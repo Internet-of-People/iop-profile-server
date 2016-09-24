@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace HomeNet.Data
@@ -31,8 +32,12 @@ namespace HomeNet.Data
     }
 
 
+    /// <summary>Lock for the identity repository.</summary>
+    public static string HomeIdentityLock = "HOME_IDENTITY";
+
+
     private SettingsRepository settingsRepository;
-    private GenericRepository<Identity> identityRepository;
+    private GenericRepository<Identity> homeIdentityRepository;
 
 
     /// <summary>Settings repository.</summary>
@@ -48,15 +53,15 @@ namespace HomeNet.Data
     }
 
 
-    /// <summary>Identity repository.</summary>
-    public GenericRepository<Identity> IdentityRepository
+    /// <summary>Identity repository for the node clients.</summary>
+    public GenericRepository<Identity> HomeIdentityRepository
     {
       get
       {
-        if (identityRepository == null)
-          identityRepository = new GenericRepository<Identity>(Context);
+        if (homeIdentityRepository == null)
+          homeIdentityRepository = new GenericRepository<Identity>(Context);
 
-        return identityRepository;
+        return homeIdentityRepository;
       }
     }
 
@@ -69,8 +74,20 @@ namespace HomeNet.Data
     /// <returns>true if the function succeeds, false otherwise.</returns>
     public bool Save()
     {
-      Task<bool> task = SaveAsync();
-      return task.Result;
+      log.Trace("()");
+
+      bool res = false;
+      try
+      {
+        SaveThrow();
+        res = true;
+      }
+      catch 
+      {
+      }
+
+      log.Trace("(-):{0}", res);
+      return res;
     }
 
     /// <summary>
@@ -85,8 +102,31 @@ namespace HomeNet.Data
       bool res = false;
       try
       {
-        await Context.SaveChangesAsync();
+        await SaveThrowAsync();
         res = true;
+      }
+      catch 
+      {
+      }
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+
+
+    /// <summary>
+    /// Saves all changes in the context to the database. 
+    /// If an exception occurs during the operation, this function propagates the exception to the caller.
+    /// </summary>
+    /// <returns>true if the function succeeds, false otherwise.</returns>
+    public void SaveThrow()
+    {
+      log.Trace("()");
+
+      try
+      {
+        Context.SaveChanges();
       }
       catch (Exception e)
       {
@@ -98,26 +138,28 @@ namespace HomeNet.Data
           if (e.InnerException.InnerException != null)
             log.Error("Inner exception level 2: {0}", e.InnerException.InnerException.ToString());
         }
+
+        log.Trace("(-):throw");
+        throw e;
       }
 
-      log.Trace("(-):{0}", res);
-      return res;
+      log.Trace("(-)");
     }
+
+
 
     /// <summary>
     /// Asynchronously saves all changes in the context to the database. 
     /// If an exception occurs during the operation, this function propagates the exception to the caller.
     /// </summary>
     /// <returns>true if the function succeeds, false otherwise.</returns>
-    public async Task<bool> SaveThrowAsync()
+    public async Task SaveThrowAsync()
     {
       log.Trace("()");
 
-      bool res = false;
       try
       {
         await Context.SaveChangesAsync();
-        res = true;
       }
       catch (Exception e)
       {
@@ -129,29 +171,117 @@ namespace HomeNet.Data
           if (e.InnerException.InnerException != null)
             log.Error("Inner exception level 2: {0}", e.InnerException.InnerException.ToString());
         }
+
+        log.Trace("(-):throw");
         throw e;
       }
 
-      log.Trace("(-):{0}", res);
-      return res;
+      log.Trace("(-)");
     }
 
 
     /// <summary>
-    /// Starts the database transaction.
+    /// Starts database transaction and acquires a lock.
+    /// The transaction makes sure the whole operation is atomic,
+    /// the lock is used to prevent race conditions among threads.
     /// </summary>
-    /// <returns>Transaction object </returns>
-    /// <remarks>
-    /// In .NET Core, the transaction automatically commits unless it is explicitly rolled back.
-    /// This means that one does not need to call DbContextTransaction.Commit() to commit the transaction,
-    /// but one does need to call DbContextTransaction.Rollback() for a rollback.
-    /// </remarks>
-    public async Task<IDbContextTransaction> BeginTransactionAsync()
+    /// <param name="Lock">Lock to protect the transaction.</param>
+    /// <returns>Entity Framework transaction object.</returns>
+    /// <remarks>The caller is responsible for releasing the lock by calling ReleaseLock.</remarks>
+    public IDbContextTransaction BeginTransactionWithLock(string Lock)
     {
-      return await context.Database.BeginTransactionAsync();
+      log.Trace("(Lock:{0})", Lock);
+
+      Monitor.Enter(Lock);
+      IDbContextTransaction result = Context.Database.BeginTransaction();
+
+      log.Trace("(-)");
+      return result;
     }
 
-    
+
+    /// <summary>
+    /// Starts database transaction and acquires multiple locks.
+    /// The transaction makes sure the whole operation is atomic,
+    /// the locks are used to prevent race conditions among threads.
+    /// </summary>
+    /// <param name="Lock">Locks to protect the transaction.</param>
+    /// <returns>Entity Framework transaction object.</returns>
+    /// <remarks>The caller is responsible for releasing the locks by calling ReleaseLock.</remarks>
+    public IDbContextTransaction BeginTransactionWithLock(string[] Locks)
+    {
+      log.Trace("(Locks:[{0}])", string.Join(",", Locks));
+
+      foreach (string lockObject in Locks)
+        Monitor.Enter(lockObject);
+
+      IDbContextTransaction result = Context.Database.BeginTransaction();
+
+      log.Trace("(-)");
+      return result;
+    }
+
+
+    /// <summary>
+    /// Acquires a lock to prevent race conditions.
+    /// </summary>
+    /// <param name="Lock">Lock object to acquire.</param>
+    /// <remarks>The caller is responsible for releasing the lock by calling ReleaseLock.</remarks>
+    public void AcquireLock(string Lock)
+    {
+      log.Trace("(Lock:{0})", Lock);
+
+      Monitor.Enter(Lock);
+
+      log.Trace("(-)");
+    }
+
+
+    /// <summary>
+    /// Acquires locks to prevent race conditions.
+    /// </summary>
+    /// <param name="Lock">Lock objects to acquire.</param>
+    /// <remarks>The caller is responsible for releasing the locks by calling ReleaseLock.</remarks>
+    public void AcquireLock(string[] Locks)
+    {
+      log.Trace("(Locks:[{0}])", string.Join(",", Locks));
+
+      for (int i = 0; i < Locks.Length; i++)
+        Monitor.Enter(Locks[i]);
+
+      log.Trace("(-)");
+    }
+
+
+    /// <summary>
+    /// Releases an acquired lock.
+    /// </summary>
+    /// <param name="Lock">Lock object to release.</param>
+    public void ReleaseLock(string Lock)
+    {
+      log.Trace("(Lock:{0})", Lock);
+
+      Monitor.Exit(Lock);
+
+      log.Trace("(-)");
+    }
+
+
+    /// <summary>
+    /// Releases acquired locks.
+    /// </summary>
+    /// <param name="Lock">Lock objects to release.</param>
+    public void ReleaseLocks(string[] Locks)
+    {
+      log.Trace("(Locks:[{0}])", string.Join(",", Locks));
+
+      for (int i = Locks.Length - 1; i >= 0; i++)
+        Monitor.Exit(Locks[i]);
+
+      log.Trace("(-)");
+    }
+
+
     /// <summary>Signals whether the instance has been disposed already or not.</summary>
     private bool disposed = false;
 
@@ -174,7 +304,7 @@ namespace HomeNet.Data
 
       if (Disposing)
       {
-        context.Dispose();
+        if (context != null) context.Dispose();
         context = null;
         disposed = true;
       }

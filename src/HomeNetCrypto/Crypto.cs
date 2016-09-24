@@ -43,9 +43,8 @@ namespace HomeNetCrypto
     /// <returns>Structure holding newly generated keys.</returns>
     public static KeysEd25519 GenerateKeys()
     {
-      RandomNumberGenerator rng = RandomNumberGenerator.Create();
       byte[] seed = new byte[32];
-      rng.GetBytes(seed);
+      Crypto.Rng.GetBytes(seed);
 
       return GenerateKeys(seed);
     }
@@ -128,6 +127,11 @@ namespace HomeNetCrypto
   /// </summary>
   public class Crypto
   {
+    /// <summary>Cryptographically secure random number generator.</summary>
+    public static RandomNumberGenerator Rng = RandomNumberGenerator.Create();
+
+    public static SHA1 Sha1Engine = SHA1.Create();
+
     /// <summary>
     /// Converts a binary data to an uppercase hexadecimal string representation.
     /// </summary>
@@ -146,6 +150,17 @@ namespace HomeNetCrypto
     public static byte[] FromHex(string Data)
     {
       return CryptoBytes.FromHexString(Data);     
+    }
+
+
+    /// <summary>
+    /// Computes SHA1 hash of binary data.
+    /// </summary>
+    /// <param name="Data">Data to be hashed.</param>
+    /// <returns>SHA1 hash in binary form.</returns>
+    public static byte[] Sha1(byte[] Data)
+    {
+      return Sha1Engine.ComputeHash(Data);
     }
   }
 }

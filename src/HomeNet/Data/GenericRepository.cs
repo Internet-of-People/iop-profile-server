@@ -52,14 +52,45 @@ namespace HomeNet.Data
     }
 
     /// <summary>
+    /// Asynchronously obtains a list of entities based on the specified criteria.
+    /// </summary>
+    /// <param name="filter">Specifies which entities should be returned from the database. If null, all entities are returned.</param>
+    /// <param name="orderBy">Specifies the order in which the matching entities are returned. If null, the default ordering is used.</param>
+    /// <returns></returns>
+    public virtual async Task<IEnumerable<TEntity>> GetAsync(Expression<Func<TEntity, bool>> filter = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null)
+    {
+      log.Trace("()");
+      IQueryable<TEntity> query = dbSet;
+
+      if (filter != null)
+        query = query.Where(filter);
+
+      List<TEntity> result = await (orderBy != null ? orderBy(query).ToListAsync() : query.ToListAsync());
+      log.Trace("(-):{0}", result != null ? "*Count=" + result.Count.ToString() : "null");
+      return result;
+    }
+
+    /// <summary>
     /// Counts number of entities that match certain criteria.
     /// </summary>
-    /// <param name="filter">Specifies matching criteria.</param>
+    /// <param name="filter">Specifies matching criteria, can be null to count all entities.</param>
     /// <returns>Number of entities that match the criteria.</returns>
     public virtual int Count(Expression<Func<TEntity, bool>> filter)
     {
       IQueryable<TEntity> query = dbSet;
-      int result = query.Count(filter);
+      int result = filter != null ? query.Count(filter) : query.Count();
+      return result;
+    }
+
+    /// <summary>
+    /// Asynchronously counts number of entities that match certain criteria.
+    /// </summary>
+    /// <param name="filter">Specifies matching criteria, can be null to count all entities.</param>
+    /// <returns>Number of entities that match the criteria.</returns>
+    public virtual async Task<int> CountAsync(Expression<Func<TEntity, bool>> filter)
+    {
+      IQueryable<TEntity> query = dbSet;
+      int result = await (filter != null ? query.CountAsync(filter) : query.CountAsync());
       return result;
     }
 
@@ -91,6 +122,33 @@ namespace HomeNet.Data
     }
 
     /// <summary>
+    /// Asynchronously obtains a list of entities based on the specified criteria with a limit on number of returned entities.
+    /// </summary>
+    /// <param name="filter">Specifies which entities should be returned from the database. If null, all entities are returned.</param>
+    /// <param name="takeLimit">Number of entities to return at maximum. If set to 0, no limit is defined.</param>
+    /// <param name="orderBy">Specifies the order in which the matching entities are returned. If null, the default ordering is used.</param>
+    /// <returns></returns>
+    public virtual async Task<IEnumerable<TEntity>> GetLimitAsync(Expression<Func<TEntity, bool>> filter = null, int takeLimit = 0, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null)
+    {
+      log.Trace("()");
+      IQueryable<TEntity> query = dbSet;
+
+      if (filter != null)
+      {
+        query = query.Where(filter);
+      }
+
+      if (takeLimit != 0)
+      {
+        query = query.Take(takeLimit);
+      }
+
+      List<TEntity> result = await (orderBy != null ? orderBy(query).ToListAsync() : query.ToListAsync());
+      log.Trace("(-):{0}", result != null ? "*Count=" + result.Count.ToString() : "null");
+      return result;
+    }
+
+    /// <summary>
     /// Obtains a certain number of entities from the collection.
     /// </summary>
     /// <param name="Count">Number of entities to return at maximum.</param>
@@ -106,6 +164,21 @@ namespace HomeNet.Data
     }
 
     /// <summary>
+    /// Asynchronously obtains a certain number of entities from the collection.
+    /// </summary>
+    /// <param name="Count">Number of entities to return at maximum.</param>
+    /// <returns>Collection of entities that contains at most <paramref name="Count"/> items.</returns>
+    public virtual async Task<IEnumerable<TEntity>> TakeAsync(int Count)
+    {
+      log.Trace("(Count:{0})", Count);
+
+      List<TEntity> result = await dbSet.Take(Count).ToListAsync();
+
+      log.Trace("(-):{0}", result != null ? "*Count=" + result.Count.ToString() : "null");
+      return result;
+    }
+
+    /// <summary>
     /// Obtains entity by its primary identifier.
     /// </summary>
     /// <param name="id">Primary identifier of the entity.</param>
@@ -113,7 +186,24 @@ namespace HomeNet.Data
     public virtual TEntity GetById(object id)
     {
       log.Trace("(id:{0})", id);
+#warning Not implemented, need .NET Core 1.1.0.
+      throw new NotImplementedException("Wait for .NET Core 1.1.0");
+      /*TEntity result = dbSet.Find(id);
 
+      log.Trace("(-):{0}", result);
+      return result;*/
+    }
+
+    /// <summary>
+    /// Asynchronously obtains entity by its primary identifier.
+    /// </summary>
+    /// <param name="id">Primary identifier of the entity.</param>
+    /// <returns>Entity with the given primary identifier or null if no such entity exists.</returns>
+    public virtual /*async*/ Task<TEntity> GetByIdAsync(object id)
+    {
+      log.Trace("(id:{0})", id);
+
+#warning Not implemented, need .NET Core 1.1.0.
       throw new NotImplementedException("Wait for .NET Core 1.1.0");
       /*TEntity result = dbSet.Find(id);
 

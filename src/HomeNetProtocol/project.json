@@ -3,6 +3,7 @@
 
   "dependencies": {
     "Google.Protobuf": "3.0.0",
+    "HomeNetCrypto": "1.0.0-*",
     "NETStandard.Library": "1.6.0"
   },
 

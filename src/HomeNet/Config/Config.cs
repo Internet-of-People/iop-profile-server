@@ -70,6 +70,12 @@ namespace HomeNet.Config
     /// <summary>Description of role servers.</summary>
     public ServerRolesConfig ServerRoles;
 
+    /// <summary>Path to the directory where images are stored.</summary>
+    public string ImageDataFolder;
+
+    /// <summary>Maximal total number of identities hosted by this node.</summary>
+    public int MaxHostedIdentities;
+
     /// <summary>Cryptographic keys of the node that can be used for signing messages and verifying signatures.</summary>
     public KeysEd25519 Keys;
 
@@ -155,6 +161,8 @@ namespace HomeNet.Config
         X509Certificate tcpServerTlsCertificate = null;
         ServerRolesConfig serverRoles = null;
         IPAddress serverInterface = null;
+        string imageDataFolder = null;
+        int maxHostedIdentities = 0;
 
         Dictionary<string, object> nameVal = new Dictionary<string, object>();
 
@@ -168,6 +176,8 @@ namespace HomeNet.Config
           { "client_non_customer_interface_port",   ConfigValueType.Port           },
           { "client_customer_interface_port",       ConfigValueType.Port           },
           { "tls_server_certificate",               ConfigValueType.StringNonEmpty },
+          { "image_data_folder",                    ConfigValueType.StringNonEmpty },
+          { "max_hosted_identities",                ConfigValueType.Int            },
         };
 
         error = !LinesToNameValueDictionary(Lines, namesDefinition, nameVal);
@@ -181,6 +191,9 @@ namespace HomeNet.Config
           int clientCustomerInterfacePort = (int)nameVal["client_customer_interface_port"];
 
           tcpServerTlsCertificateFileName = (string)nameVal["tls_server_certificate"];
+          imageDataFolder = (string)nameVal["image_data_folder"];
+          maxHostedIdentities = (int)nameVal["max_hosted_identities"];
+
 
           serverRoles = new ServerRolesConfig();
           error = !(serverRoles.AddRoleServer(primaryInterfacePort, ServerRole.PrimaryUnrelated)
@@ -212,12 +225,30 @@ namespace HomeNet.Config
           }
         }
 
+        if (!error)
+        {
+          try
+          {
+            if (!Directory.Exists(imageDataFolder))
+              Directory.CreateDirectory(imageDataFolder);
+          }
+          catch (Exception e)
+          {
+            log.Error("Exception occurred while initializing image data folder '{0}': {1}", imageDataFolder, e.ToString());
+            error = true;
+          }
+          
+          
+        }
+
         // Finally, if everything is OK, change the actual configuration.
         if (!error)
         {
           ServerInterface = serverInterface;
           ServerRoles = serverRoles;
           TcpServerTlsCertificate = tcpServerTlsCertificate;
+          ImageDataFolder = imageDataFolder;
+          MaxHostedIdentities = maxHostedIdentities;
 
           log.Info("New configuration loaded successfully.");
         }

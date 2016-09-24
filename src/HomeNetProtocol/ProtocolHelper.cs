@@ -10,7 +10,7 @@ namespace HomeNetProtocol
   /// <summary>
   /// Helper functions and constants used for handling protocol messages.
   /// </summary>
-  public static class Utils
+  public static class ProtocolHelper
   {
     /// <summary>Length of the message prefix in bytes that contains the message length.</summary>
     public const int HeaderSize = 4;
@@ -34,12 +34,12 @@ namespace HomeNetProtocol
     }
 
     /// <summary>
-    /// Obtains 64-bit Unix timestamp.
+    /// Obtains 64-bit Unix timestamp with milliseconds precision.
     /// </summary>
-    /// <returns>64-bit Unix timestamp.</returns>
-    public static long GetUnixTimestamp()
+    /// <returns>64-bit Unix timestamp with milliseconds precision.</returns>
+    public static long GetUnixTimestampMs()
     {
-      long res = (long)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+      long res = (long)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalMilliseconds;
       return res;
     }
 
@@ -85,7 +85,7 @@ namespace HomeNetProtocol
     {
       string res = "<INVALID>";
       
-        if (Version.Length == 3)
+      if (Version.Length == 3)
         res = string.Format("{0}.{1}.{2}", Version[0], Version[1], Version[2]);
 
       return res;        
@@ -101,6 +101,16 @@ namespace HomeNetProtocol
     public static ByteString VersionToByteString(byte Major, byte Minor, byte Patch)
     {
       return ByteArrayToByteString(new byte[] { Major, Minor, Patch });
+    }
+
+    /// <summary>
+    /// Converts binary version to Protobuf ByteString format.
+    /// </summary>
+    /// <param name="Version">Binary version information.</param>
+    /// <returns>Version in ByteString format to be used directly in Protobuf message.</returns>
+    public static ByteString VersionToByteString(byte[] Version)
+    {
+      return ByteArrayToByteString(new byte[] { Version[0], Version[1], Version[2] });
     }
 
     /// <summary>
