@@ -11,10 +11,36 @@ using HomeNet.Kernel;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
+using HomeNet.Utils;
+using HomeNet.Data.Models;
 
 namespace HomeNet.Network
 {
-  public enum ClientStatus { ReadingHeader, ReadingBody }
+  /// <summary>
+  /// On the lowest socket level, the receiving part of the client can either be reading the message prefix header or the body.
+  /// </summary>
+  public enum ClientStatus
+  {
+    /// <summary>Server is waiting for the message header to be read from the socket.</summary>
+    ReadingHeader,
+
+    /// <summary>Server read the message header and is now waiting for the message body to be read.</summary>
+    ReadingBody
+  }
+
+  
+  /// <summary>Different states of conversation between the client and the server.</summary>
+  public enum ClientConversationStatus
+  {
+    /// <summary>Client has not initiated a conversation yet.</summary>
+    NoConversation,
+
+    /// <summary>There is an established conversation with the client, but no authentication has been done.</summary>
+    ConversationStarted,
+
+    /// <summary>There is an established conversation with the client and the authentication process has already been completed.</summary>
+    Authenticated
+  };
 
   /// <summary>
   /// Client class represents any kind of TCP client that connects to one of the node's TCP servers.
@@ -24,7 +50,7 @@ namespace HomeNet.Network
     private PrefixLogger log;
 
     /// <summary>Role server assigned client identifier.</summary>
-    public uint Id;
+    public ulong Id;
 
     /// <summary>Source IP address and port of the client.</summary>
     public EndPoint RemoteEndPoint;
@@ -45,13 +71,42 @@ namespace HomeNet.Network
     /// TcpRoleServer.NodeKeepAliveIntervalSeconds for node to node or unknown connections.</summary>
     public int KeepAliveIntervalSeconds;
 
+    /// <summary>Protocol message builder.</summary>
+    public MessageBuilder MessageBuilder;
+
+
+    // Client Context Section
+    
+    /// <summary>Current status of the conversation with the client.</summary>
+    public ClientConversationStatus ConversationStatus;
+
+    /// <summary>Client's public key.</summary>
+    public byte[] PublicKey;
+
+    /// <summary>Client's public key hash.</summary>
+    public byte[] IdentityId;
+
+    /// <summary>Random data used for client's authentication.</summary>
+    public byte[] AuthenticationChallenge;
+
+    /// <summary>true if the network client represents identity hosted by the node that is checked-in, false otherwise.</summary>
+    public bool IsOurCheckedInClient;
+
+    // \Client Context Section
+
+
+
+    /// <summary>Server to which the client is connected to.</summary>
+    private TcpRoleServer server;
+
+
     /// <summary>
     /// Creates the encapsulation for a new TCP server client.
     /// </summary>
     /// <param name="TcpClient">TCP client class that holds the connection and allows communication with the client.</param>
     /// <param name="UseTls">true if the client is connected to the TLS port, false otherwise.</param>
     /// <param name="KeepAliveIntervalSeconds">Number of seconds for the connection to this client to be without any message until the node can close it for inactivity.</param>
-    public Client(TcpClient TcpClient, bool UseTls, int KeepAliveIntervalSeconds)
+    public Client(TcpRoleServer Server, TcpClient TcpClient, bool UseTls, int KeepAliveIntervalSeconds)
     {
       this.TcpClient = TcpClient;
       RemoteEndPoint = this.TcpClient.Client.RemoteEndPoint;
@@ -64,12 +119,17 @@ namespace HomeNet.Network
 
       this.KeepAliveIntervalSeconds = KeepAliveIntervalSeconds;
       NextKeepAliveTime = DateTime.UtcNow.AddSeconds(this.KeepAliveIntervalSeconds);
-
+    
       this.TcpClient.LingerState = new LingerOption(true, 0);
       this.UseTls = UseTls;
       Stream = this.TcpClient.GetStream();
       if (this.UseTls)
         Stream = new SslStream(Stream, false, PeerCertificateValidationCallback);
+
+      server = Server;
+      MessageBuilder = new MessageBuilder(server.IdBase, new List<byte[]>() { new byte[] { 1, 0, 0 } }, Base.Configuration.Keys);
+      ConversationStatus = ClientConversationStatus.NoConversation;
+      IsOurCheckedInClient = false;
 
       log.Trace("(-)");
     }

@@ -30,48 +30,104 @@ namespace Iop.Homenode {
             "YWdlVHlwZSKVAQoHUmVxdWVzdBI0Cg1zaW5nbGVSZXF1ZXN0GAEgASgLMhsu",
             "aW9wLmhvbWVub2RlLlNpbmdsZVJlcXVlc3RIABJAChNjb252ZXJzYXRpb25S",
             "ZXF1ZXN0GAIgASgLMiEuaW9wLmhvbWVub2RlLkNvbnZlcnNhdGlvblJlcXVl",
-            "c3RIAEISChBDb252ZXJzYXRpb25UeXBlItMBCghSZXNwb25zZRIkCgZzdGF0",
+            "c3RIAEISChBDb252ZXJzYXRpb25UeXBlIuQBCghSZXNwb25zZRIkCgZzdGF0",
             "dXMYASABKA4yFC5pb3AuaG9tZW5vZGUuU3RhdHVzEhEKCXRpbWVzdGFtcBgC",
-            "IAEoEhI2Cg5zaW5nbGVSZXNwb25zZRgDIAEoCzIcLmlvcC5ob21lbm9kZS5T",
-            "aW5nbGVSZXNwb25zZUgAEkIKFGNvbnZlcnNhdGlvblJlc3BvbnNlGAQgASgL",
-            "MiIuaW9wLmhvbWVub2RlLkNvbnZlcnNhdGlvblJlc3BvbnNlSABCEgoQQ29u",
-            "dmVyc2F0aW9uVHlwZSKPAQoNU2luZ2xlUmVxdWVzdBIPCgd2ZXJzaW9uGAEg",
-            "ASgMEikKBHBpbmcYAiABKAsyGS5pb3AuaG9tZW5vZGUuUGluZ1JlcXVlc3RI",
-            "ABIzCglsaXN0Um9sZXMYAyABKAsyHi5pb3AuaG9tZW5vZGUuTGlzdFJvbGVz",
-            "UmVxdWVzdEgAQg0KC1JlcXVlc3RUeXBlIpMBCg5TaW5nbGVSZXNwb25zZRIP",
-            "Cgd2ZXJzaW9uGAEgASgMEioKBHBpbmcYAiABKAsyGi5pb3AuaG9tZW5vZGUu",
-            "UGluZ1Jlc3BvbnNlSAASNAoJbGlzdFJvbGVzGAMgASgLMh8uaW9wLmhvbWVu",
-            "b2RlLkxpc3RSb2xlc1Jlc3BvbnNlSABCDgoMUmVzcG9uc2VUeXBlIjUKE0Nv",
-            "bnZlcnNhdGlvblJlcXVlc3QSDwoFZHVtbXkYASABKA1IAEINCgtSZXF1ZXN0",
-            "VHlwZSI2ChRDb252ZXJzYXRpb25SZXNwb25zZRIPCgVkdW1teRgCIAEoDUgA",
+            "IAEoEhIPCgdkZXRhaWxzGAMgASgJEjYKDnNpbmdsZVJlc3BvbnNlGAggASgL",
+            "MhwuaW9wLmhvbWVub2RlLlNpbmdsZVJlc3BvbnNlSAASQgoUY29udmVyc2F0",
+            "aW9uUmVzcG9uc2UYCSABKAsyIi5pb3AuaG9tZW5vZGUuQ29udmVyc2F0aW9u",
+            "UmVzcG9uc2VIAEISChBDb252ZXJzYXRpb25UeXBlItQBCg1TaW5nbGVSZXF1",
+            "ZXN0Eg8KB3ZlcnNpb24YASABKAwSKQoEcGluZxgCIAEoCzIZLmlvcC5ob21l",
+            "bm9kZS5QaW5nUmVxdWVzdEgAEjMKCWxpc3RSb2xlcxgDIAEoCzIeLmlvcC5o",
+            "b21lbm9kZS5MaXN0Um9sZXNSZXF1ZXN0SAASQwoRbGlzdEhvbWVOb2RlUGxh",
+            "bnMYBCABKAsyJi5pb3AuaG9tZW5vZGUuTGlzdEhvbWVOb2RlUGxhbnNSZXF1",
+            "ZXN0SABCDQoLUmVxdWVzdFR5cGUi2QEKDlNpbmdsZVJlc3BvbnNlEg8KB3Zl",
+            "cnNpb24YASABKAwSKgoEcGluZxgCIAEoCzIaLmlvcC5ob21lbm9kZS5QaW5n",
+            "UmVzcG9uc2VIABI0CglsaXN0Um9sZXMYAyABKAsyHy5pb3AuaG9tZW5vZGUu",
+            "TGlzdFJvbGVzUmVzcG9uc2VIABJEChFsaXN0SG9tZU5vZGVQbGFucxgEIAEo",
+            "CzInLmlvcC5ob21lbm9kZS5MaXN0SG9tZU5vZGVQbGFuc1Jlc3BvbnNlSABC",
+            "DgoMUmVzcG9uc2VUeXBlIp8CChNDb252ZXJzYXRpb25SZXF1ZXN0EhEKCXNp",
+            "Z25hdHVyZRgBIAEoDBI3CgVzdGFydBgCIAEoCzImLmlvcC5ob21lbm9kZS5T",
+            "dGFydENvbnZlcnNhdGlvblJlcXVlc3RIABI/Cg9ob21lTm9kZVJlcXVlc3QY",
+            "AyABKAsyJC5pb3AuaG9tZW5vZGUuSG9tZU5vZGVSZXF1ZXN0UmVxdWVzdEgA",
+            "Ei8KB2NoZWNrSW4YBCABKAsyHC5pb3AuaG9tZW5vZGUuQ2hlY2tJblJlcXVl",
+            "c3RIABI7Cg11cGRhdGVQcm9maWxlGAUgASgLMiIuaW9wLmhvbWVub2RlLlVw",
+            "ZGF0ZVByb2ZpbGVSZXF1ZXN0SABCDQoLUmVxdWVzdFR5cGUipAIKFENvbnZl",
+            "cnNhdGlvblJlc3BvbnNlEhEKCXNpZ25hdHVyZRgBIAEoDBI4CgVzdGFydBgC",
+            "IAEoCzInLmlvcC5ob21lbm9kZS5TdGFydENvbnZlcnNhdGlvblJlc3BvbnNl",
+            "SAASQAoPaG9tZU5vZGVSZXF1ZXN0GAMgASgLMiUuaW9wLmhvbWVub2RlLkhv",
+            "bWVOb2RlUmVxdWVzdFJlc3BvbnNlSAASMAoHY2hlY2tJbhgEIAEoCzIdLmlv",
+            "cC5ob21lbm9kZS5DaGVja0luUmVzcG9uc2VIABI8Cg11cGRhdGVQcm9maWxl",
+            "GAUgASgLMiMuaW9wLmhvbWVub2RlLlVwZGF0ZVByb2ZpbGVSZXNwb25zZUgA",
             "Qg0KC1JlcXVlc3RUeXBlIh4KC1BpbmdSZXF1ZXN0Eg8KB3BheWxvYWQYASAB",
             "KAwiLgoMUGluZ1Jlc3BvbnNlEg8KB3BheWxvYWQYASABKAwSDQoFY2xvY2sY",
             "AiABKBIiEgoQTGlzdFJvbGVzUmVxdWVzdCI7ChFMaXN0Um9sZXNSZXNwb25z",
             "ZRImCgRyb2xlGAEgAygLMhguaW9wLmhvbWVub2RlLlNlcnZlclJvbGUiZAoK",
             "U2VydmVyUm9sZRIqCgRyb2xlGAEgASgOMhwuaW9wLmhvbWVub2RlLlNlcnZl",
             "clJvbGVUeXBlEgwKBHBvcnQYAiABKA0SDQoFaXNUY3AYAyABKAgSDQoFaXNU",
-            "bHMYBCABKAgqbgoGU3RhdHVzEg0KCVNUQVRVU19PSxAAEhwKGEVSUk9SX1BS",
-            "T1RPQ09MX1ZJT0xBVElPThABEhUKEUVSUk9SX1VOU1VQUE9SVEVEEAISEAoM",
-            "RVJST1JfQkFOTkVEEAMSDgoKRVJST1JfQlVTWRAEKmYKDlNlcnZlclJvbGVU",
-            "eXBlEgsKB1BSSU1BUlkQABIPCgtORF9ORUlHSEJPUhABEhAKDE5EX0NPTExF",
-            "QUdVRRACEhMKD0NMX05PTl9DVVNUT01FUhADEg8KC0NMX0NVU1RPTUVSEARi",
-            "BnByb3RvMw=="));
+            "bHMYBCABKAgiMAoYTGlzdEhvbWVOb2RlUGxhbnNSZXF1ZXN0EhQKDGlkZW50",
+            "aXR5VHlwZRgBIAEoCSJGChlMaXN0SG9tZU5vZGVQbGFuc1Jlc3BvbnNlEikK",
+            "BXBsYW5zGAEgAygLMhouaW9wLmhvbWVub2RlLkhvbWVOb2RlUGxhbiKaAQoM",
+            "SG9tZU5vZGVQbGFuEg4KBnBsYW5JZBgBIAEoDBIUCgxpZGVudGl0eVR5cGUY",
+            "AiABKAkSCwoDZmVlGAMgASgEEhwKFGJpbGxpbmdQZXJpb2RTZWNvbmRzGAQg",
+            "ASgNEjkKDnBsYW5QYXJhbWV0ZXJzGAkgAygLMiEuaW9wLmhvbWVub2RlLk5h",
+            "bWVTdHJpbmdWYWx1ZVBhaXIiMgoTTmFtZVN0cmluZ1ZhbHVlUGFpchIMCgRu",
+            "YW1lGAEgASgJEg0KBXZhbHVlGAIgASgJIkgKGFN0YXJ0Q29udmVyc2F0aW9u",
+            "UmVxdWVzdBIZChFzdXBwb3J0ZWRWZXJzaW9ucxgBIAMoDBIRCglwdWJsaWNL",
+            "ZXkYAiABKAwiUgoZU3RhcnRDb252ZXJzYXRpb25SZXNwb25zZRIPCgd2ZXJz",
+            "aW9uGAEgASgMEhEKCXB1YmxpY0tleRgCIAEoDBIRCgljaGFsbGVuZ2UYAyAB",
+            "KAwiTgoWSG9tZU5vZGVSZXF1ZXN0UmVxdWVzdBI0Cghjb250cmFjdBgBIAEo",
+            "CzIiLmlvcC5ob21lbm9kZS5Ib21lTm9kZVBsYW5Db250cmFjdCJPChdIb21l",
+            "Tm9kZVJlcXVlc3RSZXNwb25zZRI0Cghjb250cmFjdBgBIAEoCzIiLmlvcC5o",
+            "b21lbm9kZS5Ib21lTm9kZVBsYW5Db250cmFjdCKFAQoUSG9tZU5vZGVQbGFu",
+            "Q29udHJhY3QSKAoEcGxhbhgBIAEoCzIaLmlvcC5ob21lbm9kZS5Ib21lTm9k",
+            "ZVBsYW4SFQoNbm9kZVB1YmxpY0tleRgCIAEoDBIZChFpZGVudGl0eVB1Ymxp",
+            "Y0tleRgDIAEoDBIRCglzdGFydFRpbWUYBCABKBIiIwoOQ2hlY2tJblJlcXVl",
+            "c3QSEQoJY2hhbGxlbmdlGAEgASgMIhEKD0NoZWNrSW5SZXNwb25zZSLLAQoU",
+            "VXBkYXRlUHJvZmlsZVJlcXVlc3QSEgoKc2V0VmVyc2lvbhgBIAEoCBIPCgdz",
+            "ZXROYW1lGAIgASgIEhAKCHNldEltYWdlGAMgASgIEhMKC3NldExvY2F0aW9u",
+            "GAQgASgIEhQKDHNldEV4dHJhRGF0YRgFIAEoCBIPCgd2ZXJzaW9uGAggASgM",
+            "EgwKBG5hbWUYCSABKAkSDQoFaW1hZ2UYCiABKAwSEAoIbG9jYXRpb24YCyAB",
+            "KAcSEQoJZXh0cmFEYXRhGAwgASgJIhcKFVVwZGF0ZVByb2ZpbGVSZXNwb25z",
+            "ZSrQAgoGU3RhdHVzEg0KCVNUQVRVU19PSxAAEhwKGEVSUk9SX1BST1RPQ09M",
+            "X1ZJT0xBVElPThABEhUKEUVSUk9SX1VOU1VQUE9SVEVEEAISEAoMRVJST1Jf",
+            "QkFOTkVEEAMSDgoKRVJST1JfQlVTWRAEEhYKEkVSUk9SX1VOQVVUSE9SSVpF",
+            "RBAFEhIKDkVSUk9SX0JBRF9ST0xFEAYSIQodRVJST1JfQkFEX0NPTlZFUlNB",
+            "VElPTl9TVEFUVVMQBxISCg5FUlJPUl9JTlRFUk5BTBAIEhgKFEVSUk9SX1FV",
+            "T1RBX0VYQ0VFREVEEDMSGwoXRVJST1JfSU5WQUxJRF9TSUdOQVRVUkUQNBIT",
+            "Cg9FUlJPUl9OT1RfRk9VTkQQNRIXChNFUlJPUl9JTlZBTElEX1ZBTFVFEDYS",
+            "GAoURVJST1JfQUxSRUFEWV9FWElTVFMQNypmCg5TZXJ2ZXJSb2xlVHlwZRIL",
+            "CgdQUklNQVJZEAASDwoLTkRfTkVJR0hCT1IQARIQCgxORF9DT0xMRUFHVUUQ",
+            "AhITCg9DTF9OT05fQ1VTVE9NRVIQAxIPCgtDTF9DVVNUT01FUhAEYgZwcm90",
+            "bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Iop.Homenode.Status), typeof(global::Iop.Homenode.ServerRoleType), }, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.MessageWithHeader), global::Iop.Homenode.MessageWithHeader.Parser, new[]{ "Header", "Body" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.Message), global::Iop.Homenode.Message.Parser, new[]{ "Id", "Request", "Response" }, new[]{ "MessageType" }, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.Request), global::Iop.Homenode.Request.Parser, new[]{ "SingleRequest", "ConversationRequest" }, new[]{ "ConversationType" }, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.Response), global::Iop.Homenode.Response.Parser, new[]{ "Status", "Timestamp", "SingleResponse", "ConversationResponse" }, new[]{ "ConversationType" }, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.SingleRequest), global::Iop.Homenode.SingleRequest.Parser, new[]{ "Version", "Ping", "ListRoles" }, new[]{ "RequestType" }, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.SingleResponse), global::Iop.Homenode.SingleResponse.Parser, new[]{ "Version", "Ping", "ListRoles" }, new[]{ "ResponseType" }, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ConversationRequest), global::Iop.Homenode.ConversationRequest.Parser, new[]{ "Dummy" }, new[]{ "RequestType" }, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ConversationResponse), global::Iop.Homenode.ConversationResponse.Parser, new[]{ "Dummy" }, new[]{ "RequestType" }, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.Response), global::Iop.Homenode.Response.Parser, new[]{ "Status", "Timestamp", "Details", "SingleResponse", "ConversationResponse" }, new[]{ "ConversationType" }, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.SingleRequest), global::Iop.Homenode.SingleRequest.Parser, new[]{ "Version", "Ping", "ListRoles", "ListHomeNodePlans" }, new[]{ "RequestType" }, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.SingleResponse), global::Iop.Homenode.SingleResponse.Parser, new[]{ "Version", "Ping", "ListRoles", "ListHomeNodePlans" }, new[]{ "ResponseType" }, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ConversationRequest), global::Iop.Homenode.ConversationRequest.Parser, new[]{ "Signature", "Start", "HomeNodeRequest", "CheckIn", "UpdateProfile" }, new[]{ "RequestType" }, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ConversationResponse), global::Iop.Homenode.ConversationResponse.Parser, new[]{ "Signature", "Start", "HomeNodeRequest", "CheckIn", "UpdateProfile" }, new[]{ "RequestType" }, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.PingRequest), global::Iop.Homenode.PingRequest.Parser, new[]{ "Payload" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.PingResponse), global::Iop.Homenode.PingResponse.Parser, new[]{ "Payload", "Clock" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ListRolesRequest), global::Iop.Homenode.ListRolesRequest.Parser, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ListRolesResponse), global::Iop.Homenode.ListRolesResponse.Parser, new[]{ "Role" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ServerRole), global::Iop.Homenode.ServerRole.Parser, new[]{ "Role", "Port", "IsTcp", "IsTls" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ServerRole), global::Iop.Homenode.ServerRole.Parser, new[]{ "Role", "Port", "IsTcp", "IsTls" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ListHomeNodePlansRequest), global::Iop.Homenode.ListHomeNodePlansRequest.Parser, new[]{ "IdentityType" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ListHomeNodePlansResponse), global::Iop.Homenode.ListHomeNodePlansResponse.Parser, new[]{ "Plans" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.HomeNodePlan), global::Iop.Homenode.HomeNodePlan.Parser, new[]{ "PlanId", "IdentityType", "Fee", "BillingPeriodSeconds", "PlanParameters" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.NameStringValuePair), global::Iop.Homenode.NameStringValuePair.Parser, new[]{ "Name", "Value" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.StartConversationRequest), global::Iop.Homenode.StartConversationRequest.Parser, new[]{ "SupportedVersions", "PublicKey" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.StartConversationResponse), global::Iop.Homenode.StartConversationResponse.Parser, new[]{ "Version", "PublicKey", "Challenge" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.HomeNodeRequestRequest), global::Iop.Homenode.HomeNodeRequestRequest.Parser, new[]{ "Contract" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.HomeNodeRequestResponse), global::Iop.Homenode.HomeNodeRequestResponse.Parser, new[]{ "Contract" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.HomeNodePlanContract), global::Iop.Homenode.HomeNodePlanContract.Parser, new[]{ "Plan", "NodePublicKey", "IdentityPublicKey", "StartTime" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.CheckInRequest), global::Iop.Homenode.CheckInRequest.Parser, new[]{ "Challenge" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.CheckInResponse), global::Iop.Homenode.CheckInResponse.Parser, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.UpdateProfileRequest), global::Iop.Homenode.UpdateProfileRequest.Parser, new[]{ "SetVersion", "SetName", "SetImage", "SetLocation", "SetExtraData", "Version", "Name", "Image", "Location", "ExtraData" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.UpdateProfileResponse), global::Iop.Homenode.UpdateProfileResponse.Parser, null, null, null, null)
           }));
     }
     #endregion
@@ -95,13 +151,49 @@ namespace Iop.Homenode {
     /// </summary>
     [pbr::OriginalName("ERROR_UNSUPPORTED")] ErrorUnsupported = 2,
     /// <summary>
-    ///  The peer will not process the request bacause the requestor is on the blacklist. Information about the blacklist entry expiration is provided in Response.timestamp.
+    ///  The peer will not process the request bacause the requestor is on the blacklist. Information about the blacklist entry expiration is provided in 'Response.timestamp'.
     /// </summary>
     [pbr::OriginalName("ERROR_BANNED")] ErrorBanned = 3,
     /// <summary>
     ///  The peer will not process the request because it is too busy. The requestor can try later.
     /// </summary>
     [pbr::OriginalName("ERROR_BUSY")] ErrorBusy = 4,
+    /// <summary>
+    ///  Within conversation, some server roles require authorization of the peer before certain requests are allowed.
+    /// </summary>
+    [pbr::OriginalName("ERROR_UNAUTHORIZED")] ErrorUnauthorized = 5,
+    /// <summary>
+    ///  If a request is sent to a port that does not handle the specific role, this error is returned.
+    /// </summary>
+    [pbr::OriginalName("ERROR_BAD_ROLE")] ErrorBadRole = 6,
+    /// <summary>
+    ///  The conversation status is different from what the message requires.
+    /// </summary>
+    [pbr::OriginalName("ERROR_BAD_CONVERSATION_STATUS")] ErrorBadConversationStatus = 7,
+    /// <summary>
+    ///  Internal error occurred while processing the message.
+    /// </summary>
+    [pbr::OriginalName("ERROR_INTERNAL")] ErrorInternal = 8,
+    /// <summary>
+    ///  Return codes specific to a request.
+    /// </summary>
+    [pbr::OriginalName("ERROR_QUOTA_EXCEEDED")] ErrorQuotaExceeded = 51,
+    /// <summary>
+    ///  The signature provided be the peer does not correspond to the peer's key or the message being signed.
+    /// </summary>
+    [pbr::OriginalName("ERROR_INVALID_SIGNATURE")] ErrorInvalidSignature = 52,
+    /// <summary>
+    ///  A referenced object was not found.
+    /// </summary>
+    [pbr::OriginalName("ERROR_NOT_FOUND")] ErrorNotFound = 53,
+    /// <summary>
+    ///  One of the values provided is invalid.
+    /// </summary>
+    [pbr::OriginalName("ERROR_INVALID_VALUE")] ErrorInvalidValue = 54,
+    /// <summary>
+    ///  An object with the same identifier already exists.
+    /// </summary>
+    [pbr::OriginalName("ERROR_ALREADY_EXISTS")] ErrorAlreadyExists = 55,
   }
 
   /// <summary>
@@ -745,6 +837,7 @@ namespace Iop.Homenode {
     public Response(Response other) : this() {
       status_ = other.status_;
       timestamp_ = other.timestamp_;
+      details_ = other.details_;
       switch (other.ConversationTypeCase) {
         case ConversationTypeOneofCase.SingleResponse:
           SingleResponse = other.SingleResponse.Clone();
@@ -779,7 +872,7 @@ namespace Iop.Homenode {
     public const int TimestampFieldNumber = 2;
     private long timestamp_;
     /// <summary>
-    ///  If status is ERROR_BANNED, this field contains 64-bit signed Unix UTC timestamp specifying when the blacklist entry expires.
+    ///  TimestampType. If status is ERROR_BANNED, this field specifies when the blacklist entry expires.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public long Timestamp {
@@ -789,8 +882,22 @@ namespace Iop.Homenode {
       }
     }
 
+    /// <summary>Field number for the "details" field.</summary>
+    public const int DetailsFieldNumber = 3;
+    private string details_ = "";
+    /// <summary>
+    ///  In case of an error, this field may contain additional details.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string Details {
+      get { return details_; }
+      set {
+        details_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
     /// <summary>Field number for the "singleResponse" field.</summary>
-    public const int SingleResponseFieldNumber = 3;
+    public const int SingleResponseFieldNumber = 8;
     /// <summary>
     ///  Responses to single requests are sent as single responses,
     /// </summary>
@@ -804,7 +911,7 @@ namespace Iop.Homenode {
     }
 
     /// <summary>Field number for the "conversationResponse" field.</summary>
-    public const int ConversationResponseFieldNumber = 4;
+    public const int ConversationResponseFieldNumber = 9;
     /// <summary>
     ///  responses to conversation requests are sent as conversation responses.
     /// </summary>
@@ -821,8 +928,8 @@ namespace Iop.Homenode {
     /// <summary>Enum of possible cases for the "ConversationType" oneof.</summary>
     public enum ConversationTypeOneofCase {
       None = 0,
-      SingleResponse = 3,
-      ConversationResponse = 4,
+      SingleResponse = 8,
+      ConversationResponse = 9,
     }
     private ConversationTypeOneofCase conversationTypeCase_ = ConversationTypeOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -851,6 +958,7 @@ namespace Iop.Homenode {
       }
       if (Status != other.Status) return false;
       if (Timestamp != other.Timestamp) return false;
+      if (Details != other.Details) return false;
       if (!object.Equals(SingleResponse, other.SingleResponse)) return false;
       if (!object.Equals(ConversationResponse, other.ConversationResponse)) return false;
       if (ConversationTypeCase != other.ConversationTypeCase) return false;
@@ -862,6 +970,7 @@ namespace Iop.Homenode {
       int hash = 1;
       if (Status != 0) hash ^= Status.GetHashCode();
       if (Timestamp != 0L) hash ^= Timestamp.GetHashCode();
+      if (Details.Length != 0) hash ^= Details.GetHashCode();
       if (conversationTypeCase_ == ConversationTypeOneofCase.SingleResponse) hash ^= SingleResponse.GetHashCode();
       if (conversationTypeCase_ == ConversationTypeOneofCase.ConversationResponse) hash ^= ConversationResponse.GetHashCode();
       hash ^= (int) conversationTypeCase_;
@@ -883,12 +992,16 @@ namespace Iop.Homenode {
         output.WriteRawTag(16);
         output.WriteSInt64(Timestamp);
       }
-      if (conversationTypeCase_ == ConversationTypeOneofCase.SingleResponse) {
+      if (Details.Length != 0) {
         output.WriteRawTag(26);
+        output.WriteString(Details);
+      }
+      if (conversationTypeCase_ == ConversationTypeOneofCase.SingleResponse) {
+        output.WriteRawTag(66);
         output.WriteMessage(SingleResponse);
       }
       if (conversationTypeCase_ == ConversationTypeOneofCase.ConversationResponse) {
-        output.WriteRawTag(34);
+        output.WriteRawTag(74);
         output.WriteMessage(ConversationResponse);
       }
     }
@@ -901,6 +1014,9 @@ namespace Iop.Homenode {
       }
       if (Timestamp != 0L) {
         size += 1 + pb::CodedOutputStream.ComputeSInt64Size(Timestamp);
+      }
+      if (Details.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Details);
       }
       if (conversationTypeCase_ == ConversationTypeOneofCase.SingleResponse) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(SingleResponse);
@@ -921,6 +1037,9 @@ namespace Iop.Homenode {
       }
       if (other.Timestamp != 0L) {
         Timestamp = other.Timestamp;
+      }
+      if (other.Details.Length != 0) {
+        Details = other.Details;
       }
       switch (other.ConversationTypeCase) {
         case ConversationTypeOneofCase.SingleResponse:
@@ -950,6 +1069,10 @@ namespace Iop.Homenode {
             break;
           }
           case 26: {
+            Details = input.ReadString();
+            break;
+          }
+          case 66: {
             global::Iop.Homenode.SingleResponse subBuilder = new global::Iop.Homenode.SingleResponse();
             if (conversationTypeCase_ == ConversationTypeOneofCase.SingleResponse) {
               subBuilder.MergeFrom(SingleResponse);
@@ -958,7 +1081,7 @@ namespace Iop.Homenode {
             SingleResponse = subBuilder;
             break;
           }
-          case 34: {
+          case 74: {
             global::Iop.Homenode.ConversationResponse subBuilder = new global::Iop.Homenode.ConversationResponse();
             if (conversationTypeCase_ == ConversationTypeOneofCase.ConversationResponse) {
               subBuilder.MergeFrom(ConversationResponse);
@@ -1009,6 +1132,9 @@ namespace Iop.Homenode {
         case RequestTypeOneofCase.ListRoles:
           ListRoles = other.ListRoles.Clone();
           break;
+        case RequestTypeOneofCase.ListHomeNodePlans:
+          ListHomeNodePlans = other.ListHomeNodePlans.Clone();
+          break;
       }
 
     }
@@ -1022,7 +1148,7 @@ namespace Iop.Homenode {
     public const int VersionFieldNumber = 1;
     private pb::ByteString version_ = pb::ByteString.Empty;
     /// <summary>
-    ///  Protocol version specification encoded in 3 bytes - see http://semver.org/. First byte is MAJOR, second byte is MINOR, third byte is PATCH.
+    ///  VersionType. Protocol version specification.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public pb::ByteString Version {
@@ -1054,12 +1180,24 @@ namespace Iop.Homenode {
       }
     }
 
+    /// <summary>Field number for the "listHomeNodePlans" field.</summary>
+    public const int ListHomeNodePlansFieldNumber = 4;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Homenode.ListHomeNodePlansRequest ListHomeNodePlans {
+      get { return requestTypeCase_ == RequestTypeOneofCase.ListHomeNodePlans ? (global::Iop.Homenode.ListHomeNodePlansRequest) requestType_ : null; }
+      set {
+        requestType_ = value;
+        requestTypeCase_ = value == null ? RequestTypeOneofCase.None : RequestTypeOneofCase.ListHomeNodePlans;
+      }
+    }
+
     private object requestType_;
     /// <summary>Enum of possible cases for the "RequestType" oneof.</summary>
     public enum RequestTypeOneofCase {
       None = 0,
       Ping = 2,
       ListRoles = 3,
+      ListHomeNodePlans = 4,
     }
     private RequestTypeOneofCase requestTypeCase_ = RequestTypeOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1089,6 +1227,7 @@ namespace Iop.Homenode {
       if (Version != other.Version) return false;
       if (!object.Equals(Ping, other.Ping)) return false;
       if (!object.Equals(ListRoles, other.ListRoles)) return false;
+      if (!object.Equals(ListHomeNodePlans, other.ListHomeNodePlans)) return false;
       if (RequestTypeCase != other.RequestTypeCase) return false;
       return true;
     }
@@ -1099,6 +1238,7 @@ namespace Iop.Homenode {
       if (Version.Length != 0) hash ^= Version.GetHashCode();
       if (requestTypeCase_ == RequestTypeOneofCase.Ping) hash ^= Ping.GetHashCode();
       if (requestTypeCase_ == RequestTypeOneofCase.ListRoles) hash ^= ListRoles.GetHashCode();
+      if (requestTypeCase_ == RequestTypeOneofCase.ListHomeNodePlans) hash ^= ListHomeNodePlans.GetHashCode();
       hash ^= (int) requestTypeCase_;
       return hash;
     }
@@ -1122,6 +1262,10 @@ namespace Iop.Homenode {
         output.WriteRawTag(26);
         output.WriteMessage(ListRoles);
       }
+      if (requestTypeCase_ == RequestTypeOneofCase.ListHomeNodePlans) {
+        output.WriteRawTag(34);
+        output.WriteMessage(ListHomeNodePlans);
+      }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1135,6 +1279,9 @@ namespace Iop.Homenode {
       }
       if (requestTypeCase_ == RequestTypeOneofCase.ListRoles) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(ListRoles);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.ListHomeNodePlans) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(ListHomeNodePlans);
       }
       return size;
     }
@@ -1153,6 +1300,9 @@ namespace Iop.Homenode {
           break;
         case RequestTypeOneofCase.ListRoles:
           ListRoles = other.ListRoles;
+          break;
+        case RequestTypeOneofCase.ListHomeNodePlans:
+          ListHomeNodePlans = other.ListHomeNodePlans;
           break;
       }
 
@@ -1186,6 +1336,15 @@ namespace Iop.Homenode {
             }
             input.ReadMessage(subBuilder);
             ListRoles = subBuilder;
+            break;
+          }
+          case 34: {
+            global::Iop.Homenode.ListHomeNodePlansRequest subBuilder = new global::Iop.Homenode.ListHomeNodePlansRequest();
+            if (requestTypeCase_ == RequestTypeOneofCase.ListHomeNodePlans) {
+              subBuilder.MergeFrom(ListHomeNodePlans);
+            }
+            input.ReadMessage(subBuilder);
+            ListHomeNodePlans = subBuilder;
             break;
           }
         }
@@ -1229,6 +1388,9 @@ namespace Iop.Homenode {
         case ResponseTypeOneofCase.ListRoles:
           ListRoles = other.ListRoles.Clone();
           break;
+        case ResponseTypeOneofCase.ListHomeNodePlans:
+          ListHomeNodePlans = other.ListHomeNodePlans.Clone();
+          break;
       }
 
     }
@@ -1242,7 +1404,7 @@ namespace Iop.Homenode {
     public const int VersionFieldNumber = 1;
     private pb::ByteString version_ = pb::ByteString.Empty;
     /// <summary>
-    ///  See SingleRequest.version. The version of response can be different than the version in request, 
+    ///  VersionType. See 'SingleRequest.version'. The version of response can be different than the version in request, 
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public pb::ByteString Version {
@@ -1274,12 +1436,24 @@ namespace Iop.Homenode {
       }
     }
 
+    /// <summary>Field number for the "listHomeNodePlans" field.</summary>
+    public const int ListHomeNodePlansFieldNumber = 4;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Homenode.ListHomeNodePlansResponse ListHomeNodePlans {
+      get { return responseTypeCase_ == ResponseTypeOneofCase.ListHomeNodePlans ? (global::Iop.Homenode.ListHomeNodePlansResponse) responseType_ : null; }
+      set {
+        responseType_ = value;
+        responseTypeCase_ = value == null ? ResponseTypeOneofCase.None : ResponseTypeOneofCase.ListHomeNodePlans;
+      }
+    }
+
     private object responseType_;
     /// <summary>Enum of possible cases for the "ResponseType" oneof.</summary>
     public enum ResponseTypeOneofCase {
       None = 0,
       Ping = 2,
       ListRoles = 3,
+      ListHomeNodePlans = 4,
     }
     private ResponseTypeOneofCase responseTypeCase_ = ResponseTypeOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1309,6 +1483,7 @@ namespace Iop.Homenode {
       if (Version != other.Version) return false;
       if (!object.Equals(Ping, other.Ping)) return false;
       if (!object.Equals(ListRoles, other.ListRoles)) return false;
+      if (!object.Equals(ListHomeNodePlans, other.ListHomeNodePlans)) return false;
       if (ResponseTypeCase != other.ResponseTypeCase) return false;
       return true;
     }
@@ -1319,6 +1494,7 @@ namespace Iop.Homenode {
       if (Version.Length != 0) hash ^= Version.GetHashCode();
       if (responseTypeCase_ == ResponseTypeOneofCase.Ping) hash ^= Ping.GetHashCode();
       if (responseTypeCase_ == ResponseTypeOneofCase.ListRoles) hash ^= ListRoles.GetHashCode();
+      if (responseTypeCase_ == ResponseTypeOneofCase.ListHomeNodePlans) hash ^= ListHomeNodePlans.GetHashCode();
       hash ^= (int) responseTypeCase_;
       return hash;
     }
@@ -1342,6 +1518,10 @@ namespace Iop.Homenode {
         output.WriteRawTag(26);
         output.WriteMessage(ListRoles);
       }
+      if (responseTypeCase_ == ResponseTypeOneofCase.ListHomeNodePlans) {
+        output.WriteRawTag(34);
+        output.WriteMessage(ListHomeNodePlans);
+      }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1355,6 +1535,9 @@ namespace Iop.Homenode {
       }
       if (responseTypeCase_ == ResponseTypeOneofCase.ListRoles) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(ListRoles);
+      }
+      if (responseTypeCase_ == ResponseTypeOneofCase.ListHomeNodePlans) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(ListHomeNodePlans);
       }
       return size;
     }
@@ -1373,6 +1556,9 @@ namespace Iop.Homenode {
           break;
         case ResponseTypeOneofCase.ListRoles:
           ListRoles = other.ListRoles;
+          break;
+        case ResponseTypeOneofCase.ListHomeNodePlans:
+          ListHomeNodePlans = other.ListHomeNodePlans;
           break;
       }
 
@@ -1406,6 +1592,15 @@ namespace Iop.Homenode {
             }
             input.ReadMessage(subBuilder);
             ListRoles = subBuilder;
+            break;
+          }
+          case 34: {
+            global::Iop.Homenode.ListHomeNodePlansResponse subBuilder = new global::Iop.Homenode.ListHomeNodePlansResponse();
+            if (responseTypeCase_ == ResponseTypeOneofCase.ListHomeNodePlans) {
+              subBuilder.MergeFrom(ListHomeNodePlans);
+            }
+            input.ReadMessage(subBuilder);
+            ListHomeNodePlans = subBuilder;
             break;
           }
         }
@@ -1442,9 +1637,19 @@ namespace Iop.Homenode {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public ConversationRequest(ConversationRequest other) : this() {
+      signature_ = other.signature_;
       switch (other.RequestTypeCase) {
-        case RequestTypeOneofCase.Dummy:
-          Dummy = other.Dummy;
+        case RequestTypeOneofCase.Start:
+          Start = other.Start.Clone();
+          break;
+        case RequestTypeOneofCase.HomeNodeRequest:
+          HomeNodeRequest = other.HomeNodeRequest.Clone();
+          break;
+        case RequestTypeOneofCase.CheckIn:
+          CheckIn = other.CheckIn.Clone();
+          break;
+        case RequestTypeOneofCase.UpdateProfile:
+          UpdateProfile = other.UpdateProfile.Clone();
           break;
       }
 
@@ -1455,17 +1660,64 @@ namespace Iop.Homenode {
       return new ConversationRequest(this);
     }
 
-    /// <summary>Field number for the "dummy" field.</summary>
-    public const int DummyFieldNumber = 1;
+    /// <summary>Field number for the "signature" field.</summary>
+    public const int SignatureFieldNumber = 1;
+    private pb::ByteString signature_ = pb::ByteString.Empty;
     /// <summary>
-    ///  TBD
+    ///  Optional (request specific) signature that signs the Protobuf binary form of the included request body.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public uint Dummy {
-      get { return requestTypeCase_ == RequestTypeOneofCase.Dummy ? (uint) requestType_ : 0; }
+    public pb::ByteString Signature {
+      get { return signature_; }
+      set {
+        signature_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "start" field.</summary>
+    public const int StartFieldNumber = 2;
+    /// <summary>
+    ///  Request body.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Homenode.StartConversationRequest Start {
+      get { return requestTypeCase_ == RequestTypeOneofCase.Start ? (global::Iop.Homenode.StartConversationRequest) requestType_ : null; }
       set {
         requestType_ = value;
-        requestTypeCase_ = RequestTypeOneofCase.Dummy;
+        requestTypeCase_ = value == null ? RequestTypeOneofCase.None : RequestTypeOneofCase.Start;
+      }
+    }
+
+    /// <summary>Field number for the "homeNodeRequest" field.</summary>
+    public const int HomeNodeRequestFieldNumber = 3;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Homenode.HomeNodeRequestRequest HomeNodeRequest {
+      get { return requestTypeCase_ == RequestTypeOneofCase.HomeNodeRequest ? (global::Iop.Homenode.HomeNodeRequestRequest) requestType_ : null; }
+      set {
+        requestType_ = value;
+        requestTypeCase_ = value == null ? RequestTypeOneofCase.None : RequestTypeOneofCase.HomeNodeRequest;
+      }
+    }
+
+    /// <summary>Field number for the "checkIn" field.</summary>
+    public const int CheckInFieldNumber = 4;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Homenode.CheckInRequest CheckIn {
+      get { return requestTypeCase_ == RequestTypeOneofCase.CheckIn ? (global::Iop.Homenode.CheckInRequest) requestType_ : null; }
+      set {
+        requestType_ = value;
+        requestTypeCase_ = value == null ? RequestTypeOneofCase.None : RequestTypeOneofCase.CheckIn;
+      }
+    }
+
+    /// <summary>Field number for the "updateProfile" field.</summary>
+    public const int UpdateProfileFieldNumber = 5;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Homenode.UpdateProfileRequest UpdateProfile {
+      get { return requestTypeCase_ == RequestTypeOneofCase.UpdateProfile ? (global::Iop.Homenode.UpdateProfileRequest) requestType_ : null; }
+      set {
+        requestType_ = value;
+        requestTypeCase_ = value == null ? RequestTypeOneofCase.None : RequestTypeOneofCase.UpdateProfile;
       }
     }
 
@@ -1473,7 +1725,10 @@ namespace Iop.Homenode {
     /// <summary>Enum of possible cases for the "RequestType" oneof.</summary>
     public enum RequestTypeOneofCase {
       None = 0,
-      Dummy = 1,
+      Start = 2,
+      HomeNodeRequest = 3,
+      CheckIn = 4,
+      UpdateProfile = 5,
     }
     private RequestTypeOneofCase requestTypeCase_ = RequestTypeOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1500,7 +1755,11 @@ namespace Iop.Homenode {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (Dummy != other.Dummy) return false;
+      if (Signature != other.Signature) return false;
+      if (!object.Equals(Start, other.Start)) return false;
+      if (!object.Equals(HomeNodeRequest, other.HomeNodeRequest)) return false;
+      if (!object.Equals(CheckIn, other.CheckIn)) return false;
+      if (!object.Equals(UpdateProfile, other.UpdateProfile)) return false;
       if (RequestTypeCase != other.RequestTypeCase) return false;
       return true;
     }
@@ -1508,7 +1767,11 @@ namespace Iop.Homenode {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      if (requestTypeCase_ == RequestTypeOneofCase.Dummy) hash ^= Dummy.GetHashCode();
+      if (Signature.Length != 0) hash ^= Signature.GetHashCode();
+      if (requestTypeCase_ == RequestTypeOneofCase.Start) hash ^= Start.GetHashCode();
+      if (requestTypeCase_ == RequestTypeOneofCase.HomeNodeRequest) hash ^= HomeNodeRequest.GetHashCode();
+      if (requestTypeCase_ == RequestTypeOneofCase.CheckIn) hash ^= CheckIn.GetHashCode();
+      if (requestTypeCase_ == RequestTypeOneofCase.UpdateProfile) hash ^= UpdateProfile.GetHashCode();
       hash ^= (int) requestTypeCase_;
       return hash;
     }
@@ -1520,17 +1783,45 @@ namespace Iop.Homenode {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (requestTypeCase_ == RequestTypeOneofCase.Dummy) {
-        output.WriteRawTag(8);
-        output.WriteUInt32(Dummy);
+      if (Signature.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteBytes(Signature);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.Start) {
+        output.WriteRawTag(18);
+        output.WriteMessage(Start);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.HomeNodeRequest) {
+        output.WriteRawTag(26);
+        output.WriteMessage(HomeNodeRequest);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.CheckIn) {
+        output.WriteRawTag(34);
+        output.WriteMessage(CheckIn);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.UpdateProfile) {
+        output.WriteRawTag(42);
+        output.WriteMessage(UpdateProfile);
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      if (requestTypeCase_ == RequestTypeOneofCase.Dummy) {
-        size += 1 + pb::CodedOutputStream.ComputeUInt32Size(Dummy);
+      if (Signature.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(Signature);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.Start) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Start);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.HomeNodeRequest) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(HomeNodeRequest);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.CheckIn) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(CheckIn);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.UpdateProfile) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(UpdateProfile);
       }
       return size;
     }
@@ -1540,9 +1831,21 @@ namespace Iop.Homenode {
       if (other == null) {
         return;
       }
+      if (other.Signature.Length != 0) {
+        Signature = other.Signature;
+      }
       switch (other.RequestTypeCase) {
-        case RequestTypeOneofCase.Dummy:
-          Dummy = other.Dummy;
+        case RequestTypeOneofCase.Start:
+          Start = other.Start;
+          break;
+        case RequestTypeOneofCase.HomeNodeRequest:
+          HomeNodeRequest = other.HomeNodeRequest;
+          break;
+        case RequestTypeOneofCase.CheckIn:
+          CheckIn = other.CheckIn;
+          break;
+        case RequestTypeOneofCase.UpdateProfile:
+          UpdateProfile = other.UpdateProfile;
           break;
       }
 
@@ -1556,8 +1859,44 @@ namespace Iop.Homenode {
           default:
             input.SkipLastField();
             break;
-          case 8: {
-            Dummy = input.ReadUInt32();
+          case 10: {
+            Signature = input.ReadBytes();
+            break;
+          }
+          case 18: {
+            global::Iop.Homenode.StartConversationRequest subBuilder = new global::Iop.Homenode.StartConversationRequest();
+            if (requestTypeCase_ == RequestTypeOneofCase.Start) {
+              subBuilder.MergeFrom(Start);
+            }
+            input.ReadMessage(subBuilder);
+            Start = subBuilder;
+            break;
+          }
+          case 26: {
+            global::Iop.Homenode.HomeNodeRequestRequest subBuilder = new global::Iop.Homenode.HomeNodeRequestRequest();
+            if (requestTypeCase_ == RequestTypeOneofCase.HomeNodeRequest) {
+              subBuilder.MergeFrom(HomeNodeRequest);
+            }
+            input.ReadMessage(subBuilder);
+            HomeNodeRequest = subBuilder;
+            break;
+          }
+          case 34: {
+            global::Iop.Homenode.CheckInRequest subBuilder = new global::Iop.Homenode.CheckInRequest();
+            if (requestTypeCase_ == RequestTypeOneofCase.CheckIn) {
+              subBuilder.MergeFrom(CheckIn);
+            }
+            input.ReadMessage(subBuilder);
+            CheckIn = subBuilder;
+            break;
+          }
+          case 42: {
+            global::Iop.Homenode.UpdateProfileRequest subBuilder = new global::Iop.Homenode.UpdateProfileRequest();
+            if (requestTypeCase_ == RequestTypeOneofCase.UpdateProfile) {
+              subBuilder.MergeFrom(UpdateProfile);
+            }
+            input.ReadMessage(subBuilder);
+            UpdateProfile = subBuilder;
             break;
           }
         }
@@ -1593,9 +1932,19 @@ namespace Iop.Homenode {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public ConversationResponse(ConversationResponse other) : this() {
+      signature_ = other.signature_;
       switch (other.RequestTypeCase) {
-        case RequestTypeOneofCase.Dummy:
-          Dummy = other.Dummy;
+        case RequestTypeOneofCase.Start:
+          Start = other.Start.Clone();
+          break;
+        case RequestTypeOneofCase.HomeNodeRequest:
+          HomeNodeRequest = other.HomeNodeRequest.Clone();
+          break;
+        case RequestTypeOneofCase.CheckIn:
+          CheckIn = other.CheckIn.Clone();
+          break;
+        case RequestTypeOneofCase.UpdateProfile:
+          UpdateProfile = other.UpdateProfile.Clone();
           break;
       }
 
@@ -1606,17 +1955,64 @@ namespace Iop.Homenode {
       return new ConversationResponse(this);
     }
 
-    /// <summary>Field number for the "dummy" field.</summary>
-    public const int DummyFieldNumber = 2;
+    /// <summary>Field number for the "signature" field.</summary>
+    public const int SignatureFieldNumber = 1;
+    private pb::ByteString signature_ = pb::ByteString.Empty;
     /// <summary>
-    ///  TBD
+    ///  Optional (response specific) signature that signs the Protobuf binary form of the included response body.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public uint Dummy {
-      get { return requestTypeCase_ == RequestTypeOneofCase.Dummy ? (uint) requestType_ : 0; }
+    public pb::ByteString Signature {
+      get { return signature_; }
+      set {
+        signature_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "start" field.</summary>
+    public const int StartFieldNumber = 2;
+    /// <summary>
+    ///  Response body.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Homenode.StartConversationResponse Start {
+      get { return requestTypeCase_ == RequestTypeOneofCase.Start ? (global::Iop.Homenode.StartConversationResponse) requestType_ : null; }
       set {
         requestType_ = value;
-        requestTypeCase_ = RequestTypeOneofCase.Dummy;
+        requestTypeCase_ = value == null ? RequestTypeOneofCase.None : RequestTypeOneofCase.Start;
+      }
+    }
+
+    /// <summary>Field number for the "homeNodeRequest" field.</summary>
+    public const int HomeNodeRequestFieldNumber = 3;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Homenode.HomeNodeRequestResponse HomeNodeRequest {
+      get { return requestTypeCase_ == RequestTypeOneofCase.HomeNodeRequest ? (global::Iop.Homenode.HomeNodeRequestResponse) requestType_ : null; }
+      set {
+        requestType_ = value;
+        requestTypeCase_ = value == null ? RequestTypeOneofCase.None : RequestTypeOneofCase.HomeNodeRequest;
+      }
+    }
+
+    /// <summary>Field number for the "checkIn" field.</summary>
+    public const int CheckInFieldNumber = 4;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Homenode.CheckInResponse CheckIn {
+      get { return requestTypeCase_ == RequestTypeOneofCase.CheckIn ? (global::Iop.Homenode.CheckInResponse) requestType_ : null; }
+      set {
+        requestType_ = value;
+        requestTypeCase_ = value == null ? RequestTypeOneofCase.None : RequestTypeOneofCase.CheckIn;
+      }
+    }
+
+    /// <summary>Field number for the "updateProfile" field.</summary>
+    public const int UpdateProfileFieldNumber = 5;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Homenode.UpdateProfileResponse UpdateProfile {
+      get { return requestTypeCase_ == RequestTypeOneofCase.UpdateProfile ? (global::Iop.Homenode.UpdateProfileResponse) requestType_ : null; }
+      set {
+        requestType_ = value;
+        requestTypeCase_ = value == null ? RequestTypeOneofCase.None : RequestTypeOneofCase.UpdateProfile;
       }
     }
 
@@ -1624,7 +2020,10 @@ namespace Iop.Homenode {
     /// <summary>Enum of possible cases for the "RequestType" oneof.</summary>
     public enum RequestTypeOneofCase {
       None = 0,
-      Dummy = 2,
+      Start = 2,
+      HomeNodeRequest = 3,
+      CheckIn = 4,
+      UpdateProfile = 5,
     }
     private RequestTypeOneofCase requestTypeCase_ = RequestTypeOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1651,7 +2050,11 @@ namespace Iop.Homenode {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (Dummy != other.Dummy) return false;
+      if (Signature != other.Signature) return false;
+      if (!object.Equals(Start, other.Start)) return false;
+      if (!object.Equals(HomeNodeRequest, other.HomeNodeRequest)) return false;
+      if (!object.Equals(CheckIn, other.CheckIn)) return false;
+      if (!object.Equals(UpdateProfile, other.UpdateProfile)) return false;
       if (RequestTypeCase != other.RequestTypeCase) return false;
       return true;
     }
@@ -1659,7 +2062,11 @@ namespace Iop.Homenode {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      if (requestTypeCase_ == RequestTypeOneofCase.Dummy) hash ^= Dummy.GetHashCode();
+      if (Signature.Length != 0) hash ^= Signature.GetHashCode();
+      if (requestTypeCase_ == RequestTypeOneofCase.Start) hash ^= Start.GetHashCode();
+      if (requestTypeCase_ == RequestTypeOneofCase.HomeNodeRequest) hash ^= HomeNodeRequest.GetHashCode();
+      if (requestTypeCase_ == RequestTypeOneofCase.CheckIn) hash ^= CheckIn.GetHashCode();
+      if (requestTypeCase_ == RequestTypeOneofCase.UpdateProfile) hash ^= UpdateProfile.GetHashCode();
       hash ^= (int) requestTypeCase_;
       return hash;
     }
@@ -1671,17 +2078,45 @@ namespace Iop.Homenode {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (requestTypeCase_ == RequestTypeOneofCase.Dummy) {
-        output.WriteRawTag(16);
-        output.WriteUInt32(Dummy);
+      if (Signature.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteBytes(Signature);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.Start) {
+        output.WriteRawTag(18);
+        output.WriteMessage(Start);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.HomeNodeRequest) {
+        output.WriteRawTag(26);
+        output.WriteMessage(HomeNodeRequest);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.CheckIn) {
+        output.WriteRawTag(34);
+        output.WriteMessage(CheckIn);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.UpdateProfile) {
+        output.WriteRawTag(42);
+        output.WriteMessage(UpdateProfile);
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      if (requestTypeCase_ == RequestTypeOneofCase.Dummy) {
-        size += 1 + pb::CodedOutputStream.ComputeUInt32Size(Dummy);
+      if (Signature.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(Signature);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.Start) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Start);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.HomeNodeRequest) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(HomeNodeRequest);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.CheckIn) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(CheckIn);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.UpdateProfile) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(UpdateProfile);
       }
       return size;
     }
@@ -1691,9 +2126,21 @@ namespace Iop.Homenode {
       if (other == null) {
         return;
       }
+      if (other.Signature.Length != 0) {
+        Signature = other.Signature;
+      }
       switch (other.RequestTypeCase) {
-        case RequestTypeOneofCase.Dummy:
-          Dummy = other.Dummy;
+        case RequestTypeOneofCase.Start:
+          Start = other.Start;
+          break;
+        case RequestTypeOneofCase.HomeNodeRequest:
+          HomeNodeRequest = other.HomeNodeRequest;
+          break;
+        case RequestTypeOneofCase.CheckIn:
+          CheckIn = other.CheckIn;
+          break;
+        case RequestTypeOneofCase.UpdateProfile:
+          UpdateProfile = other.UpdateProfile;
           break;
       }
 
@@ -1707,8 +2154,44 @@ namespace Iop.Homenode {
           default:
             input.SkipLastField();
             break;
-          case 16: {
-            Dummy = input.ReadUInt32();
+          case 10: {
+            Signature = input.ReadBytes();
+            break;
+          }
+          case 18: {
+            global::Iop.Homenode.StartConversationResponse subBuilder = new global::Iop.Homenode.StartConversationResponse();
+            if (requestTypeCase_ == RequestTypeOneofCase.Start) {
+              subBuilder.MergeFrom(Start);
+            }
+            input.ReadMessage(subBuilder);
+            Start = subBuilder;
+            break;
+          }
+          case 26: {
+            global::Iop.Homenode.HomeNodeRequestResponse subBuilder = new global::Iop.Homenode.HomeNodeRequestResponse();
+            if (requestTypeCase_ == RequestTypeOneofCase.HomeNodeRequest) {
+              subBuilder.MergeFrom(HomeNodeRequest);
+            }
+            input.ReadMessage(subBuilder);
+            HomeNodeRequest = subBuilder;
+            break;
+          }
+          case 34: {
+            global::Iop.Homenode.CheckInResponse subBuilder = new global::Iop.Homenode.CheckInResponse();
+            if (requestTypeCase_ == RequestTypeOneofCase.CheckIn) {
+              subBuilder.MergeFrom(CheckIn);
+            }
+            input.ReadMessage(subBuilder);
+            CheckIn = subBuilder;
+            break;
+          }
+          case 42: {
+            global::Iop.Homenode.UpdateProfileResponse subBuilder = new global::Iop.Homenode.UpdateProfileResponse();
+            if (requestTypeCase_ == RequestTypeOneofCase.UpdateProfile) {
+              subBuilder.MergeFrom(UpdateProfile);
+            }
+            input.ReadMessage(subBuilder);
+            UpdateProfile = subBuilder;
             break;
           }
         }
@@ -1883,7 +2366,7 @@ namespace Iop.Homenode {
     public const int PayloadFieldNumber = 1;
     private pb::ByteString payload_ = pb::ByteString.Empty;
     /// <summary>
-    ///  See PingRequest.payload.
+    ///  See 'PingRequest.payload'.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public pb::ByteString Payload {
@@ -2417,6 +2900,2233 @@ namespace Iop.Homenode {
             IsTls = input.ReadBool();
             break;
           }
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///
+  ///  A client asks node for its home node plans that match the given criteria.
+  ///
+  ///  Roles: clNonCustomer
+  /// </summary>
+  public sealed partial class ListHomeNodePlansRequest : pb::IMessage<ListHomeNodePlansRequest> {
+    private static readonly pb::MessageParser<ListHomeNodePlansRequest> _parser = new pb::MessageParser<ListHomeNodePlansRequest>(() => new ListHomeNodePlansRequest());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<ListHomeNodePlansRequest> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Homenode.IopHomeNodeReflection.Descriptor.MessageTypes[13]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ListHomeNodePlansRequest() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ListHomeNodePlansRequest(ListHomeNodePlansRequest other) : this() {
+      identityType_ = other.identityType_;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ListHomeNodePlansRequest Clone() {
+      return new ListHomeNodePlansRequest(this);
+    }
+
+    /// <summary>Field number for the "identityType" field.</summary>
+    public const int IdentityTypeFieldNumber = 1;
+    private string identityType_ = "";
+    /// <summary>
+    ///  A specific identity type, for which the client searches the plan.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string IdentityType {
+      get { return identityType_; }
+      set {
+        identityType_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as ListHomeNodePlansRequest);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(ListHomeNodePlansRequest other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (IdentityType != other.IdentityType) return false;
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (IdentityType.Length != 0) hash ^= IdentityType.GetHashCode();
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (IdentityType.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteString(IdentityType);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (IdentityType.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(IdentityType);
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(ListHomeNodePlansRequest other) {
+      if (other == null) {
+        return;
+      }
+      if (other.IdentityType.Length != 0) {
+        IdentityType = other.IdentityType;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+          case 10: {
+            IdentityType = input.ReadString();
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///
+  ///  A response to ListHomeNodePlansRequest that contains a list of matching plans.
+  ///
+  ///  Specific Error Responses: 
+  ///    * ERROR_QUOTA_EXCEEDED - A node users this error code in case it wants to express that it will not accept any new clients because it has no free slots.
+  /// </summary>
+  public sealed partial class ListHomeNodePlansResponse : pb::IMessage<ListHomeNodePlansResponse> {
+    private static readonly pb::MessageParser<ListHomeNodePlansResponse> _parser = new pb::MessageParser<ListHomeNodePlansResponse>(() => new ListHomeNodePlansResponse());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<ListHomeNodePlansResponse> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Homenode.IopHomeNodeReflection.Descriptor.MessageTypes[14]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ListHomeNodePlansResponse() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ListHomeNodePlansResponse(ListHomeNodePlansResponse other) : this() {
+      plans_ = other.plans_.Clone();
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ListHomeNodePlansResponse Clone() {
+      return new ListHomeNodePlansResponse(this);
+    }
+
+    /// <summary>Field number for the "plans" field.</summary>
+    public const int PlansFieldNumber = 1;
+    private static readonly pb::FieldCodec<global::Iop.Homenode.HomeNodePlan> _repeated_plans_codec
+        = pb::FieldCodec.ForMessage(10, global::Iop.Homenode.HomeNodePlan.Parser);
+    private readonly pbc::RepeatedField<global::Iop.Homenode.HomeNodePlan> plans_ = new pbc::RepeatedField<global::Iop.Homenode.HomeNodePlan>();
+    /// <summary>
+    ///  List of matching plans.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<global::Iop.Homenode.HomeNodePlan> Plans {
+      get { return plans_; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as ListHomeNodePlansResponse);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(ListHomeNodePlansResponse other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if(!plans_.Equals(other.plans_)) return false;
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      hash ^= plans_.GetHashCode();
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      plans_.WriteTo(output, _repeated_plans_codec);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      size += plans_.CalculateSize(_repeated_plans_codec);
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(ListHomeNodePlansResponse other) {
+      if (other == null) {
+        return;
+      }
+      plans_.Add(other.plans_);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+          case 10: {
+            plans_.AddEntriesFrom(input, _repeated_plans_codec);
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///  Description of a home node hosting plan.
+  /// </summary>
+  public sealed partial class HomeNodePlan : pb::IMessage<HomeNodePlan> {
+    private static readonly pb::MessageParser<HomeNodePlan> _parser = new pb::MessageParser<HomeNodePlan>(() => new HomeNodePlan());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<HomeNodePlan> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Homenode.IopHomeNodeReflection.Descriptor.MessageTypes[15]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public HomeNodePlan() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public HomeNodePlan(HomeNodePlan other) : this() {
+      planId_ = other.planId_;
+      identityType_ = other.identityType_;
+      fee_ = other.fee_;
+      billingPeriodSeconds_ = other.billingPeriodSeconds_;
+      planParameters_ = other.planParameters_.Clone();
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public HomeNodePlan Clone() {
+      return new HomeNodePlan(this);
+    }
+
+    /// <summary>Field number for the "planId" field.</summary>
+    public const int PlanIdFieldNumber = 1;
+    private pb::ByteString planId_ = pb::ByteString.Empty;
+    /// <summary>
+    ///  GUID of the plan. If a node wants to change the plan, it has to change the GUID as well,
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString PlanId {
+      get { return planId_; }
+      set {
+        planId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "identityType" field.</summary>
+    public const int IdentityTypeFieldNumber = 2;
+    private string identityType_ = "";
+    /// <summary>
+    ///  thus effectively creating a new plan.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string IdentityType {
+      get { return identityType_; }
+      set {
+        identityType_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "fee" field.</summary>
+    public const int FeeFieldNumber = 3;
+    private ulong fee_;
+    /// <summary>
+    ///  at the end of the type to support multiple types to be served with a single plan. 
+    ///  For example, the value "*" would mean that any identity type is supported,
+    ///  and the value "Taxi *" would mean that any identity type that starts with "Taxi *"
+    ///  would match this plan.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ulong Fee {
+      get { return fee_; }
+      set {
+        fee_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "billingPeriodSeconds" field.</summary>
+    public const int BillingPeriodSecondsFieldNumber = 4;
+    private uint billingPeriodSeconds_;
+    /// <summary>
+    ///  Length of the billing period in seconds.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public uint BillingPeriodSeconds {
+      get { return billingPeriodSeconds_; }
+      set {
+        billingPeriodSeconds_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "planParameters" field.</summary>
+    public const int PlanParametersFieldNumber = 9;
+    private static readonly pb::FieldCodec<global::Iop.Homenode.NameStringValuePair> _repeated_planParameters_codec
+        = pb::FieldCodec.ForMessage(74, global::Iop.Homenode.NameStringValuePair.Parser);
+    private readonly pbc::RepeatedField<global::Iop.Homenode.NameStringValuePair> planParameters_ = new pbc::RepeatedField<global::Iop.Homenode.NameStringValuePair>();
+    /// <summary>
+    ///  List of additional service parameters that define the plan.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<global::Iop.Homenode.NameStringValuePair> PlanParameters {
+      get { return planParameters_; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as HomeNodePlan);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(HomeNodePlan other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (PlanId != other.PlanId) return false;
+      if (IdentityType != other.IdentityType) return false;
+      if (Fee != other.Fee) return false;
+      if (BillingPeriodSeconds != other.BillingPeriodSeconds) return false;
+      if(!planParameters_.Equals(other.planParameters_)) return false;
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (PlanId.Length != 0) hash ^= PlanId.GetHashCode();
+      if (IdentityType.Length != 0) hash ^= IdentityType.GetHashCode();
+      if (Fee != 0UL) hash ^= Fee.GetHashCode();
+      if (BillingPeriodSeconds != 0) hash ^= BillingPeriodSeconds.GetHashCode();
+      hash ^= planParameters_.GetHashCode();
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (PlanId.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteBytes(PlanId);
+      }
+      if (IdentityType.Length != 0) {
+        output.WriteRawTag(18);
+        output.WriteString(IdentityType);
+      }
+      if (Fee != 0UL) {
+        output.WriteRawTag(24);
+        output.WriteUInt64(Fee);
+      }
+      if (BillingPeriodSeconds != 0) {
+        output.WriteRawTag(32);
+        output.WriteUInt32(BillingPeriodSeconds);
+      }
+      planParameters_.WriteTo(output, _repeated_planParameters_codec);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (PlanId.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(PlanId);
+      }
+      if (IdentityType.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(IdentityType);
+      }
+      if (Fee != 0UL) {
+        size += 1 + pb::CodedOutputStream.ComputeUInt64Size(Fee);
+      }
+      if (BillingPeriodSeconds != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeUInt32Size(BillingPeriodSeconds);
+      }
+      size += planParameters_.CalculateSize(_repeated_planParameters_codec);
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(HomeNodePlan other) {
+      if (other == null) {
+        return;
+      }
+      if (other.PlanId.Length != 0) {
+        PlanId = other.PlanId;
+      }
+      if (other.IdentityType.Length != 0) {
+        IdentityType = other.IdentityType;
+      }
+      if (other.Fee != 0UL) {
+        Fee = other.Fee;
+      }
+      if (other.BillingPeriodSeconds != 0) {
+        BillingPeriodSeconds = other.BillingPeriodSeconds;
+      }
+      planParameters_.Add(other.planParameters_);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+          case 10: {
+            PlanId = input.ReadBytes();
+            break;
+          }
+          case 18: {
+            IdentityType = input.ReadString();
+            break;
+          }
+          case 24: {
+            Fee = input.ReadUInt64();
+            break;
+          }
+          case 32: {
+            BillingPeriodSeconds = input.ReadUInt32();
+            break;
+          }
+          case 74: {
+            planParameters_.AddEntriesFrom(input, _repeated_planParameters_codec);
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///  Description of name-value structure with string values.
+  /// </summary>
+  public sealed partial class NameStringValuePair : pb::IMessage<NameStringValuePair> {
+    private static readonly pb::MessageParser<NameStringValuePair> _parser = new pb::MessageParser<NameStringValuePair>(() => new NameStringValuePair());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<NameStringValuePair> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Homenode.IopHomeNodeReflection.Descriptor.MessageTypes[16]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public NameStringValuePair() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public NameStringValuePair(NameStringValuePair other) : this() {
+      name_ = other.name_;
+      value_ = other.value_;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public NameStringValuePair Clone() {
+      return new NameStringValuePair(this);
+    }
+
+    /// <summary>Field number for the "name" field.</summary>
+    public const int NameFieldNumber = 1;
+    private string name_ = "";
+    /// <summary>
+    ///  Name of the object.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string Name {
+      get { return name_; }
+      set {
+        name_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "value" field.</summary>
+    public const int ValueFieldNumber = 2;
+    private string value_ = "";
+    /// <summary>
+    ///  String value.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string Value {
+      get { return value_; }
+      set {
+        value_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as NameStringValuePair);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(NameStringValuePair other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (Name != other.Name) return false;
+      if (Value != other.Value) return false;
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (Name.Length != 0) hash ^= Name.GetHashCode();
+      if (Value.Length != 0) hash ^= Value.GetHashCode();
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (Name.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteString(Name);
+      }
+      if (Value.Length != 0) {
+        output.WriteRawTag(18);
+        output.WriteString(Value);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (Name.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Name);
+      }
+      if (Value.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Value);
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(NameStringValuePair other) {
+      if (other == null) {
+        return;
+      }
+      if (other.Name.Length != 0) {
+        Name = other.Name;
+      }
+      if (other.Value.Length != 0) {
+        Value = other.Value;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+          case 10: {
+            Name = input.ReadString();
+            break;
+          }
+          case 18: {
+            Value = input.ReadString();
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///
+  ///  Every conversation starts with this request, in which the requestor sends a list of protocol versions 
+  ///  it supports and its public key that identifies it.
+  ///
+  ///  Roles: any
+  ///
+  ///  Conversation status: NoConversation
+  /// </summary>
+  public sealed partial class StartConversationRequest : pb::IMessage<StartConversationRequest> {
+    private static readonly pb::MessageParser<StartConversationRequest> _parser = new pb::MessageParser<StartConversationRequest>(() => new StartConversationRequest());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<StartConversationRequest> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Homenode.IopHomeNodeReflection.Descriptor.MessageTypes[17]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public StartConversationRequest() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public StartConversationRequest(StartConversationRequest other) : this() {
+      supportedVersions_ = other.supportedVersions_.Clone();
+      publicKey_ = other.publicKey_;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public StartConversationRequest Clone() {
+      return new StartConversationRequest(this);
+    }
+
+    /// <summary>Field number for the "supportedVersions" field.</summary>
+    public const int SupportedVersionsFieldNumber = 1;
+    private static readonly pb::FieldCodec<pb::ByteString> _repeated_supportedVersions_codec
+        = pb::FieldCodec.ForBytes(10);
+    private readonly pbc::RepeatedField<pb::ByteString> supportedVersions_ = new pbc::RepeatedField<pb::ByteString>();
+    /// <summary>
+    ///  List of VersionType items. Ordered by requestor's preference. See 'SingleRequest.version'.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<pb::ByteString> SupportedVersions {
+      get { return supportedVersions_; }
+    }
+
+    /// <summary>Field number for the "publicKey" field.</summary>
+    public const int PublicKeyFieldNumber = 2;
+    private pb::ByteString publicKey_ = pb::ByteString.Empty;
+    /// <summary>
+    ///  Public key of the requestor.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString PublicKey {
+      get { return publicKey_; }
+      set {
+        publicKey_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as StartConversationRequest);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(StartConversationRequest other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if(!supportedVersions_.Equals(other.supportedVersions_)) return false;
+      if (PublicKey != other.PublicKey) return false;
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      hash ^= supportedVersions_.GetHashCode();
+      if (PublicKey.Length != 0) hash ^= PublicKey.GetHashCode();
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      supportedVersions_.WriteTo(output, _repeated_supportedVersions_codec);
+      if (PublicKey.Length != 0) {
+        output.WriteRawTag(18);
+        output.WriteBytes(PublicKey);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      size += supportedVersions_.CalculateSize(_repeated_supportedVersions_codec);
+      if (PublicKey.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(PublicKey);
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(StartConversationRequest other) {
+      if (other == null) {
+        return;
+      }
+      supportedVersions_.Add(other.supportedVersions_);
+      if (other.PublicKey.Length != 0) {
+        PublicKey = other.PublicKey;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+          case 10: {
+            supportedVersions_.AddEntriesFrom(input, _repeated_supportedVersions_codec);
+            break;
+          }
+          case 18: {
+            PublicKey = input.ReadBytes();
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///
+  ///  A response to StartConversationRequest in case the requestee found at least one protocol version that 
+  ///  both peers are willing to use. 
+  ///  
+  ///
+  ///  After StartConversationResponse is sent, the conversation context includes version and keys of both peers.
+  ///
+  ///  Specific Error Responses:
+  ///    * ERROR_UNSUPPORTED - If the requestee does not support any of the requestor's versions, it replies with this error code.
+  /// </summary>
+  public sealed partial class StartConversationResponse : pb::IMessage<StartConversationResponse> {
+    private static readonly pb::MessageParser<StartConversationResponse> _parser = new pb::MessageParser<StartConversationResponse>(() => new StartConversationResponse());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<StartConversationResponse> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Homenode.IopHomeNodeReflection.Descriptor.MessageTypes[18]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public StartConversationResponse() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public StartConversationResponse(StartConversationResponse other) : this() {
+      version_ = other.version_;
+      publicKey_ = other.publicKey_;
+      challenge_ = other.challenge_;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public StartConversationResponse Clone() {
+      return new StartConversationResponse(this);
+    }
+
+    /// <summary>Field number for the "version" field.</summary>
+    public const int VersionFieldNumber = 1;
+    private pb::ByteString version_ = pb::ByteString.Empty;
+    /// <summary>
+    ///  VersionType. The version that the requestee selected from the offered set.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString Version {
+      get { return version_; }
+      set {
+        version_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "publicKey" field.</summary>
+    public const int PublicKeyFieldNumber = 2;
+    private pb::ByteString publicKey_ = pb::ByteString.Empty;
+    /// <summary>
+    ///  Public key of the requestee.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString PublicKey {
+      get { return publicKey_; }
+      set {
+        publicKey_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "challenge" field.</summary>
+    public const int ChallengeFieldNumber = 3;
+    private pb::ByteString challenge_ = pb::ByteString.Empty;
+    /// <summary>
+    ///  32 byte challenge data (random bytes generated by the requestee) that is used for later authentication purposes.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString Challenge {
+      get { return challenge_; }
+      set {
+        challenge_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as StartConversationResponse);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(StartConversationResponse other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (Version != other.Version) return false;
+      if (PublicKey != other.PublicKey) return false;
+      if (Challenge != other.Challenge) return false;
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (Version.Length != 0) hash ^= Version.GetHashCode();
+      if (PublicKey.Length != 0) hash ^= PublicKey.GetHashCode();
+      if (Challenge.Length != 0) hash ^= Challenge.GetHashCode();
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (Version.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteBytes(Version);
+      }
+      if (PublicKey.Length != 0) {
+        output.WriteRawTag(18);
+        output.WriteBytes(PublicKey);
+      }
+      if (Challenge.Length != 0) {
+        output.WriteRawTag(26);
+        output.WriteBytes(Challenge);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (Version.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(Version);
+      }
+      if (PublicKey.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(PublicKey);
+      }
+      if (Challenge.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(Challenge);
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(StartConversationResponse other) {
+      if (other == null) {
+        return;
+      }
+      if (other.Version.Length != 0) {
+        Version = other.Version;
+      }
+      if (other.PublicKey.Length != 0) {
+        PublicKey = other.PublicKey;
+      }
+      if (other.Challenge.Length != 0) {
+        Challenge = other.Challenge;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+          case 10: {
+            Version = input.ReadBytes();
+            break;
+          }
+          case 18: {
+            PublicKey = input.ReadBytes();
+            break;
+          }
+          case 26: {
+            Challenge = input.ReadBytes();
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///
+  ///  A client asks node to become its home node by sending HomeNodeRequestRequest
+  ///  with a signed contract. The signature is provided in 'ConversationRequest.signature'.
+  ///
+  ///  Roles: clNonCustomer
+  ///
+  ///  Conversation status: ConversationStarted
+  /// </summary>
+  public sealed partial class HomeNodeRequestRequest : pb::IMessage<HomeNodeRequestRequest> {
+    private static readonly pb::MessageParser<HomeNodeRequestRequest> _parser = new pb::MessageParser<HomeNodeRequestRequest>(() => new HomeNodeRequestRequest());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<HomeNodeRequestRequest> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Homenode.IopHomeNodeReflection.Descriptor.MessageTypes[19]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public HomeNodeRequestRequest() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public HomeNodeRequestRequest(HomeNodeRequestRequest other) : this() {
+      Contract = other.contract_ != null ? other.Contract.Clone() : null;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public HomeNodeRequestRequest Clone() {
+      return new HomeNodeRequestRequest(this);
+    }
+
+    /// <summary>Field number for the "contract" field.</summary>
+    public const int ContractFieldNumber = 1;
+    private global::Iop.Homenode.HomeNodePlanContract contract_;
+    /// <summary>
+    ///  Description of the contract that the client wants to have with the node.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Homenode.HomeNodePlanContract Contract {
+      get { return contract_; }
+      set {
+        contract_ = value;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as HomeNodeRequestRequest);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(HomeNodeRequestRequest other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (!object.Equals(Contract, other.Contract)) return false;
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (contract_ != null) hash ^= Contract.GetHashCode();
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (contract_ != null) {
+        output.WriteRawTag(10);
+        output.WriteMessage(Contract);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (contract_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Contract);
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(HomeNodeRequestRequest other) {
+      if (other == null) {
+        return;
+      }
+      if (other.contract_ != null) {
+        if (contract_ == null) {
+          contract_ = new global::Iop.Homenode.HomeNodePlanContract();
+        }
+        Contract.MergeFrom(other.Contract);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+          case 10: {
+            if (contract_ == null) {
+              contract_ = new global::Iop.Homenode.HomeNodePlanContract();
+            }
+            input.ReadMessage(contract_);
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///
+  ///  A response to HomeNodeRequestRequest in case the node wants to accept the request.
+  ///  The contract is signed with a signature in ConversationResponse.signature.
+  ///
+  ///  Specific Error Responses:
+  ///    * ERROR_QUOTA_EXCEEDED - A node uses this error code in case it wants to express that it will not accept any new clients because it has no free slots.
+  ///    * ERROR_NOT_FOUND - 'HomeNodePlanContract.contract.plan.planId' does not correspond to a node's plan, or the plan values are different from what the node offers.
+  ///    * ERROR_INVALID_SIGNATURE - The client's signature of the contract is not valid.
+  ///    * ERROR_ALREADY_EXISTS - The identity is hosted by the node already.
+  ///    * ERROR_INVALID_VALUE
+  ///      * Response.details == "contract.startTime" - 'HomeNodeRequestRequest.contract.startTime' is more than 1 hour in the past. 
+  ///      * Response.details == "contract.nodePublicKey" - 'HomeNodeRequestRequest.contract.nodePublicKey' does not match node's public key. 
+  ///      * Response.details == "contract.identityPublicKey" - 'HomeNodeRequestRequest.contract.identityPublicKey' does not match identity's public key.
+  /// </summary>
+  public sealed partial class HomeNodeRequestResponse : pb::IMessage<HomeNodeRequestResponse> {
+    private static readonly pb::MessageParser<HomeNodeRequestResponse> _parser = new pb::MessageParser<HomeNodeRequestResponse>(() => new HomeNodeRequestResponse());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<HomeNodeRequestResponse> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Homenode.IopHomeNodeReflection.Descriptor.MessageTypes[20]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public HomeNodeRequestResponse() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public HomeNodeRequestResponse(HomeNodeRequestResponse other) : this() {
+      Contract = other.contract_ != null ? other.Contract.Clone() : null;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public HomeNodeRequestResponse Clone() {
+      return new HomeNodeRequestResponse(this);
+    }
+
+    /// <summary>Field number for the "contract" field.</summary>
+    public const int ContractFieldNumber = 1;
+    private global::Iop.Homenode.HomeNodePlanContract contract_;
+    /// <summary>
+    ///  Description of the contract that the client wants to have with the node and the node accepted it.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Homenode.HomeNodePlanContract Contract {
+      get { return contract_; }
+      set {
+        contract_ = value;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as HomeNodeRequestResponse);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(HomeNodeRequestResponse other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (!object.Equals(Contract, other.Contract)) return false;
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (contract_ != null) hash ^= Contract.GetHashCode();
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (contract_ != null) {
+        output.WriteRawTag(10);
+        output.WriteMessage(Contract);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (contract_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Contract);
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(HomeNodeRequestResponse other) {
+      if (other == null) {
+        return;
+      }
+      if (other.contract_ != null) {
+        if (contract_ == null) {
+          contract_ = new global::Iop.Homenode.HomeNodePlanContract();
+        }
+        Contract.MergeFrom(other.Contract);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+          case 10: {
+            if (contract_ == null) {
+              contract_ = new global::Iop.Homenode.HomeNodePlanContract();
+            }
+            input.ReadMessage(contract_);
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///  A description of the contract between a client and a home node.
+  /// </summary>
+  public sealed partial class HomeNodePlanContract : pb::IMessage<HomeNodePlanContract> {
+    private static readonly pb::MessageParser<HomeNodePlanContract> _parser = new pb::MessageParser<HomeNodePlanContract>(() => new HomeNodePlanContract());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<HomeNodePlanContract> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Homenode.IopHomeNodeReflection.Descriptor.MessageTypes[21]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public HomeNodePlanContract() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public HomeNodePlanContract(HomeNodePlanContract other) : this() {
+      Plan = other.plan_ != null ? other.Plan.Clone() : null;
+      nodePublicKey_ = other.nodePublicKey_;
+      identityPublicKey_ = other.identityPublicKey_;
+      startTime_ = other.startTime_;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public HomeNodePlanContract Clone() {
+      return new HomeNodePlanContract(this);
+    }
+
+    /// <summary>Field number for the "plan" field.</summary>
+    public const int PlanFieldNumber = 1;
+    private global::Iop.Homenode.HomeNodePlan plan_;
+    /// <summary>
+    ///  Description of the home node hosting plan.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Homenode.HomeNodePlan Plan {
+      get { return plan_; }
+      set {
+        plan_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "nodePublicKey" field.</summary>
+    public const int NodePublicKeyFieldNumber = 2;
+    private pb::ByteString nodePublicKey_ = pb::ByteString.Empty;
+    /// <summary>
+    ///  Public key of the node.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString NodePublicKey {
+      get { return nodePublicKey_; }
+      set {
+        nodePublicKey_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "identityPublicKey" field.</summary>
+    public const int IdentityPublicKeyFieldNumber = 3;
+    private pb::ByteString identityPublicKey_ = pb::ByteString.Empty;
+    /// <summary>
+    ///  Public key of the identity.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString IdentityPublicKey {
+      get { return identityPublicKey_; }
+      set {
+        identityPublicKey_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "startTime" field.</summary>
+    public const int StartTimeFieldNumber = 4;
+    private long startTime_;
+    /// <summary>
+    ///  TimestampType. Specifies the start time of the contract.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public long StartTime {
+      get { return startTime_; }
+      set {
+        startTime_ = value;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as HomeNodePlanContract);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(HomeNodePlanContract other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (!object.Equals(Plan, other.Plan)) return false;
+      if (NodePublicKey != other.NodePublicKey) return false;
+      if (IdentityPublicKey != other.IdentityPublicKey) return false;
+      if (StartTime != other.StartTime) return false;
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (plan_ != null) hash ^= Plan.GetHashCode();
+      if (NodePublicKey.Length != 0) hash ^= NodePublicKey.GetHashCode();
+      if (IdentityPublicKey.Length != 0) hash ^= IdentityPublicKey.GetHashCode();
+      if (StartTime != 0L) hash ^= StartTime.GetHashCode();
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (plan_ != null) {
+        output.WriteRawTag(10);
+        output.WriteMessage(Plan);
+      }
+      if (NodePublicKey.Length != 0) {
+        output.WriteRawTag(18);
+        output.WriteBytes(NodePublicKey);
+      }
+      if (IdentityPublicKey.Length != 0) {
+        output.WriteRawTag(26);
+        output.WriteBytes(IdentityPublicKey);
+      }
+      if (StartTime != 0L) {
+        output.WriteRawTag(32);
+        output.WriteSInt64(StartTime);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (plan_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Plan);
+      }
+      if (NodePublicKey.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(NodePublicKey);
+      }
+      if (IdentityPublicKey.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(IdentityPublicKey);
+      }
+      if (StartTime != 0L) {
+        size += 1 + pb::CodedOutputStream.ComputeSInt64Size(StartTime);
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(HomeNodePlanContract other) {
+      if (other == null) {
+        return;
+      }
+      if (other.plan_ != null) {
+        if (plan_ == null) {
+          plan_ = new global::Iop.Homenode.HomeNodePlan();
+        }
+        Plan.MergeFrom(other.Plan);
+      }
+      if (other.NodePublicKey.Length != 0) {
+        NodePublicKey = other.NodePublicKey;
+      }
+      if (other.IdentityPublicKey.Length != 0) {
+        IdentityPublicKey = other.IdentityPublicKey;
+      }
+      if (other.StartTime != 0L) {
+        StartTime = other.StartTime;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+          case 10: {
+            if (plan_ == null) {
+              plan_ = new global::Iop.Homenode.HomeNodePlan();
+            }
+            input.ReadMessage(plan_);
+            break;
+          }
+          case 18: {
+            NodePublicKey = input.ReadBytes();
+            break;
+          }
+          case 26: {
+            IdentityPublicKey = input.ReadBytes();
+            break;
+          }
+          case 32: {
+            StartTime = input.ReadSInt64();
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///  
+  ///  A customer client announces it is online and it "logs in".
+  ///  The client has to provide a signature in 'ConversationRequest.signature'.
+  ///
+  ///  Roles: clCustomer
+  ///
+  ///  Conversation status: ConversationStarted
+  /// </summary>
+  public sealed partial class CheckInRequest : pb::IMessage<CheckInRequest> {
+    private static readonly pb::MessageParser<CheckInRequest> _parser = new pb::MessageParser<CheckInRequest>(() => new CheckInRequest());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<CheckInRequest> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Homenode.IopHomeNodeReflection.Descriptor.MessageTypes[22]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CheckInRequest() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CheckInRequest(CheckInRequest other) : this() {
+      challenge_ = other.challenge_;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CheckInRequest Clone() {
+      return new CheckInRequest(this);
+    }
+
+    /// <summary>Field number for the "challenge" field.</summary>
+    public const int ChallengeFieldNumber = 1;
+    private pb::ByteString challenge_ = pb::ByteString.Empty;
+    /// <summary>
+    ///  The exact copy of 'StartConversationResponse.challenge' from the start of the conversation.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString Challenge {
+      get { return challenge_; }
+      set {
+        challenge_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as CheckInRequest);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(CheckInRequest other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (Challenge != other.Challenge) return false;
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (Challenge.Length != 0) hash ^= Challenge.GetHashCode();
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (Challenge.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteBytes(Challenge);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (Challenge.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(Challenge);
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(CheckInRequest other) {
+      if (other == null) {
+        return;
+      }
+      if (other.Challenge.Length != 0) {
+        Challenge = other.Challenge;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+          case 10: {
+            Challenge = input.ReadBytes();
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///
+  ///  A response to CheckInRequest.
+  ///
+  ///  Specific Error Responses:
+  ///    * ERROR_INVALID_SIGNATURE - The client's signature of the challenge is not valid.
+  ///    * ERROR_NOT_FOUND - The identity is not a client of the node.
+  /// </summary>
+  public sealed partial class CheckInResponse : pb::IMessage<CheckInResponse> {
+    private static readonly pb::MessageParser<CheckInResponse> _parser = new pb::MessageParser<CheckInResponse>(() => new CheckInResponse());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<CheckInResponse> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Homenode.IopHomeNodeReflection.Descriptor.MessageTypes[23]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CheckInResponse() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CheckInResponse(CheckInResponse other) : this() {
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CheckInResponse Clone() {
+      return new CheckInResponse(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as CheckInResponse);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(CheckInResponse other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(CheckInResponse other) {
+      if (other == null) {
+        return;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///
+  ///  A customer client updates its profile hosted at the node.
+  ///  The client must make sure that its profile is complete after processing the request.
+  ///  After sending HomeNodeRequest, its profile is almost empty - only identity type 
+  ///  and public key are known. This means that the first call of this request 
+  ///  has to contain all required information to make the profile complete. Namely the first 
+  ///  UpdateProfileRequest has to have setVersion, setName, and setLocation set to true.
+  ///  
+  ///  Roles: clCustomer
+  ///
+  ///  Conversation status: Authenticated
+  /// </summary>
+  public sealed partial class UpdateProfileRequest : pb::IMessage<UpdateProfileRequest> {
+    private static readonly pb::MessageParser<UpdateProfileRequest> _parser = new pb::MessageParser<UpdateProfileRequest>(() => new UpdateProfileRequest());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<UpdateProfileRequest> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Homenode.IopHomeNodeReflection.Descriptor.MessageTypes[24]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public UpdateProfileRequest() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public UpdateProfileRequest(UpdateProfileRequest other) : this() {
+      setVersion_ = other.setVersion_;
+      setName_ = other.setName_;
+      setImage_ = other.setImage_;
+      setLocation_ = other.setLocation_;
+      setExtraData_ = other.setExtraData_;
+      version_ = other.version_;
+      name_ = other.name_;
+      image_ = other.image_;
+      location_ = other.location_;
+      extraData_ = other.extraData_;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public UpdateProfileRequest Clone() {
+      return new UpdateProfileRequest(this);
+    }
+
+    /// <summary>Field number for the "setVersion" field.</summary>
+    public const int SetVersionFieldNumber = 1;
+    private bool setVersion_;
+    /// <summary>
+    ///  Profile version should be updated. 'version' must contain valid data.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool SetVersion {
+      get { return setVersion_; }
+      set {
+        setVersion_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "setName" field.</summary>
+    public const int SetNameFieldNumber = 2;
+    private bool setName_;
+    /// <summary>
+    ///  Profile name should be updated. 'name' must contain valid data.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool SetName {
+      get { return setName_; }
+      set {
+        setName_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "setImage" field.</summary>
+    public const int SetImageFieldNumber = 3;
+    private bool setImage_;
+    /// <summary>
+    ///  Profile image should be updated. 'image' must contain valid data.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool SetImage {
+      get { return setImage_; }
+      set {
+        setImage_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "setLocation" field.</summary>
+    public const int SetLocationFieldNumber = 4;
+    private bool setLocation_;
+    /// <summary>
+    ///  Profile location should be updated. 'location' must contain valid data.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool SetLocation {
+      get { return setLocation_; }
+      set {
+        setLocation_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "setExtraData" field.</summary>
+    public const int SetExtraDataFieldNumber = 5;
+    private bool setExtraData_;
+    /// <summary>
+    ///  Profile extra data should be updated. 'extraData' must contain valid data.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool SetExtraData {
+      get { return setExtraData_; }
+      set {
+        setExtraData_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "version" field.</summary>
+    public const int VersionFieldNumber = 8;
+    private pb::ByteString version_ = pb::ByteString.Empty;
+    /// <summary>
+    ///  VersionType. Version of the profile structure.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString Version {
+      get { return version_; }
+      set {
+        version_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "name" field.</summary>
+    public const int NameFieldNumber = 9;
+    private string name_ = "";
+    /// <summary>
+    ///  Name of the profile, non-empty string, max 64 bytes long.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string Name {
+      get { return name_; }
+      set {
+        name_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "image" field.</summary>
+    public const int ImageFieldNumber = 10;
+    private pb::ByteString image_ = pb::ByteString.Empty;
+    /// <summary>
+    ///  Profile image in PNG or JPEG format, non-empty binary data, max 20,480 bytes long.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString Image {
+      get { return image_; }
+      set {
+        image_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "location" field.</summary>
+    public const int LocationFieldNumber = 11;
+    private uint location_;
+    /// <summary>
+    ///  Encoded GPS location information.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public uint Location {
+      get { return location_; }
+      set {
+        location_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "extraData" field.</summary>
+    public const int ExtraDataFieldNumber = 12;
+    private string extraData_ = "";
+    /// <summary>
+    ///  Semicolon separated 'key=value' list, max 200 bytes long.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string ExtraData {
+      get { return extraData_; }
+      set {
+        extraData_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as UpdateProfileRequest);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(UpdateProfileRequest other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (SetVersion != other.SetVersion) return false;
+      if (SetName != other.SetName) return false;
+      if (SetImage != other.SetImage) return false;
+      if (SetLocation != other.SetLocation) return false;
+      if (SetExtraData != other.SetExtraData) return false;
+      if (Version != other.Version) return false;
+      if (Name != other.Name) return false;
+      if (Image != other.Image) return false;
+      if (Location != other.Location) return false;
+      if (ExtraData != other.ExtraData) return false;
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (SetVersion != false) hash ^= SetVersion.GetHashCode();
+      if (SetName != false) hash ^= SetName.GetHashCode();
+      if (SetImage != false) hash ^= SetImage.GetHashCode();
+      if (SetLocation != false) hash ^= SetLocation.GetHashCode();
+      if (SetExtraData != false) hash ^= SetExtraData.GetHashCode();
+      if (Version.Length != 0) hash ^= Version.GetHashCode();
+      if (Name.Length != 0) hash ^= Name.GetHashCode();
+      if (Image.Length != 0) hash ^= Image.GetHashCode();
+      if (Location != 0) hash ^= Location.GetHashCode();
+      if (ExtraData.Length != 0) hash ^= ExtraData.GetHashCode();
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (SetVersion != false) {
+        output.WriteRawTag(8);
+        output.WriteBool(SetVersion);
+      }
+      if (SetName != false) {
+        output.WriteRawTag(16);
+        output.WriteBool(SetName);
+      }
+      if (SetImage != false) {
+        output.WriteRawTag(24);
+        output.WriteBool(SetImage);
+      }
+      if (SetLocation != false) {
+        output.WriteRawTag(32);
+        output.WriteBool(SetLocation);
+      }
+      if (SetExtraData != false) {
+        output.WriteRawTag(40);
+        output.WriteBool(SetExtraData);
+      }
+      if (Version.Length != 0) {
+        output.WriteRawTag(66);
+        output.WriteBytes(Version);
+      }
+      if (Name.Length != 0) {
+        output.WriteRawTag(74);
+        output.WriteString(Name);
+      }
+      if (Image.Length != 0) {
+        output.WriteRawTag(82);
+        output.WriteBytes(Image);
+      }
+      if (Location != 0) {
+        output.WriteRawTag(93);
+        output.WriteFixed32(Location);
+      }
+      if (ExtraData.Length != 0) {
+        output.WriteRawTag(98);
+        output.WriteString(ExtraData);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (SetVersion != false) {
+        size += 1 + 1;
+      }
+      if (SetName != false) {
+        size += 1 + 1;
+      }
+      if (SetImage != false) {
+        size += 1 + 1;
+      }
+      if (SetLocation != false) {
+        size += 1 + 1;
+      }
+      if (SetExtraData != false) {
+        size += 1 + 1;
+      }
+      if (Version.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(Version);
+      }
+      if (Name.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Name);
+      }
+      if (Image.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(Image);
+      }
+      if (Location != 0) {
+        size += 1 + 4;
+      }
+      if (ExtraData.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(ExtraData);
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(UpdateProfileRequest other) {
+      if (other == null) {
+        return;
+      }
+      if (other.SetVersion != false) {
+        SetVersion = other.SetVersion;
+      }
+      if (other.SetName != false) {
+        SetName = other.SetName;
+      }
+      if (other.SetImage != false) {
+        SetImage = other.SetImage;
+      }
+      if (other.SetLocation != false) {
+        SetLocation = other.SetLocation;
+      }
+      if (other.SetExtraData != false) {
+        SetExtraData = other.SetExtraData;
+      }
+      if (other.Version.Length != 0) {
+        Version = other.Version;
+      }
+      if (other.Name.Length != 0) {
+        Name = other.Name;
+      }
+      if (other.Image.Length != 0) {
+        Image = other.Image;
+      }
+      if (other.Location != 0) {
+        Location = other.Location;
+      }
+      if (other.ExtraData.Length != 0) {
+        ExtraData = other.ExtraData;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+          case 8: {
+            SetVersion = input.ReadBool();
+            break;
+          }
+          case 16: {
+            SetName = input.ReadBool();
+            break;
+          }
+          case 24: {
+            SetImage = input.ReadBool();
+            break;
+          }
+          case 32: {
+            SetLocation = input.ReadBool();
+            break;
+          }
+          case 40: {
+            SetExtraData = input.ReadBool();
+            break;
+          }
+          case 66: {
+            Version = input.ReadBytes();
+            break;
+          }
+          case 74: {
+            Name = input.ReadString();
+            break;
+          }
+          case 82: {
+            Image = input.ReadBytes();
+            break;
+          }
+          case 93: {
+            Location = input.ReadFixed32();
+            break;
+          }
+          case 98: {
+            ExtraData = input.ReadString();
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///
+  ///  A response to UpdateProfileRequest.
+  ///
+  ///  Specific Error Responses:
+  ///    * ERROR_NOT_FOUND - The identity is not a client of the node.
+  ///    * ERROR_INVALID_VALUE
+  ///      * Response.details == "setVersion" - 'UpdateProfileRequest.setVersion' is not set during the first request.
+  ///      * Response.details == "setName" - 'UpdateProfileRequest.setName' is not set during the firts request.
+  ///      * Response.details == "setLocation" - 'UpdateProfileRequest.setLocation' is not set during the firts request.
+  ///      * Response.details == "version" - 'UpdateProfileRequest.version' does not contain a valid version information.
+  ///      * Response.details == "name" - 'UpdateProfileRequest.name' does not contain a valid name.
+  ///      * Response.details == "image" - 'UpdateProfileRequest.image' does not contain a valid PNG or JPEG image.
+  ///      * Response.details == "location" - 'UpdateProfileRequest.image' does not contain a valid location information.
+  ///      * Response.details == "extraData" - 'UpdateProfileRequest.extraData' does not contain a valid extra data information.
+  /// </summary>
+  public sealed partial class UpdateProfileResponse : pb::IMessage<UpdateProfileResponse> {
+    private static readonly pb::MessageParser<UpdateProfileResponse> _parser = new pb::MessageParser<UpdateProfileResponse>(() => new UpdateProfileResponse());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<UpdateProfileResponse> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Homenode.IopHomeNodeReflection.Descriptor.MessageTypes[25]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public UpdateProfileResponse() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public UpdateProfileResponse(UpdateProfileResponse other) : this() {
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public UpdateProfileResponse Clone() {
+      return new UpdateProfileResponse(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as UpdateProfileResponse);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(UpdateProfileResponse other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(UpdateProfileResponse other) {
+      if (other == null) {
+        return;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
         }
       }
     }

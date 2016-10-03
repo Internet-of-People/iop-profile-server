@@ -23,18 +23,22 @@ namespace HomeNet.Migrations
                     b.Property<string>("ExtraData")
                         .HasAnnotation("MaxLength", 200);
 
+                    b.Property<byte[]>("HomeNodeId")
+                        .HasAnnotation("MaxLength", 20);
+
                     b.Property<uint>("InitialLocationEncoded");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasAnnotation("MaxLength", 64);
 
-                    b.Property<byte[]>("Picture")
-                        .HasAnnotation("MaxLength", 20480);
+                    b.Property<Guid?>("ProfileImage");
 
                     b.Property<byte[]>("PublicKey")
                         .IsRequired()
                         .HasAnnotation("MaxLength", 256);
+
+                    b.Property<Guid?>("ThumbnailImage");
 
                     b.Property<string>("Type")
                         .IsRequired()
@@ -45,6 +49,8 @@ namespace HomeNet.Migrations
                         .HasAnnotation("MaxLength", 3);
 
                     b.HasKey("IdentityId");
+
+                    b.HasIndex("IdentityId", "HomeNodeId", "Name", "Type", "ExtraData");
 
                     b.ToTable("Identities");
                 });

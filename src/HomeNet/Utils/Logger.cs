@@ -1,7 +1,7 @@
 ﻿using NLog;
 using System;
 
-namespace HomeNet.Kernel
+namespace HomeNet.Utils
 {
   /// <summary>
   /// NLog wrapper class to enable a simple logging with a prefix to be put in front of each message.

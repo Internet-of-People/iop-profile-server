@@ -26,5 +26,11 @@ namespace HomeNet.Data
     {
       optionsBuilder.UseSqlite(string.Format("Filename={0}", DatabaseFileName));
     }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+      modelBuilder.Entity<Identity>()
+          .HasIndex(i => new { i.IdentityId, i.HomeNodeId, i.Name, i.Type, i.ExtraData });
+    }
   }
 }

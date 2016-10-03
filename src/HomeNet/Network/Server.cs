@@ -210,18 +210,18 @@ namespace HomeNet.Network
           List<Client> clients = server.GetClientListCopy();
           foreach (Client client in clients)
           {
-            uint id = 0;
+            ulong id = 0;
             try
             {
               id = client.Id;
-              log.Trace("Client ID 0x{0:X8} has NextKeepAliveTime set to {1}.", id, client.NextKeepAliveTime.ToString("yyyy-MM-dd HH:mm:ss"));
+              log.Trace("Client ID 0x{0:X16} has NextKeepAliveTime set to {1}.", id, client.NextKeepAliveTime.ToString("yyyy-MM-dd HH:mm:ss"));
               if (client.NextKeepAliveTime < DateTime.UtcNow)
               {
                 // Client's connection is now considered inactive. 
                 // We want to disconnect the client and remove it from the list.
                 // If we dispose the client this will terminate the read loop in TcpRoleServer.ClientHandlerAsync,
                 // which will then remove the client from the list, so we do not need to care about that.
-                log.Debug("Client ID 0x{0:X8} did not send any requests before {1} and is now considered as inactive. Disposing client.", id, client.NextKeepAliveTime);
+                log.Debug("Client ID 0x{0:X16} did not send any requests before {1} and is now considered as inactive. Disposing client.", id, client.NextKeepAliveTime);
                 client.Dispose();
               }
             }
@@ -238,6 +238,16 @@ namespace HomeNet.Network
       }
 
       log.Trace("(-)");
+    }
+
+    public List<TcpRoleServer> GetRoleServers()
+    {
+      log.Trace("()");
+
+      List<TcpRoleServer> res = new List<TcpRoleServer>(tcpServers.Values);
+
+      log.Trace("(-):*.Count={0}", res.Count);
+      return res;
     }
   }
 }
