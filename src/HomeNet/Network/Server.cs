@@ -93,7 +93,7 @@ namespace HomeNet.Network
 
       if (!res)
       {
-        SignalLocalShutdown();
+        ShutdownSignaling.SignalShutdown();
 
         if (checkInactiveClientConnectionsTimer != null) checkInactiveClientConnectionsTimer.Dispose();
         checkInactiveClientConnectionsTimer = null;
@@ -114,7 +114,7 @@ namespace HomeNet.Network
     {
       log.Info("()");
 
-      SignalLocalShutdown();
+      ShutdownSignaling.SignalShutdown();
 
       if (checkInactiveClientConnectionsTimer != null) checkInactiveClientConnectionsTimer.Dispose();
       checkInactiveClientConnectionsTimer = null;
@@ -152,14 +152,14 @@ namespace HomeNet.Network
 
       serversMaintenanceThreadFinished.Reset();
 
-      while (!IsShutdown)
+      while (!ShutdownSignaling.IsShutdown)
       {
         log.Info("Waiting for event.");
 
-        WaitHandle[] handles = new WaitHandle[] { localShutdownEvent, checkInactiveClientConnectionsEvent };
+        WaitHandle[] handles = new WaitHandle[] { ShutdownSignaling.ShutdownEvent, checkInactiveClientConnectionsEvent };
 
         int index = WaitHandle.WaitAny(handles);
-        if (handles[index] == localShutdownEvent)
+        if (handles[index] == ShutdownSignaling.ShutdownEvent)
         {
           log.Info("Shutdown detected.");
           break;

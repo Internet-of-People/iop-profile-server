@@ -537,5 +537,40 @@ namespace HomeNetProtocol
       return res;
     }
 
+
+    /// <summary>
+    /// Creates a new CancelHomeNodeAgreementRequest message.
+    /// </summary>
+    /// <param name="NewHomeNodeId">Network identifier of the identity's new home node, or null if this information is not to be sent to the previous home node.</param>
+    /// <returns>CancelHomeNodeAgreementRequest message that is ready to be sent.</returns>
+    public Message CreateCancelHomeNodeAgreementRequest(byte[] NewHomeNodeId)
+    {
+      CancelHomeNodeAgreementRequest cancelHomeNodeAgreementRequest = new CancelHomeNodeAgreementRequest();
+      cancelHomeNodeAgreementRequest.RedirectToNewHomeNode = NewHomeNodeId != null;
+      if (cancelHomeNodeAgreementRequest.RedirectToNewHomeNode)
+        cancelHomeNodeAgreementRequest.NewHomeNodeNetworkId = ProtocolHelper.ByteArrayToByteString(NewHomeNodeId);
+
+      Message res = CreateConversationRequest();
+      res.Request.ConversationRequest.CancelHomeNodeAgreement = cancelHomeNodeAgreementRequest;
+
+      return res;
+    }
+
+
+    /// <summary>
+    /// Creates a response message to a CancelHomeNodeAgreementRequest message.
+    /// </summary>
+    /// <param name="Request">CancelHomeNodeAgreementRequest message for which the response is created.</param>
+    /// <returns>CancelHomeNodeAgreementResponse message that is ready to be sent.</returns>
+    public Message CreateCancelHomeNodeAgreementResponse(Message Request)
+    {
+      CancelHomeNodeAgreementResponse cancelHomeNodeAgreementResponse = new CancelHomeNodeAgreementResponse();
+
+      Message res = CreateConversationResponse(Request);
+      res.Response.ConversationResponse.CancelHomeNodeAgreement = cancelHomeNodeAgreementResponse;
+
+      return res;
+    }
+
   }
 }

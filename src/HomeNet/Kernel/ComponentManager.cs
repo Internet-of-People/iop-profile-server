@@ -33,20 +33,9 @@ namespace HomeNet.Kernel
     /// <summary>Current system state.</summary>
     public SystemStateType SystemState { get { return systemState; } }
 
-    /// <summary>true if the application shutdown has been initiated.</summary>
-    public bool IsShutdown { get { return SystemState == SystemStateType.Shutdown; } }
 
-    /// <summary>Task that completes once ShutdownEvent is set.</summary>
-    public Task ShutdownTask;
-
-    /// <summary>Event that is set when the shutdown is initiated.</summary>
-    public ManualResetEvent ShutdownEvent = new ManualResetEvent(false);
-
-    /// <summary>Event that is set when the shutdown process is finished.</summary>
-    public ManualResetEvent ShutdownFinishedEvent = new ManualResetEvent(false);
-
-    /// <summary>Cancellation token source for asynchronous tasks that is being triggered when the system shutdown is initiated.</summary>
-    public CancellationTokenSource ShutdownCancellationTokenSource = new CancellationTokenSource();
+    /// <summary>Global shutdown signaling object.</summary>
+    public ComponentShutdown GlobalShutdown = new ComponentShutdown(null);
 
     /// <summary>List of application components for initialization and shutdown.</summary>
     private List<Component> componentList;
@@ -62,7 +51,6 @@ namespace HomeNet.Kernel
 
       bool res = false;
       systemState = SystemStateType.Initiating;
-      ShutdownTask = WaitHandleExtension.AsTask(ShutdownEvent);
 
       componentList = ComponentList;
 
@@ -106,9 +94,7 @@ namespace HomeNet.Kernel
       log.Info("()");
 
       systemState = SystemStateType.Shutdown;
-      ShutdownEvent.Set();
-      ShutdownTask.Wait();
-      ShutdownCancellationTokenSource.Cancel();
+      GlobalShutdown.SignalShutdown();
 
       log.Info("(-)");
     }
@@ -132,7 +118,7 @@ namespace HomeNet.Kernel
           {
             string name = comp.GetType().Name;
             log.Info("Shutting down component '{0}'.", name);
-            comp.SignalLocalShutdown();
+            comp.ShutdownSignaling.SignalShutdown();
             comp.Shutdown();
           }
         }
@@ -141,8 +127,6 @@ namespace HomeNet.Kernel
       {
         log.Error("Exception occurred: {0}", e.ToString());
       }
-
-      ShutdownFinishedEvent.Set();
 
       log.Info("(-)");
     }

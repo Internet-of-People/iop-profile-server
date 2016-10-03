@@ -12,11 +12,38 @@ using System.Threading.Tasks;
 namespace HomeNet.Data
 {
   /// <summary>
+  /// Synchronization object that is used to prevent race conditions while accessing database.
+  /// </summary>
+  public class DatabaseLock
+  {
+    /// <summary>Lock object itself.</summary>
+    public SemaphoreSlim Lock;
+
+    /// <summary>Lock name for debugging purposes.</summary>
+    public string Name;
+
+    /// <summary>
+    /// Creates an instance of the synchronization object.
+    /// </summary>
+    /// <param name="Name">Name to be assigned for debugging purposes.</param>
+    public DatabaseLock(string Name)
+    {
+      Lock = new SemaphoreSlim(1);
+      this.Name = Name;
+    }
+
+    public override string ToString()
+    {
+      return Name;
+    }
+  }
+
+  /// <summary>
   /// Coordinates the work of multiple repositories by creating a single database context class shared by all of them.
   /// </summary>
   public class UnitOfWork : IDisposable
   {
-    private static NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
+    private static NLog.Logger log = NLog.LogManager.GetLogger("HomeNet.Data.UnitOfWork");
 
     private Context context = null;
     /// <summary>Database context.</summary>
@@ -33,7 +60,7 @@ namespace HomeNet.Data
 
 
     /// <summary>Lock for the identity repository.</summary>
-    public static string HomeIdentityLock = "HOME_IDENTITY";
+    public static DatabaseLock HomeIdentityLock = new DatabaseLock("HOME_IDENTITY");
 
 
     private SettingsRepository settingsRepository;
@@ -188,12 +215,32 @@ namespace HomeNet.Data
     /// <param name="Lock">Lock to protect the transaction.</param>
     /// <returns>Entity Framework transaction object.</returns>
     /// <remarks>The caller is responsible for releasing the lock by calling ReleaseLock.</remarks>
-    public IDbContextTransaction BeginTransactionWithLock(string Lock)
+    public IDbContextTransaction BeginTransactionWithLock(DatabaseLock Lock)
     {
       log.Trace("(Lock:{0})", Lock);
 
-      Monitor.Enter(Lock);
+      Lock.Lock.Wait();
       IDbContextTransaction result = Context.Database.BeginTransaction();
+
+      log.Trace("(-)");
+      return result;
+    }
+
+
+    /// <summary>
+    /// Asynchronously starts database transaction and acquires a lock.
+    /// The transaction makes sure the whole operation is atomic,
+    /// the lock is used to prevent race conditions among threads.
+    /// </summary>
+    /// <param name="Lock">Lock to protect the transaction.</param>
+    /// <returns>Entity Framework transaction object.</returns>
+    /// <remarks>The caller is responsible for releasing the lock by calling ReleaseLock.</remarks>
+    public async Task<IDbContextTransaction> BeginTransactionWithLockAsync(DatabaseLock Lock)
+    {
+      log.Trace("(Lock:{0})", Lock);
+
+      await Lock.Lock.WaitAsync();
+      IDbContextTransaction result = await Context.Database.BeginTransactionAsync();
 
       log.Trace("(-)");
       return result;
@@ -205,15 +252,15 @@ namespace HomeNet.Data
     /// The transaction makes sure the whole operation is atomic,
     /// the locks are used to prevent race conditions among threads.
     /// </summary>
-    /// <param name="Lock">Locks to protect the transaction.</param>
+    /// <param name="Locks">Locks to protect the transaction.</param>
     /// <returns>Entity Framework transaction object.</returns>
     /// <remarks>The caller is responsible for releasing the locks by calling ReleaseLock.</remarks>
-    public IDbContextTransaction BeginTransactionWithLock(string[] Locks)
+    public IDbContextTransaction BeginTransactionWithLock(DatabaseLock[] Locks)
     {
-      log.Trace("(Locks:[{0}])", string.Join(",", Locks));
+      log.Trace("(Locks:[{0}])", string.Join<DatabaseLock>(",", Locks));
 
-      foreach (string lockObject in Locks)
-        Monitor.Enter(lockObject);
+      for (int i = 0; i < Locks.Length; i++)
+        Locks[i].Lock.Wait();
 
       IDbContextTransaction result = Context.Database.BeginTransaction();
 
@@ -223,15 +270,67 @@ namespace HomeNet.Data
 
 
     /// <summary>
+    /// Asynchronously starts database transaction and acquires multiple locks.
+    /// The transaction makes sure the whole operation is atomic,
+    /// the locks are used to prevent race conditions among threads.
+    /// </summary>
+    /// <param name="Locks">Locks to protect the transaction.</param>
+    /// <returns>Entity Framework transaction object.</returns>
+    /// <remarks>The caller is responsible for releasing the locks by calling ReleaseLock.</remarks>
+    public async Task<IDbContextTransaction> BeginTransactionWithLockAsync(DatabaseLock[] Locks)
+    {
+      log.Trace("(Locks:[{0}])", string.Join<DatabaseLock>(",", Locks));
+
+      for (int i = 0; i < Locks.Length; i++)
+        await Locks[i].Lock.WaitAsync();
+
+      IDbContextTransaction result = await Context.Database.BeginTransactionAsync();
+
+      log.Trace("(-)");
+      return result;
+    }
+
+
+    /// <summary>
+    /// Rollbacks transaction and prevents exceptions.
+    /// </summary>
+    /// <param name="Transaction">Transaction to rollback.</param>
+    public void SafeTransactionRollback(IDbContextTransaction Transaction)
+    {
+      try
+      {
+        Transaction.Rollback();
+      }
+      catch
+      {
+      }
+    }
+
+    /// <summary>
     /// Acquires a lock to prevent race conditions.
     /// </summary>
     /// <param name="Lock">Lock object to acquire.</param>
     /// <remarks>The caller is responsible for releasing the lock by calling ReleaseLock.</remarks>
-    public void AcquireLock(string Lock)
+    public void AcquireLock(DatabaseLock Lock)
     {
       log.Trace("(Lock:{0})", Lock);
 
-      Monitor.Enter(Lock);
+      Lock.Lock.Wait();
+
+      log.Trace("(-)");
+    }
+
+
+    /// <summary>
+    /// Asynchronously acquires a lock to prevent race conditions.
+    /// </summary>
+    /// <param name="Lock">Lock object to acquire.</param>
+    /// <remarks>The caller is responsible for releasing the lock by calling ReleaseLock.</remarks>
+    public async Task AcquireLockAsync(DatabaseLock Lock)
+    {
+      log.Trace("(Lock:{0})", Lock);
+
+      await Lock.Lock.WaitAsync();
 
       log.Trace("(-)");
     }
@@ -240,14 +339,30 @@ namespace HomeNet.Data
     /// <summary>
     /// Acquires locks to prevent race conditions.
     /// </summary>
-    /// <param name="Lock">Lock objects to acquire.</param>
+    /// <param name="Locks">Lock objects to acquire.</param>
     /// <remarks>The caller is responsible for releasing the locks by calling ReleaseLock.</remarks>
-    public void AcquireLock(string[] Locks)
+    public void AcquireLock(DatabaseLock[] Locks)
     {
-      log.Trace("(Locks:[{0}])", string.Join(",", Locks));
+      log.Trace("(Locks:[{0}])", string.Join<DatabaseLock>(",", Locks));
 
       for (int i = 0; i < Locks.Length; i++)
-        Monitor.Enter(Locks[i]);
+        Locks[i].Lock.Wait();
+
+      log.Trace("(-)");
+    }
+
+
+    /// <summary>
+    /// Asynchronously acquires locks to prevent race conditions.
+    /// </summary>
+    /// <param name="Locks">Lock objects to acquire.</param>
+    /// <remarks>The caller is responsible for releasing the locks by calling ReleaseLock.</remarks>
+    public async Task AcquireLockAsync(DatabaseLock[] Locks)
+    {
+      log.Trace("(Locks:[{0}])", string.Join<DatabaseLock>(",", Locks));
+
+      for (int i = 0; i < Locks.Length; i++)
+        await Locks[i].Lock.WaitAsync();
 
       log.Trace("(-)");
     }
@@ -257,11 +372,11 @@ namespace HomeNet.Data
     /// Releases an acquired lock.
     /// </summary>
     /// <param name="Lock">Lock object to release.</param>
-    public void ReleaseLock(string Lock)
+    public void ReleaseLock(DatabaseLock Lock)
     {
       log.Trace("(Lock:{0})", Lock);
 
-      Monitor.Exit(Lock);
+      Lock.Lock.Release();
 
       log.Trace("(-)");
     }
@@ -270,13 +385,13 @@ namespace HomeNet.Data
     /// <summary>
     /// Releases acquired locks.
     /// </summary>
-    /// <param name="Lock">Lock objects to release.</param>
-    public void ReleaseLocks(string[] Locks)
+    /// <param name="Locks">Lock objects to release.</param>
+    public void ReleaseLocks(DatabaseLock[] Locks)
     {
-      log.Trace("(Locks:[{0}])", string.Join(",", Locks));
+      log.Trace("(Locks:[{0}])", string.Join<DatabaseLock>(",", Locks));
 
       for (int i = Locks.Length - 1; i >= 0; i++)
-        Monitor.Exit(Locks[i]);
+        Locks[i].Lock.Release();
 
       log.Trace("(-)");
     }

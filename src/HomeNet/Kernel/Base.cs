@@ -12,7 +12,7 @@ namespace HomeNet.Kernel
   /// </summary>
   public static class Base
   {
-    private static NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
+    private static NLog.Logger log = NLog.LogManager.GetLogger("HomeNet.Kernel.Base");
 
     /// <summary>Component manager instance that is used for initialization and shutdown of the components.</summary>
     public static ComponentManager Components;
@@ -34,6 +34,8 @@ namespace HomeNet.Kernel
 
       bool res = false;
 
+      Components = new ComponentManager();
+
       Configuration = new Config.Config();
       ComponentDictionary = new Dictionary<string, Component>()
       {
@@ -48,7 +50,6 @@ namespace HomeNet.Kernel
         ComponentDictionary["Network.Server"],
       };
 
-      Components = new ComponentManager();
       res = Components.Init(componentList);
 
       log.Info("(-):{0}", res);

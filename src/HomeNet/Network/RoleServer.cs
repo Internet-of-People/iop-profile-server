@@ -97,17 +97,8 @@ namespace HomeNet.Network
     };
 
 
-    /// <summary>Cancellation token source for asynchronous tasks that is being triggered when the TCP server is stopped.</summary>
-    private CancellationTokenSource shutdownCancellationTokenSource = new CancellationTokenSource();
-
-    /// <summary>Internal task that completes once shutdownEvent is set.</summary>
-    private Task shutdownTask;
-
-    /// <summary>Internal event that is set when the TCP server shutdown is initiated.</summary>
-    private ManualResetEvent shutdownEvent = new ManualResetEvent(false);
-
-    /// <summary>true if the TCP server was stopped, false otherwise.</summary>
-    private bool isShutdown = false;
+    /// <summary>Shutdown signaling object.</summary>
+    private ComponentShutdown shutdownSignaling;
 
     /// <summary>.NET representation of TCP server.</summary>
     public TcpListener Listener;
@@ -155,19 +146,6 @@ namespace HomeNet.Network
     /// <summary>Thread that is responsible for handling new clients that were accepted by acceptThread.</summary>
     private Thread clientQueueHandlerThread;
 
-    /*
-
-    /// <summary>Lock object for synchronized access to clientList and clientLastId.</summary>
-    private object clientListLock = new object();
-
-    /// <summary>List of server's clients indexed by client ID.</summary>
-    private Dictionary<uint, Client> clientList = new Dictionary<uint, Client>();
-
-    /// <summary>Server assigned client identifier for internal client maintanence purposes.</summary>
-    private uint clientLastId = 0;
-
-      */
-
     /// <summary>List of server's network peers and clients.</summary>
     private ClientList clientList;
 
@@ -199,6 +177,8 @@ namespace HomeNet.Network
     /// <param name="Roles">One or more roles of this server.</param>
     public TcpRoleServer(IPEndPoint EndPoint, bool UseTls, ServerRole Roles)
     {
+      this.shutdownSignaling = new ComponentShutdown(Base.Components.GlobalShutdown);
+
       this.IsRunning = false;
       this.UseTls = UseTls;
       this.Roles = Roles;
@@ -230,8 +210,6 @@ namespace HomeNet.Network
       // Initialize last client ID to have different values for each role server.
       IdBase = ((uint)Roles << 24);
       clientList = new ClientList((ulong)IdBase << 32, logPrefix);
-
-      shutdownTask = WaitHandleExtension.AsTask(shutdownEvent);
     }
 
     /// <summary>
@@ -290,10 +268,7 @@ namespace HomeNet.Network
     {
       log.Info("()");
 
-      isShutdown = true;
-      shutdownEvent.Set();
-      shutdownTask.Wait();
-      shutdownCancellationTokenSource.Cancel();
+      shutdownSignaling.SignalShutdown();
 
       try
       {
@@ -336,14 +311,17 @@ namespace HomeNet.Network
 
       acceptThreadFinished.Reset();
 
-      while (!isShutdown)
+      AutoResetEvent acceptTaskEvent = new AutoResetEvent(false);
+
+      while (!shutdownSignaling.IsShutdown)
       {
         log.Info("Waiting for new client.");
         Task<TcpClient> acceptTask = Listener.AcceptTcpClientAsync();
+        acceptTask.ContinueWith(t => acceptTaskEvent.Set());
 
-        Task[] tasks = new Task[] { acceptTask, shutdownTask };
-        int index = Task.WaitAny(tasks);
-        if (tasks[index] == shutdownTask)
+        WaitHandle[] handles = new WaitHandle[] { acceptTaskEvent, shutdownSignaling.ShutdownEvent };
+        int index = WaitHandle.WaitAny(handles);
+        if (handles[index] == shutdownSignaling.ShutdownEvent)
         {
           log.Info("Shutdown detected.");
           break;
@@ -351,6 +329,7 @@ namespace HomeNet.Network
 
         try
         {
+          // acceptTask is finished here, asking for Result won't block.
           TcpClient client = acceptTask.Result;
           lock (clientQueueLock)
           {
@@ -382,11 +361,11 @@ namespace HomeNet.Network
 
       clientQueueHandlerThreadFinished.Reset();
 
-      while (!isShutdown)
+      while (!shutdownSignaling.IsShutdown)
       {
-        WaitHandle[] handles = new WaitHandle[] { shutdownEvent, clientQueueEvent };
+        WaitHandle[] handles = new WaitHandle[] { clientQueueEvent, shutdownSignaling.ShutdownEvent };
         int index = WaitHandle.WaitAny(handles);
-        if (handles[index] == shutdownEvent)
+        if (handles[index] == shutdownSignaling.ShutdownEvent)
         {
           log.Info("Shutdown detected.");
           break;
@@ -394,7 +373,7 @@ namespace HomeNet.Network
 
         log.Debug("New client in the queue detected, queue count is {0}.", clientQueue.Count);
         bool queueEmpty = false;
-        while (!queueEmpty && !isShutdown)
+        while (!queueEmpty && !shutdownSignaling.IsShutdown)
         {
           TcpClient tcpClient = null;
           lock (clientQueueLock)
@@ -458,7 +437,7 @@ namespace HomeNet.Network
         int messageBytesRead = 0;
 
         bool disconnect = false;
-        while (!isShutdown && !disconnect)
+        while (!shutdownSignaling.IsShutdown && !disconnect)
         {
           Task<int> readTask = null;
           int remain = 0;
@@ -469,14 +448,14 @@ namespace HomeNet.Network
             case ClientStatus.ReadingHeader:
               {
                 remain = ProtocolHelper.HeaderSize - messageHeaderBytesRead;
-                readTask = Client.Stream.ReadAsync(messageHeaderBuffer, messageHeaderBytesRead, remain, shutdownCancellationTokenSource.Token);
+                readTask = Client.Stream.ReadAsync(messageHeaderBuffer, messageHeaderBytesRead, remain, shutdownSignaling.ShutdownCancellationTokenSource.Token);
                 break;
               }
 
             case ClientStatus.ReadingBody:
               {
                 remain = (int)messageSize - messageBytesRead;
-                readTask = Client.Stream.ReadAsync(messageBuffer, messageBytesRead, remain, shutdownCancellationTokenSource.Token);
+                readTask = Client.Stream.ReadAsync(messageBuffer, messageBytesRead, remain, shutdownSignaling.ShutdownCancellationTokenSource.Token);
                 break;
               }
 
@@ -531,7 +510,7 @@ namespace HomeNet.Network
                   clientStatus = ClientStatus.ReadingHeader;
                   messageBytesRead = 0;
                   messageHeaderBytesRead = 0;
-                  log.Debug("Reading of message size {0} completed.", messageSize);
+                  log.Trace("Reading of message size {0} completed.", messageSize);
 
                   await ProcessMessageAsync(messageBuffer, Client);
                 }
@@ -648,7 +627,7 @@ namespace HomeNet.Network
                         break;
 
                       case ConversationRequest.RequestTypeOneofCase.HomeNodeRequest:
-                        responseMessage = ProcessMessageHomeNodeRequestRequest(Client, requestMessage);
+                        responseMessage = await ProcessMessageHomeNodeRequestRequestAsync(Client, requestMessage);
                         break;
 
                       case ConversationRequest.RequestTypeOneofCase.CheckIn:
@@ -656,7 +635,11 @@ namespace HomeNet.Network
                         break;
 
                       case ConversationRequest.RequestTypeOneofCase.UpdateProfile:
-                        responseMessage = ProcessMessageUpdateProfileRequest(Client, requestMessage);
+                        responseMessage = await ProcessMessageUpdateProfileRequestAsync(Client, requestMessage);
+                        break;
+
+                      case ConversationRequest.RequestTypeOneofCase.CancelHomeNodeAgreement:
+                        responseMessage = await ProcessMessageCancelHomeNodeAgreementRequestAsync(Client, requestMessage);
                         break;
 
                       default:
@@ -678,7 +661,7 @@ namespace HomeNet.Network
               {
                 log.Trace("Sending response to client:\n{0}", responseMessage);
                 byte[] responseBytes = ProtocolHelper.GetMessageBytes(responseMessage);
-                Client.Stream.Write(responseBytes, 0, responseBytes.Length);
+                await Client.Stream.WriteAsync(responseBytes, 0, responseBytes.Length);
               }
               catch (IOException)
               {
@@ -948,7 +931,7 @@ namespace HomeNet.Network
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public Message ProcessMessageHomeNodeRequestRequest(Client Client, Message RequestMessage)
+    public async Task<Message> ProcessMessageHomeNodeRequestRequestAsync(Client Client, Message RequestMessage)
     {
 #warning TODO: This function is currently implemented only to ignore contracts.
       // TODO: CHECK CONTRACT:
@@ -971,45 +954,57 @@ namespace HomeNet.Network
       HomeNodeRequestRequest homeNodeRequestRequest = RequestMessage.Request.ConversationRequest.HomeNodeRequest;
       HomeNodePlanContract contract = homeNodeRequestRequest.Contract;
 
+
       bool success = false;
       res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
       using (UnitOfWork unitOfWork = new UnitOfWork())
       {
-        string lockObject = UnitOfWork.HomeIdentityLock;
-        using (IDbContextTransaction transaction = unitOfWork.BeginTransactionWithLock(lockObject))
+        DatabaseLock lockObject = UnitOfWork.HomeIdentityLock;
+        using (IDbContextTransaction transaction = await unitOfWork.BeginTransactionWithLockAsync(lockObject))
         {
           try
           {
             // We need to recheck the number of hosted identities within the transaction.
-            int hostedIdentities = unitOfWork.HomeIdentityRepository.Count(null);
+            int hostedIdentities = await unitOfWork.HomeIdentityRepository.CountAsync(null);
             log.Trace("Currently hosting {0} clients.", hostedIdentities);
             if (hostedIdentities <= Base.Configuration.MaxHostedIdentities)
             {
-              Identity existingIdentity = unitOfWork.HomeIdentityRepository.Get(i => i.IdentityId == Client.IdentityId).FirstOrDefault();
-              if (existingIdentity == null)
+              Identity existingIdentity = (await unitOfWork.HomeIdentityRepository.GetAsync(i => i.IdentityId == Client.IdentityId)).FirstOrDefault();
+              if ((existingIdentity == null) || (existingIdentity.ExpirationDate != null))
               {
-                Identity identity = new Identity()
-                {
-                  IdentityId = Client.IdentityId,
-                  ExtraData = null,
-                  HomeNodeId = new byte[0],
-                  InitialLocationEncoded = 0,
-                  Name = "",
-                  ProfileImage = null,
-                  PublicKey = Client.PublicKey,
-                  ThumbnailImage = null,
-                  Type = "<new>",
-                  Version = new byte[] { 0, 0, 0 }
-                };
+                // We do not have the identity in our client's database,
+                // OR we do have the identity in our client's database, but it's contract has been cancelled.
+                if (existingIdentity != null)
+                  log.Debug("Identity ID '{0}' is already a client of this node, but its contract has been cancelled.", Crypto.ToHex(Client.IdentityId));
 
-                unitOfWork.HomeIdentityRepository.Insert(identity);
-                unitOfWork.SaveThrow();
+                Identity identity = existingIdentity == null ? new Identity() : existingIdentity;
+
+                // We can't change primary identifier in existing entity.
+                if (existingIdentity == null) identity.IdentityId = Client.IdentityId;
+
+                identity.HomeNodeId = new byte[0];
+                identity.PublicKey = Client.PublicKey;
+                identity.Version = new byte[] { 0, 0, 0 };
+                identity.Name = "";
+                identity.Type = "<new>";
+                // Existing cancelled identity profile does not have images, no need to delete anything at this point.
+                identity.ProfileImage = null;
+                identity.ThumbnailImage = null;
+                identity.InitialLocationEncoded = 0;
+                identity.ExtraData = null;
+                identity.ExpirationDate = null;
+
+                if (existingIdentity == null) unitOfWork.HomeIdentityRepository.Insert(identity);
+                else unitOfWork.HomeIdentityRepository.Update(identity);
+
+                await unitOfWork.SaveThrowAsync();
                 transaction.Commit();
                 success = true;
               }
-              else
+              else 
               {
-                log.Debug("Identity ID '{0}' is already client of this node.", Crypto.ToHex(Client.IdentityId));
+                // We have the identity in our client's database with an active contract.
+                log.Debug("Identity ID '{0}' is already a client of this node.", Crypto.ToHex(Client.IdentityId));
                 res = messageBuilder.CreateErrorAlreadyExistsResponse(RequestMessage);
               }
             }
@@ -1027,7 +1022,7 @@ namespace HomeNet.Network
           if (!success)
           {
             log.Warn("Rolling back transaction.");
-            transaction.Rollback();
+            unitOfWork.SafeTransactionRollback(transaction);
           }
 
           unitOfWork.ReleaseLock(lockObject);
@@ -1049,7 +1044,7 @@ namespace HomeNet.Network
 
 
     /// <summary>
-    /// Asynchronously processes CheckInRequest message from client.
+    /// Processes CheckInRequest message from client.
     /// </summary>
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
@@ -1080,7 +1075,7 @@ namespace HomeNet.Network
         {
           try
           {
-            Identity identity = (await unitOfWork.HomeIdentityRepository.GetAsync(i => i.IdentityId == Client.IdentityId)).FirstOrDefault();
+            Identity identity = (await unitOfWork.HomeIdentityRepository.GetAsync(i => (i.IdentityId == Client.IdentityId) && (i.ExpirationDate == null))).FirstOrDefault();
             if (identity != null)
             {
               if (clientList.AddCheckedInClient(Client))
@@ -1088,7 +1083,6 @@ namespace HomeNet.Network
                 Client.ConversationStatus = ClientConversationStatus.Authenticated;
                 success = true;
               }
-              else res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
             }
             else
             {
@@ -1126,7 +1120,7 @@ namespace HomeNet.Network
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public Message ProcessMessageUpdateProfileRequest(Client Client, Message RequestMessage)
+    public async Task<Message> ProcessMessageUpdateProfileRequestAsync(Client Client, Message RequestMessage)
     {
       log.Trace("()");
 
@@ -1144,112 +1138,115 @@ namespace HomeNet.Network
       res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
       using (UnitOfWork unitOfWork = new UnitOfWork())
       {
-        Identity identityForValidation = unitOfWork.HomeIdentityRepository.Get(i => i.IdentityId == Client.IdentityId).FirstOrDefault();
-        if (identityForValidation != null)
+        try
         {
-          Message errorResponse;
-          if (ValidateUpdateProfileRequest(identityForValidation, updateProfileRequest, messageBuilder, RequestMessage, out errorResponse))
+          Identity identityForValidation = (await unitOfWork.HomeIdentityRepository.GetAsync(i => (i.IdentityId == Client.IdentityId) && (i.ExpirationDate == null))).FirstOrDefault();
+          if (identityForValidation != null)
           {
-            // If an identity has a profile image and a thumbnail image, they are saved on the disk.
-            // If we are replacing those images, we have to create new files and delete the old files.
-            // First, we create the new files and then in DB transaction, we get information about 
-            // whether to delete existing files and which ones.
-
-            unitOfWork.Context.Entry(identityForValidation).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
-            Guid? profileImageToDelete = null;
-            Guid? thumbnailImageToDelete = null;
-
-            if (updateProfileRequest.SetImage)
+            Message errorResponse;
+            if (ValidateUpdateProfileRequest(identityForValidation, updateProfileRequest, messageBuilder, RequestMessage, out errorResponse))
             {
-              identityForValidation.ProfileImage = Guid.NewGuid();
-              identityForValidation.ThumbnailImage = Guid.NewGuid();
+              // If an identity has a profile image and a thumbnail image, they are saved on the disk.
+              // If we are replacing those images, we have to create new files and delete the old files.
+              // First, we create the new files and then in DB transaction, we get information about 
+              // whether to delete existing files and which ones.
+#warning TODO: Change this when EF Core 1.1 is out with Reload() method
+              unitOfWork.Context.Entry(identityForValidation).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
+              Guid? profileImageToDelete = null;
+              Guid? thumbnailImageToDelete = null;
 
-              byte[] profileImage = updateProfileRequest.Image.ToByteArray();
-              byte[] thumbnailImage;
-              ProfileImageToThumbnailImage(profileImage, out thumbnailImage);
+              if (updateProfileRequest.SetImage)
+              {
+                identityForValidation.ProfileImage = Guid.NewGuid();
+                identityForValidation.ThumbnailImage = Guid.NewGuid();
 
-              identityForValidation.SaveProfileImageData(profileImage);
-              identityForValidation.SaveThumbnailImageData(thumbnailImage);
-            }
+                byte[] profileImage = updateProfileRequest.Image.ToByteArray();
+                byte[] thumbnailImage;
+                ProfileImageToThumbnailImage(profileImage, out thumbnailImage);
+
+                await identityForValidation.SaveProfileImageDataAsync(profileImage);
+                await identityForValidation.SaveThumbnailImageDataAsync(thumbnailImage);
+              }
 
 
-            string lockObject = UnitOfWork.HomeIdentityLock;
-            using (IDbContextTransaction transaction = unitOfWork.BeginTransactionWithLock(lockObject))
-            {
+              // Update database record.
+              DatabaseLock lockObject = UnitOfWork.HomeIdentityLock;
+              await unitOfWork.AcquireLockAsync(lockObject);
               try
               {
-                Identity identity = unitOfWork.HomeIdentityRepository.Get(i => i.IdentityId == Client.IdentityId).FirstOrDefault();
+                Identity identity = (await unitOfWork.HomeIdentityRepository.GetAsync(i => (i.IdentityId == Client.IdentityId) && (i.ExpirationDate == null))).FirstOrDefault();
 
-                if (updateProfileRequest.SetVersion)
-                  identity.Version = updateProfileRequest.Version.ToByteArray();
-
-                if (updateProfileRequest.SetName)
-                  identity.Name = updateProfileRequest.Name;
-
-                if (updateProfileRequest.SetImage)
+                if (identity != null)
                 {
-                  // Here we replace existing images with new ones
-                  // and we save the old images GUIDs so we can delete them later.
-                  profileImageToDelete = identity.ProfileImage;
-                  thumbnailImageToDelete = identity.ThumbnailImage;
+                  if (updateProfileRequest.SetVersion)
+                    identity.Version = updateProfileRequest.Version.ToByteArray();
 
-                  identity.ProfileImage = identityForValidation.ProfileImage;
-                  identity.ThumbnailImage = identityForValidation.ThumbnailImage;
+                  if (updateProfileRequest.SetName)
+                    identity.Name = updateProfileRequest.Name;
+
+                  if (updateProfileRequest.SetImage)
+                  {
+                    // Here we replace existing images with new ones
+                    // and we save the old images GUIDs so we can delete them later.
+                    profileImageToDelete = identity.ProfileImage;
+                    thumbnailImageToDelete = identity.ThumbnailImage;
+
+                    identity.ProfileImage = identityForValidation.ProfileImage;
+                    identity.ThumbnailImage = identityForValidation.ThumbnailImage;
+                  }
+
+                  if (updateProfileRequest.SetLocation)
+                    identity.InitialLocationEncoded = updateProfileRequest.Location;
+
+                  if (updateProfileRequest.SetExtraData)
+                    identity.ExtraData = updateProfileRequest.ExtraData;
+
+                  unitOfWork.HomeIdentityRepository.Update(identity);
+                  success = await unitOfWork.SaveAsync();
                 }
-
-                if (updateProfileRequest.SetLocation)
-                  identity.InitialLocationEncoded = updateProfileRequest.Location;
-
-                if (updateProfileRequest.SetExtraData)
-                  identity.ExtraData = updateProfileRequest.ExtraData;
-
-                unitOfWork.HomeIdentityRepository.Update(identity);
-                unitOfWork.SaveThrow();
-                transaction.Commit();
-                success = true;
-              }
+                else
+                {
+                  log.Debug("Identity '{0}' is not a client of this node.", Crypto.ToHex(Client.IdentityId));
+                  res = messageBuilder.CreateErrorNotFoundResponse(RequestMessage);
+                }
+              } 
               catch (Exception e)
               {
-                log.Error("Exception occurred: {0}", e.ToString());
+                log.Error("Exception occurred: {0}", e);
               }
-
-              if (!success)
-              {
-                log.Warn("Rolling back transaction.");
-                transaction.Rollback();
-              }
-
               unitOfWork.ReleaseLock(lockObject);
-            }
 
+              if (success)
+              {
+                log.Debug("Identity '{0}' updated its profile in the database.", Crypto.ToHex(Client.IdentityId));
+                res = messageBuilder.CreateUpdateProfileResponse(RequestMessage);
+              }
 
-            // Delete old files, if there are any.
-            if (profileImageToDelete != null)
-            {
-              if (ImageHelper.DeleteImageFile(profileImageToDelete.Value)) log.Trace("Old file of image {0} deleted.", profileImageToDelete.Value);
-              else log.Error("Unable to delete old file of image {0}.", profileImageToDelete.Value);
+              // Delete old files, if there are any.
+              if (profileImageToDelete != null)
+              {
+                if (ImageHelper.DeleteImageFile(profileImageToDelete.Value)) log.Trace("Old file of image {0} deleted.", profileImageToDelete.Value);
+                else log.Error("Unable to delete old file of image {0}.", profileImageToDelete.Value);
+              }
+              if (thumbnailImageToDelete != null)
+              {
+                if (ImageHelper.DeleteImageFile(thumbnailImageToDelete.Value)) log.Trace("Old file of image {0} deleted.", thumbnailImageToDelete.Value);
+                else log.Error("Unable to delete old file of image {0}.", thumbnailImageToDelete.Value);
+              }
             }
-            if (thumbnailImageToDelete != null)
-            {
-              if (ImageHelper.DeleteImageFile(thumbnailImageToDelete.Value)) log.Trace("Old file of image {0} deleted.", thumbnailImageToDelete.Value);
-              else log.Error("Unable to delete old file of image {0}.", thumbnailImageToDelete.Value);
-            }
+            else res = errorResponse;
+          }
+          else
+          {
+            log.Debug("Identity '{0}' is not a client of this node.", Crypto.ToHex(Client.IdentityId));
+            res = messageBuilder.CreateErrorNotFoundResponse(RequestMessage);
           }
         }
-        else
+        catch (Exception e)
         {
-          log.Debug("Identity '{0}' is not a client of this node.", Crypto.ToHex(Client.IdentityId));
-          res = messageBuilder.CreateErrorNotFoundResponse(RequestMessage);
+          log.Error("Exception occurred: {0}", e);
         }
       }
-
-
-      if (success)
-      {
-        log.Debug("Identity '{0}' updated its profile in the database.", Crypto.ToHex(Client.IdentityId));
-        res = messageBuilder.CreateUpdateProfileResponse(RequestMessage);
-      }
-
 
       log.Trace("(-):*.Response.Status={0}", res.Response.Status);
       return res;
@@ -1289,6 +1286,19 @@ namespace HomeNet.Network
 
           log.Debug("Attempt to initialize profile without '{0}' being set.", details);
           ErrorResponse = MessageBuilder.CreateErrorInvalidValueResponse(RequestMessage, details);
+        }
+      }
+      else
+      {
+        // Nothing to update?
+        if (!UpdateProfileRequest.SetVersion
+          && !UpdateProfileRequest.SetName
+          && !UpdateProfileRequest.SetImage
+          && !UpdateProfileRequest.SetLocation
+          && !UpdateProfileRequest.SetExtraData)
+        {
+          log.Debug("Update request updates nothing.");
+          ErrorResponse = MessageBuilder.CreateErrorInvalidValueResponse(RequestMessage, "set*");
         }
       }
 
@@ -1363,6 +1373,110 @@ namespace HomeNet.Network
       return res;
     }
 
+
+    /// <summary>
+    /// Processes CancelHomeNodeAgreementRequest message from client.
+    /// </summary>
+    /// <param name="Client">Client that sent the request.</param>
+    /// <param name="RequestMessage">Full request message.</param>
+    /// <returns>Response message to be sent to the client.</returns>
+    /// <remarks>Cancelling home node agreement causes identity's image files to be deleted. 
+    /// The profile itself is not immediately deleted, but its expiration date is set, 
+    /// which will lead to its deletion. If the home node redirection is installed, the expiration date 
+    /// is set to a later time.</remarks>
+    public async Task<Message> ProcessMessageCancelHomeNodeAgreementRequestAsync(Client Client, Message RequestMessage)
+    {
+      log.Trace("()");
+
+      Message res = null;
+      if (!CheckSessionConditions(Client, RequestMessage, ServerRole.ClientCustomer, ClientConversationStatus.Authenticated, out res))
+      {
+        log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+        return res;
+      }
+
+      MessageBuilder messageBuilder = Client.MessageBuilder;
+      CancelHomeNodeAgreementRequest cancelHomeNodeAgreementRequest = RequestMessage.Request.ConversationRequest.CancelHomeNodeAgreement;
+
+      if (!cancelHomeNodeAgreementRequest.RedirectToNewHomeNode || (cancelHomeNodeAgreementRequest.NewHomeNodeNetworkId.Length == Identity.IdentifierLength))
+      {
+        Guid? profileImageToDelete = null;
+        Guid? thumbnailImageToDelete = null;
+
+        bool success = false;
+        res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
+        using (UnitOfWork unitOfWork = new UnitOfWork())
+        {
+          DatabaseLock lockObject = UnitOfWork.HomeIdentityLock;
+          await unitOfWork.AcquireLockAsync(lockObject);
+          try
+          {
+            Identity identity = (await unitOfWork.HomeIdentityRepository.GetAsync(i => (i.IdentityId == Client.IdentityId) && (i.ExpirationDate == null))).FirstOrDefault();
+            if (identity != null)
+            {
+              profileImageToDelete = identity.ProfileImage;
+              thumbnailImageToDelete = identity.ThumbnailImage;
+
+              if (cancelHomeNodeAgreementRequest.RedirectToNewHomeNode)
+              {
+                // The customer cancelled the contract, but left a redirect, which we will maintain for 14 days.
+                identity.ExpirationDate = DateTime.UtcNow.AddDays(14);
+                identity.HomeNodeId = cancelHomeNodeAgreementRequest.NewHomeNodeNetworkId.ToByteArray();
+              }
+              else
+              {
+                // The customer cancelled the contract, no redirect is being maintained, we can delete the record at any time.
+                identity.ExpirationDate = DateTime.UtcNow;
+              }
+
+              unitOfWork.HomeIdentityRepository.Update(identity);
+              success = await unitOfWork.SaveAsync();
+            }
+            else
+            {
+              log.Debug("Identity '{0}' is not a client of this node.", Crypto.ToHex(Client.IdentityId));
+              res = messageBuilder.CreateErrorNotFoundResponse(RequestMessage);
+            }
+          }
+          catch (Exception e)
+          {
+            log.Error("Exception occurred: {0}", e);
+
+          }
+          unitOfWork.ReleaseLock(lockObject);
+
+          if (success)
+          {
+            if (cancelHomeNodeAgreementRequest.RedirectToNewHomeNode) log.Debug("Identity '{0}' home node agreement cancelled and redirection set to node '{1}'.", Crypto.ToHex(Client.IdentityId), Crypto.ToHex(cancelHomeNodeAgreementRequest.NewHomeNodeNetworkId.ToByteArray()));
+            else log.Debug("Identity '{0}' home node agreement cancelled and no redirection set.", Crypto.ToHex(Client.IdentityId));
+
+            res = messageBuilder.CreateCancelHomeNodeAgreementResponse(RequestMessage);
+          }
+        }
+
+        // Delete old files, if there are any.
+        if (profileImageToDelete != null)
+        {
+          if (ImageHelper.DeleteImageFile(profileImageToDelete.Value)) log.Trace("Old file of image {0} deleted.", profileImageToDelete.Value);
+          else log.Error("Unable to delete old file of image {0}.", profileImageToDelete.Value);
+        }
+        if (thumbnailImageToDelete != null)
+        {
+          if (ImageHelper.DeleteImageFile(thumbnailImageToDelete.Value)) log.Trace("Old file of image {0} deleted.", thumbnailImageToDelete.Value);
+          else log.Error("Unable to delete old file of image {0}.", thumbnailImageToDelete.Value);
+        }
+      }
+      else
+      {
+        log.Debug("Invalid home node identifier '{0}'.", Crypto.ToHex(cancelHomeNodeAgreementRequest.NewHomeNodeNetworkId.ToByteArray()));
+        res = messageBuilder.CreateErrorInvalidValueResponse(RequestMessage, "newHomeNodeNetworkId");
+      }
+
+      log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+      return res;
+    }
+
+
     /// <summary>
     /// Checks whether binary data represent a valid PNG or JPEG image.
     /// </summary>
@@ -1371,7 +1485,7 @@ namespace HomeNet.Network
     public bool ValidateImageFormat(byte[] Data)
     {
       log.Trace("(Data.Length:{0})", Data.Length);
-#warning TODO: This function currently does nothing.
+#warning TODO: This function currently does nothing, waiting for some libraries to be released.
       // TODO: 
       // * check image is valid PNG or JPEG format
       // * waiting for https://github.com/JimBobSquarePants/ImageProcessor/ to release
@@ -1394,7 +1508,7 @@ namespace HomeNet.Network
     {
       log.Trace("(ProfileImage.Length:{0})", ProfileImage.Length);
 
-#warning TODO: This function currently does nothing.
+#warning TODO: This function currently does nothing, waiting for some libraries to be released.
       // TODO: 
       // * check if ProfileImage is small enough to represent thumbnail image without changes
       // * if it is too big, check if it is PNG or JPEG
