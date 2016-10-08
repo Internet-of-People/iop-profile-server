@@ -19,7 +19,7 @@ namespace HomeNet.Data
     /// <summary>Access to node's settings in the database.</summary>
     public DbSet<Setting> Settings { get; set; }
 
-    /// <summary>Access to IoP identities in the database.</summary>
+    /// <summary>Access to IoP identities, for which the node acts as a home node, in the database.</summary>
     public DbSet<Identity> Identities { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -30,7 +30,7 @@ namespace HomeNet.Data
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
       modelBuilder.Entity<Identity>()
-          .HasIndex(i => new { i.IdentityId, i.HomeNodeId, i.Name, i.Type, i.ExtraData });
+          .HasIndex(i => new { i.IdentityId, i.HomeNodeId, i.Name, i.Type, i.ExtraData, i.ExpirationDate });
     }
   }
 }

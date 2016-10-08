@@ -35,70 +35,134 @@ namespace Iop.Homenode {
             "IAEoEhIPCgdkZXRhaWxzGAMgASgJEjYKDnNpbmdsZVJlc3BvbnNlGAggASgL",
             "MhwuaW9wLmhvbWVub2RlLlNpbmdsZVJlc3BvbnNlSAASQgoUY29udmVyc2F0",
             "aW9uUmVzcG9uc2UYCSABKAsyIi5pb3AuaG9tZW5vZGUuQ29udmVyc2F0aW9u",
-            "UmVzcG9uc2VIAEISChBDb252ZXJzYXRpb25UeXBlItQBCg1TaW5nbGVSZXF1",
+            "UmVzcG9uc2VIAEISChBDb252ZXJzYXRpb25UeXBlIocECg1TaW5nbGVSZXF1",
             "ZXN0Eg8KB3ZlcnNpb24YASABKAwSKQoEcGluZxgCIAEoCzIZLmlvcC5ob21l",
             "bm9kZS5QaW5nUmVxdWVzdEgAEjMKCWxpc3RSb2xlcxgDIAEoCzIeLmlvcC5o",
             "b21lbm9kZS5MaXN0Um9sZXNSZXF1ZXN0SAASQwoRbGlzdEhvbWVOb2RlUGxh",
             "bnMYBCABKAsyJi5pb3AuaG9tZW5vZGUuTGlzdEhvbWVOb2RlUGxhbnNSZXF1",
-            "ZXN0SABCDQoLUmVxdWVzdFR5cGUi2QEKDlNpbmdsZVJlc3BvbnNlEg8KB3Zl",
-            "cnNpb24YASABKAwSKgoEcGluZxgCIAEoCzIaLmlvcC5ob21lbm9kZS5QaW5n",
-            "UmVzcG9uc2VIABI0CglsaXN0Um9sZXMYAyABKAsyHy5pb3AuaG9tZW5vZGUu",
-            "TGlzdFJvbGVzUmVzcG9uc2VIABJEChFsaXN0SG9tZU5vZGVQbGFucxgEIAEo",
-            "CzInLmlvcC5ob21lbm9kZS5MaXN0SG9tZU5vZGVQbGFuc1Jlc3BvbnNlSABC",
-            "DgoMUmVzcG9uc2VUeXBlIp8CChNDb252ZXJzYXRpb25SZXF1ZXN0EhEKCXNp",
-            "Z25hdHVyZRgBIAEoDBI3CgVzdGFydBgCIAEoCzImLmlvcC5ob21lbm9kZS5T",
-            "dGFydENvbnZlcnNhdGlvblJlcXVlc3RIABI/Cg9ob21lTm9kZVJlcXVlc3QY",
-            "AyABKAsyJC5pb3AuaG9tZW5vZGUuSG9tZU5vZGVSZXF1ZXN0UmVxdWVzdEgA",
-            "Ei8KB2NoZWNrSW4YBCABKAsyHC5pb3AuaG9tZW5vZGUuQ2hlY2tJblJlcXVl",
-            "c3RIABI7Cg11cGRhdGVQcm9maWxlGAUgASgLMiIuaW9wLmhvbWVub2RlLlVw",
-            "ZGF0ZVByb2ZpbGVSZXF1ZXN0SABCDQoLUmVxdWVzdFR5cGUipAIKFENvbnZl",
-            "cnNhdGlvblJlc3BvbnNlEhEKCXNpZ25hdHVyZRgBIAEoDBI4CgVzdGFydBgC",
-            "IAEoCzInLmlvcC5ob21lbm9kZS5TdGFydENvbnZlcnNhdGlvblJlc3BvbnNl",
-            "SAASQAoPaG9tZU5vZGVSZXF1ZXN0GAMgASgLMiUuaW9wLmhvbWVub2RlLkhv",
-            "bWVOb2RlUmVxdWVzdFJlc3BvbnNlSAASMAoHY2hlY2tJbhgEIAEoCzIdLmlv",
-            "cC5ob21lbm9kZS5DaGVja0luUmVzcG9uc2VIABI8Cg11cGRhdGVQcm9maWxl",
-            "GAUgASgLMiMuaW9wLmhvbWVub2RlLlVwZGF0ZVByb2ZpbGVSZXNwb25zZUgA",
-            "Qg0KC1JlcXVlc3RUeXBlIh4KC1BpbmdSZXF1ZXN0Eg8KB3BheWxvYWQYASAB",
-            "KAwiLgoMUGluZ1Jlc3BvbnNlEg8KB3BheWxvYWQYASABKAwSDQoFY2xvY2sY",
-            "AiABKBIiEgoQTGlzdFJvbGVzUmVxdWVzdCI7ChFMaXN0Um9sZXNSZXNwb25z",
-            "ZRImCgRyb2xlGAEgAygLMhguaW9wLmhvbWVub2RlLlNlcnZlclJvbGUiZAoK",
-            "U2VydmVyUm9sZRIqCgRyb2xlGAEgASgOMhwuaW9wLmhvbWVub2RlLlNlcnZl",
-            "clJvbGVUeXBlEgwKBHBvcnQYAiABKA0SDQoFaXNUY3AYAyABKAgSDQoFaXNU",
-            "bHMYBCABKAgiMAoYTGlzdEhvbWVOb2RlUGxhbnNSZXF1ZXN0EhQKDGlkZW50",
-            "aXR5VHlwZRgBIAEoCSJGChlMaXN0SG9tZU5vZGVQbGFuc1Jlc3BvbnNlEikK",
-            "BXBsYW5zGAEgAygLMhouaW9wLmhvbWVub2RlLkhvbWVOb2RlUGxhbiKaAQoM",
-            "SG9tZU5vZGVQbGFuEg4KBnBsYW5JZBgBIAEoDBIUCgxpZGVudGl0eVR5cGUY",
-            "AiABKAkSCwoDZmVlGAMgASgEEhwKFGJpbGxpbmdQZXJpb2RTZWNvbmRzGAQg",
-            "ASgNEjkKDnBsYW5QYXJhbWV0ZXJzGAkgAygLMiEuaW9wLmhvbWVub2RlLk5h",
-            "bWVTdHJpbmdWYWx1ZVBhaXIiMgoTTmFtZVN0cmluZ1ZhbHVlUGFpchIMCgRu",
-            "YW1lGAEgASgJEg0KBXZhbHVlGAIgASgJIkgKGFN0YXJ0Q29udmVyc2F0aW9u",
-            "UmVxdWVzdBIZChFzdXBwb3J0ZWRWZXJzaW9ucxgBIAMoDBIRCglwdWJsaWNL",
-            "ZXkYAiABKAwiUgoZU3RhcnRDb252ZXJzYXRpb25SZXNwb25zZRIPCgd2ZXJz",
-            "aW9uGAEgASgMEhEKCXB1YmxpY0tleRgCIAEoDBIRCgljaGFsbGVuZ2UYAyAB",
-            "KAwiTgoWSG9tZU5vZGVSZXF1ZXN0UmVxdWVzdBI0Cghjb250cmFjdBgBIAEo",
-            "CzIiLmlvcC5ob21lbm9kZS5Ib21lTm9kZVBsYW5Db250cmFjdCJPChdIb21l",
-            "Tm9kZVJlcXVlc3RSZXNwb25zZRI0Cghjb250cmFjdBgBIAEoCzIiLmlvcC5o",
-            "b21lbm9kZS5Ib21lTm9kZVBsYW5Db250cmFjdCKFAQoUSG9tZU5vZGVQbGFu",
-            "Q29udHJhY3QSKAoEcGxhbhgBIAEoCzIaLmlvcC5ob21lbm9kZS5Ib21lTm9k",
-            "ZVBsYW4SFQoNbm9kZVB1YmxpY0tleRgCIAEoDBIZChFpZGVudGl0eVB1Ymxp",
-            "Y0tleRgDIAEoDBIRCglzdGFydFRpbWUYBCABKBIiIwoOQ2hlY2tJblJlcXVl",
-            "c3QSEQoJY2hhbGxlbmdlGAEgASgMIhEKD0NoZWNrSW5SZXNwb25zZSLLAQoU",
-            "VXBkYXRlUHJvZmlsZVJlcXVlc3QSEgoKc2V0VmVyc2lvbhgBIAEoCBIPCgdz",
-            "ZXROYW1lGAIgASgIEhAKCHNldEltYWdlGAMgASgIEhMKC3NldExvY2F0aW9u",
-            "GAQgASgIEhQKDHNldEV4dHJhRGF0YRgFIAEoCBIPCgd2ZXJzaW9uGAggASgM",
-            "EgwKBG5hbWUYCSABKAkSDQoFaW1hZ2UYCiABKAwSEAoIbG9jYXRpb24YCyAB",
-            "KAcSEQoJZXh0cmFEYXRhGAwgASgJIhcKFVVwZGF0ZVByb2ZpbGVSZXNwb25z",
-            "ZSrQAgoGU3RhdHVzEg0KCVNUQVRVU19PSxAAEhwKGEVSUk9SX1BST1RPQ09M",
-            "X1ZJT0xBVElPThABEhUKEUVSUk9SX1VOU1VQUE9SVEVEEAISEAoMRVJST1Jf",
-            "QkFOTkVEEAMSDgoKRVJST1JfQlVTWRAEEhYKEkVSUk9SX1VOQVVUSE9SSVpF",
-            "RBAFEhIKDkVSUk9SX0JBRF9ST0xFEAYSIQodRVJST1JfQkFEX0NPTlZFUlNB",
-            "VElPTl9TVEFUVVMQBxISCg5FUlJPUl9JTlRFUk5BTBAIEhgKFEVSUk9SX1FV",
-            "T1RBX0VYQ0VFREVEEDMSGwoXRVJST1JfSU5WQUxJRF9TSUdOQVRVUkUQNBIT",
-            "Cg9FUlJPUl9OT1RfRk9VTkQQNRIXChNFUlJPUl9JTlZBTElEX1ZBTFVFEDYS",
-            "GAoURVJST1JfQUxSRUFEWV9FWElTVFMQNypmCg5TZXJ2ZXJSb2xlVHlwZRIL",
-            "CgdQUklNQVJZEAASDwoLTkRfTkVJR0hCT1IQARIQCgxORF9DT0xMRUFHVUUQ",
-            "AhITCg9DTF9OT05fQ1VTVE9NRVIQAxIPCgtDTF9DVVNUT01FUhAEYgZwcm90",
-            "bzM="));
+            "ZXN0SAASWQocZ2V0SWRlbnRpdHlPbmxpbmVJbmZvcm1hdGlvbhgFIAEoCzIx",
+            "LmlvcC5ob21lbm9kZS5HZXRJZGVudGl0eU9ubGluZUluZm9ybWF0aW9uUmVx",
+            "dWVzdEgAElsKHWFwcGxpY2F0aW9uU2VydmljZVNlbmRNZXNzYWdlGAYgASgL",
+            "MjIuaW9wLmhvbWVub2RlLkFwcGxpY2F0aW9uU2VydmljZVNlbmRNZXNzYWdl",
+            "UmVxdWVzdEgAEnkKLGFwcGxpY2F0aW9uU2VydmljZVJlY2VpdmVNZXNzYWdl",
+            "Tm90aWZpY2F0aW9uGAcgASgLMkEuaW9wLmhvbWVub2RlLkFwcGxpY2F0aW9u",
+            "U2VydmljZVJlY2VpdmVNZXNzYWdlTm90aWZpY2F0aW9uUmVxdWVzdEgAQg0K",
+            "C1JlcXVlc3RUeXBlIo8ECg5TaW5nbGVSZXNwb25zZRIPCgd2ZXJzaW9uGAEg",
+            "ASgMEioKBHBpbmcYAiABKAsyGi5pb3AuaG9tZW5vZGUuUGluZ1Jlc3BvbnNl",
+            "SAASNAoJbGlzdFJvbGVzGAMgASgLMh8uaW9wLmhvbWVub2RlLkxpc3RSb2xl",
+            "c1Jlc3BvbnNlSAASRAoRbGlzdEhvbWVOb2RlUGxhbnMYBCABKAsyJy5pb3Au",
+            "aG9tZW5vZGUuTGlzdEhvbWVOb2RlUGxhbnNSZXNwb25zZUgAEloKHGdldElk",
+            "ZW50aXR5T25saW5lSW5mb3JtYXRpb24YBSABKAsyMi5pb3AuaG9tZW5vZGUu",
+            "R2V0SWRlbnRpdHlPbmxpbmVJbmZvcm1hdGlvblJlc3BvbnNlSAASXAodYXBw",
+            "bGljYXRpb25TZXJ2aWNlU2VuZE1lc3NhZ2UYBiABKAsyMy5pb3AuaG9tZW5v",
+            "ZGUuQXBwbGljYXRpb25TZXJ2aWNlU2VuZE1lc3NhZ2VSZXNwb25zZUgAEnoK",
+            "LGFwcGxpY2F0aW9uU2VydmljZVJlY2VpdmVNZXNzYWdlTm90aWZpY2F0aW9u",
+            "GAcgASgLMkIuaW9wLmhvbWVub2RlLkFwcGxpY2F0aW9uU2VydmljZVJlY2Vp",
+            "dmVNZXNzYWdlTm90aWZpY2F0aW9uUmVzcG9uc2VIAEIOCgxSZXNwb25zZVR5",
+            "cGUigQYKE0NvbnZlcnNhdGlvblJlcXVlc3QSEQoJc2lnbmF0dXJlGAEgASgM",
+            "EjcKBXN0YXJ0GAIgASgLMiYuaW9wLmhvbWVub2RlLlN0YXJ0Q29udmVyc2F0",
+            "aW9uUmVxdWVzdEgAEj8KD2hvbWVOb2RlUmVxdWVzdBgDIAEoCzIkLmlvcC5o",
+            "b21lbm9kZS5Ib21lTm9kZVJlcXVlc3RSZXF1ZXN0SAASLwoHY2hlY2tJbhgE",
+            "IAEoCzIcLmlvcC5ob21lbm9kZS5DaGVja0luUmVxdWVzdEgAEj0KDnZlcmlm",
+            "eUlkZW50aXR5GAUgASgLMiMuaW9wLmhvbWVub2RlLlZlcmlmeUlkZW50aXR5",
+            "UmVxdWVzdEgAEjsKDXVwZGF0ZVByb2ZpbGUYBiABKAsyIi5pb3AuaG9tZW5v",
+            "ZGUuVXBkYXRlUHJvZmlsZVJlcXVlc3RIABJPChdjYW5jZWxIb21lTm9kZUFn",
+            "cmVlbWVudBgHIAEoCzIsLmlvcC5ob21lbm9kZS5DYW5jZWxIb21lTm9kZUFn",
+            "cmVlbWVudFJlcXVlc3RIABJLChVhcHBsaWNhdGlvblNlcnZpY2VBZGQYCCAB",
+            "KAsyKi5pb3AuaG9tZW5vZGUuQXBwbGljYXRpb25TZXJ2aWNlQWRkUmVxdWVz",
+            "dEgAElEKGGFwcGxpY2F0aW9uU2VydmljZVJlbW92ZRgJIAEoCzItLmlvcC5o",
+            "b21lbm9kZS5BcHBsaWNhdGlvblNlcnZpY2VSZW1vdmVSZXF1ZXN0SAASXQoe",
+            "Y2FsbElkZW50aXR5QXBwbGljYXRpb25TZXJ2aWNlGAogASgLMjMuaW9wLmhv",
+            "bWVub2RlLkNhbGxJZGVudGl0eUFwcGxpY2F0aW9uU2VydmljZVJlcXVlc3RI",
+            "ABJRChhpbmNvbWluZ0NhbGxOb3RpZmljYXRpb24YCyABKAsyLS5pb3AuaG9t",
+            "ZW5vZGUuSW5jb21pbmdDYWxsTm90aWZpY2F0aW9uUmVxdWVzdEgAQg0KC1Jl",
+            "cXVlc3RUeXBlIowGChRDb252ZXJzYXRpb25SZXNwb25zZRIRCglzaWduYXR1",
+            "cmUYASABKAwSOAoFc3RhcnQYAiABKAsyJy5pb3AuaG9tZW5vZGUuU3RhcnRD",
+            "b252ZXJzYXRpb25SZXNwb25zZUgAEkAKD2hvbWVOb2RlUmVxdWVzdBgDIAEo",
+            "CzIlLmlvcC5ob21lbm9kZS5Ib21lTm9kZVJlcXVlc3RSZXNwb25zZUgAEjAK",
+            "B2NoZWNrSW4YBCABKAsyHS5pb3AuaG9tZW5vZGUuQ2hlY2tJblJlc3BvbnNl",
+            "SAASPgoOdmVyaWZ5SWRlbnRpdHkYBSABKAsyJC5pb3AuaG9tZW5vZGUuVmVy",
+            "aWZ5SWRlbnRpdHlSZXNwb25zZUgAEjwKDXVwZGF0ZVByb2ZpbGUYBiABKAsy",
+            "Iy5pb3AuaG9tZW5vZGUuVXBkYXRlUHJvZmlsZVJlc3BvbnNlSAASUAoXY2Fu",
+            "Y2VsSG9tZU5vZGVBZ3JlZW1lbnQYByABKAsyLS5pb3AuaG9tZW5vZGUuQ2Fu",
+            "Y2VsSG9tZU5vZGVBZ3JlZW1lbnRSZXNwb25zZUgAEkwKFWFwcGxpY2F0aW9u",
+            "U2VydmljZUFkZBgIIAEoCzIrLmlvcC5ob21lbm9kZS5BcHBsaWNhdGlvblNl",
+            "cnZpY2VBZGRSZXNwb25zZUgAElIKGGFwcGxpY2F0aW9uU2VydmljZVJlbW92",
+            "ZRgJIAEoCzIuLmlvcC5ob21lbm9kZS5BcHBsaWNhdGlvblNlcnZpY2VSZW1v",
+            "dmVSZXNwb25zZUgAEl4KHmNhbGxJZGVudGl0eUFwcGxpY2F0aW9uU2Vydmlj",
+            "ZRgKIAEoCzI0LmlvcC5ob21lbm9kZS5DYWxsSWRlbnRpdHlBcHBsaWNhdGlv",
+            "blNlcnZpY2VSZXNwb25zZUgAElIKGGluY29taW5nQ2FsbE5vdGlmaWNhdGlv",
+            "bhgLIAEoCzIuLmlvcC5ob21lbm9kZS5JbmNvbWluZ0NhbGxOb3RpZmljYXRp",
+            "b25SZXNwb25zZUgAQg0KC1JlcXVlc3RUeXBlIh4KC1BpbmdSZXF1ZXN0Eg8K",
+            "B3BheWxvYWQYASABKAwiLgoMUGluZ1Jlc3BvbnNlEg8KB3BheWxvYWQYASAB",
+            "KAwSDQoFY2xvY2sYAiABKBIiEgoQTGlzdFJvbGVzUmVxdWVzdCI7ChFMaXN0",
+            "Um9sZXNSZXNwb25zZRImCgRyb2xlGAEgAygLMhguaW9wLmhvbWVub2RlLlNl",
+            "cnZlclJvbGUiZAoKU2VydmVyUm9sZRIqCgRyb2xlGAEgASgOMhwuaW9wLmhv",
+            "bWVub2RlLlNlcnZlclJvbGVUeXBlEgwKBHBvcnQYAiABKA0SDQoFaXNUY3AY",
+            "AyABKAgSDQoFaXNUbHMYBCABKAgiMAoYTGlzdEhvbWVOb2RlUGxhbnNSZXF1",
+            "ZXN0EhQKDGlkZW50aXR5VHlwZRgBIAEoCSJGChlMaXN0SG9tZU5vZGVQbGFu",
+            "c1Jlc3BvbnNlEikKBXBsYW5zGAEgAygLMhouaW9wLmhvbWVub2RlLkhvbWVO",
+            "b2RlUGxhbiKaAQoMSG9tZU5vZGVQbGFuEg4KBnBsYW5JZBgBIAEoDBIUCgxp",
+            "ZGVudGl0eVR5cGUYAiABKAkSCwoDZmVlGAMgASgEEhwKFGJpbGxpbmdQZXJp",
+            "b2RTZWNvbmRzGAQgASgNEjkKDnBsYW5QYXJhbWV0ZXJzGAkgAygLMiEuaW9w",
+            "LmhvbWVub2RlLk5hbWVTdHJpbmdWYWx1ZVBhaXIiMgoTTmFtZVN0cmluZ1Zh",
+            "bHVlUGFpchIMCgRuYW1lGAEgASgJEg0KBXZhbHVlGAIgASgJIkgKGFN0YXJ0",
+            "Q29udmVyc2F0aW9uUmVxdWVzdBIZChFzdXBwb3J0ZWRWZXJzaW9ucxgBIAMo",
+            "DBIRCglwdWJsaWNLZXkYAiABKAwiUgoZU3RhcnRDb252ZXJzYXRpb25SZXNw",
+            "b25zZRIPCgd2ZXJzaW9uGAEgASgMEhEKCXB1YmxpY0tleRgCIAEoDBIRCglj",
+            "aGFsbGVuZ2UYAyABKAwiTgoWSG9tZU5vZGVSZXF1ZXN0UmVxdWVzdBI0Cghj",
+            "b250cmFjdBgBIAEoCzIiLmlvcC5ob21lbm9kZS5Ib21lTm9kZVBsYW5Db250",
+            "cmFjdCJPChdIb21lTm9kZVJlcXVlc3RSZXNwb25zZRI0Cghjb250cmFjdBgB",
+            "IAEoCzIiLmlvcC5ob21lbm9kZS5Ib21lTm9kZVBsYW5Db250cmFjdCKFAQoU",
+            "SG9tZU5vZGVQbGFuQ29udHJhY3QSKAoEcGxhbhgBIAEoCzIaLmlvcC5ob21l",
+            "bm9kZS5Ib21lTm9kZVBsYW4SFQoNbm9kZVB1YmxpY0tleRgCIAEoDBIZChFp",
+            "ZGVudGl0eVB1YmxpY0tleRgDIAEoDBIRCglzdGFydFRpbWUYBCABKBIiIwoO",
+            "Q2hlY2tJblJlcXVlc3QSEQoJY2hhbGxlbmdlGAEgASgMIhEKD0NoZWNrSW5S",
+            "ZXNwb25zZSIqChVWZXJpZnlJZGVudGl0eVJlcXVlc3QSEQoJY2hhbGxlbmdl",
+            "GAEgASgMIhgKFlZlcmlmeUlkZW50aXR5UmVzcG9uc2UiywEKFFVwZGF0ZVBy",
+            "b2ZpbGVSZXF1ZXN0EhIKCnNldFZlcnNpb24YASABKAgSDwoHc2V0TmFtZRgC",
+            "IAEoCBIQCghzZXRJbWFnZRgDIAEoCBITCgtzZXRMb2NhdGlvbhgEIAEoCBIU",
+            "CgxzZXRFeHRyYURhdGEYBSABKAgSDwoHdmVyc2lvbhgIIAEoDBIMCgRuYW1l",
+            "GAkgASgJEg0KBWltYWdlGAogASgMEhAKCGxvY2F0aW9uGAsgASgHEhEKCWV4",
+            "dHJhRGF0YRgMIAEoCSIXChVVcGRhdGVQcm9maWxlUmVzcG9uc2UiXQoeQ2Fu",
+            "Y2VsSG9tZU5vZGVBZ3JlZW1lbnRSZXF1ZXN0Eh0KFXJlZGlyZWN0VG9OZXdI",
+            "b21lTm9kZRgBIAEoCBIcChRuZXdIb21lTm9kZU5ldHdvcmtJZBgCIAEoDCIh",
+            "Ch9DYW5jZWxIb21lTm9kZUFncmVlbWVudFJlc3BvbnNlIjQKHEFwcGxpY2F0",
+            "aW9uU2VydmljZUFkZFJlcXVlc3QSFAoMc2VydmljZU5hbWVzGAEgAygJIh8K",
+            "HUFwcGxpY2F0aW9uU2VydmljZUFkZFJlc3BvbnNlIjYKH0FwcGxpY2F0aW9u",
+            "U2VydmljZVJlbW92ZVJlcXVlc3QSEwoLc2VydmljZU5hbWUYASABKAkiIgog",
+            "QXBwbGljYXRpb25TZXJ2aWNlUmVtb3ZlUmVzcG9uc2UioAEKI0dldElkZW50",
+            "aXR5T25saW5lSW5mb3JtYXRpb25SZXF1ZXN0EhkKEWlkZW50aXR5TmV0d29y",
+            "a0lkGAEgASgMEhsKE2luY2x1ZGVQcm9maWxlSW1hZ2UYAiABKAgSHQoVaW5j",
+            "bHVkZVRodW1ibmFpbEltYWdlGAMgASgIEiIKGmluY2x1ZGVBcHBsaWNhdGlv",
+            "blNlcnZpY2VzGAQgASgIIr8BCiRHZXRJZGVudGl0eU9ubGluZUluZm9ybWF0",
+            "aW9uUmVzcG9uc2USEAoIaXNPbmxpbmUYASABKAgSGQoRaWRlbnRpdHlQdWJs",
+            "aWNLZXkYAiABKAwSDAoEbmFtZRgDIAEoCRIRCglleHRyYURhdGEYBCABKAkS",
+            "FAoMcHJvZmlsZUltYWdlGAUgASgMEhYKDnRodW1ibmFpbEltYWdlGAYgASgM",
+            "EhsKE2FwcGxpY2F0aW9uU2VydmljZXMYCiADKAkiVwolQ2FsbElkZW50aXR5",
+            "QXBwbGljYXRpb25TZXJ2aWNlUmVxdWVzdBIZChFpZGVudGl0eU5ldHdvcmtJ",
+            "ZBgBIAEoDBITCgtzZXJ2aWNlTmFtZRgCIAEoCSI9CiZDYWxsSWRlbnRpdHlB",
+            "cHBsaWNhdGlvblNlcnZpY2VSZXNwb25zZRITCgtjYWxsZXJUb2tlbhgBIAEo",
+            "DCJkCh9JbmNvbWluZ0NhbGxOb3RpZmljYXRpb25SZXF1ZXN0EhcKD2NhbGxl",
+            "clB1YmxpY0tleRgBIAEoDBITCgtzZXJ2aWNlTmFtZRgCIAEoCRITCgtjYWxs",
+            "ZWVUb2tlbhgDIAEoDCIiCiBJbmNvbWluZ0NhbGxOb3RpZmljYXRpb25SZXNw",
+            "b25zZSJGCiRBcHBsaWNhdGlvblNlcnZpY2VTZW5kTWVzc2FnZVJlcXVlc3QS",
+            "DQoFdG9rZW4YASABKAwSDwoHbWVzc2FnZRgCIAEoDCInCiVBcHBsaWNhdGlv",
+            "blNlcnZpY2VTZW5kTWVzc2FnZVJlc3BvbnNlIkYKM0FwcGxpY2F0aW9uU2Vy",
+            "dmljZVJlY2VpdmVNZXNzYWdlTm90aWZpY2F0aW9uUmVxdWVzdBIPCgdtZXNz",
+            "YWdlGAEgASgMIjYKNEFwcGxpY2F0aW9uU2VydmljZVJlY2VpdmVNZXNzYWdl",
+            "Tm90aWZpY2F0aW9uUmVzcG9uc2Uq/QIKBlN0YXR1cxINCglTVEFUVVNfT0sQ",
+            "ABIcChhFUlJPUl9QUk9UT0NPTF9WSU9MQVRJT04QARIVChFFUlJPUl9VTlNV",
+            "UFBPUlRFRBACEhAKDEVSUk9SX0JBTk5FRBADEg4KCkVSUk9SX0JVU1kQBBIW",
+            "ChJFUlJPUl9VTkFVVEhPUklaRUQQBRISCg5FUlJPUl9CQURfUk9MRRAGEiEK",
+            "HUVSUk9SX0JBRF9DT05WRVJTQVRJT05fU1RBVFVTEAcSEgoORVJST1JfSU5U",
+            "RVJOQUwQCBIYChRFUlJPUl9RVU9UQV9FWENFRURFRBAzEhsKF0VSUk9SX0lO",
+            "VkFMSURfU0lHTkFUVVJFEDQSEwoPRVJST1JfTk9UX0ZPVU5EEDUSFwoTRVJS",
+            "T1JfSU5WQUxJRF9WQUxVRRA2EhgKFEVSUk9SX0FMUkVBRFlfRVhJU1RTEDcS",
+            "FwoTRVJST1JfTk9UX0FWQUlMQUJMRRA4EhIKDkVSUk9SX1JFSkVDVEVEEDkq",
+            "ZgoOU2VydmVyUm9sZVR5cGUSCwoHUFJJTUFSWRAAEg8KC05EX05FSUdIQk9S",
+            "EAESEAoMTkRfQ09MTEVBR1VFEAISEwoPQ0xfTk9OX0NVU1RPTUVSEAMSDwoL",
+            "Q0xfQ1VTVE9NRVIQBGIGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Iop.Homenode.Status), typeof(global::Iop.Homenode.ServerRoleType), }, new pbr::GeneratedClrTypeInfo[] {
@@ -106,10 +170,10 @@ namespace Iop.Homenode {
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.Message), global::Iop.Homenode.Message.Parser, new[]{ "Id", "Request", "Response" }, new[]{ "MessageType" }, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.Request), global::Iop.Homenode.Request.Parser, new[]{ "SingleRequest", "ConversationRequest" }, new[]{ "ConversationType" }, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.Response), global::Iop.Homenode.Response.Parser, new[]{ "Status", "Timestamp", "Details", "SingleResponse", "ConversationResponse" }, new[]{ "ConversationType" }, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.SingleRequest), global::Iop.Homenode.SingleRequest.Parser, new[]{ "Version", "Ping", "ListRoles", "ListHomeNodePlans" }, new[]{ "RequestType" }, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.SingleResponse), global::Iop.Homenode.SingleResponse.Parser, new[]{ "Version", "Ping", "ListRoles", "ListHomeNodePlans" }, new[]{ "ResponseType" }, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ConversationRequest), global::Iop.Homenode.ConversationRequest.Parser, new[]{ "Signature", "Start", "HomeNodeRequest", "CheckIn", "UpdateProfile" }, new[]{ "RequestType" }, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ConversationResponse), global::Iop.Homenode.ConversationResponse.Parser, new[]{ "Signature", "Start", "HomeNodeRequest", "CheckIn", "UpdateProfile" }, new[]{ "RequestType" }, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.SingleRequest), global::Iop.Homenode.SingleRequest.Parser, new[]{ "Version", "Ping", "ListRoles", "ListHomeNodePlans", "GetIdentityOnlineInformation", "ApplicationServiceSendMessage", "ApplicationServiceReceiveMessageNotification" }, new[]{ "RequestType" }, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.SingleResponse), global::Iop.Homenode.SingleResponse.Parser, new[]{ "Version", "Ping", "ListRoles", "ListHomeNodePlans", "GetIdentityOnlineInformation", "ApplicationServiceSendMessage", "ApplicationServiceReceiveMessageNotification" }, new[]{ "ResponseType" }, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ConversationRequest), global::Iop.Homenode.ConversationRequest.Parser, new[]{ "Signature", "Start", "HomeNodeRequest", "CheckIn", "VerifyIdentity", "UpdateProfile", "CancelHomeNodeAgreement", "ApplicationServiceAdd", "ApplicationServiceRemove", "CallIdentityApplicationService", "IncomingCallNotification" }, new[]{ "RequestType" }, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ConversationResponse), global::Iop.Homenode.ConversationResponse.Parser, new[]{ "Signature", "Start", "HomeNodeRequest", "CheckIn", "VerifyIdentity", "UpdateProfile", "CancelHomeNodeAgreement", "ApplicationServiceAdd", "ApplicationServiceRemove", "CallIdentityApplicationService", "IncomingCallNotification" }, new[]{ "RequestType" }, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.PingRequest), global::Iop.Homenode.PingRequest.Parser, new[]{ "Payload" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.PingResponse), global::Iop.Homenode.PingResponse.Parser, new[]{ "Payload", "Clock" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ListRolesRequest), global::Iop.Homenode.ListRolesRequest.Parser, null, null, null, null),
@@ -126,8 +190,26 @@ namespace Iop.Homenode {
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.HomeNodePlanContract), global::Iop.Homenode.HomeNodePlanContract.Parser, new[]{ "Plan", "NodePublicKey", "IdentityPublicKey", "StartTime" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.CheckInRequest), global::Iop.Homenode.CheckInRequest.Parser, new[]{ "Challenge" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.CheckInResponse), global::Iop.Homenode.CheckInResponse.Parser, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.VerifyIdentityRequest), global::Iop.Homenode.VerifyIdentityRequest.Parser, new[]{ "Challenge" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.VerifyIdentityResponse), global::Iop.Homenode.VerifyIdentityResponse.Parser, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.UpdateProfileRequest), global::Iop.Homenode.UpdateProfileRequest.Parser, new[]{ "SetVersion", "SetName", "SetImage", "SetLocation", "SetExtraData", "Version", "Name", "Image", "Location", "ExtraData" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.UpdateProfileResponse), global::Iop.Homenode.UpdateProfileResponse.Parser, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.UpdateProfileResponse), global::Iop.Homenode.UpdateProfileResponse.Parser, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.CancelHomeNodeAgreementRequest), global::Iop.Homenode.CancelHomeNodeAgreementRequest.Parser, new[]{ "RedirectToNewHomeNode", "NewHomeNodeNetworkId" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.CancelHomeNodeAgreementResponse), global::Iop.Homenode.CancelHomeNodeAgreementResponse.Parser, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ApplicationServiceAddRequest), global::Iop.Homenode.ApplicationServiceAddRequest.Parser, new[]{ "ServiceNames" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ApplicationServiceAddResponse), global::Iop.Homenode.ApplicationServiceAddResponse.Parser, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ApplicationServiceRemoveRequest), global::Iop.Homenode.ApplicationServiceRemoveRequest.Parser, new[]{ "ServiceName" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ApplicationServiceRemoveResponse), global::Iop.Homenode.ApplicationServiceRemoveResponse.Parser, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.GetIdentityOnlineInformationRequest), global::Iop.Homenode.GetIdentityOnlineInformationRequest.Parser, new[]{ "IdentityNetworkId", "IncludeProfileImage", "IncludeThumbnailImage", "IncludeApplicationServices" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.GetIdentityOnlineInformationResponse), global::Iop.Homenode.GetIdentityOnlineInformationResponse.Parser, new[]{ "IsOnline", "IdentityPublicKey", "Name", "ExtraData", "ProfileImage", "ThumbnailImage", "ApplicationServices" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.CallIdentityApplicationServiceRequest), global::Iop.Homenode.CallIdentityApplicationServiceRequest.Parser, new[]{ "IdentityNetworkId", "ServiceName" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.CallIdentityApplicationServiceResponse), global::Iop.Homenode.CallIdentityApplicationServiceResponse.Parser, new[]{ "CallerToken" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.IncomingCallNotificationRequest), global::Iop.Homenode.IncomingCallNotificationRequest.Parser, new[]{ "CallerPublicKey", "ServiceName", "CalleeToken" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.IncomingCallNotificationResponse), global::Iop.Homenode.IncomingCallNotificationResponse.Parser, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ApplicationServiceSendMessageRequest), global::Iop.Homenode.ApplicationServiceSendMessageRequest.Parser, new[]{ "Token", "Message" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ApplicationServiceSendMessageResponse), global::Iop.Homenode.ApplicationServiceSendMessageResponse.Parser, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ApplicationServiceReceiveMessageNotificationRequest), global::Iop.Homenode.ApplicationServiceReceiveMessageNotificationRequest.Parser, new[]{ "Message" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ApplicationServiceReceiveMessageNotificationResponse), global::Iop.Homenode.ApplicationServiceReceiveMessageNotificationResponse.Parser, null, null, null, null)
           }));
     }
     #endregion
@@ -194,6 +276,14 @@ namespace Iop.Homenode {
     ///  An object with the same identifier already exists.
     /// </summary>
     [pbr::OriginalName("ERROR_ALREADY_EXISTS")] ErrorAlreadyExists = 55,
+    /// <summary>
+    ///  A request object is not available.
+    /// </summary>
+    [pbr::OriginalName("ERROR_NOT_AVAILABLE")] ErrorNotAvailable = 56,
+    /// <summary>
+    ///  A third party rejected the requested action.
+    /// </summary>
+    [pbr::OriginalName("ERROR_REJECTED")] ErrorRejected = 57,
   }
 
   /// <summary>
@@ -1135,6 +1225,15 @@ namespace Iop.Homenode {
         case RequestTypeOneofCase.ListHomeNodePlans:
           ListHomeNodePlans = other.ListHomeNodePlans.Clone();
           break;
+        case RequestTypeOneofCase.GetIdentityOnlineInformation:
+          GetIdentityOnlineInformation = other.GetIdentityOnlineInformation.Clone();
+          break;
+        case RequestTypeOneofCase.ApplicationServiceSendMessage:
+          ApplicationServiceSendMessage = other.ApplicationServiceSendMessage.Clone();
+          break;
+        case RequestTypeOneofCase.ApplicationServiceReceiveMessageNotification:
+          ApplicationServiceReceiveMessageNotification = other.ApplicationServiceReceiveMessageNotification.Clone();
+          break;
       }
 
     }
@@ -1191,6 +1290,39 @@ namespace Iop.Homenode {
       }
     }
 
+    /// <summary>Field number for the "getIdentityOnlineInformation" field.</summary>
+    public const int GetIdentityOnlineInformationFieldNumber = 5;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Homenode.GetIdentityOnlineInformationRequest GetIdentityOnlineInformation {
+      get { return requestTypeCase_ == RequestTypeOneofCase.GetIdentityOnlineInformation ? (global::Iop.Homenode.GetIdentityOnlineInformationRequest) requestType_ : null; }
+      set {
+        requestType_ = value;
+        requestTypeCase_ = value == null ? RequestTypeOneofCase.None : RequestTypeOneofCase.GetIdentityOnlineInformation;
+      }
+    }
+
+    /// <summary>Field number for the "applicationServiceSendMessage" field.</summary>
+    public const int ApplicationServiceSendMessageFieldNumber = 6;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Homenode.ApplicationServiceSendMessageRequest ApplicationServiceSendMessage {
+      get { return requestTypeCase_ == RequestTypeOneofCase.ApplicationServiceSendMessage ? (global::Iop.Homenode.ApplicationServiceSendMessageRequest) requestType_ : null; }
+      set {
+        requestType_ = value;
+        requestTypeCase_ = value == null ? RequestTypeOneofCase.None : RequestTypeOneofCase.ApplicationServiceSendMessage;
+      }
+    }
+
+    /// <summary>Field number for the "applicationServiceReceiveMessageNotification" field.</summary>
+    public const int ApplicationServiceReceiveMessageNotificationFieldNumber = 7;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Homenode.ApplicationServiceReceiveMessageNotificationRequest ApplicationServiceReceiveMessageNotification {
+      get { return requestTypeCase_ == RequestTypeOneofCase.ApplicationServiceReceiveMessageNotification ? (global::Iop.Homenode.ApplicationServiceReceiveMessageNotificationRequest) requestType_ : null; }
+      set {
+        requestType_ = value;
+        requestTypeCase_ = value == null ? RequestTypeOneofCase.None : RequestTypeOneofCase.ApplicationServiceReceiveMessageNotification;
+      }
+    }
+
     private object requestType_;
     /// <summary>Enum of possible cases for the "RequestType" oneof.</summary>
     public enum RequestTypeOneofCase {
@@ -1198,6 +1330,9 @@ namespace Iop.Homenode {
       Ping = 2,
       ListRoles = 3,
       ListHomeNodePlans = 4,
+      GetIdentityOnlineInformation = 5,
+      ApplicationServiceSendMessage = 6,
+      ApplicationServiceReceiveMessageNotification = 7,
     }
     private RequestTypeOneofCase requestTypeCase_ = RequestTypeOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1228,6 +1363,9 @@ namespace Iop.Homenode {
       if (!object.Equals(Ping, other.Ping)) return false;
       if (!object.Equals(ListRoles, other.ListRoles)) return false;
       if (!object.Equals(ListHomeNodePlans, other.ListHomeNodePlans)) return false;
+      if (!object.Equals(GetIdentityOnlineInformation, other.GetIdentityOnlineInformation)) return false;
+      if (!object.Equals(ApplicationServiceSendMessage, other.ApplicationServiceSendMessage)) return false;
+      if (!object.Equals(ApplicationServiceReceiveMessageNotification, other.ApplicationServiceReceiveMessageNotification)) return false;
       if (RequestTypeCase != other.RequestTypeCase) return false;
       return true;
     }
@@ -1239,6 +1377,9 @@ namespace Iop.Homenode {
       if (requestTypeCase_ == RequestTypeOneofCase.Ping) hash ^= Ping.GetHashCode();
       if (requestTypeCase_ == RequestTypeOneofCase.ListRoles) hash ^= ListRoles.GetHashCode();
       if (requestTypeCase_ == RequestTypeOneofCase.ListHomeNodePlans) hash ^= ListHomeNodePlans.GetHashCode();
+      if (requestTypeCase_ == RequestTypeOneofCase.GetIdentityOnlineInformation) hash ^= GetIdentityOnlineInformation.GetHashCode();
+      if (requestTypeCase_ == RequestTypeOneofCase.ApplicationServiceSendMessage) hash ^= ApplicationServiceSendMessage.GetHashCode();
+      if (requestTypeCase_ == RequestTypeOneofCase.ApplicationServiceReceiveMessageNotification) hash ^= ApplicationServiceReceiveMessageNotification.GetHashCode();
       hash ^= (int) requestTypeCase_;
       return hash;
     }
@@ -1266,6 +1407,18 @@ namespace Iop.Homenode {
         output.WriteRawTag(34);
         output.WriteMessage(ListHomeNodePlans);
       }
+      if (requestTypeCase_ == RequestTypeOneofCase.GetIdentityOnlineInformation) {
+        output.WriteRawTag(42);
+        output.WriteMessage(GetIdentityOnlineInformation);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.ApplicationServiceSendMessage) {
+        output.WriteRawTag(50);
+        output.WriteMessage(ApplicationServiceSendMessage);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.ApplicationServiceReceiveMessageNotification) {
+        output.WriteRawTag(58);
+        output.WriteMessage(ApplicationServiceReceiveMessageNotification);
+      }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1282,6 +1435,15 @@ namespace Iop.Homenode {
       }
       if (requestTypeCase_ == RequestTypeOneofCase.ListHomeNodePlans) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(ListHomeNodePlans);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.GetIdentityOnlineInformation) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(GetIdentityOnlineInformation);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.ApplicationServiceSendMessage) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(ApplicationServiceSendMessage);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.ApplicationServiceReceiveMessageNotification) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(ApplicationServiceReceiveMessageNotification);
       }
       return size;
     }
@@ -1303,6 +1465,15 @@ namespace Iop.Homenode {
           break;
         case RequestTypeOneofCase.ListHomeNodePlans:
           ListHomeNodePlans = other.ListHomeNodePlans;
+          break;
+        case RequestTypeOneofCase.GetIdentityOnlineInformation:
+          GetIdentityOnlineInformation = other.GetIdentityOnlineInformation;
+          break;
+        case RequestTypeOneofCase.ApplicationServiceSendMessage:
+          ApplicationServiceSendMessage = other.ApplicationServiceSendMessage;
+          break;
+        case RequestTypeOneofCase.ApplicationServiceReceiveMessageNotification:
+          ApplicationServiceReceiveMessageNotification = other.ApplicationServiceReceiveMessageNotification;
           break;
       }
 
@@ -1345,6 +1516,33 @@ namespace Iop.Homenode {
             }
             input.ReadMessage(subBuilder);
             ListHomeNodePlans = subBuilder;
+            break;
+          }
+          case 42: {
+            global::Iop.Homenode.GetIdentityOnlineInformationRequest subBuilder = new global::Iop.Homenode.GetIdentityOnlineInformationRequest();
+            if (requestTypeCase_ == RequestTypeOneofCase.GetIdentityOnlineInformation) {
+              subBuilder.MergeFrom(GetIdentityOnlineInformation);
+            }
+            input.ReadMessage(subBuilder);
+            GetIdentityOnlineInformation = subBuilder;
+            break;
+          }
+          case 50: {
+            global::Iop.Homenode.ApplicationServiceSendMessageRequest subBuilder = new global::Iop.Homenode.ApplicationServiceSendMessageRequest();
+            if (requestTypeCase_ == RequestTypeOneofCase.ApplicationServiceSendMessage) {
+              subBuilder.MergeFrom(ApplicationServiceSendMessage);
+            }
+            input.ReadMessage(subBuilder);
+            ApplicationServiceSendMessage = subBuilder;
+            break;
+          }
+          case 58: {
+            global::Iop.Homenode.ApplicationServiceReceiveMessageNotificationRequest subBuilder = new global::Iop.Homenode.ApplicationServiceReceiveMessageNotificationRequest();
+            if (requestTypeCase_ == RequestTypeOneofCase.ApplicationServiceReceiveMessageNotification) {
+              subBuilder.MergeFrom(ApplicationServiceReceiveMessageNotification);
+            }
+            input.ReadMessage(subBuilder);
+            ApplicationServiceReceiveMessageNotification = subBuilder;
             break;
           }
         }
@@ -1390,6 +1588,15 @@ namespace Iop.Homenode {
           break;
         case ResponseTypeOneofCase.ListHomeNodePlans:
           ListHomeNodePlans = other.ListHomeNodePlans.Clone();
+          break;
+        case ResponseTypeOneofCase.GetIdentityOnlineInformation:
+          GetIdentityOnlineInformation = other.GetIdentityOnlineInformation.Clone();
+          break;
+        case ResponseTypeOneofCase.ApplicationServiceSendMessage:
+          ApplicationServiceSendMessage = other.ApplicationServiceSendMessage.Clone();
+          break;
+        case ResponseTypeOneofCase.ApplicationServiceReceiveMessageNotification:
+          ApplicationServiceReceiveMessageNotification = other.ApplicationServiceReceiveMessageNotification.Clone();
           break;
       }
 
@@ -1447,6 +1654,39 @@ namespace Iop.Homenode {
       }
     }
 
+    /// <summary>Field number for the "getIdentityOnlineInformation" field.</summary>
+    public const int GetIdentityOnlineInformationFieldNumber = 5;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Homenode.GetIdentityOnlineInformationResponse GetIdentityOnlineInformation {
+      get { return responseTypeCase_ == ResponseTypeOneofCase.GetIdentityOnlineInformation ? (global::Iop.Homenode.GetIdentityOnlineInformationResponse) responseType_ : null; }
+      set {
+        responseType_ = value;
+        responseTypeCase_ = value == null ? ResponseTypeOneofCase.None : ResponseTypeOneofCase.GetIdentityOnlineInformation;
+      }
+    }
+
+    /// <summary>Field number for the "applicationServiceSendMessage" field.</summary>
+    public const int ApplicationServiceSendMessageFieldNumber = 6;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Homenode.ApplicationServiceSendMessageResponse ApplicationServiceSendMessage {
+      get { return responseTypeCase_ == ResponseTypeOneofCase.ApplicationServiceSendMessage ? (global::Iop.Homenode.ApplicationServiceSendMessageResponse) responseType_ : null; }
+      set {
+        responseType_ = value;
+        responseTypeCase_ = value == null ? ResponseTypeOneofCase.None : ResponseTypeOneofCase.ApplicationServiceSendMessage;
+      }
+    }
+
+    /// <summary>Field number for the "applicationServiceReceiveMessageNotification" field.</summary>
+    public const int ApplicationServiceReceiveMessageNotificationFieldNumber = 7;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Homenode.ApplicationServiceReceiveMessageNotificationResponse ApplicationServiceReceiveMessageNotification {
+      get { return responseTypeCase_ == ResponseTypeOneofCase.ApplicationServiceReceiveMessageNotification ? (global::Iop.Homenode.ApplicationServiceReceiveMessageNotificationResponse) responseType_ : null; }
+      set {
+        responseType_ = value;
+        responseTypeCase_ = value == null ? ResponseTypeOneofCase.None : ResponseTypeOneofCase.ApplicationServiceReceiveMessageNotification;
+      }
+    }
+
     private object responseType_;
     /// <summary>Enum of possible cases for the "ResponseType" oneof.</summary>
     public enum ResponseTypeOneofCase {
@@ -1454,6 +1694,9 @@ namespace Iop.Homenode {
       Ping = 2,
       ListRoles = 3,
       ListHomeNodePlans = 4,
+      GetIdentityOnlineInformation = 5,
+      ApplicationServiceSendMessage = 6,
+      ApplicationServiceReceiveMessageNotification = 7,
     }
     private ResponseTypeOneofCase responseTypeCase_ = ResponseTypeOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1484,6 +1727,9 @@ namespace Iop.Homenode {
       if (!object.Equals(Ping, other.Ping)) return false;
       if (!object.Equals(ListRoles, other.ListRoles)) return false;
       if (!object.Equals(ListHomeNodePlans, other.ListHomeNodePlans)) return false;
+      if (!object.Equals(GetIdentityOnlineInformation, other.GetIdentityOnlineInformation)) return false;
+      if (!object.Equals(ApplicationServiceSendMessage, other.ApplicationServiceSendMessage)) return false;
+      if (!object.Equals(ApplicationServiceReceiveMessageNotification, other.ApplicationServiceReceiveMessageNotification)) return false;
       if (ResponseTypeCase != other.ResponseTypeCase) return false;
       return true;
     }
@@ -1495,6 +1741,9 @@ namespace Iop.Homenode {
       if (responseTypeCase_ == ResponseTypeOneofCase.Ping) hash ^= Ping.GetHashCode();
       if (responseTypeCase_ == ResponseTypeOneofCase.ListRoles) hash ^= ListRoles.GetHashCode();
       if (responseTypeCase_ == ResponseTypeOneofCase.ListHomeNodePlans) hash ^= ListHomeNodePlans.GetHashCode();
+      if (responseTypeCase_ == ResponseTypeOneofCase.GetIdentityOnlineInformation) hash ^= GetIdentityOnlineInformation.GetHashCode();
+      if (responseTypeCase_ == ResponseTypeOneofCase.ApplicationServiceSendMessage) hash ^= ApplicationServiceSendMessage.GetHashCode();
+      if (responseTypeCase_ == ResponseTypeOneofCase.ApplicationServiceReceiveMessageNotification) hash ^= ApplicationServiceReceiveMessageNotification.GetHashCode();
       hash ^= (int) responseTypeCase_;
       return hash;
     }
@@ -1522,6 +1771,18 @@ namespace Iop.Homenode {
         output.WriteRawTag(34);
         output.WriteMessage(ListHomeNodePlans);
       }
+      if (responseTypeCase_ == ResponseTypeOneofCase.GetIdentityOnlineInformation) {
+        output.WriteRawTag(42);
+        output.WriteMessage(GetIdentityOnlineInformation);
+      }
+      if (responseTypeCase_ == ResponseTypeOneofCase.ApplicationServiceSendMessage) {
+        output.WriteRawTag(50);
+        output.WriteMessage(ApplicationServiceSendMessage);
+      }
+      if (responseTypeCase_ == ResponseTypeOneofCase.ApplicationServiceReceiveMessageNotification) {
+        output.WriteRawTag(58);
+        output.WriteMessage(ApplicationServiceReceiveMessageNotification);
+      }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1538,6 +1799,15 @@ namespace Iop.Homenode {
       }
       if (responseTypeCase_ == ResponseTypeOneofCase.ListHomeNodePlans) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(ListHomeNodePlans);
+      }
+      if (responseTypeCase_ == ResponseTypeOneofCase.GetIdentityOnlineInformation) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(GetIdentityOnlineInformation);
+      }
+      if (responseTypeCase_ == ResponseTypeOneofCase.ApplicationServiceSendMessage) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(ApplicationServiceSendMessage);
+      }
+      if (responseTypeCase_ == ResponseTypeOneofCase.ApplicationServiceReceiveMessageNotification) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(ApplicationServiceReceiveMessageNotification);
       }
       return size;
     }
@@ -1559,6 +1829,15 @@ namespace Iop.Homenode {
           break;
         case ResponseTypeOneofCase.ListHomeNodePlans:
           ListHomeNodePlans = other.ListHomeNodePlans;
+          break;
+        case ResponseTypeOneofCase.GetIdentityOnlineInformation:
+          GetIdentityOnlineInformation = other.GetIdentityOnlineInformation;
+          break;
+        case ResponseTypeOneofCase.ApplicationServiceSendMessage:
+          ApplicationServiceSendMessage = other.ApplicationServiceSendMessage;
+          break;
+        case ResponseTypeOneofCase.ApplicationServiceReceiveMessageNotification:
+          ApplicationServiceReceiveMessageNotification = other.ApplicationServiceReceiveMessageNotification;
           break;
       }
 
@@ -1601,6 +1880,33 @@ namespace Iop.Homenode {
             }
             input.ReadMessage(subBuilder);
             ListHomeNodePlans = subBuilder;
+            break;
+          }
+          case 42: {
+            global::Iop.Homenode.GetIdentityOnlineInformationResponse subBuilder = new global::Iop.Homenode.GetIdentityOnlineInformationResponse();
+            if (responseTypeCase_ == ResponseTypeOneofCase.GetIdentityOnlineInformation) {
+              subBuilder.MergeFrom(GetIdentityOnlineInformation);
+            }
+            input.ReadMessage(subBuilder);
+            GetIdentityOnlineInformation = subBuilder;
+            break;
+          }
+          case 50: {
+            global::Iop.Homenode.ApplicationServiceSendMessageResponse subBuilder = new global::Iop.Homenode.ApplicationServiceSendMessageResponse();
+            if (responseTypeCase_ == ResponseTypeOneofCase.ApplicationServiceSendMessage) {
+              subBuilder.MergeFrom(ApplicationServiceSendMessage);
+            }
+            input.ReadMessage(subBuilder);
+            ApplicationServiceSendMessage = subBuilder;
+            break;
+          }
+          case 58: {
+            global::Iop.Homenode.ApplicationServiceReceiveMessageNotificationResponse subBuilder = new global::Iop.Homenode.ApplicationServiceReceiveMessageNotificationResponse();
+            if (responseTypeCase_ == ResponseTypeOneofCase.ApplicationServiceReceiveMessageNotification) {
+              subBuilder.MergeFrom(ApplicationServiceReceiveMessageNotification);
+            }
+            input.ReadMessage(subBuilder);
+            ApplicationServiceReceiveMessageNotification = subBuilder;
             break;
           }
         }
@@ -1648,8 +1954,26 @@ namespace Iop.Homenode {
         case RequestTypeOneofCase.CheckIn:
           CheckIn = other.CheckIn.Clone();
           break;
+        case RequestTypeOneofCase.VerifyIdentity:
+          VerifyIdentity = other.VerifyIdentity.Clone();
+          break;
         case RequestTypeOneofCase.UpdateProfile:
           UpdateProfile = other.UpdateProfile.Clone();
+          break;
+        case RequestTypeOneofCase.CancelHomeNodeAgreement:
+          CancelHomeNodeAgreement = other.CancelHomeNodeAgreement.Clone();
+          break;
+        case RequestTypeOneofCase.ApplicationServiceAdd:
+          ApplicationServiceAdd = other.ApplicationServiceAdd.Clone();
+          break;
+        case RequestTypeOneofCase.ApplicationServiceRemove:
+          ApplicationServiceRemove = other.ApplicationServiceRemove.Clone();
+          break;
+        case RequestTypeOneofCase.CallIdentityApplicationService:
+          CallIdentityApplicationService = other.CallIdentityApplicationService.Clone();
+          break;
+        case RequestTypeOneofCase.IncomingCallNotification:
+          IncomingCallNotification = other.IncomingCallNotification.Clone();
           break;
       }
 
@@ -1710,14 +2034,80 @@ namespace Iop.Homenode {
       }
     }
 
+    /// <summary>Field number for the "verifyIdentity" field.</summary>
+    public const int VerifyIdentityFieldNumber = 5;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Homenode.VerifyIdentityRequest VerifyIdentity {
+      get { return requestTypeCase_ == RequestTypeOneofCase.VerifyIdentity ? (global::Iop.Homenode.VerifyIdentityRequest) requestType_ : null; }
+      set {
+        requestType_ = value;
+        requestTypeCase_ = value == null ? RequestTypeOneofCase.None : RequestTypeOneofCase.VerifyIdentity;
+      }
+    }
+
     /// <summary>Field number for the "updateProfile" field.</summary>
-    public const int UpdateProfileFieldNumber = 5;
+    public const int UpdateProfileFieldNumber = 6;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Homenode.UpdateProfileRequest UpdateProfile {
       get { return requestTypeCase_ == RequestTypeOneofCase.UpdateProfile ? (global::Iop.Homenode.UpdateProfileRequest) requestType_ : null; }
       set {
         requestType_ = value;
         requestTypeCase_ = value == null ? RequestTypeOneofCase.None : RequestTypeOneofCase.UpdateProfile;
+      }
+    }
+
+    /// <summary>Field number for the "cancelHomeNodeAgreement" field.</summary>
+    public const int CancelHomeNodeAgreementFieldNumber = 7;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Homenode.CancelHomeNodeAgreementRequest CancelHomeNodeAgreement {
+      get { return requestTypeCase_ == RequestTypeOneofCase.CancelHomeNodeAgreement ? (global::Iop.Homenode.CancelHomeNodeAgreementRequest) requestType_ : null; }
+      set {
+        requestType_ = value;
+        requestTypeCase_ = value == null ? RequestTypeOneofCase.None : RequestTypeOneofCase.CancelHomeNodeAgreement;
+      }
+    }
+
+    /// <summary>Field number for the "applicationServiceAdd" field.</summary>
+    public const int ApplicationServiceAddFieldNumber = 8;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Homenode.ApplicationServiceAddRequest ApplicationServiceAdd {
+      get { return requestTypeCase_ == RequestTypeOneofCase.ApplicationServiceAdd ? (global::Iop.Homenode.ApplicationServiceAddRequest) requestType_ : null; }
+      set {
+        requestType_ = value;
+        requestTypeCase_ = value == null ? RequestTypeOneofCase.None : RequestTypeOneofCase.ApplicationServiceAdd;
+      }
+    }
+
+    /// <summary>Field number for the "applicationServiceRemove" field.</summary>
+    public const int ApplicationServiceRemoveFieldNumber = 9;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Homenode.ApplicationServiceRemoveRequest ApplicationServiceRemove {
+      get { return requestTypeCase_ == RequestTypeOneofCase.ApplicationServiceRemove ? (global::Iop.Homenode.ApplicationServiceRemoveRequest) requestType_ : null; }
+      set {
+        requestType_ = value;
+        requestTypeCase_ = value == null ? RequestTypeOneofCase.None : RequestTypeOneofCase.ApplicationServiceRemove;
+      }
+    }
+
+    /// <summary>Field number for the "callIdentityApplicationService" field.</summary>
+    public const int CallIdentityApplicationServiceFieldNumber = 10;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Homenode.CallIdentityApplicationServiceRequest CallIdentityApplicationService {
+      get { return requestTypeCase_ == RequestTypeOneofCase.CallIdentityApplicationService ? (global::Iop.Homenode.CallIdentityApplicationServiceRequest) requestType_ : null; }
+      set {
+        requestType_ = value;
+        requestTypeCase_ = value == null ? RequestTypeOneofCase.None : RequestTypeOneofCase.CallIdentityApplicationService;
+      }
+    }
+
+    /// <summary>Field number for the "incomingCallNotification" field.</summary>
+    public const int IncomingCallNotificationFieldNumber = 11;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Homenode.IncomingCallNotificationRequest IncomingCallNotification {
+      get { return requestTypeCase_ == RequestTypeOneofCase.IncomingCallNotification ? (global::Iop.Homenode.IncomingCallNotificationRequest) requestType_ : null; }
+      set {
+        requestType_ = value;
+        requestTypeCase_ = value == null ? RequestTypeOneofCase.None : RequestTypeOneofCase.IncomingCallNotification;
       }
     }
 
@@ -1728,7 +2118,13 @@ namespace Iop.Homenode {
       Start = 2,
       HomeNodeRequest = 3,
       CheckIn = 4,
-      UpdateProfile = 5,
+      VerifyIdentity = 5,
+      UpdateProfile = 6,
+      CancelHomeNodeAgreement = 7,
+      ApplicationServiceAdd = 8,
+      ApplicationServiceRemove = 9,
+      CallIdentityApplicationService = 10,
+      IncomingCallNotification = 11,
     }
     private RequestTypeOneofCase requestTypeCase_ = RequestTypeOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1759,7 +2155,13 @@ namespace Iop.Homenode {
       if (!object.Equals(Start, other.Start)) return false;
       if (!object.Equals(HomeNodeRequest, other.HomeNodeRequest)) return false;
       if (!object.Equals(CheckIn, other.CheckIn)) return false;
+      if (!object.Equals(VerifyIdentity, other.VerifyIdentity)) return false;
       if (!object.Equals(UpdateProfile, other.UpdateProfile)) return false;
+      if (!object.Equals(CancelHomeNodeAgreement, other.CancelHomeNodeAgreement)) return false;
+      if (!object.Equals(ApplicationServiceAdd, other.ApplicationServiceAdd)) return false;
+      if (!object.Equals(ApplicationServiceRemove, other.ApplicationServiceRemove)) return false;
+      if (!object.Equals(CallIdentityApplicationService, other.CallIdentityApplicationService)) return false;
+      if (!object.Equals(IncomingCallNotification, other.IncomingCallNotification)) return false;
       if (RequestTypeCase != other.RequestTypeCase) return false;
       return true;
     }
@@ -1771,7 +2173,13 @@ namespace Iop.Homenode {
       if (requestTypeCase_ == RequestTypeOneofCase.Start) hash ^= Start.GetHashCode();
       if (requestTypeCase_ == RequestTypeOneofCase.HomeNodeRequest) hash ^= HomeNodeRequest.GetHashCode();
       if (requestTypeCase_ == RequestTypeOneofCase.CheckIn) hash ^= CheckIn.GetHashCode();
+      if (requestTypeCase_ == RequestTypeOneofCase.VerifyIdentity) hash ^= VerifyIdentity.GetHashCode();
       if (requestTypeCase_ == RequestTypeOneofCase.UpdateProfile) hash ^= UpdateProfile.GetHashCode();
+      if (requestTypeCase_ == RequestTypeOneofCase.CancelHomeNodeAgreement) hash ^= CancelHomeNodeAgreement.GetHashCode();
+      if (requestTypeCase_ == RequestTypeOneofCase.ApplicationServiceAdd) hash ^= ApplicationServiceAdd.GetHashCode();
+      if (requestTypeCase_ == RequestTypeOneofCase.ApplicationServiceRemove) hash ^= ApplicationServiceRemove.GetHashCode();
+      if (requestTypeCase_ == RequestTypeOneofCase.CallIdentityApplicationService) hash ^= CallIdentityApplicationService.GetHashCode();
+      if (requestTypeCase_ == RequestTypeOneofCase.IncomingCallNotification) hash ^= IncomingCallNotification.GetHashCode();
       hash ^= (int) requestTypeCase_;
       return hash;
     }
@@ -1799,9 +2207,33 @@ namespace Iop.Homenode {
         output.WriteRawTag(34);
         output.WriteMessage(CheckIn);
       }
-      if (requestTypeCase_ == RequestTypeOneofCase.UpdateProfile) {
+      if (requestTypeCase_ == RequestTypeOneofCase.VerifyIdentity) {
         output.WriteRawTag(42);
+        output.WriteMessage(VerifyIdentity);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.UpdateProfile) {
+        output.WriteRawTag(50);
         output.WriteMessage(UpdateProfile);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.CancelHomeNodeAgreement) {
+        output.WriteRawTag(58);
+        output.WriteMessage(CancelHomeNodeAgreement);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.ApplicationServiceAdd) {
+        output.WriteRawTag(66);
+        output.WriteMessage(ApplicationServiceAdd);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.ApplicationServiceRemove) {
+        output.WriteRawTag(74);
+        output.WriteMessage(ApplicationServiceRemove);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.CallIdentityApplicationService) {
+        output.WriteRawTag(82);
+        output.WriteMessage(CallIdentityApplicationService);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.IncomingCallNotification) {
+        output.WriteRawTag(90);
+        output.WriteMessage(IncomingCallNotification);
       }
     }
 
@@ -1820,8 +2252,26 @@ namespace Iop.Homenode {
       if (requestTypeCase_ == RequestTypeOneofCase.CheckIn) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(CheckIn);
       }
+      if (requestTypeCase_ == RequestTypeOneofCase.VerifyIdentity) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(VerifyIdentity);
+      }
       if (requestTypeCase_ == RequestTypeOneofCase.UpdateProfile) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(UpdateProfile);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.CancelHomeNodeAgreement) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(CancelHomeNodeAgreement);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.ApplicationServiceAdd) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(ApplicationServiceAdd);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.ApplicationServiceRemove) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(ApplicationServiceRemove);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.CallIdentityApplicationService) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(CallIdentityApplicationService);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.IncomingCallNotification) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(IncomingCallNotification);
       }
       return size;
     }
@@ -1844,8 +2294,26 @@ namespace Iop.Homenode {
         case RequestTypeOneofCase.CheckIn:
           CheckIn = other.CheckIn;
           break;
+        case RequestTypeOneofCase.VerifyIdentity:
+          VerifyIdentity = other.VerifyIdentity;
+          break;
         case RequestTypeOneofCase.UpdateProfile:
           UpdateProfile = other.UpdateProfile;
+          break;
+        case RequestTypeOneofCase.CancelHomeNodeAgreement:
+          CancelHomeNodeAgreement = other.CancelHomeNodeAgreement;
+          break;
+        case RequestTypeOneofCase.ApplicationServiceAdd:
+          ApplicationServiceAdd = other.ApplicationServiceAdd;
+          break;
+        case RequestTypeOneofCase.ApplicationServiceRemove:
+          ApplicationServiceRemove = other.ApplicationServiceRemove;
+          break;
+        case RequestTypeOneofCase.CallIdentityApplicationService:
+          CallIdentityApplicationService = other.CallIdentityApplicationService;
+          break;
+        case RequestTypeOneofCase.IncomingCallNotification:
+          IncomingCallNotification = other.IncomingCallNotification;
           break;
       }
 
@@ -1891,12 +2359,66 @@ namespace Iop.Homenode {
             break;
           }
           case 42: {
+            global::Iop.Homenode.VerifyIdentityRequest subBuilder = new global::Iop.Homenode.VerifyIdentityRequest();
+            if (requestTypeCase_ == RequestTypeOneofCase.VerifyIdentity) {
+              subBuilder.MergeFrom(VerifyIdentity);
+            }
+            input.ReadMessage(subBuilder);
+            VerifyIdentity = subBuilder;
+            break;
+          }
+          case 50: {
             global::Iop.Homenode.UpdateProfileRequest subBuilder = new global::Iop.Homenode.UpdateProfileRequest();
             if (requestTypeCase_ == RequestTypeOneofCase.UpdateProfile) {
               subBuilder.MergeFrom(UpdateProfile);
             }
             input.ReadMessage(subBuilder);
             UpdateProfile = subBuilder;
+            break;
+          }
+          case 58: {
+            global::Iop.Homenode.CancelHomeNodeAgreementRequest subBuilder = new global::Iop.Homenode.CancelHomeNodeAgreementRequest();
+            if (requestTypeCase_ == RequestTypeOneofCase.CancelHomeNodeAgreement) {
+              subBuilder.MergeFrom(CancelHomeNodeAgreement);
+            }
+            input.ReadMessage(subBuilder);
+            CancelHomeNodeAgreement = subBuilder;
+            break;
+          }
+          case 66: {
+            global::Iop.Homenode.ApplicationServiceAddRequest subBuilder = new global::Iop.Homenode.ApplicationServiceAddRequest();
+            if (requestTypeCase_ == RequestTypeOneofCase.ApplicationServiceAdd) {
+              subBuilder.MergeFrom(ApplicationServiceAdd);
+            }
+            input.ReadMessage(subBuilder);
+            ApplicationServiceAdd = subBuilder;
+            break;
+          }
+          case 74: {
+            global::Iop.Homenode.ApplicationServiceRemoveRequest subBuilder = new global::Iop.Homenode.ApplicationServiceRemoveRequest();
+            if (requestTypeCase_ == RequestTypeOneofCase.ApplicationServiceRemove) {
+              subBuilder.MergeFrom(ApplicationServiceRemove);
+            }
+            input.ReadMessage(subBuilder);
+            ApplicationServiceRemove = subBuilder;
+            break;
+          }
+          case 82: {
+            global::Iop.Homenode.CallIdentityApplicationServiceRequest subBuilder = new global::Iop.Homenode.CallIdentityApplicationServiceRequest();
+            if (requestTypeCase_ == RequestTypeOneofCase.CallIdentityApplicationService) {
+              subBuilder.MergeFrom(CallIdentityApplicationService);
+            }
+            input.ReadMessage(subBuilder);
+            CallIdentityApplicationService = subBuilder;
+            break;
+          }
+          case 90: {
+            global::Iop.Homenode.IncomingCallNotificationRequest subBuilder = new global::Iop.Homenode.IncomingCallNotificationRequest();
+            if (requestTypeCase_ == RequestTypeOneofCase.IncomingCallNotification) {
+              subBuilder.MergeFrom(IncomingCallNotification);
+            }
+            input.ReadMessage(subBuilder);
+            IncomingCallNotification = subBuilder;
             break;
           }
         }
@@ -1943,8 +2465,26 @@ namespace Iop.Homenode {
         case RequestTypeOneofCase.CheckIn:
           CheckIn = other.CheckIn.Clone();
           break;
+        case RequestTypeOneofCase.VerifyIdentity:
+          VerifyIdentity = other.VerifyIdentity.Clone();
+          break;
         case RequestTypeOneofCase.UpdateProfile:
           UpdateProfile = other.UpdateProfile.Clone();
+          break;
+        case RequestTypeOneofCase.CancelHomeNodeAgreement:
+          CancelHomeNodeAgreement = other.CancelHomeNodeAgreement.Clone();
+          break;
+        case RequestTypeOneofCase.ApplicationServiceAdd:
+          ApplicationServiceAdd = other.ApplicationServiceAdd.Clone();
+          break;
+        case RequestTypeOneofCase.ApplicationServiceRemove:
+          ApplicationServiceRemove = other.ApplicationServiceRemove.Clone();
+          break;
+        case RequestTypeOneofCase.CallIdentityApplicationService:
+          CallIdentityApplicationService = other.CallIdentityApplicationService.Clone();
+          break;
+        case RequestTypeOneofCase.IncomingCallNotification:
+          IncomingCallNotification = other.IncomingCallNotification.Clone();
           break;
       }
 
@@ -2005,14 +2545,80 @@ namespace Iop.Homenode {
       }
     }
 
+    /// <summary>Field number for the "verifyIdentity" field.</summary>
+    public const int VerifyIdentityFieldNumber = 5;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Homenode.VerifyIdentityResponse VerifyIdentity {
+      get { return requestTypeCase_ == RequestTypeOneofCase.VerifyIdentity ? (global::Iop.Homenode.VerifyIdentityResponse) requestType_ : null; }
+      set {
+        requestType_ = value;
+        requestTypeCase_ = value == null ? RequestTypeOneofCase.None : RequestTypeOneofCase.VerifyIdentity;
+      }
+    }
+
     /// <summary>Field number for the "updateProfile" field.</summary>
-    public const int UpdateProfileFieldNumber = 5;
+    public const int UpdateProfileFieldNumber = 6;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Homenode.UpdateProfileResponse UpdateProfile {
       get { return requestTypeCase_ == RequestTypeOneofCase.UpdateProfile ? (global::Iop.Homenode.UpdateProfileResponse) requestType_ : null; }
       set {
         requestType_ = value;
         requestTypeCase_ = value == null ? RequestTypeOneofCase.None : RequestTypeOneofCase.UpdateProfile;
+      }
+    }
+
+    /// <summary>Field number for the "cancelHomeNodeAgreement" field.</summary>
+    public const int CancelHomeNodeAgreementFieldNumber = 7;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Homenode.CancelHomeNodeAgreementResponse CancelHomeNodeAgreement {
+      get { return requestTypeCase_ == RequestTypeOneofCase.CancelHomeNodeAgreement ? (global::Iop.Homenode.CancelHomeNodeAgreementResponse) requestType_ : null; }
+      set {
+        requestType_ = value;
+        requestTypeCase_ = value == null ? RequestTypeOneofCase.None : RequestTypeOneofCase.CancelHomeNodeAgreement;
+      }
+    }
+
+    /// <summary>Field number for the "applicationServiceAdd" field.</summary>
+    public const int ApplicationServiceAddFieldNumber = 8;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Homenode.ApplicationServiceAddResponse ApplicationServiceAdd {
+      get { return requestTypeCase_ == RequestTypeOneofCase.ApplicationServiceAdd ? (global::Iop.Homenode.ApplicationServiceAddResponse) requestType_ : null; }
+      set {
+        requestType_ = value;
+        requestTypeCase_ = value == null ? RequestTypeOneofCase.None : RequestTypeOneofCase.ApplicationServiceAdd;
+      }
+    }
+
+    /// <summary>Field number for the "applicationServiceRemove" field.</summary>
+    public const int ApplicationServiceRemoveFieldNumber = 9;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Homenode.ApplicationServiceRemoveResponse ApplicationServiceRemove {
+      get { return requestTypeCase_ == RequestTypeOneofCase.ApplicationServiceRemove ? (global::Iop.Homenode.ApplicationServiceRemoveResponse) requestType_ : null; }
+      set {
+        requestType_ = value;
+        requestTypeCase_ = value == null ? RequestTypeOneofCase.None : RequestTypeOneofCase.ApplicationServiceRemove;
+      }
+    }
+
+    /// <summary>Field number for the "callIdentityApplicationService" field.</summary>
+    public const int CallIdentityApplicationServiceFieldNumber = 10;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Homenode.CallIdentityApplicationServiceResponse CallIdentityApplicationService {
+      get { return requestTypeCase_ == RequestTypeOneofCase.CallIdentityApplicationService ? (global::Iop.Homenode.CallIdentityApplicationServiceResponse) requestType_ : null; }
+      set {
+        requestType_ = value;
+        requestTypeCase_ = value == null ? RequestTypeOneofCase.None : RequestTypeOneofCase.CallIdentityApplicationService;
+      }
+    }
+
+    /// <summary>Field number for the "incomingCallNotification" field.</summary>
+    public const int IncomingCallNotificationFieldNumber = 11;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Homenode.IncomingCallNotificationResponse IncomingCallNotification {
+      get { return requestTypeCase_ == RequestTypeOneofCase.IncomingCallNotification ? (global::Iop.Homenode.IncomingCallNotificationResponse) requestType_ : null; }
+      set {
+        requestType_ = value;
+        requestTypeCase_ = value == null ? RequestTypeOneofCase.None : RequestTypeOneofCase.IncomingCallNotification;
       }
     }
 
@@ -2023,7 +2629,13 @@ namespace Iop.Homenode {
       Start = 2,
       HomeNodeRequest = 3,
       CheckIn = 4,
-      UpdateProfile = 5,
+      VerifyIdentity = 5,
+      UpdateProfile = 6,
+      CancelHomeNodeAgreement = 7,
+      ApplicationServiceAdd = 8,
+      ApplicationServiceRemove = 9,
+      CallIdentityApplicationService = 10,
+      IncomingCallNotification = 11,
     }
     private RequestTypeOneofCase requestTypeCase_ = RequestTypeOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2054,7 +2666,13 @@ namespace Iop.Homenode {
       if (!object.Equals(Start, other.Start)) return false;
       if (!object.Equals(HomeNodeRequest, other.HomeNodeRequest)) return false;
       if (!object.Equals(CheckIn, other.CheckIn)) return false;
+      if (!object.Equals(VerifyIdentity, other.VerifyIdentity)) return false;
       if (!object.Equals(UpdateProfile, other.UpdateProfile)) return false;
+      if (!object.Equals(CancelHomeNodeAgreement, other.CancelHomeNodeAgreement)) return false;
+      if (!object.Equals(ApplicationServiceAdd, other.ApplicationServiceAdd)) return false;
+      if (!object.Equals(ApplicationServiceRemove, other.ApplicationServiceRemove)) return false;
+      if (!object.Equals(CallIdentityApplicationService, other.CallIdentityApplicationService)) return false;
+      if (!object.Equals(IncomingCallNotification, other.IncomingCallNotification)) return false;
       if (RequestTypeCase != other.RequestTypeCase) return false;
       return true;
     }
@@ -2066,7 +2684,13 @@ namespace Iop.Homenode {
       if (requestTypeCase_ == RequestTypeOneofCase.Start) hash ^= Start.GetHashCode();
       if (requestTypeCase_ == RequestTypeOneofCase.HomeNodeRequest) hash ^= HomeNodeRequest.GetHashCode();
       if (requestTypeCase_ == RequestTypeOneofCase.CheckIn) hash ^= CheckIn.GetHashCode();
+      if (requestTypeCase_ == RequestTypeOneofCase.VerifyIdentity) hash ^= VerifyIdentity.GetHashCode();
       if (requestTypeCase_ == RequestTypeOneofCase.UpdateProfile) hash ^= UpdateProfile.GetHashCode();
+      if (requestTypeCase_ == RequestTypeOneofCase.CancelHomeNodeAgreement) hash ^= CancelHomeNodeAgreement.GetHashCode();
+      if (requestTypeCase_ == RequestTypeOneofCase.ApplicationServiceAdd) hash ^= ApplicationServiceAdd.GetHashCode();
+      if (requestTypeCase_ == RequestTypeOneofCase.ApplicationServiceRemove) hash ^= ApplicationServiceRemove.GetHashCode();
+      if (requestTypeCase_ == RequestTypeOneofCase.CallIdentityApplicationService) hash ^= CallIdentityApplicationService.GetHashCode();
+      if (requestTypeCase_ == RequestTypeOneofCase.IncomingCallNotification) hash ^= IncomingCallNotification.GetHashCode();
       hash ^= (int) requestTypeCase_;
       return hash;
     }
@@ -2094,9 +2718,33 @@ namespace Iop.Homenode {
         output.WriteRawTag(34);
         output.WriteMessage(CheckIn);
       }
-      if (requestTypeCase_ == RequestTypeOneofCase.UpdateProfile) {
+      if (requestTypeCase_ == RequestTypeOneofCase.VerifyIdentity) {
         output.WriteRawTag(42);
+        output.WriteMessage(VerifyIdentity);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.UpdateProfile) {
+        output.WriteRawTag(50);
         output.WriteMessage(UpdateProfile);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.CancelHomeNodeAgreement) {
+        output.WriteRawTag(58);
+        output.WriteMessage(CancelHomeNodeAgreement);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.ApplicationServiceAdd) {
+        output.WriteRawTag(66);
+        output.WriteMessage(ApplicationServiceAdd);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.ApplicationServiceRemove) {
+        output.WriteRawTag(74);
+        output.WriteMessage(ApplicationServiceRemove);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.CallIdentityApplicationService) {
+        output.WriteRawTag(82);
+        output.WriteMessage(CallIdentityApplicationService);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.IncomingCallNotification) {
+        output.WriteRawTag(90);
+        output.WriteMessage(IncomingCallNotification);
       }
     }
 
@@ -2115,8 +2763,26 @@ namespace Iop.Homenode {
       if (requestTypeCase_ == RequestTypeOneofCase.CheckIn) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(CheckIn);
       }
+      if (requestTypeCase_ == RequestTypeOneofCase.VerifyIdentity) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(VerifyIdentity);
+      }
       if (requestTypeCase_ == RequestTypeOneofCase.UpdateProfile) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(UpdateProfile);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.CancelHomeNodeAgreement) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(CancelHomeNodeAgreement);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.ApplicationServiceAdd) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(ApplicationServiceAdd);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.ApplicationServiceRemove) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(ApplicationServiceRemove);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.CallIdentityApplicationService) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(CallIdentityApplicationService);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.IncomingCallNotification) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(IncomingCallNotification);
       }
       return size;
     }
@@ -2139,8 +2805,26 @@ namespace Iop.Homenode {
         case RequestTypeOneofCase.CheckIn:
           CheckIn = other.CheckIn;
           break;
+        case RequestTypeOneofCase.VerifyIdentity:
+          VerifyIdentity = other.VerifyIdentity;
+          break;
         case RequestTypeOneofCase.UpdateProfile:
           UpdateProfile = other.UpdateProfile;
+          break;
+        case RequestTypeOneofCase.CancelHomeNodeAgreement:
+          CancelHomeNodeAgreement = other.CancelHomeNodeAgreement;
+          break;
+        case RequestTypeOneofCase.ApplicationServiceAdd:
+          ApplicationServiceAdd = other.ApplicationServiceAdd;
+          break;
+        case RequestTypeOneofCase.ApplicationServiceRemove:
+          ApplicationServiceRemove = other.ApplicationServiceRemove;
+          break;
+        case RequestTypeOneofCase.CallIdentityApplicationService:
+          CallIdentityApplicationService = other.CallIdentityApplicationService;
+          break;
+        case RequestTypeOneofCase.IncomingCallNotification:
+          IncomingCallNotification = other.IncomingCallNotification;
           break;
       }
 
@@ -2186,12 +2870,66 @@ namespace Iop.Homenode {
             break;
           }
           case 42: {
+            global::Iop.Homenode.VerifyIdentityResponse subBuilder = new global::Iop.Homenode.VerifyIdentityResponse();
+            if (requestTypeCase_ == RequestTypeOneofCase.VerifyIdentity) {
+              subBuilder.MergeFrom(VerifyIdentity);
+            }
+            input.ReadMessage(subBuilder);
+            VerifyIdentity = subBuilder;
+            break;
+          }
+          case 50: {
             global::Iop.Homenode.UpdateProfileResponse subBuilder = new global::Iop.Homenode.UpdateProfileResponse();
             if (requestTypeCase_ == RequestTypeOneofCase.UpdateProfile) {
               subBuilder.MergeFrom(UpdateProfile);
             }
             input.ReadMessage(subBuilder);
             UpdateProfile = subBuilder;
+            break;
+          }
+          case 58: {
+            global::Iop.Homenode.CancelHomeNodeAgreementResponse subBuilder = new global::Iop.Homenode.CancelHomeNodeAgreementResponse();
+            if (requestTypeCase_ == RequestTypeOneofCase.CancelHomeNodeAgreement) {
+              subBuilder.MergeFrom(CancelHomeNodeAgreement);
+            }
+            input.ReadMessage(subBuilder);
+            CancelHomeNodeAgreement = subBuilder;
+            break;
+          }
+          case 66: {
+            global::Iop.Homenode.ApplicationServiceAddResponse subBuilder = new global::Iop.Homenode.ApplicationServiceAddResponse();
+            if (requestTypeCase_ == RequestTypeOneofCase.ApplicationServiceAdd) {
+              subBuilder.MergeFrom(ApplicationServiceAdd);
+            }
+            input.ReadMessage(subBuilder);
+            ApplicationServiceAdd = subBuilder;
+            break;
+          }
+          case 74: {
+            global::Iop.Homenode.ApplicationServiceRemoveResponse subBuilder = new global::Iop.Homenode.ApplicationServiceRemoveResponse();
+            if (requestTypeCase_ == RequestTypeOneofCase.ApplicationServiceRemove) {
+              subBuilder.MergeFrom(ApplicationServiceRemove);
+            }
+            input.ReadMessage(subBuilder);
+            ApplicationServiceRemove = subBuilder;
+            break;
+          }
+          case 82: {
+            global::Iop.Homenode.CallIdentityApplicationServiceResponse subBuilder = new global::Iop.Homenode.CallIdentityApplicationServiceResponse();
+            if (requestTypeCase_ == RequestTypeOneofCase.CallIdentityApplicationService) {
+              subBuilder.MergeFrom(CallIdentityApplicationService);
+            }
+            input.ReadMessage(subBuilder);
+            CallIdentityApplicationService = subBuilder;
+            break;
+          }
+          case 90: {
+            global::Iop.Homenode.IncomingCallNotificationResponse subBuilder = new global::Iop.Homenode.IncomingCallNotificationResponse();
+            if (requestTypeCase_ == RequestTypeOneofCase.IncomingCallNotification) {
+              subBuilder.MergeFrom(IncomingCallNotification);
+            }
+            input.ReadMessage(subBuilder);
+            IncomingCallNotification = subBuilder;
             break;
           }
         }
@@ -4521,7 +5259,7 @@ namespace Iop.Homenode {
 
   /// <summary>
   ///
-  ///  A response to CheckInRequest.
+  ///  A response to CheckInRequest. If no error occurs, the conversation status is upgraded to Authenticated.
   ///
   ///  Specific Error Responses:
   ///    * ERROR_INVALID_SIGNATURE - The client's signature of the challenge is not valid.
@@ -4617,6 +5355,231 @@ namespace Iop.Homenode {
   }
 
   /// <summary>
+  ///  
+  ///  A non-customer client verifies its public key by signing the challenge. This request is similar to CheckInRequest, 
+  ///  but it is intended for non-customer clients. The client has to provide a signature in 'ConversationRequest.signature'.
+  ///
+  ///  Roles: clNonCustomer
+  ///
+  ///  Conversation status: ConversationStarted
+  /// </summary>
+  public sealed partial class VerifyIdentityRequest : pb::IMessage<VerifyIdentityRequest> {
+    private static readonly pb::MessageParser<VerifyIdentityRequest> _parser = new pb::MessageParser<VerifyIdentityRequest>(() => new VerifyIdentityRequest());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<VerifyIdentityRequest> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Homenode.IopHomeNodeReflection.Descriptor.MessageTypes[24]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public VerifyIdentityRequest() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public VerifyIdentityRequest(VerifyIdentityRequest other) : this() {
+      challenge_ = other.challenge_;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public VerifyIdentityRequest Clone() {
+      return new VerifyIdentityRequest(this);
+    }
+
+    /// <summary>Field number for the "challenge" field.</summary>
+    public const int ChallengeFieldNumber = 1;
+    private pb::ByteString challenge_ = pb::ByteString.Empty;
+    /// <summary>
+    ///  The exact copy of 'StartConversationResponse.challenge' from the start of the conversation.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString Challenge {
+      get { return challenge_; }
+      set {
+        challenge_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as VerifyIdentityRequest);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(VerifyIdentityRequest other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (Challenge != other.Challenge) return false;
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (Challenge.Length != 0) hash ^= Challenge.GetHashCode();
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (Challenge.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteBytes(Challenge);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (Challenge.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(Challenge);
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(VerifyIdentityRequest other) {
+      if (other == null) {
+        return;
+      }
+      if (other.Challenge.Length != 0) {
+        Challenge = other.Challenge;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+          case 10: {
+            Challenge = input.ReadBytes();
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///
+  ///  A response to VerifyIdentityRequest. If no error occurs, the conversation status is upgraded to Verified.
+  ///
+  ///  Specific Error Responses:
+  ///    * ERROR_INVALID_SIGNATURE - The client's signature of the challenge is not valid.
+  /// </summary>
+  public sealed partial class VerifyIdentityResponse : pb::IMessage<VerifyIdentityResponse> {
+    private static readonly pb::MessageParser<VerifyIdentityResponse> _parser = new pb::MessageParser<VerifyIdentityResponse>(() => new VerifyIdentityResponse());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<VerifyIdentityResponse> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Homenode.IopHomeNodeReflection.Descriptor.MessageTypes[25]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public VerifyIdentityResponse() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public VerifyIdentityResponse(VerifyIdentityResponse other) : this() {
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public VerifyIdentityResponse Clone() {
+      return new VerifyIdentityResponse(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as VerifyIdentityResponse);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(VerifyIdentityResponse other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(VerifyIdentityResponse other) {
+      if (other == null) {
+        return;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
   ///
   ///  A customer client updates its profile hosted at the node.
   ///  The client must make sure that its profile is complete after processing the request.
@@ -4636,7 +5599,7 @@ namespace Iop.Homenode {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Iop.Homenode.IopHomeNodeReflection.Descriptor.MessageTypes[24]; }
+      get { return global::Iop.Homenode.IopHomeNodeReflection.Descriptor.MessageTypes[26]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -5038,6 +6001,7 @@ namespace Iop.Homenode {
   ///      * Response.details == "setVersion" - 'UpdateProfileRequest.setVersion' is not set during the first request.
   ///      * Response.details == "setName" - 'UpdateProfileRequest.setName' is not set during the firts request.
   ///      * Response.details == "setLocation" - 'UpdateProfileRequest.setLocation' is not set during the firts request.
+  ///      * Response.details == "set*" - Nothing was set to be updated.
   ///      * Response.details == "version" - 'UpdateProfileRequest.version' does not contain a valid version information.
   ///      * Response.details == "name" - 'UpdateProfileRequest.name' does not contain a valid name.
   ///      * Response.details == "image" - 'UpdateProfileRequest.image' does not contain a valid PNG or JPEG image.
@@ -5051,7 +6015,7 @@ namespace Iop.Homenode {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Iop.Homenode.IopHomeNodeReflection.Descriptor.MessageTypes[25]; }
+      get { return global::Iop.Homenode.IopHomeNodeReflection.Descriptor.MessageTypes[27]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -5114,6 +6078,2291 @@ namespace Iop.Homenode {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(UpdateProfileResponse other) {
+      if (other == null) {
+        return;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///  
+  ///  A customer client cancels the home node agreement and optionally informs 
+  ///  the node about its new home node location. The node will keep the information 
+  ///  about identity's new location for some time.
+  ///
+  ///  Roles: clCustomer
+  ///
+  ///  Conversation status: Authenticated
+  /// </summary>
+  public sealed partial class CancelHomeNodeAgreementRequest : pb::IMessage<CancelHomeNodeAgreementRequest> {
+    private static readonly pb::MessageParser<CancelHomeNodeAgreementRequest> _parser = new pb::MessageParser<CancelHomeNodeAgreementRequest>(() => new CancelHomeNodeAgreementRequest());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<CancelHomeNodeAgreementRequest> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Homenode.IopHomeNodeReflection.Descriptor.MessageTypes[28]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CancelHomeNodeAgreementRequest() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CancelHomeNodeAgreementRequest(CancelHomeNodeAgreementRequest other) : this() {
+      redirectToNewHomeNode_ = other.redirectToNewHomeNode_;
+      newHomeNodeNetworkId_ = other.newHomeNodeNetworkId_;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CancelHomeNodeAgreementRequest Clone() {
+      return new CancelHomeNodeAgreementRequest(this);
+    }
+
+    /// <summary>Field number for the "redirectToNewHomeNode" field.</summary>
+    public const int RedirectToNewHomeNodeFieldNumber = 1;
+    private bool redirectToNewHomeNode_;
+    /// <summary>
+    ///  true, if the client wants to inform the home node about its new home node location, false otherwise.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool RedirectToNewHomeNode {
+      get { return redirectToNewHomeNode_; }
+      set {
+        redirectToNewHomeNode_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "newHomeNodeNetworkId" field.</summary>
+    public const int NewHomeNodeNetworkIdFieldNumber = 2;
+    private pb::ByteString newHomeNodeNetworkId_ = pb::ByteString.Empty;
+    /// <summary>
+    ///  If 'redirectToNewHomeNode' is true, an identifier of the new home node.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString NewHomeNodeNetworkId {
+      get { return newHomeNodeNetworkId_; }
+      set {
+        newHomeNodeNetworkId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as CancelHomeNodeAgreementRequest);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(CancelHomeNodeAgreementRequest other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (RedirectToNewHomeNode != other.RedirectToNewHomeNode) return false;
+      if (NewHomeNodeNetworkId != other.NewHomeNodeNetworkId) return false;
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (RedirectToNewHomeNode != false) hash ^= RedirectToNewHomeNode.GetHashCode();
+      if (NewHomeNodeNetworkId.Length != 0) hash ^= NewHomeNodeNetworkId.GetHashCode();
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (RedirectToNewHomeNode != false) {
+        output.WriteRawTag(8);
+        output.WriteBool(RedirectToNewHomeNode);
+      }
+      if (NewHomeNodeNetworkId.Length != 0) {
+        output.WriteRawTag(18);
+        output.WriteBytes(NewHomeNodeNetworkId);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (RedirectToNewHomeNode != false) {
+        size += 1 + 1;
+      }
+      if (NewHomeNodeNetworkId.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(NewHomeNodeNetworkId);
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(CancelHomeNodeAgreementRequest other) {
+      if (other == null) {
+        return;
+      }
+      if (other.RedirectToNewHomeNode != false) {
+        RedirectToNewHomeNode = other.RedirectToNewHomeNode;
+      }
+      if (other.NewHomeNodeNetworkId.Length != 0) {
+        NewHomeNodeNetworkId = other.NewHomeNodeNetworkId;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+          case 8: {
+            RedirectToNewHomeNode = input.ReadBool();
+            break;
+          }
+          case 18: {
+            NewHomeNodeNetworkId = input.ReadBytes();
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///
+  ///  A response to CancelHomeNodeAgreementRequest.
+  ///
+  ///  Specific Error Responses:
+  ///    * ERROR_NOT_FOUND - The identity is not a client of the node.
+  ///    * ERROR_INVALID_VALUE
+  ///      * Response.details == "newHomeNodeNetworkId" - 'CancelHomeNodeAgreementRequest.newHomeNodeNetworkId' is not a valid node network identifier.
+  /// </summary>
+  public sealed partial class CancelHomeNodeAgreementResponse : pb::IMessage<CancelHomeNodeAgreementResponse> {
+    private static readonly pb::MessageParser<CancelHomeNodeAgreementResponse> _parser = new pb::MessageParser<CancelHomeNodeAgreementResponse>(() => new CancelHomeNodeAgreementResponse());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<CancelHomeNodeAgreementResponse> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Homenode.IopHomeNodeReflection.Descriptor.MessageTypes[29]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CancelHomeNodeAgreementResponse() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CancelHomeNodeAgreementResponse(CancelHomeNodeAgreementResponse other) : this() {
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CancelHomeNodeAgreementResponse Clone() {
+      return new CancelHomeNodeAgreementResponse(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as CancelHomeNodeAgreementResponse);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(CancelHomeNodeAgreementResponse other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(CancelHomeNodeAgreementResponse other) {
+      if (other == null) {
+        return;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///  
+  ///  Adds (checks-in) one or more application services to the list of services that the customer 
+  ///  client supports in the current session.
+  ///
+  ///  Roles: clCustomer
+  ///
+  ///  Conversation status: Authenticated
+  /// </summary>
+  public sealed partial class ApplicationServiceAddRequest : pb::IMessage<ApplicationServiceAddRequest> {
+    private static readonly pb::MessageParser<ApplicationServiceAddRequest> _parser = new pb::MessageParser<ApplicationServiceAddRequest>(() => new ApplicationServiceAddRequest());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<ApplicationServiceAddRequest> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Homenode.IopHomeNodeReflection.Descriptor.MessageTypes[30]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ApplicationServiceAddRequest() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ApplicationServiceAddRequest(ApplicationServiceAddRequest other) : this() {
+      serviceNames_ = other.serviceNames_.Clone();
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ApplicationServiceAddRequest Clone() {
+      return new ApplicationServiceAddRequest(this);
+    }
+
+    /// <summary>Field number for the "serviceNames" field.</summary>
+    public const int ServiceNamesFieldNumber = 1;
+    private static readonly pb::FieldCodec<string> _repeated_serviceNames_codec
+        = pb::FieldCodec.ForString(10);
+    private readonly pbc::RepeatedField<string> serviceNames_ = new pbc::RepeatedField<string>();
+    /// <summary>
+    ///  List of application service names to add to the list. If a service name is already 
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<string> ServiceNames {
+      get { return serviceNames_; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as ApplicationServiceAddRequest);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(ApplicationServiceAddRequest other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if(!serviceNames_.Equals(other.serviceNames_)) return false;
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      hash ^= serviceNames_.GetHashCode();
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      serviceNames_.WriteTo(output, _repeated_serviceNames_codec);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      size += serviceNames_.CalculateSize(_repeated_serviceNames_codec);
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(ApplicationServiceAddRequest other) {
+      if (other == null) {
+        return;
+      }
+      serviceNames_.Add(other.serviceNames_);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+          case 10: {
+            serviceNames_.AddEntriesFrom(input, _repeated_serviceNames_codec);
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///
+  ///  A response to ApplicationServiceAddRequest.
+  ///
+  ///  Specific Error Responses:
+  ///    * ERROR_NOT_FOUND - The identity is not a client of the node.
+  /// </summary>
+  public sealed partial class ApplicationServiceAddResponse : pb::IMessage<ApplicationServiceAddResponse> {
+    private static readonly pb::MessageParser<ApplicationServiceAddResponse> _parser = new pb::MessageParser<ApplicationServiceAddResponse>(() => new ApplicationServiceAddResponse());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<ApplicationServiceAddResponse> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Homenode.IopHomeNodeReflection.Descriptor.MessageTypes[31]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ApplicationServiceAddResponse() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ApplicationServiceAddResponse(ApplicationServiceAddResponse other) : this() {
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ApplicationServiceAddResponse Clone() {
+      return new ApplicationServiceAddResponse(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as ApplicationServiceAddResponse);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(ApplicationServiceAddResponse other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(ApplicationServiceAddResponse other) {
+      if (other == null) {
+        return;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///  
+  ///  Removes (checks-out) a single application service from the list of services that the customer 
+  ///  client supports in the current session.
+  ///
+  ///  Roles: clCustomer
+  ///
+  ///  Conversation status: Authenticated
+  /// </summary>
+  public sealed partial class ApplicationServiceRemoveRequest : pb::IMessage<ApplicationServiceRemoveRequest> {
+    private static readonly pb::MessageParser<ApplicationServiceRemoveRequest> _parser = new pb::MessageParser<ApplicationServiceRemoveRequest>(() => new ApplicationServiceRemoveRequest());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<ApplicationServiceRemoveRequest> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Homenode.IopHomeNodeReflection.Descriptor.MessageTypes[32]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ApplicationServiceRemoveRequest() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ApplicationServiceRemoveRequest(ApplicationServiceRemoveRequest other) : this() {
+      serviceName_ = other.serviceName_;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ApplicationServiceRemoveRequest Clone() {
+      return new ApplicationServiceRemoveRequest(this);
+    }
+
+    /// <summary>Field number for the "serviceName" field.</summary>
+    public const int ServiceNameFieldNumber = 1;
+    private string serviceName_ = "";
+    /// <summary>
+    ///  Name of the application service to remove. The service must be in the customer client's list.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string ServiceName {
+      get { return serviceName_; }
+      set {
+        serviceName_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as ApplicationServiceRemoveRequest);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(ApplicationServiceRemoveRequest other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (ServiceName != other.ServiceName) return false;
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (ServiceName.Length != 0) hash ^= ServiceName.GetHashCode();
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (ServiceName.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteString(ServiceName);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (ServiceName.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(ServiceName);
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(ApplicationServiceRemoveRequest other) {
+      if (other == null) {
+        return;
+      }
+      if (other.ServiceName.Length != 0) {
+        ServiceName = other.ServiceName;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+          case 10: {
+            ServiceName = input.ReadString();
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///
+  ///  A response to ApplicationServiceRemoveRequest.
+  ///
+  ///  Specific Error Responses:
+  ///    * ERROR_NOT_FOUND - 'ApplicationServiceRemoveRequest.serviceName' does not refer to an application service that was previously added using ApplicationServiceAddRequest.
+  /// </summary>
+  public sealed partial class ApplicationServiceRemoveResponse : pb::IMessage<ApplicationServiceRemoveResponse> {
+    private static readonly pb::MessageParser<ApplicationServiceRemoveResponse> _parser = new pb::MessageParser<ApplicationServiceRemoveResponse>(() => new ApplicationServiceRemoveResponse());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<ApplicationServiceRemoveResponse> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Homenode.IopHomeNodeReflection.Descriptor.MessageTypes[33]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ApplicationServiceRemoveResponse() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ApplicationServiceRemoveResponse(ApplicationServiceRemoveResponse other) : this() {
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ApplicationServiceRemoveResponse Clone() {
+      return new ApplicationServiceRemoveResponse(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as ApplicationServiceRemoveResponse);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(ApplicationServiceRemoveResponse other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(ApplicationServiceRemoveResponse other) {
+      if (other == null) {
+        return;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///  
+  ///  Obtains a basic information about an identity hosted on the node.
+  ///  If the identity is online, the information includes a list of application services 
+  ///  that the identity supports in the currently active session.
+  ///
+  ///  Roles: clNonCustomer, clCustomer
+  /// </summary>
+  public sealed partial class GetIdentityOnlineInformationRequest : pb::IMessage<GetIdentityOnlineInformationRequest> {
+    private static readonly pb::MessageParser<GetIdentityOnlineInformationRequest> _parser = new pb::MessageParser<GetIdentityOnlineInformationRequest>(() => new GetIdentityOnlineInformationRequest());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<GetIdentityOnlineInformationRequest> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Homenode.IopHomeNodeReflection.Descriptor.MessageTypes[34]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public GetIdentityOnlineInformationRequest() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public GetIdentityOnlineInformationRequest(GetIdentityOnlineInformationRequest other) : this() {
+      identityNetworkId_ = other.identityNetworkId_;
+      includeProfileImage_ = other.includeProfileImage_;
+      includeThumbnailImage_ = other.includeThumbnailImage_;
+      includeApplicationServices_ = other.includeApplicationServices_;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public GetIdentityOnlineInformationRequest Clone() {
+      return new GetIdentityOnlineInformationRequest(this);
+    }
+
+    /// <summary>Field number for the "identityNetworkId" field.</summary>
+    public const int IdentityNetworkIdFieldNumber = 1;
+    private pb::ByteString identityNetworkId_ = pb::ByteString.Empty;
+    /// <summary>
+    ///  Identity's network identifier.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString IdentityNetworkId {
+      get { return identityNetworkId_; }
+      set {
+        identityNetworkId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "includeProfileImage" field.</summary>
+    public const int IncludeProfileImageFieldNumber = 2;
+    private bool includeProfileImage_;
+    /// <summary>
+    ///  If set to true, the response will include a profile image.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool IncludeProfileImage {
+      get { return includeProfileImage_; }
+      set {
+        includeProfileImage_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "includeThumbnailImage" field.</summary>
+    public const int IncludeThumbnailImageFieldNumber = 3;
+    private bool includeThumbnailImage_;
+    /// <summary>
+    ///  If set to true, the response will include a thumbnail image.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool IncludeThumbnailImage {
+      get { return includeThumbnailImage_; }
+      set {
+        includeThumbnailImage_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "includeApplicationServices" field.</summary>
+    public const int IncludeApplicationServicesFieldNumber = 4;
+    private bool includeApplicationServices_;
+    /// <summary>
+    ///  If set to true and the given identity is online, the response will include 
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool IncludeApplicationServices {
+      get { return includeApplicationServices_; }
+      set {
+        includeApplicationServices_ = value;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as GetIdentityOnlineInformationRequest);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(GetIdentityOnlineInformationRequest other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (IdentityNetworkId != other.IdentityNetworkId) return false;
+      if (IncludeProfileImage != other.IncludeProfileImage) return false;
+      if (IncludeThumbnailImage != other.IncludeThumbnailImage) return false;
+      if (IncludeApplicationServices != other.IncludeApplicationServices) return false;
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (IdentityNetworkId.Length != 0) hash ^= IdentityNetworkId.GetHashCode();
+      if (IncludeProfileImage != false) hash ^= IncludeProfileImage.GetHashCode();
+      if (IncludeThumbnailImage != false) hash ^= IncludeThumbnailImage.GetHashCode();
+      if (IncludeApplicationServices != false) hash ^= IncludeApplicationServices.GetHashCode();
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (IdentityNetworkId.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteBytes(IdentityNetworkId);
+      }
+      if (IncludeProfileImage != false) {
+        output.WriteRawTag(16);
+        output.WriteBool(IncludeProfileImage);
+      }
+      if (IncludeThumbnailImage != false) {
+        output.WriteRawTag(24);
+        output.WriteBool(IncludeThumbnailImage);
+      }
+      if (IncludeApplicationServices != false) {
+        output.WriteRawTag(32);
+        output.WriteBool(IncludeApplicationServices);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (IdentityNetworkId.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(IdentityNetworkId);
+      }
+      if (IncludeProfileImage != false) {
+        size += 1 + 1;
+      }
+      if (IncludeThumbnailImage != false) {
+        size += 1 + 1;
+      }
+      if (IncludeApplicationServices != false) {
+        size += 1 + 1;
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(GetIdentityOnlineInformationRequest other) {
+      if (other == null) {
+        return;
+      }
+      if (other.IdentityNetworkId.Length != 0) {
+        IdentityNetworkId = other.IdentityNetworkId;
+      }
+      if (other.IncludeProfileImage != false) {
+        IncludeProfileImage = other.IncludeProfileImage;
+      }
+      if (other.IncludeThumbnailImage != false) {
+        IncludeThumbnailImage = other.IncludeThumbnailImage;
+      }
+      if (other.IncludeApplicationServices != false) {
+        IncludeApplicationServices = other.IncludeApplicationServices;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+          case 10: {
+            IdentityNetworkId = input.ReadBytes();
+            break;
+          }
+          case 16: {
+            IncludeProfileImage = input.ReadBool();
+            break;
+          }
+          case 24: {
+            IncludeThumbnailImage = input.ReadBool();
+            break;
+          }
+          case 32: {
+            IncludeApplicationServices = input.ReadBool();
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///
+  ///  A response to GetIdentityOnlineInformationRequest.
+  ///
+  ///  Specific Error Responses:
+  ///    * ERROR_NOT_FOUND - 'ApplicationServiceRemoveRequest.identityNetworkId' does not identify an identity hosted by the node.
+  /// </summary>
+  public sealed partial class GetIdentityOnlineInformationResponse : pb::IMessage<GetIdentityOnlineInformationResponse> {
+    private static readonly pb::MessageParser<GetIdentityOnlineInformationResponse> _parser = new pb::MessageParser<GetIdentityOnlineInformationResponse>(() => new GetIdentityOnlineInformationResponse());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<GetIdentityOnlineInformationResponse> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Homenode.IopHomeNodeReflection.Descriptor.MessageTypes[35]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public GetIdentityOnlineInformationResponse() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public GetIdentityOnlineInformationResponse(GetIdentityOnlineInformationResponse other) : this() {
+      isOnline_ = other.isOnline_;
+      identityPublicKey_ = other.identityPublicKey_;
+      name_ = other.name_;
+      extraData_ = other.extraData_;
+      profileImage_ = other.profileImage_;
+      thumbnailImage_ = other.thumbnailImage_;
+      applicationServices_ = other.applicationServices_.Clone();
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public GetIdentityOnlineInformationResponse Clone() {
+      return new GetIdentityOnlineInformationResponse(this);
+    }
+
+    /// <summary>Field number for the "isOnline" field.</summary>
+    public const int IsOnlineFieldNumber = 1;
+    private bool isOnline_;
+    /// <summary>
+    ///  True if the requested identity is currently online.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool IsOnline {
+      get { return isOnline_; }
+      set {
+        isOnline_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "identityPublicKey" field.</summary>
+    public const int IdentityPublicKeyFieldNumber = 2;
+    private pb::ByteString identityPublicKey_ = pb::ByteString.Empty;
+    /// <summary>
+    ///  The requested identity's public key.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString IdentityPublicKey {
+      get { return identityPublicKey_; }
+      set {
+        identityPublicKey_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "name" field.</summary>
+    public const int NameFieldNumber = 3;
+    private string name_ = "";
+    /// <summary>
+    ///  The requested identity's name.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string Name {
+      get { return name_; }
+      set {
+        name_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "extraData" field.</summary>
+    public const int ExtraDataFieldNumber = 4;
+    private string extraData_ = "";
+    /// <summary>
+    ///  The requested identity's extra data.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string ExtraData {
+      get { return extraData_; }
+      set {
+        extraData_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "profileImage" field.</summary>
+    public const int ProfileImageFieldNumber = 5;
+    private pb::ByteString profileImage_ = pb::ByteString.Empty;
+    /// <summary>
+    ///  If 'GetIdentityOnlineInformationRequest.includeProfileImage' was set, this contains the requested identity's profile image.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString ProfileImage {
+      get { return profileImage_; }
+      set {
+        profileImage_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "thumbnailImage" field.</summary>
+    public const int ThumbnailImageFieldNumber = 6;
+    private pb::ByteString thumbnailImage_ = pb::ByteString.Empty;
+    /// <summary>
+    ///  If 'GetIdentityOnlineInformationRequest.includeThumbnailImage' was set, this contains the requested identity's thumbnail image.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString ThumbnailImage {
+      get { return thumbnailImage_; }
+      set {
+        thumbnailImage_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "applicationServices" field.</summary>
+    public const int ApplicationServicesFieldNumber = 10;
+    private static readonly pb::FieldCodec<string> _repeated_applicationServices_codec
+        = pb::FieldCodec.ForString(82);
+    private readonly pbc::RepeatedField<string> applicationServices_ = new pbc::RepeatedField<string>();
+    /// <summary>
+    ///  If 'GetIdentityOnlineInformationRequest.includeApplicationServices' was set and if 'isOnline' is true, this contains 
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<string> ApplicationServices {
+      get { return applicationServices_; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as GetIdentityOnlineInformationResponse);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(GetIdentityOnlineInformationResponse other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (IsOnline != other.IsOnline) return false;
+      if (IdentityPublicKey != other.IdentityPublicKey) return false;
+      if (Name != other.Name) return false;
+      if (ExtraData != other.ExtraData) return false;
+      if (ProfileImage != other.ProfileImage) return false;
+      if (ThumbnailImage != other.ThumbnailImage) return false;
+      if(!applicationServices_.Equals(other.applicationServices_)) return false;
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (IsOnline != false) hash ^= IsOnline.GetHashCode();
+      if (IdentityPublicKey.Length != 0) hash ^= IdentityPublicKey.GetHashCode();
+      if (Name.Length != 0) hash ^= Name.GetHashCode();
+      if (ExtraData.Length != 0) hash ^= ExtraData.GetHashCode();
+      if (ProfileImage.Length != 0) hash ^= ProfileImage.GetHashCode();
+      if (ThumbnailImage.Length != 0) hash ^= ThumbnailImage.GetHashCode();
+      hash ^= applicationServices_.GetHashCode();
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (IsOnline != false) {
+        output.WriteRawTag(8);
+        output.WriteBool(IsOnline);
+      }
+      if (IdentityPublicKey.Length != 0) {
+        output.WriteRawTag(18);
+        output.WriteBytes(IdentityPublicKey);
+      }
+      if (Name.Length != 0) {
+        output.WriteRawTag(26);
+        output.WriteString(Name);
+      }
+      if (ExtraData.Length != 0) {
+        output.WriteRawTag(34);
+        output.WriteString(ExtraData);
+      }
+      if (ProfileImage.Length != 0) {
+        output.WriteRawTag(42);
+        output.WriteBytes(ProfileImage);
+      }
+      if (ThumbnailImage.Length != 0) {
+        output.WriteRawTag(50);
+        output.WriteBytes(ThumbnailImage);
+      }
+      applicationServices_.WriteTo(output, _repeated_applicationServices_codec);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (IsOnline != false) {
+        size += 1 + 1;
+      }
+      if (IdentityPublicKey.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(IdentityPublicKey);
+      }
+      if (Name.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Name);
+      }
+      if (ExtraData.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(ExtraData);
+      }
+      if (ProfileImage.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(ProfileImage);
+      }
+      if (ThumbnailImage.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(ThumbnailImage);
+      }
+      size += applicationServices_.CalculateSize(_repeated_applicationServices_codec);
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(GetIdentityOnlineInformationResponse other) {
+      if (other == null) {
+        return;
+      }
+      if (other.IsOnline != false) {
+        IsOnline = other.IsOnline;
+      }
+      if (other.IdentityPublicKey.Length != 0) {
+        IdentityPublicKey = other.IdentityPublicKey;
+      }
+      if (other.Name.Length != 0) {
+        Name = other.Name;
+      }
+      if (other.ExtraData.Length != 0) {
+        ExtraData = other.ExtraData;
+      }
+      if (other.ProfileImage.Length != 0) {
+        ProfileImage = other.ProfileImage;
+      }
+      if (other.ThumbnailImage.Length != 0) {
+        ThumbnailImage = other.ThumbnailImage;
+      }
+      applicationServices_.Add(other.applicationServices_);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+          case 8: {
+            IsOnline = input.ReadBool();
+            break;
+          }
+          case 18: {
+            IdentityPublicKey = input.ReadBytes();
+            break;
+          }
+          case 26: {
+            Name = input.ReadString();
+            break;
+          }
+          case 34: {
+            ExtraData = input.ReadString();
+            break;
+          }
+          case 42: {
+            ProfileImage = input.ReadBytes();
+            break;
+          }
+          case 50: {
+            ThumbnailImage = input.ReadBytes();
+            break;
+          }
+          case 82: {
+            applicationServices_.AddEntriesFrom(input, _repeated_applicationServices_codec);
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///  
+  ///  Request to establish a bridged connection between a requestor (the caller) and an identity (the callee) hosted on the node 
+  ///  via one of its supported application service. The callee has to be online, otherwise the request will fail.
+  ///
+  ///  The node informs the callee about the incoming call and issues a token pair (caller's and callee's tokens) to identify the caller 
+  ///  and the callee on the Application Service Interface. The callee's token is sent to the callee with the information about the incoming call. 
+  ///  If the callee wants to accept the call, the node informs the caller and sends it the caller's token. Both clients are then expected 
+  ///  to establish new connections to the node's Application Service Interface and use their tokens to send a message to the other client.
+  ///
+  ///  Roles: clNonCustomer, clCustomer
+  ///
+  ///  Conversation status: Verified
+  /// </summary>
+  public sealed partial class CallIdentityApplicationServiceRequest : pb::IMessage<CallIdentityApplicationServiceRequest> {
+    private static readonly pb::MessageParser<CallIdentityApplicationServiceRequest> _parser = new pb::MessageParser<CallIdentityApplicationServiceRequest>(() => new CallIdentityApplicationServiceRequest());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<CallIdentityApplicationServiceRequest> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Homenode.IopHomeNodeReflection.Descriptor.MessageTypes[36]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CallIdentityApplicationServiceRequest() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CallIdentityApplicationServiceRequest(CallIdentityApplicationServiceRequest other) : this() {
+      identityNetworkId_ = other.identityNetworkId_;
+      serviceName_ = other.serviceName_;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CallIdentityApplicationServiceRequest Clone() {
+      return new CallIdentityApplicationServiceRequest(this);
+    }
+
+    /// <summary>Field number for the "identityNetworkId" field.</summary>
+    public const int IdentityNetworkIdFieldNumber = 1;
+    private pb::ByteString identityNetworkId_ = pb::ByteString.Empty;
+    /// <summary>
+    ///  Network identifier of the identity to call.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString IdentityNetworkId {
+      get { return identityNetworkId_; }
+      set {
+        identityNetworkId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "serviceName" field.</summary>
+    public const int ServiceNameFieldNumber = 2;
+    private string serviceName_ = "";
+    /// <summary>
+    ///  Name of the application service to use.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string ServiceName {
+      get { return serviceName_; }
+      set {
+        serviceName_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as CallIdentityApplicationServiceRequest);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(CallIdentityApplicationServiceRequest other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (IdentityNetworkId != other.IdentityNetworkId) return false;
+      if (ServiceName != other.ServiceName) return false;
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (IdentityNetworkId.Length != 0) hash ^= IdentityNetworkId.GetHashCode();
+      if (ServiceName.Length != 0) hash ^= ServiceName.GetHashCode();
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (IdentityNetworkId.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteBytes(IdentityNetworkId);
+      }
+      if (ServiceName.Length != 0) {
+        output.WriteRawTag(18);
+        output.WriteString(ServiceName);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (IdentityNetworkId.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(IdentityNetworkId);
+      }
+      if (ServiceName.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(ServiceName);
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(CallIdentityApplicationServiceRequest other) {
+      if (other == null) {
+        return;
+      }
+      if (other.IdentityNetworkId.Length != 0) {
+        IdentityNetworkId = other.IdentityNetworkId;
+      }
+      if (other.ServiceName.Length != 0) {
+        ServiceName = other.ServiceName;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+          case 10: {
+            IdentityNetworkId = input.ReadBytes();
+            break;
+          }
+          case 18: {
+            ServiceName = input.ReadString();
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///
+  ///  A response to CallIdentityApplicationServiceRequest.
+  ///
+  ///  Specific Error Responses:
+  ///    * ERROR_NOT_AVAILABLE - The callee is not online.
+  ///    * ERROR_REJECTED - The callee rejected the call.
+  ///    * ERROR_INVALID_VALUE
+  ///      * Response.details == "identityNetworkId" - 'CallIdentityApplicationServiceRequest.identityNetworkId' does not identify an identity hosted by the node.
+  ///      * Response.details == "serviceName" - 'CallIdentityApplicationServiceRequest.serviceName' is not an application service supported by the callee in the current session.
+  /// </summary>
+  public sealed partial class CallIdentityApplicationServiceResponse : pb::IMessage<CallIdentityApplicationServiceResponse> {
+    private static readonly pb::MessageParser<CallIdentityApplicationServiceResponse> _parser = new pb::MessageParser<CallIdentityApplicationServiceResponse>(() => new CallIdentityApplicationServiceResponse());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<CallIdentityApplicationServiceResponse> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Homenode.IopHomeNodeReflection.Descriptor.MessageTypes[37]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CallIdentityApplicationServiceResponse() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CallIdentityApplicationServiceResponse(CallIdentityApplicationServiceResponse other) : this() {
+      callerToken_ = other.callerToken_;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CallIdentityApplicationServiceResponse Clone() {
+      return new CallIdentityApplicationServiceResponse(this);
+    }
+
+    /// <summary>Field number for the "callerToken" field.</summary>
+    public const int CallerTokenFieldNumber = 1;
+    private pb::ByteString callerToken_ = pb::ByteString.Empty;
+    /// <summary>
+    ///  Token for the caller to identify the session on the Application Service Interface.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString CallerToken {
+      get { return callerToken_; }
+      set {
+        callerToken_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as CallIdentityApplicationServiceResponse);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(CallIdentityApplicationServiceResponse other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (CallerToken != other.CallerToken) return false;
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (CallerToken.Length != 0) hash ^= CallerToken.GetHashCode();
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (CallerToken.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteBytes(CallerToken);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (CallerToken.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(CallerToken);
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(CallIdentityApplicationServiceResponse other) {
+      if (other == null) {
+        return;
+      }
+      if (other.CallerToken.Length != 0) {
+        CallerToken = other.CallerToken;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+          case 10: {
+            CallerToken = input.ReadBytes();
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///  
+  ///  This request is sent by node to its customer client (the callee) when another client (the caller) wants 
+  ///  to establish a call over the customer client's application service.
+  ///
+  ///  Roles: clCustomer
+  ///
+  ///  Conversation status: Authenticated
+  /// </summary>
+  public sealed partial class IncomingCallNotificationRequest : pb::IMessage<IncomingCallNotificationRequest> {
+    private static readonly pb::MessageParser<IncomingCallNotificationRequest> _parser = new pb::MessageParser<IncomingCallNotificationRequest>(() => new IncomingCallNotificationRequest());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<IncomingCallNotificationRequest> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Homenode.IopHomeNodeReflection.Descriptor.MessageTypes[38]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public IncomingCallNotificationRequest() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public IncomingCallNotificationRequest(IncomingCallNotificationRequest other) : this() {
+      callerPublicKey_ = other.callerPublicKey_;
+      serviceName_ = other.serviceName_;
+      calleeToken_ = other.calleeToken_;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public IncomingCallNotificationRequest Clone() {
+      return new IncomingCallNotificationRequest(this);
+    }
+
+    /// <summary>Field number for the "callerPublicKey" field.</summary>
+    public const int CallerPublicKeyFieldNumber = 1;
+    private pb::ByteString callerPublicKey_ = pb::ByteString.Empty;
+    /// <summary>
+    ///  Public key of the caller.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString CallerPublicKey {
+      get { return callerPublicKey_; }
+      set {
+        callerPublicKey_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "serviceName" field.</summary>
+    public const int ServiceNameFieldNumber = 2;
+    private string serviceName_ = "";
+    /// <summary>
+    ///  Name of the application service the caller wants to use.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string ServiceName {
+      get { return serviceName_; }
+      set {
+        serviceName_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "calleeToken" field.</summary>
+    public const int CalleeTokenFieldNumber = 3;
+    private pb::ByteString calleeToken_ = pb::ByteString.Empty;
+    /// <summary>
+    ///  Token for the callee to identify the session on the Application Service Interface.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString CalleeToken {
+      get { return calleeToken_; }
+      set {
+        calleeToken_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as IncomingCallNotificationRequest);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(IncomingCallNotificationRequest other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (CallerPublicKey != other.CallerPublicKey) return false;
+      if (ServiceName != other.ServiceName) return false;
+      if (CalleeToken != other.CalleeToken) return false;
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (CallerPublicKey.Length != 0) hash ^= CallerPublicKey.GetHashCode();
+      if (ServiceName.Length != 0) hash ^= ServiceName.GetHashCode();
+      if (CalleeToken.Length != 0) hash ^= CalleeToken.GetHashCode();
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (CallerPublicKey.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteBytes(CallerPublicKey);
+      }
+      if (ServiceName.Length != 0) {
+        output.WriteRawTag(18);
+        output.WriteString(ServiceName);
+      }
+      if (CalleeToken.Length != 0) {
+        output.WriteRawTag(26);
+        output.WriteBytes(CalleeToken);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (CallerPublicKey.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(CallerPublicKey);
+      }
+      if (ServiceName.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(ServiceName);
+      }
+      if (CalleeToken.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(CalleeToken);
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(IncomingCallNotificationRequest other) {
+      if (other == null) {
+        return;
+      }
+      if (other.CallerPublicKey.Length != 0) {
+        CallerPublicKey = other.CallerPublicKey;
+      }
+      if (other.ServiceName.Length != 0) {
+        ServiceName = other.ServiceName;
+      }
+      if (other.CalleeToken.Length != 0) {
+        CalleeToken = other.CalleeToken;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+          case 10: {
+            CallerPublicKey = input.ReadBytes();
+            break;
+          }
+          case 18: {
+            ServiceName = input.ReadString();
+            break;
+          }
+          case 26: {
+            CalleeToken = input.ReadBytes();
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///
+  ///  A response to CallIdentityApplicationServiceRequest. This is sent by the customer client (the callee) to its home node.
+  ///
+  ///  Specific Error Responses:
+  ///    * ERROR_REJECTED - The callee rejects the call.
+  /// </summary>
+  public sealed partial class IncomingCallNotificationResponse : pb::IMessage<IncomingCallNotificationResponse> {
+    private static readonly pb::MessageParser<IncomingCallNotificationResponse> _parser = new pb::MessageParser<IncomingCallNotificationResponse>(() => new IncomingCallNotificationResponse());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<IncomingCallNotificationResponse> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Homenode.IopHomeNodeReflection.Descriptor.MessageTypes[39]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public IncomingCallNotificationResponse() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public IncomingCallNotificationResponse(IncomingCallNotificationResponse other) : this() {
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public IncomingCallNotificationResponse Clone() {
+      return new IncomingCallNotificationResponse(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as IncomingCallNotificationResponse);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(IncomingCallNotificationResponse other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(IncomingCallNotificationResponse other) {
+      if (other == null) {
+        return;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///  
+  ///  This request is sent by a client to the node in order to deliver a message to the other client over the opened 
+  ///  application service call session.
+  ///
+  ///  Roles: clAppService
+  /// </summary>
+  public sealed partial class ApplicationServiceSendMessageRequest : pb::IMessage<ApplicationServiceSendMessageRequest> {
+    private static readonly pb::MessageParser<ApplicationServiceSendMessageRequest> _parser = new pb::MessageParser<ApplicationServiceSendMessageRequest>(() => new ApplicationServiceSendMessageRequest());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<ApplicationServiceSendMessageRequest> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Homenode.IopHomeNodeReflection.Descriptor.MessageTypes[40]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ApplicationServiceSendMessageRequest() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ApplicationServiceSendMessageRequest(ApplicationServiceSendMessageRequest other) : this() {
+      token_ = other.token_;
+      message_ = other.message_;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ApplicationServiceSendMessageRequest Clone() {
+      return new ApplicationServiceSendMessageRequest(this);
+    }
+
+    /// <summary>Field number for the "token" field.</summary>
+    public const int TokenFieldNumber = 1;
+    private pb::ByteString token_ = pb::ByteString.Empty;
+    /// <summary>
+    ///  Client's token to identify the session.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString Token {
+      get { return token_; }
+      set {
+        token_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "message" field.</summary>
+    public const int MessageFieldNumber = 2;
+    private pb::ByteString message_ = pb::ByteString.Empty;
+    /// <summary>
+    ///  Message to send to the other client.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString Message {
+      get { return message_; }
+      set {
+        message_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as ApplicationServiceSendMessageRequest);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(ApplicationServiceSendMessageRequest other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (Token != other.Token) return false;
+      if (Message != other.Message) return false;
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (Token.Length != 0) hash ^= Token.GetHashCode();
+      if (Message.Length != 0) hash ^= Message.GetHashCode();
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (Token.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteBytes(Token);
+      }
+      if (Message.Length != 0) {
+        output.WriteRawTag(18);
+        output.WriteBytes(Message);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (Token.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(Token);
+      }
+      if (Message.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(Message);
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(ApplicationServiceSendMessageRequest other) {
+      if (other == null) {
+        return;
+      }
+      if (other.Token.Length != 0) {
+        Token = other.Token;
+      }
+      if (other.Message.Length != 0) {
+        Message = other.Message;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+          case 10: {
+            Token = input.ReadBytes();
+            break;
+          }
+          case 18: {
+            Message = input.ReadBytes();
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///
+  ///  A response to ApplicationServiceSendMessageRequest. This is sent by the node to the client to confirm that it sent 
+  ///  the message to the other client.
+  ///  
+  ///  If the connection to one of the clients is terminated, the node closes the connection to the other client.
+  /// </summary>
+  public sealed partial class ApplicationServiceSendMessageResponse : pb::IMessage<ApplicationServiceSendMessageResponse> {
+    private static readonly pb::MessageParser<ApplicationServiceSendMessageResponse> _parser = new pb::MessageParser<ApplicationServiceSendMessageResponse>(() => new ApplicationServiceSendMessageResponse());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<ApplicationServiceSendMessageResponse> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Homenode.IopHomeNodeReflection.Descriptor.MessageTypes[41]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ApplicationServiceSendMessageResponse() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ApplicationServiceSendMessageResponse(ApplicationServiceSendMessageResponse other) : this() {
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ApplicationServiceSendMessageResponse Clone() {
+      return new ApplicationServiceSendMessageResponse(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as ApplicationServiceSendMessageResponse);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(ApplicationServiceSendMessageResponse other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(ApplicationServiceSendMessageResponse other) {
+      if (other == null) {
+        return;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///  
+  ///  This request is sent by a home node after it received ApplicationServiceSendMessageRequest from one of the clients.
+  ///  This forwards the message to its intended recipient.
+  ///
+  ///  Roles: clAppService
+  /// </summary>
+  public sealed partial class ApplicationServiceReceiveMessageNotificationRequest : pb::IMessage<ApplicationServiceReceiveMessageNotificationRequest> {
+    private static readonly pb::MessageParser<ApplicationServiceReceiveMessageNotificationRequest> _parser = new pb::MessageParser<ApplicationServiceReceiveMessageNotificationRequest>(() => new ApplicationServiceReceiveMessageNotificationRequest());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<ApplicationServiceReceiveMessageNotificationRequest> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Homenode.IopHomeNodeReflection.Descriptor.MessageTypes[42]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ApplicationServiceReceiveMessageNotificationRequest() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ApplicationServiceReceiveMessageNotificationRequest(ApplicationServiceReceiveMessageNotificationRequest other) : this() {
+      message_ = other.message_;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ApplicationServiceReceiveMessageNotificationRequest Clone() {
+      return new ApplicationServiceReceiveMessageNotificationRequest(this);
+    }
+
+    /// <summary>Field number for the "message" field.</summary>
+    public const int MessageFieldNumber = 1;
+    private pb::ByteString message_ = pb::ByteString.Empty;
+    /// <summary>
+    ///  Message that was sent to the intended recipient - a copy of 'ApplicationServiceSendMessageRequest.message'.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString Message {
+      get { return message_; }
+      set {
+        message_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as ApplicationServiceReceiveMessageNotificationRequest);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(ApplicationServiceReceiveMessageNotificationRequest other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (Message != other.Message) return false;
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (Message.Length != 0) hash ^= Message.GetHashCode();
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (Message.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteBytes(Message);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (Message.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(Message);
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(ApplicationServiceReceiveMessageNotificationRequest other) {
+      if (other == null) {
+        return;
+      }
+      if (other.Message.Length != 0) {
+        Message = other.Message;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+          case 10: {
+            Message = input.ReadBytes();
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///
+  ///  A response to ApplicationServiceReceiveMessageNotificationRequest.
+  ///  
+  /// </summary>
+  public sealed partial class ApplicationServiceReceiveMessageNotificationResponse : pb::IMessage<ApplicationServiceReceiveMessageNotificationResponse> {
+    private static readonly pb::MessageParser<ApplicationServiceReceiveMessageNotificationResponse> _parser = new pb::MessageParser<ApplicationServiceReceiveMessageNotificationResponse>(() => new ApplicationServiceReceiveMessageNotificationResponse());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<ApplicationServiceReceiveMessageNotificationResponse> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Homenode.IopHomeNodeReflection.Descriptor.MessageTypes[43]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ApplicationServiceReceiveMessageNotificationResponse() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ApplicationServiceReceiveMessageNotificationResponse(ApplicationServiceReceiveMessageNotificationResponse other) : this() {
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ApplicationServiceReceiveMessageNotificationResponse Clone() {
+      return new ApplicationServiceReceiveMessageNotificationResponse(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as ApplicationServiceReceiveMessageNotificationResponse);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(ApplicationServiceReceiveMessageNotificationResponse other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(ApplicationServiceReceiveMessageNotificationResponse other) {
       if (other == null) {
         return;
       }

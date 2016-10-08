@@ -160,7 +160,12 @@ namespace HomeNetCrypto
     /// <returns>SHA1 hash in binary form.</returns>
     public static byte[] Sha1(byte[] Data)
     {
-      return Sha1Engine.ComputeHash(Data);
+      byte[] res = null;
+      lock (Sha1Engine)
+      {
+        res = Sha1Engine.ComputeHash(Data);
+      }
+      return res;
     }
   }
 }

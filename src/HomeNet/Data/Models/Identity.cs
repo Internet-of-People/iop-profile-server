@@ -26,13 +26,17 @@ namespace HomeNet.Data.Models
     /// <summary>Maximum number of bytes that profile extra data can occupy.</summary>
     public const int MaxProfileExtraDataLengthBytes = 200;
 
+    /// <summary>Length in bytes of node/identity identifiers.</summary>
+    public const int IdentifierLength = 20;
 
     /// <summary>Identity identifier is SHA1 hash of identity's public key.</summary>
-    [MaxLength(20)]
+    /// <remarks>This is index - see HomeNet.Data.Context.OnModelCreating.</remarks>
+    [MaxLength(IdentifierLength)]
     public byte[] IdentityId { get; set; }
 
     /// <summary>Identifier of the home node or empty array if the identity is hosted by this node.</summary>
-    [MaxLength(20)]
+    /// <remarks>This is index - see HomeNet.Data.Context.OnModelCreating.</remarks>
+    [MaxLength(IdentifierLength)]
     public byte[] HomeNodeId { get; set; }
 
     /// <summary>Cryptographic public key that represents the identity.</summary>
@@ -49,14 +53,51 @@ namespace HomeNet.Data.Models
     public byte[] Version { get; set; }
 
     /// <summary>User defined profile name.</summary>
+    /// <remarks>This is index - see HomeNet.Data.Context.OnModelCreating.</remarks>
     [Required(AllowEmptyStrings = true)]
     [MaxLength(MaxProfileNameLengthBytes)]
     public string Name { get; set; }
 
     /// <summary>Profile type.</summary>
+    /// <remarks>This is index - see HomeNet.Data.Context.OnModelCreating.</remarks>
     [Required]
     [MaxLength(32)]
     public string Type { get; set; }
+
+
+    /// <summary>Encoded representation of the user's initial GPS location.</summary>
+    public uint InitialLocationEncoded { get; set; }
+
+    /// <summary>User defined extra data that serve for satisfying search queries in HomeNet.</summary>
+    /// <remarks>This is index - see HomeNet.Data.Context.OnModelCreating.</remarks>
+    [MaxLength(200)]
+    public string ExtraData { get; set; }
+
+    /// <summary>
+    /// Expiration date after which this whole record can be deleted.
+    /// This is used in case of the node clients when they change their home node 
+    /// and the node holds the redirection information. The redirect is maintained 
+    /// only until the expiration date.
+    /// 
+    /// In the IdentityRepository, if ExpirationDate is null, the identity's contract 
+    /// is valid. If it is not null, it has been cancelled.
+    /// </summary>
+    /// <remarks>This is index - see HomeNet.Data.Context.OnModelCreating.</remarks>
+    public DateTime? ExpirationDate { get; set; }
+
+
+
+
+
+    // Profile images are stored on the disk and it can rarely happen that these images 
+    // are not deleted with the identity record that used them. If this is a problem, 
+    // we should implement a garbage collector for these files, which would first create 
+    // a snapshot of all image files in the images folder and then get the list of images 
+    // of all identities in the database. Image files that are not referenced from database 
+    // can be deleted. This is not implemented at this moment. An alternative solution to that 
+    // garbage collector approach would be to ensure deletion of the images. However, 
+    // the additional complexity would probably not justify the rare frequency of occurance
+    // of this problem.
 
     /// <summary>Guid of user defined profile picture, which data is stored on disk.</summary>
     public Guid? ProfileImage { get; set; }
@@ -64,12 +105,7 @@ namespace HomeNet.Data.Models
     /// <summary>Guid of thumbnail profile picture, which data is stored on disk.</summary>
     public Guid? ThumbnailImage { get; set; }
 
-    /// <summary>Encoded representation of the user's initial GPS location.</summary>
-    public uint InitialLocationEncoded { get; set; }
 
-    /// <summary>User defined extra data that serve for satisfying search queries in HomeNet.</summary>
-    [MaxLength(200)]
-    public string ExtraData { get; set; }
 
     /// <summary>Profile image binary data that are not stored into database.</summary>
     private byte[] profileImageData { get; set; }
@@ -79,16 +115,17 @@ namespace HomeNet.Data.Models
 
 
 
+
     /// <summary>
     /// Loads profile image data to profileImageData field.
     /// </summary>
     /// <returns>true if the function succeeds, false otherwise.</returns>
-    public bool LoadProfileImageData()
+    public async Task<bool> LoadProfileImageDataAsync()
     {
       if (ProfileImage == null)
         return false;
 
-      profileImageData = Utils.ImageHelper.GetImageData(ProfileImage.Value);
+      profileImageData = await Utils.ImageHelper.GetImageDataAsync(ProfileImage.Value);
       return profileImageData != null;
     }
 
@@ -96,12 +133,12 @@ namespace HomeNet.Data.Models
     /// Loads thumbnail image data to thumbnailImageData field.
     /// </summary>
     /// <returns>true if the function succeeds, false otherwise.</returns>
-    public bool LoadThumbnailImageData()
+    public async Task<bool> LoadThumbnailImageDataAsync()
     {
       if (ThumbnailImage == null)
         return false;
 
-      thumbnailImageData = Utils.ImageHelper.GetImageData(ThumbnailImage.Value);
+      thumbnailImageData = await Utils.ImageHelper.GetImageDataAsync(ThumbnailImage.Value);
       return thumbnailImageData != null;
     }
 
@@ -109,12 +146,12 @@ namespace HomeNet.Data.Models
     /// Saves profile image data to a file provided that profileImageData field is initialized.
     /// </summary>
     /// <returns>true if the function succeeds, false otherwise.</returns>
-    public bool SaveProfileImageData()
+    public async Task<bool> SaveProfileImageDataAsync()
     {
       if (ProfileImage == null)
         return false;
 
-      return Utils.ImageHelper.SaveImageData(ProfileImage.Value, profileImageData);
+      return await Utils.ImageHelper.SaveImageDataAsync(ProfileImage.Value, profileImageData);
     }
 
     /// <summary>
@@ -122,13 +159,13 @@ namespace HomeNet.Data.Models
     /// </summary>
     /// <param name="Data">Binary image data to set and save.</param>
     /// <returns>true if the function succeeds, false otherwise.</returns>
-    public bool SaveProfileImageData(byte[] Data)
+    public async Task<bool> SaveProfileImageDataAsync(byte[] Data)
     {
       if (ProfileImage == null)
         return false;
 
       profileImageData = Data;
-      return Utils.ImageHelper.SaveImageData(ProfileImage.Value, profileImageData);
+      return await Utils.ImageHelper.SaveImageDataAsync(ProfileImage.Value, profileImageData);
     }
 
 
@@ -136,12 +173,12 @@ namespace HomeNet.Data.Models
     /// Saves thumbnail image data to a file provided that thumbnailImageData field is initialized.
     /// </summary>
     /// <returns>true if the function succeeds, false otherwise.</returns>
-    public bool SaveThumbnailImageData()
+    public async Task<bool> SaveThumbnailImageDataAsync()
     {
       if (ThumbnailImage == null)
         return false;
 
-      return Utils.ImageHelper.SaveImageData(ThumbnailImage.Value, thumbnailImageData);
+      return await Utils.ImageHelper.SaveImageDataAsync(ThumbnailImage.Value, thumbnailImageData);
     }
 
     /// <summary>
@@ -149,13 +186,13 @@ namespace HomeNet.Data.Models
     /// </summary>
     /// <param name="Data">Binary image data to set and save.</param>
     /// <returns>true if the function succeeds, false otherwise.</returns>
-    public bool SaveThumbnailImageData(byte[] Data)
+    public async Task<bool> SaveThumbnailImageDataAsync(byte[] Data)
     {
       if (ThumbnailImage == null)
         return false;
 
       thumbnailImageData = Data;
-      return Utils.ImageHelper.SaveImageData(ThumbnailImage.Value, thumbnailImageData);
+      return await Utils.ImageHelper.SaveImageDataAsync(ThumbnailImage.Value, thumbnailImageData);
     }
   }
 }

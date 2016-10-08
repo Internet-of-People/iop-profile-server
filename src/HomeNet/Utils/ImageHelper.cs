@@ -40,7 +40,7 @@ namespace HomeNet.Utils
     /// </summary>
     /// <param name="ImageGuid">Image GUID.</param>
     /// <returns>Binary image data if the function succeeds, null in case of error.</returns>
-    public static byte[] GetImageData(Guid ImageGuid)
+    public static async Task<byte[]> GetImageDataAsync(Guid ImageGuid)
     {
       log.Trace("(ImageGuid:'{0}')", ImageGuid);
 
@@ -50,7 +50,7 @@ namespace HomeNet.Utils
       {
         try
         {
-          res = File.ReadAllBytes(fileName);
+          res = await FileAsync.ReadAllBytesAsync(fileName);
         }
         catch (Exception e)
         {
@@ -68,7 +68,7 @@ namespace HomeNet.Utils
     /// <param name="ImageGuid">Image GUID.</param>
     /// <param name="Data">Binary image data to save.</param>
     /// <returns>true if the function succeeds, false otherwise.</returns>
-    public static bool SaveImageData(Guid ImageGuid, byte[] Data)
+    public static async Task<bool> SaveImageDataAsync(Guid ImageGuid, byte[] Data)
     {
       log.Trace("(ImageGuid:'{0}',Data.Length:{1})", ImageGuid, Data != null ? Data.Length.ToString() : "n/a");
 
@@ -80,7 +80,7 @@ namespace HomeNet.Utils
           string fileName = GetImageFileName(ImageGuid);
           string path = Path.GetDirectoryName(fileName);
           Directory.CreateDirectory(path);
-          File.WriteAllBytes(fileName, Data);
+          await FileAsync.WriteAllBytesAsync(fileName, Data);
           res = true;
         }
         catch (Exception e)
