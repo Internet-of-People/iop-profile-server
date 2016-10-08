@@ -35,134 +35,136 @@ namespace Iop.Homenode {
             "IAEoEhIPCgdkZXRhaWxzGAMgASgJEjYKDnNpbmdsZVJlc3BvbnNlGAggASgL",
             "MhwuaW9wLmhvbWVub2RlLlNpbmdsZVJlc3BvbnNlSAASQgoUY29udmVyc2F0",
             "aW9uUmVzcG9uc2UYCSABKAsyIi5pb3AuaG9tZW5vZGUuQ29udmVyc2F0aW9u",
-            "UmVzcG9uc2VIAEISChBDb252ZXJzYXRpb25UeXBlIocECg1TaW5nbGVSZXF1",
+            "UmVzcG9uc2VIAEISChBDb252ZXJzYXRpb25UeXBlIvsDCg1TaW5nbGVSZXF1",
             "ZXN0Eg8KB3ZlcnNpb24YASABKAwSKQoEcGluZxgCIAEoCzIZLmlvcC5ob21l",
             "bm9kZS5QaW5nUmVxdWVzdEgAEjMKCWxpc3RSb2xlcxgDIAEoCzIeLmlvcC5o",
             "b21lbm9kZS5MaXN0Um9sZXNSZXF1ZXN0SAASQwoRbGlzdEhvbWVOb2RlUGxh",
             "bnMYBCABKAsyJi5pb3AuaG9tZW5vZGUuTGlzdEhvbWVOb2RlUGxhbnNSZXF1",
-            "ZXN0SAASWQocZ2V0SWRlbnRpdHlPbmxpbmVJbmZvcm1hdGlvbhgFIAEoCzIx",
-            "LmlvcC5ob21lbm9kZS5HZXRJZGVudGl0eU9ubGluZUluZm9ybWF0aW9uUmVx",
-            "dWVzdEgAElsKHWFwcGxpY2F0aW9uU2VydmljZVNlbmRNZXNzYWdlGAYgASgL",
-            "MjIuaW9wLmhvbWVub2RlLkFwcGxpY2F0aW9uU2VydmljZVNlbmRNZXNzYWdl",
-            "UmVxdWVzdEgAEnkKLGFwcGxpY2F0aW9uU2VydmljZVJlY2VpdmVNZXNzYWdl",
-            "Tm90aWZpY2F0aW9uGAcgASgLMkEuaW9wLmhvbWVub2RlLkFwcGxpY2F0aW9u",
-            "U2VydmljZVJlY2VpdmVNZXNzYWdlTm90aWZpY2F0aW9uUmVxdWVzdEgAQg0K",
-            "C1JlcXVlc3RUeXBlIo8ECg5TaW5nbGVSZXNwb25zZRIPCgd2ZXJzaW9uGAEg",
-            "ASgMEioKBHBpbmcYAiABKAsyGi5pb3AuaG9tZW5vZGUuUGluZ1Jlc3BvbnNl",
-            "SAASNAoJbGlzdFJvbGVzGAMgASgLMh8uaW9wLmhvbWVub2RlLkxpc3RSb2xl",
-            "c1Jlc3BvbnNlSAASRAoRbGlzdEhvbWVOb2RlUGxhbnMYBCABKAsyJy5pb3Au",
-            "aG9tZW5vZGUuTGlzdEhvbWVOb2RlUGxhbnNSZXNwb25zZUgAEloKHGdldElk",
-            "ZW50aXR5T25saW5lSW5mb3JtYXRpb24YBSABKAsyMi5pb3AuaG9tZW5vZGUu",
-            "R2V0SWRlbnRpdHlPbmxpbmVJbmZvcm1hdGlvblJlc3BvbnNlSAASXAodYXBw",
-            "bGljYXRpb25TZXJ2aWNlU2VuZE1lc3NhZ2UYBiABKAsyMy5pb3AuaG9tZW5v",
-            "ZGUuQXBwbGljYXRpb25TZXJ2aWNlU2VuZE1lc3NhZ2VSZXNwb25zZUgAEnoK",
+            "ZXN0SAASTQoWZ2V0SWRlbnRpdHlJbmZvcm1hdGlvbhgFIAEoCzIrLmlvcC5o",
+            "b21lbm9kZS5HZXRJZGVudGl0eUluZm9ybWF0aW9uUmVxdWVzdEgAElsKHWFw",
+            "cGxpY2F0aW9uU2VydmljZVNlbmRNZXNzYWdlGAYgASgLMjIuaW9wLmhvbWVu",
+            "b2RlLkFwcGxpY2F0aW9uU2VydmljZVNlbmRNZXNzYWdlUmVxdWVzdEgAEnkK",
             "LGFwcGxpY2F0aW9uU2VydmljZVJlY2VpdmVNZXNzYWdlTm90aWZpY2F0aW9u",
-            "GAcgASgLMkIuaW9wLmhvbWVub2RlLkFwcGxpY2F0aW9uU2VydmljZVJlY2Vp",
-            "dmVNZXNzYWdlTm90aWZpY2F0aW9uUmVzcG9uc2VIAEIOCgxSZXNwb25zZVR5",
-            "cGUigQYKE0NvbnZlcnNhdGlvblJlcXVlc3QSEQoJc2lnbmF0dXJlGAEgASgM",
-            "EjcKBXN0YXJ0GAIgASgLMiYuaW9wLmhvbWVub2RlLlN0YXJ0Q29udmVyc2F0",
-            "aW9uUmVxdWVzdEgAEj8KD2hvbWVOb2RlUmVxdWVzdBgDIAEoCzIkLmlvcC5o",
-            "b21lbm9kZS5Ib21lTm9kZVJlcXVlc3RSZXF1ZXN0SAASLwoHY2hlY2tJbhgE",
-            "IAEoCzIcLmlvcC5ob21lbm9kZS5DaGVja0luUmVxdWVzdEgAEj0KDnZlcmlm",
-            "eUlkZW50aXR5GAUgASgLMiMuaW9wLmhvbWVub2RlLlZlcmlmeUlkZW50aXR5",
-            "UmVxdWVzdEgAEjsKDXVwZGF0ZVByb2ZpbGUYBiABKAsyIi5pb3AuaG9tZW5v",
-            "ZGUuVXBkYXRlUHJvZmlsZVJlcXVlc3RIABJPChdjYW5jZWxIb21lTm9kZUFn",
-            "cmVlbWVudBgHIAEoCzIsLmlvcC5ob21lbm9kZS5DYW5jZWxIb21lTm9kZUFn",
-            "cmVlbWVudFJlcXVlc3RIABJLChVhcHBsaWNhdGlvblNlcnZpY2VBZGQYCCAB",
-            "KAsyKi5pb3AuaG9tZW5vZGUuQXBwbGljYXRpb25TZXJ2aWNlQWRkUmVxdWVz",
-            "dEgAElEKGGFwcGxpY2F0aW9uU2VydmljZVJlbW92ZRgJIAEoCzItLmlvcC5o",
-            "b21lbm9kZS5BcHBsaWNhdGlvblNlcnZpY2VSZW1vdmVSZXF1ZXN0SAASXQoe",
-            "Y2FsbElkZW50aXR5QXBwbGljYXRpb25TZXJ2aWNlGAogASgLMjMuaW9wLmhv",
-            "bWVub2RlLkNhbGxJZGVudGl0eUFwcGxpY2F0aW9uU2VydmljZVJlcXVlc3RI",
-            "ABJRChhpbmNvbWluZ0NhbGxOb3RpZmljYXRpb24YCyABKAsyLS5pb3AuaG9t",
-            "ZW5vZGUuSW5jb21pbmdDYWxsTm90aWZpY2F0aW9uUmVxdWVzdEgAQg0KC1Jl",
-            "cXVlc3RUeXBlIowGChRDb252ZXJzYXRpb25SZXNwb25zZRIRCglzaWduYXR1",
-            "cmUYASABKAwSOAoFc3RhcnQYAiABKAsyJy5pb3AuaG9tZW5vZGUuU3RhcnRD",
-            "b252ZXJzYXRpb25SZXNwb25zZUgAEkAKD2hvbWVOb2RlUmVxdWVzdBgDIAEo",
-            "CzIlLmlvcC5ob21lbm9kZS5Ib21lTm9kZVJlcXVlc3RSZXNwb25zZUgAEjAK",
-            "B2NoZWNrSW4YBCABKAsyHS5pb3AuaG9tZW5vZGUuQ2hlY2tJblJlc3BvbnNl",
-            "SAASPgoOdmVyaWZ5SWRlbnRpdHkYBSABKAsyJC5pb3AuaG9tZW5vZGUuVmVy",
-            "aWZ5SWRlbnRpdHlSZXNwb25zZUgAEjwKDXVwZGF0ZVByb2ZpbGUYBiABKAsy",
-            "Iy5pb3AuaG9tZW5vZGUuVXBkYXRlUHJvZmlsZVJlc3BvbnNlSAASUAoXY2Fu",
-            "Y2VsSG9tZU5vZGVBZ3JlZW1lbnQYByABKAsyLS5pb3AuaG9tZW5vZGUuQ2Fu",
-            "Y2VsSG9tZU5vZGVBZ3JlZW1lbnRSZXNwb25zZUgAEkwKFWFwcGxpY2F0aW9u",
-            "U2VydmljZUFkZBgIIAEoCzIrLmlvcC5ob21lbm9kZS5BcHBsaWNhdGlvblNl",
-            "cnZpY2VBZGRSZXNwb25zZUgAElIKGGFwcGxpY2F0aW9uU2VydmljZVJlbW92",
-            "ZRgJIAEoCzIuLmlvcC5ob21lbm9kZS5BcHBsaWNhdGlvblNlcnZpY2VSZW1v",
-            "dmVSZXNwb25zZUgAEl4KHmNhbGxJZGVudGl0eUFwcGxpY2F0aW9uU2Vydmlj",
-            "ZRgKIAEoCzI0LmlvcC5ob21lbm9kZS5DYWxsSWRlbnRpdHlBcHBsaWNhdGlv",
-            "blNlcnZpY2VSZXNwb25zZUgAElIKGGluY29taW5nQ2FsbE5vdGlmaWNhdGlv",
-            "bhgLIAEoCzIuLmlvcC5ob21lbm9kZS5JbmNvbWluZ0NhbGxOb3RpZmljYXRp",
-            "b25SZXNwb25zZUgAQg0KC1JlcXVlc3RUeXBlIh4KC1BpbmdSZXF1ZXN0Eg8K",
-            "B3BheWxvYWQYASABKAwiLgoMUGluZ1Jlc3BvbnNlEg8KB3BheWxvYWQYASAB",
-            "KAwSDQoFY2xvY2sYAiABKBIiEgoQTGlzdFJvbGVzUmVxdWVzdCI7ChFMaXN0",
-            "Um9sZXNSZXNwb25zZRImCgRyb2xlGAEgAygLMhguaW9wLmhvbWVub2RlLlNl",
-            "cnZlclJvbGUiZAoKU2VydmVyUm9sZRIqCgRyb2xlGAEgASgOMhwuaW9wLmhv",
-            "bWVub2RlLlNlcnZlclJvbGVUeXBlEgwKBHBvcnQYAiABKA0SDQoFaXNUY3AY",
-            "AyABKAgSDQoFaXNUbHMYBCABKAgiMAoYTGlzdEhvbWVOb2RlUGxhbnNSZXF1",
-            "ZXN0EhQKDGlkZW50aXR5VHlwZRgBIAEoCSJGChlMaXN0SG9tZU5vZGVQbGFu",
-            "c1Jlc3BvbnNlEikKBXBsYW5zGAEgAygLMhouaW9wLmhvbWVub2RlLkhvbWVO",
-            "b2RlUGxhbiKaAQoMSG9tZU5vZGVQbGFuEg4KBnBsYW5JZBgBIAEoDBIUCgxp",
-            "ZGVudGl0eVR5cGUYAiABKAkSCwoDZmVlGAMgASgEEhwKFGJpbGxpbmdQZXJp",
-            "b2RTZWNvbmRzGAQgASgNEjkKDnBsYW5QYXJhbWV0ZXJzGAkgAygLMiEuaW9w",
-            "LmhvbWVub2RlLk5hbWVTdHJpbmdWYWx1ZVBhaXIiMgoTTmFtZVN0cmluZ1Zh",
-            "bHVlUGFpchIMCgRuYW1lGAEgASgJEg0KBXZhbHVlGAIgASgJIkgKGFN0YXJ0",
-            "Q29udmVyc2F0aW9uUmVxdWVzdBIZChFzdXBwb3J0ZWRWZXJzaW9ucxgBIAMo",
-            "DBIRCglwdWJsaWNLZXkYAiABKAwiUgoZU3RhcnRDb252ZXJzYXRpb25SZXNw",
-            "b25zZRIPCgd2ZXJzaW9uGAEgASgMEhEKCXB1YmxpY0tleRgCIAEoDBIRCglj",
-            "aGFsbGVuZ2UYAyABKAwiTgoWSG9tZU5vZGVSZXF1ZXN0UmVxdWVzdBI0Cghj",
-            "b250cmFjdBgBIAEoCzIiLmlvcC5ob21lbm9kZS5Ib21lTm9kZVBsYW5Db250",
-            "cmFjdCJPChdIb21lTm9kZVJlcXVlc3RSZXNwb25zZRI0Cghjb250cmFjdBgB",
-            "IAEoCzIiLmlvcC5ob21lbm9kZS5Ib21lTm9kZVBsYW5Db250cmFjdCKFAQoU",
-            "SG9tZU5vZGVQbGFuQ29udHJhY3QSKAoEcGxhbhgBIAEoCzIaLmlvcC5ob21l",
-            "bm9kZS5Ib21lTm9kZVBsYW4SFQoNbm9kZVB1YmxpY0tleRgCIAEoDBIZChFp",
-            "ZGVudGl0eVB1YmxpY0tleRgDIAEoDBIRCglzdGFydFRpbWUYBCABKBIiIwoO",
-            "Q2hlY2tJblJlcXVlc3QSEQoJY2hhbGxlbmdlGAEgASgMIhEKD0NoZWNrSW5S",
-            "ZXNwb25zZSIqChVWZXJpZnlJZGVudGl0eVJlcXVlc3QSEQoJY2hhbGxlbmdl",
-            "GAEgASgMIhgKFlZlcmlmeUlkZW50aXR5UmVzcG9uc2UiywEKFFVwZGF0ZVBy",
-            "b2ZpbGVSZXF1ZXN0EhIKCnNldFZlcnNpb24YASABKAgSDwoHc2V0TmFtZRgC",
-            "IAEoCBIQCghzZXRJbWFnZRgDIAEoCBITCgtzZXRMb2NhdGlvbhgEIAEoCBIU",
-            "CgxzZXRFeHRyYURhdGEYBSABKAgSDwoHdmVyc2lvbhgIIAEoDBIMCgRuYW1l",
-            "GAkgASgJEg0KBWltYWdlGAogASgMEhAKCGxvY2F0aW9uGAsgASgHEhEKCWV4",
-            "dHJhRGF0YRgMIAEoCSIXChVVcGRhdGVQcm9maWxlUmVzcG9uc2UiXQoeQ2Fu",
-            "Y2VsSG9tZU5vZGVBZ3JlZW1lbnRSZXF1ZXN0Eh0KFXJlZGlyZWN0VG9OZXdI",
-            "b21lTm9kZRgBIAEoCBIcChRuZXdIb21lTm9kZU5ldHdvcmtJZBgCIAEoDCIh",
-            "Ch9DYW5jZWxIb21lTm9kZUFncmVlbWVudFJlc3BvbnNlIjQKHEFwcGxpY2F0",
-            "aW9uU2VydmljZUFkZFJlcXVlc3QSFAoMc2VydmljZU5hbWVzGAEgAygJIh8K",
-            "HUFwcGxpY2F0aW9uU2VydmljZUFkZFJlc3BvbnNlIjYKH0FwcGxpY2F0aW9u",
-            "U2VydmljZVJlbW92ZVJlcXVlc3QSEwoLc2VydmljZU5hbWUYASABKAkiIgog",
-            "QXBwbGljYXRpb25TZXJ2aWNlUmVtb3ZlUmVzcG9uc2UioAEKI0dldElkZW50",
-            "aXR5T25saW5lSW5mb3JtYXRpb25SZXF1ZXN0EhkKEWlkZW50aXR5TmV0d29y",
-            "a0lkGAEgASgMEhsKE2luY2x1ZGVQcm9maWxlSW1hZ2UYAiABKAgSHQoVaW5j",
-            "bHVkZVRodW1ibmFpbEltYWdlGAMgASgIEiIKGmluY2x1ZGVBcHBsaWNhdGlv",
-            "blNlcnZpY2VzGAQgASgIIr8BCiRHZXRJZGVudGl0eU9ubGluZUluZm9ybWF0",
-            "aW9uUmVzcG9uc2USEAoIaXNPbmxpbmUYASABKAgSGQoRaWRlbnRpdHlQdWJs",
-            "aWNLZXkYAiABKAwSDAoEbmFtZRgDIAEoCRIRCglleHRyYURhdGEYBCABKAkS",
-            "FAoMcHJvZmlsZUltYWdlGAUgASgMEhYKDnRodW1ibmFpbEltYWdlGAYgASgM",
-            "EhsKE2FwcGxpY2F0aW9uU2VydmljZXMYCiADKAkiVwolQ2FsbElkZW50aXR5",
-            "QXBwbGljYXRpb25TZXJ2aWNlUmVxdWVzdBIZChFpZGVudGl0eU5ldHdvcmtJ",
-            "ZBgBIAEoDBITCgtzZXJ2aWNlTmFtZRgCIAEoCSI9CiZDYWxsSWRlbnRpdHlB",
-            "cHBsaWNhdGlvblNlcnZpY2VSZXNwb25zZRITCgtjYWxsZXJUb2tlbhgBIAEo",
-            "DCJkCh9JbmNvbWluZ0NhbGxOb3RpZmljYXRpb25SZXF1ZXN0EhcKD2NhbGxl",
-            "clB1YmxpY0tleRgBIAEoDBITCgtzZXJ2aWNlTmFtZRgCIAEoCRITCgtjYWxs",
-            "ZWVUb2tlbhgDIAEoDCIiCiBJbmNvbWluZ0NhbGxOb3RpZmljYXRpb25SZXNw",
-            "b25zZSJGCiRBcHBsaWNhdGlvblNlcnZpY2VTZW5kTWVzc2FnZVJlcXVlc3QS",
-            "DQoFdG9rZW4YASABKAwSDwoHbWVzc2FnZRgCIAEoDCInCiVBcHBsaWNhdGlv",
-            "blNlcnZpY2VTZW5kTWVzc2FnZVJlc3BvbnNlIkYKM0FwcGxpY2F0aW9uU2Vy",
-            "dmljZVJlY2VpdmVNZXNzYWdlTm90aWZpY2F0aW9uUmVxdWVzdBIPCgdtZXNz",
-            "YWdlGAEgASgMIjYKNEFwcGxpY2F0aW9uU2VydmljZVJlY2VpdmVNZXNzYWdl",
-            "Tm90aWZpY2F0aW9uUmVzcG9uc2Uq/QIKBlN0YXR1cxINCglTVEFUVVNfT0sQ",
-            "ABIcChhFUlJPUl9QUk9UT0NPTF9WSU9MQVRJT04QARIVChFFUlJPUl9VTlNV",
-            "UFBPUlRFRBACEhAKDEVSUk9SX0JBTk5FRBADEg4KCkVSUk9SX0JVU1kQBBIW",
-            "ChJFUlJPUl9VTkFVVEhPUklaRUQQBRISCg5FUlJPUl9CQURfUk9MRRAGEiEK",
-            "HUVSUk9SX0JBRF9DT05WRVJTQVRJT05fU1RBVFVTEAcSEgoORVJST1JfSU5U",
-            "RVJOQUwQCBIYChRFUlJPUl9RVU9UQV9FWENFRURFRBAzEhsKF0VSUk9SX0lO",
-            "VkFMSURfU0lHTkFUVVJFEDQSEwoPRVJST1JfTk9UX0ZPVU5EEDUSFwoTRVJS",
-            "T1JfSU5WQUxJRF9WQUxVRRA2EhgKFEVSUk9SX0FMUkVBRFlfRVhJU1RTEDcS",
-            "FwoTRVJST1JfTk9UX0FWQUlMQUJMRRA4EhIKDkVSUk9SX1JFSkVDVEVEEDkq",
-            "ZgoOU2VydmVyUm9sZVR5cGUSCwoHUFJJTUFSWRAAEg8KC05EX05FSUdIQk9S",
-            "EAESEAoMTkRfQ09MTEVBR1VFEAISEwoPQ0xfTk9OX0NVU1RPTUVSEAMSDwoL",
-            "Q0xfQ1VTVE9NRVIQBGIGcHJvdG8z"));
+            "GAcgASgLMkEuaW9wLmhvbWVub2RlLkFwcGxpY2F0aW9uU2VydmljZVJlY2Vp",
+            "dmVNZXNzYWdlTm90aWZpY2F0aW9uUmVxdWVzdEgAQg0KC1JlcXVlc3RUeXBl",
+            "IoMECg5TaW5nbGVSZXNwb25zZRIPCgd2ZXJzaW9uGAEgASgMEioKBHBpbmcY",
+            "AiABKAsyGi5pb3AuaG9tZW5vZGUuUGluZ1Jlc3BvbnNlSAASNAoJbGlzdFJv",
+            "bGVzGAMgASgLMh8uaW9wLmhvbWVub2RlLkxpc3RSb2xlc1Jlc3BvbnNlSAAS",
+            "RAoRbGlzdEhvbWVOb2RlUGxhbnMYBCABKAsyJy5pb3AuaG9tZW5vZGUuTGlz",
+            "dEhvbWVOb2RlUGxhbnNSZXNwb25zZUgAEk4KFmdldElkZW50aXR5SW5mb3Jt",
+            "YXRpb24YBSABKAsyLC5pb3AuaG9tZW5vZGUuR2V0SWRlbnRpdHlJbmZvcm1h",
+            "dGlvblJlc3BvbnNlSAASXAodYXBwbGljYXRpb25TZXJ2aWNlU2VuZE1lc3Nh",
+            "Z2UYBiABKAsyMy5pb3AuaG9tZW5vZGUuQXBwbGljYXRpb25TZXJ2aWNlU2Vu",
+            "ZE1lc3NhZ2VSZXNwb25zZUgAEnoKLGFwcGxpY2F0aW9uU2VydmljZVJlY2Vp",
+            "dmVNZXNzYWdlTm90aWZpY2F0aW9uGAcgASgLMkIuaW9wLmhvbWVub2RlLkFw",
+            "cGxpY2F0aW9uU2VydmljZVJlY2VpdmVNZXNzYWdlTm90aWZpY2F0aW9uUmVz",
+            "cG9uc2VIAEIOCgxSZXNwb25zZVR5cGUigQYKE0NvbnZlcnNhdGlvblJlcXVl",
+            "c3QSEQoJc2lnbmF0dXJlGAEgASgMEjcKBXN0YXJ0GAIgASgLMiYuaW9wLmhv",
+            "bWVub2RlLlN0YXJ0Q29udmVyc2F0aW9uUmVxdWVzdEgAEj8KD2hvbWVOb2Rl",
+            "UmVxdWVzdBgDIAEoCzIkLmlvcC5ob21lbm9kZS5Ib21lTm9kZVJlcXVlc3RS",
+            "ZXF1ZXN0SAASLwoHY2hlY2tJbhgEIAEoCzIcLmlvcC5ob21lbm9kZS5DaGVj",
+            "a0luUmVxdWVzdEgAEj0KDnZlcmlmeUlkZW50aXR5GAUgASgLMiMuaW9wLmhv",
+            "bWVub2RlLlZlcmlmeUlkZW50aXR5UmVxdWVzdEgAEjsKDXVwZGF0ZVByb2Zp",
+            "bGUYBiABKAsyIi5pb3AuaG9tZW5vZGUuVXBkYXRlUHJvZmlsZVJlcXVlc3RI",
+            "ABJPChdjYW5jZWxIb21lTm9kZUFncmVlbWVudBgHIAEoCzIsLmlvcC5ob21l",
+            "bm9kZS5DYW5jZWxIb21lTm9kZUFncmVlbWVudFJlcXVlc3RIABJLChVhcHBs",
+            "aWNhdGlvblNlcnZpY2VBZGQYCCABKAsyKi5pb3AuaG9tZW5vZGUuQXBwbGlj",
+            "YXRpb25TZXJ2aWNlQWRkUmVxdWVzdEgAElEKGGFwcGxpY2F0aW9uU2Vydmlj",
+            "ZVJlbW92ZRgJIAEoCzItLmlvcC5ob21lbm9kZS5BcHBsaWNhdGlvblNlcnZp",
+            "Y2VSZW1vdmVSZXF1ZXN0SAASXQoeY2FsbElkZW50aXR5QXBwbGljYXRpb25T",
+            "ZXJ2aWNlGAogASgLMjMuaW9wLmhvbWVub2RlLkNhbGxJZGVudGl0eUFwcGxp",
+            "Y2F0aW9uU2VydmljZVJlcXVlc3RIABJRChhpbmNvbWluZ0NhbGxOb3RpZmlj",
+            "YXRpb24YCyABKAsyLS5pb3AuaG9tZW5vZGUuSW5jb21pbmdDYWxsTm90aWZp",
+            "Y2F0aW9uUmVxdWVzdEgAQg0KC1JlcXVlc3RUeXBlIowGChRDb252ZXJzYXRp",
+            "b25SZXNwb25zZRIRCglzaWduYXR1cmUYASABKAwSOAoFc3RhcnQYAiABKAsy",
+            "Jy5pb3AuaG9tZW5vZGUuU3RhcnRDb252ZXJzYXRpb25SZXNwb25zZUgAEkAK",
+            "D2hvbWVOb2RlUmVxdWVzdBgDIAEoCzIlLmlvcC5ob21lbm9kZS5Ib21lTm9k",
+            "ZVJlcXVlc3RSZXNwb25zZUgAEjAKB2NoZWNrSW4YBCABKAsyHS5pb3AuaG9t",
+            "ZW5vZGUuQ2hlY2tJblJlc3BvbnNlSAASPgoOdmVyaWZ5SWRlbnRpdHkYBSAB",
+            "KAsyJC5pb3AuaG9tZW5vZGUuVmVyaWZ5SWRlbnRpdHlSZXNwb25zZUgAEjwK",
+            "DXVwZGF0ZVByb2ZpbGUYBiABKAsyIy5pb3AuaG9tZW5vZGUuVXBkYXRlUHJv",
+            "ZmlsZVJlc3BvbnNlSAASUAoXY2FuY2VsSG9tZU5vZGVBZ3JlZW1lbnQYByAB",
+            "KAsyLS5pb3AuaG9tZW5vZGUuQ2FuY2VsSG9tZU5vZGVBZ3JlZW1lbnRSZXNw",
+            "b25zZUgAEkwKFWFwcGxpY2F0aW9uU2VydmljZUFkZBgIIAEoCzIrLmlvcC5o",
+            "b21lbm9kZS5BcHBsaWNhdGlvblNlcnZpY2VBZGRSZXNwb25zZUgAElIKGGFw",
+            "cGxpY2F0aW9uU2VydmljZVJlbW92ZRgJIAEoCzIuLmlvcC5ob21lbm9kZS5B",
+            "cHBsaWNhdGlvblNlcnZpY2VSZW1vdmVSZXNwb25zZUgAEl4KHmNhbGxJZGVu",
+            "dGl0eUFwcGxpY2F0aW9uU2VydmljZRgKIAEoCzI0LmlvcC5ob21lbm9kZS5D",
+            "YWxsSWRlbnRpdHlBcHBsaWNhdGlvblNlcnZpY2VSZXNwb25zZUgAElIKGGlu",
+            "Y29taW5nQ2FsbE5vdGlmaWNhdGlvbhgLIAEoCzIuLmlvcC5ob21lbm9kZS5J",
+            "bmNvbWluZ0NhbGxOb3RpZmljYXRpb25SZXNwb25zZUgAQg0KC1JlcXVlc3RU",
+            "eXBlIh4KC1BpbmdSZXF1ZXN0Eg8KB3BheWxvYWQYASABKAwiLgoMUGluZ1Jl",
+            "c3BvbnNlEg8KB3BheWxvYWQYASABKAwSDQoFY2xvY2sYAiABKBIiEgoQTGlz",
+            "dFJvbGVzUmVxdWVzdCI8ChFMaXN0Um9sZXNSZXNwb25zZRInCgVyb2xlcxgB",
+            "IAMoCzIYLmlvcC5ob21lbm9kZS5TZXJ2ZXJSb2xlImQKClNlcnZlclJvbGUS",
+            "KgoEcm9sZRgBIAEoDjIcLmlvcC5ob21lbm9kZS5TZXJ2ZXJSb2xlVHlwZRIM",
+            "CgRwb3J0GAIgASgNEg0KBWlzVGNwGAMgASgIEg0KBWlzVGxzGAQgASgIIjAK",
+            "GExpc3RIb21lTm9kZVBsYW5zUmVxdWVzdBIUCgxpZGVudGl0eVR5cGUYASAB",
+            "KAkiRgoZTGlzdEhvbWVOb2RlUGxhbnNSZXNwb25zZRIpCgVwbGFucxgBIAMo",
+            "CzIaLmlvcC5ob21lbm9kZS5Ib21lTm9kZVBsYW4imgEKDEhvbWVOb2RlUGxh",
+            "bhIOCgZwbGFuSWQYASABKAwSFAoMaWRlbnRpdHlUeXBlGAIgASgJEgsKA2Zl",
+            "ZRgDIAEoBBIcChRiaWxsaW5nUGVyaW9kU2Vjb25kcxgEIAEoDRI5Cg5wbGFu",
+            "UGFyYW1ldGVycxgJIAMoCzIhLmlvcC5ob21lbm9kZS5OYW1lU3RyaW5nVmFs",
+            "dWVQYWlyIjIKE05hbWVTdHJpbmdWYWx1ZVBhaXISDAoEbmFtZRgBIAEoCRIN",
+            "CgV2YWx1ZRgCIAEoCSJIChhTdGFydENvbnZlcnNhdGlvblJlcXVlc3QSGQoR",
+            "c3VwcG9ydGVkVmVyc2lvbnMYASADKAwSEQoJcHVibGljS2V5GAIgASgMIlIK",
+            "GVN0YXJ0Q29udmVyc2F0aW9uUmVzcG9uc2USDwoHdmVyc2lvbhgBIAEoDBIR",
+            "CglwdWJsaWNLZXkYAiABKAwSEQoJY2hhbGxlbmdlGAMgASgMIk4KFkhvbWVO",
+            "b2RlUmVxdWVzdFJlcXVlc3QSNAoIY29udHJhY3QYASABKAsyIi5pb3AuaG9t",
+            "ZW5vZGUuSG9tZU5vZGVQbGFuQ29udHJhY3QiTwoXSG9tZU5vZGVSZXF1ZXN0",
+            "UmVzcG9uc2USNAoIY29udHJhY3QYASABKAsyIi5pb3AuaG9tZW5vZGUuSG9t",
+            "ZU5vZGVQbGFuQ29udHJhY3QihQEKFEhvbWVOb2RlUGxhbkNvbnRyYWN0EigK",
+            "BHBsYW4YASABKAsyGi5pb3AuaG9tZW5vZGUuSG9tZU5vZGVQbGFuEhUKDW5v",
+            "ZGVQdWJsaWNLZXkYAiABKAwSGQoRaWRlbnRpdHlQdWJsaWNLZXkYAyABKAwS",
+            "EQoJc3RhcnRUaW1lGAQgASgSIiMKDkNoZWNrSW5SZXF1ZXN0EhEKCWNoYWxs",
+            "ZW5nZRgBIAEoDCIRCg9DaGVja0luUmVzcG9uc2UiKgoVVmVyaWZ5SWRlbnRp",
+            "dHlSZXF1ZXN0EhEKCWNoYWxsZW5nZRgBIAEoDCIYChZWZXJpZnlJZGVudGl0",
+            "eVJlc3BvbnNlIssBChRVcGRhdGVQcm9maWxlUmVxdWVzdBISCgpzZXRWZXJz",
+            "aW9uGAEgASgIEg8KB3NldE5hbWUYAiABKAgSEAoIc2V0SW1hZ2UYAyABKAgS",
+            "EwoLc2V0TG9jYXRpb24YBCABKAgSFAoMc2V0RXh0cmFEYXRhGAUgASgIEg8K",
+            "B3ZlcnNpb24YCCABKAwSDAoEbmFtZRgJIAEoCRINCgVpbWFnZRgKIAEoDBIQ",
+            "Cghsb2NhdGlvbhgLIAEoBxIRCglleHRyYURhdGEYDCABKAkiFwoVVXBkYXRl",
+            "UHJvZmlsZVJlc3BvbnNlIl0KHkNhbmNlbEhvbWVOb2RlQWdyZWVtZW50UmVx",
+            "dWVzdBIdChVyZWRpcmVjdFRvTmV3SG9tZU5vZGUYASABKAgSHAoUbmV3SG9t",
+            "ZU5vZGVOZXR3b3JrSWQYAiABKAwiIQofQ2FuY2VsSG9tZU5vZGVBZ3JlZW1l",
+            "bnRSZXNwb25zZSI0ChxBcHBsaWNhdGlvblNlcnZpY2VBZGRSZXF1ZXN0EhQK",
+            "DHNlcnZpY2VOYW1lcxgBIAMoCSIfCh1BcHBsaWNhdGlvblNlcnZpY2VBZGRS",
+            "ZXNwb25zZSI2Ch9BcHBsaWNhdGlvblNlcnZpY2VSZW1vdmVSZXF1ZXN0EhMK",
+            "C3NlcnZpY2VOYW1lGAEgASgJIiIKIEFwcGxpY2F0aW9uU2VydmljZVJlbW92",
+            "ZVJlc3BvbnNlIpoBCh1HZXRJZGVudGl0eUluZm9ybWF0aW9uUmVxdWVzdBIZ",
+            "ChFpZGVudGl0eU5ldHdvcmtJZBgBIAEoDBIbChNpbmNsdWRlUHJvZmlsZUlt",
+            "YWdlGAIgASgIEh0KFWluY2x1ZGVUaHVtYm5haWxJbWFnZRgDIAEoCBIiChpp",
+            "bmNsdWRlQXBwbGljYXRpb25TZXJ2aWNlcxgEIAEoCCKLAgoeR2V0SWRlbnRp",
+            "dHlJbmZvcm1hdGlvblJlc3BvbnNlEhAKCGlzSG9zdGVkGAEgASgIEh0KFWlz",
+            "VGFyZ2V0SG9tZU5vZGVLbm93bhgCIAEoCBIfChd0YXJnZXRIb21lTm9kZU5l",
+            "dHdvcmtJZBgDIAEoDBIQCghpc09ubGluZRgEIAEoCBIZChFpZGVudGl0eVB1",
+            "YmxpY0tleRgFIAEoDBIMCgRuYW1lGAYgASgJEhEKCWV4dHJhRGF0YRgHIAEo",
+            "CRIUCgxwcm9maWxlSW1hZ2UYCCABKAwSFgoOdGh1bWJuYWlsSW1hZ2UYCSAB",
+            "KAwSGwoTYXBwbGljYXRpb25TZXJ2aWNlcxgKIAMoCSJXCiVDYWxsSWRlbnRp",
+            "dHlBcHBsaWNhdGlvblNlcnZpY2VSZXF1ZXN0EhkKEWlkZW50aXR5TmV0d29y",
+            "a0lkGAEgASgMEhMKC3NlcnZpY2VOYW1lGAIgASgJIj0KJkNhbGxJZGVudGl0",
+            "eUFwcGxpY2F0aW9uU2VydmljZVJlc3BvbnNlEhMKC2NhbGxlclRva2VuGAEg",
+            "ASgMImQKH0luY29taW5nQ2FsbE5vdGlmaWNhdGlvblJlcXVlc3QSFwoPY2Fs",
+            "bGVyUHVibGljS2V5GAEgASgMEhMKC3NlcnZpY2VOYW1lGAIgASgJEhMKC2Nh",
+            "bGxlZVRva2VuGAMgASgMIiIKIEluY29taW5nQ2FsbE5vdGlmaWNhdGlvblJl",
+            "c3BvbnNlIkYKJEFwcGxpY2F0aW9uU2VydmljZVNlbmRNZXNzYWdlUmVxdWVz",
+            "dBINCgV0b2tlbhgBIAEoDBIPCgdtZXNzYWdlGAIgASgMIicKJUFwcGxpY2F0",
+            "aW9uU2VydmljZVNlbmRNZXNzYWdlUmVzcG9uc2UiRgozQXBwbGljYXRpb25T",
+            "ZXJ2aWNlUmVjZWl2ZU1lc3NhZ2VOb3RpZmljYXRpb25SZXF1ZXN0Eg8KB21l",
+            "c3NhZ2UYASABKAwiNgo0QXBwbGljYXRpb25TZXJ2aWNlUmVjZWl2ZU1lc3Nh",
+            "Z2VOb3RpZmljYXRpb25SZXNwb25zZSqWAwoGU3RhdHVzEg0KCVNUQVRVU19P",
+            "SxAAEhwKGEVSUk9SX1BST1RPQ09MX1ZJT0xBVElPThABEhUKEUVSUk9SX1VO",
+            "U1VQUE9SVEVEEAISEAoMRVJST1JfQkFOTkVEEAMSDgoKRVJST1JfQlVTWRAE",
+            "EhYKEkVSUk9SX1VOQVVUSE9SSVpFRBAFEhIKDkVSUk9SX0JBRF9ST0xFEAYS",
+            "IQodRVJST1JfQkFEX0NPTlZFUlNBVElPTl9TVEFUVVMQBxISCg5FUlJPUl9J",
+            "TlRFUk5BTBAIEhgKFEVSUk9SX1FVT1RBX0VYQ0VFREVEEDMSGwoXRVJST1Jf",
+            "SU5WQUxJRF9TSUdOQVRVUkUQNBITCg9FUlJPUl9OT1RfRk9VTkQQNRIXChNF",
+            "UlJPUl9JTlZBTElEX1ZBTFVFEDYSGAoURVJST1JfQUxSRUFEWV9FWElTVFMQ",
+            "NxIXChNFUlJPUl9OT1RfQVZBSUxBQkxFEDgSEgoORVJST1JfUkVKRUNURUQQ",
+            "ORIXChNFUlJPUl9VTklOSVRJQUxJWkVEEDoqegoOU2VydmVyUm9sZVR5cGUS",
+            "CwoHUFJJTUFSWRAAEg8KC05EX05FSUdIQk9SEAESEAoMTkRfQ09MTEVBR1VF",
+            "EAISEwoPQ0xfTk9OX0NVU1RPTUVSEAMSDwoLQ0xfQ1VTVE9NRVIQBBISCg5D",
+            "TF9BUFBfU0VSVklDRRAFYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Iop.Homenode.Status), typeof(global::Iop.Homenode.ServerRoleType), }, new pbr::GeneratedClrTypeInfo[] {
@@ -170,14 +172,14 @@ namespace Iop.Homenode {
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.Message), global::Iop.Homenode.Message.Parser, new[]{ "Id", "Request", "Response" }, new[]{ "MessageType" }, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.Request), global::Iop.Homenode.Request.Parser, new[]{ "SingleRequest", "ConversationRequest" }, new[]{ "ConversationType" }, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.Response), global::Iop.Homenode.Response.Parser, new[]{ "Status", "Timestamp", "Details", "SingleResponse", "ConversationResponse" }, new[]{ "ConversationType" }, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.SingleRequest), global::Iop.Homenode.SingleRequest.Parser, new[]{ "Version", "Ping", "ListRoles", "ListHomeNodePlans", "GetIdentityOnlineInformation", "ApplicationServiceSendMessage", "ApplicationServiceReceiveMessageNotification" }, new[]{ "RequestType" }, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.SingleResponse), global::Iop.Homenode.SingleResponse.Parser, new[]{ "Version", "Ping", "ListRoles", "ListHomeNodePlans", "GetIdentityOnlineInformation", "ApplicationServiceSendMessage", "ApplicationServiceReceiveMessageNotification" }, new[]{ "ResponseType" }, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.SingleRequest), global::Iop.Homenode.SingleRequest.Parser, new[]{ "Version", "Ping", "ListRoles", "ListHomeNodePlans", "GetIdentityInformation", "ApplicationServiceSendMessage", "ApplicationServiceReceiveMessageNotification" }, new[]{ "RequestType" }, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.SingleResponse), global::Iop.Homenode.SingleResponse.Parser, new[]{ "Version", "Ping", "ListRoles", "ListHomeNodePlans", "GetIdentityInformation", "ApplicationServiceSendMessage", "ApplicationServiceReceiveMessageNotification" }, new[]{ "ResponseType" }, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ConversationRequest), global::Iop.Homenode.ConversationRequest.Parser, new[]{ "Signature", "Start", "HomeNodeRequest", "CheckIn", "VerifyIdentity", "UpdateProfile", "CancelHomeNodeAgreement", "ApplicationServiceAdd", "ApplicationServiceRemove", "CallIdentityApplicationService", "IncomingCallNotification" }, new[]{ "RequestType" }, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ConversationResponse), global::Iop.Homenode.ConversationResponse.Parser, new[]{ "Signature", "Start", "HomeNodeRequest", "CheckIn", "VerifyIdentity", "UpdateProfile", "CancelHomeNodeAgreement", "ApplicationServiceAdd", "ApplicationServiceRemove", "CallIdentityApplicationService", "IncomingCallNotification" }, new[]{ "RequestType" }, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.PingRequest), global::Iop.Homenode.PingRequest.Parser, new[]{ "Payload" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.PingResponse), global::Iop.Homenode.PingResponse.Parser, new[]{ "Payload", "Clock" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ListRolesRequest), global::Iop.Homenode.ListRolesRequest.Parser, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ListRolesResponse), global::Iop.Homenode.ListRolesResponse.Parser, new[]{ "Role" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ListRolesResponse), global::Iop.Homenode.ListRolesResponse.Parser, new[]{ "Roles" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ServerRole), global::Iop.Homenode.ServerRole.Parser, new[]{ "Role", "Port", "IsTcp", "IsTls" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ListHomeNodePlansRequest), global::Iop.Homenode.ListHomeNodePlansRequest.Parser, new[]{ "IdentityType" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ListHomeNodePlansResponse), global::Iop.Homenode.ListHomeNodePlansResponse.Parser, new[]{ "Plans" }, null, null, null),
@@ -200,8 +202,8 @@ namespace Iop.Homenode {
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ApplicationServiceAddResponse), global::Iop.Homenode.ApplicationServiceAddResponse.Parser, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ApplicationServiceRemoveRequest), global::Iop.Homenode.ApplicationServiceRemoveRequest.Parser, new[]{ "ServiceName" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ApplicationServiceRemoveResponse), global::Iop.Homenode.ApplicationServiceRemoveResponse.Parser, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.GetIdentityOnlineInformationRequest), global::Iop.Homenode.GetIdentityOnlineInformationRequest.Parser, new[]{ "IdentityNetworkId", "IncludeProfileImage", "IncludeThumbnailImage", "IncludeApplicationServices" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.GetIdentityOnlineInformationResponse), global::Iop.Homenode.GetIdentityOnlineInformationResponse.Parser, new[]{ "IsOnline", "IdentityPublicKey", "Name", "ExtraData", "ProfileImage", "ThumbnailImage", "ApplicationServices" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.GetIdentityInformationRequest), global::Iop.Homenode.GetIdentityInformationRequest.Parser, new[]{ "IdentityNetworkId", "IncludeProfileImage", "IncludeThumbnailImage", "IncludeApplicationServices" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.GetIdentityInformationResponse), global::Iop.Homenode.GetIdentityInformationResponse.Parser, new[]{ "IsHosted", "IsTargetHomeNodeKnown", "TargetHomeNodeNetworkId", "IsOnline", "IdentityPublicKey", "Name", "ExtraData", "ProfileImage", "ThumbnailImage", "ApplicationServices" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.CallIdentityApplicationServiceRequest), global::Iop.Homenode.CallIdentityApplicationServiceRequest.Parser, new[]{ "IdentityNetworkId", "ServiceName" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.CallIdentityApplicationServiceResponse), global::Iop.Homenode.CallIdentityApplicationServiceResponse.Parser, new[]{ "CallerToken" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.IncomingCallNotificationRequest), global::Iop.Homenode.IncomingCallNotificationRequest.Parser, new[]{ "CallerPublicKey", "ServiceName", "CalleeToken" }, null, null, null),
@@ -284,6 +286,10 @@ namespace Iop.Homenode {
     ///  A third party rejected the requested action.
     /// </summary>
     [pbr::OriginalName("ERROR_REJECTED")] ErrorRejected = 57,
+    /// <summary>
+    ///  The requested object can not be obtained, queried or used as it is not initialized.
+    /// </summary>
+    [pbr::OriginalName("ERROR_UNINITIALIZED")] ErrorUninitialized = 58,
   }
 
   /// <summary>
@@ -310,6 +316,10 @@ namespace Iop.Homenode {
     ///  Non Customer Clients Interface server role.
     /// </summary>
     [pbr::OriginalName("CL_CUSTOMER")] ClCustomer = 4,
+    /// <summary>
+    ///  Application Service Interface server role.
+    /// </summary>
+    [pbr::OriginalName("CL_APP_SERVICE")] ClAppService = 5,
   }
 
   #endregion
@@ -317,6 +327,15 @@ namespace Iop.Homenode {
   #region Messages
   /// <summary>
   ///  This is complete message as it goes over the wire. It includes the 32-bit header with message length.
+  ///
+  ///  There is a 1 byte prefix because of Google Protobuf protocol, so the actual binary data for a message
+  ///  with body size 4660 bytes would be:
+  ///
+  ///    0D 34 12 00 00
+  ///
+  ///  where 0x0D means type 'fixed32' (which value is 5) + index of 'header', which is 1 &lt;&lt; 3,
+  ///  this is followed be the 4 byte sequence 34 12 00 00, which is little endian of 0x00001234, which is 4660 decimal.
+  ///  Thus the total number of bytes sent over the wire for this message would be 4665 bytes.
   /// </summary>
   public sealed partial class MessageWithHeader : pb::IMessage<MessageWithHeader> {
     private static readonly pb::MessageParser<MessageWithHeader> _parser = new pb::MessageParser<MessageWithHeader>(() => new MessageWithHeader());
@@ -1225,8 +1244,8 @@ namespace Iop.Homenode {
         case RequestTypeOneofCase.ListHomeNodePlans:
           ListHomeNodePlans = other.ListHomeNodePlans.Clone();
           break;
-        case RequestTypeOneofCase.GetIdentityOnlineInformation:
-          GetIdentityOnlineInformation = other.GetIdentityOnlineInformation.Clone();
+        case RequestTypeOneofCase.GetIdentityInformation:
+          GetIdentityInformation = other.GetIdentityInformation.Clone();
           break;
         case RequestTypeOneofCase.ApplicationServiceSendMessage:
           ApplicationServiceSendMessage = other.ApplicationServiceSendMessage.Clone();
@@ -1290,14 +1309,14 @@ namespace Iop.Homenode {
       }
     }
 
-    /// <summary>Field number for the "getIdentityOnlineInformation" field.</summary>
-    public const int GetIdentityOnlineInformationFieldNumber = 5;
+    /// <summary>Field number for the "getIdentityInformation" field.</summary>
+    public const int GetIdentityInformationFieldNumber = 5;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Iop.Homenode.GetIdentityOnlineInformationRequest GetIdentityOnlineInformation {
-      get { return requestTypeCase_ == RequestTypeOneofCase.GetIdentityOnlineInformation ? (global::Iop.Homenode.GetIdentityOnlineInformationRequest) requestType_ : null; }
+    public global::Iop.Homenode.GetIdentityInformationRequest GetIdentityInformation {
+      get { return requestTypeCase_ == RequestTypeOneofCase.GetIdentityInformation ? (global::Iop.Homenode.GetIdentityInformationRequest) requestType_ : null; }
       set {
         requestType_ = value;
-        requestTypeCase_ = value == null ? RequestTypeOneofCase.None : RequestTypeOneofCase.GetIdentityOnlineInformation;
+        requestTypeCase_ = value == null ? RequestTypeOneofCase.None : RequestTypeOneofCase.GetIdentityInformation;
       }
     }
 
@@ -1330,7 +1349,7 @@ namespace Iop.Homenode {
       Ping = 2,
       ListRoles = 3,
       ListHomeNodePlans = 4,
-      GetIdentityOnlineInformation = 5,
+      GetIdentityInformation = 5,
       ApplicationServiceSendMessage = 6,
       ApplicationServiceReceiveMessageNotification = 7,
     }
@@ -1363,7 +1382,7 @@ namespace Iop.Homenode {
       if (!object.Equals(Ping, other.Ping)) return false;
       if (!object.Equals(ListRoles, other.ListRoles)) return false;
       if (!object.Equals(ListHomeNodePlans, other.ListHomeNodePlans)) return false;
-      if (!object.Equals(GetIdentityOnlineInformation, other.GetIdentityOnlineInformation)) return false;
+      if (!object.Equals(GetIdentityInformation, other.GetIdentityInformation)) return false;
       if (!object.Equals(ApplicationServiceSendMessage, other.ApplicationServiceSendMessage)) return false;
       if (!object.Equals(ApplicationServiceReceiveMessageNotification, other.ApplicationServiceReceiveMessageNotification)) return false;
       if (RequestTypeCase != other.RequestTypeCase) return false;
@@ -1377,7 +1396,7 @@ namespace Iop.Homenode {
       if (requestTypeCase_ == RequestTypeOneofCase.Ping) hash ^= Ping.GetHashCode();
       if (requestTypeCase_ == RequestTypeOneofCase.ListRoles) hash ^= ListRoles.GetHashCode();
       if (requestTypeCase_ == RequestTypeOneofCase.ListHomeNodePlans) hash ^= ListHomeNodePlans.GetHashCode();
-      if (requestTypeCase_ == RequestTypeOneofCase.GetIdentityOnlineInformation) hash ^= GetIdentityOnlineInformation.GetHashCode();
+      if (requestTypeCase_ == RequestTypeOneofCase.GetIdentityInformation) hash ^= GetIdentityInformation.GetHashCode();
       if (requestTypeCase_ == RequestTypeOneofCase.ApplicationServiceSendMessage) hash ^= ApplicationServiceSendMessage.GetHashCode();
       if (requestTypeCase_ == RequestTypeOneofCase.ApplicationServiceReceiveMessageNotification) hash ^= ApplicationServiceReceiveMessageNotification.GetHashCode();
       hash ^= (int) requestTypeCase_;
@@ -1407,9 +1426,9 @@ namespace Iop.Homenode {
         output.WriteRawTag(34);
         output.WriteMessage(ListHomeNodePlans);
       }
-      if (requestTypeCase_ == RequestTypeOneofCase.GetIdentityOnlineInformation) {
+      if (requestTypeCase_ == RequestTypeOneofCase.GetIdentityInformation) {
         output.WriteRawTag(42);
-        output.WriteMessage(GetIdentityOnlineInformation);
+        output.WriteMessage(GetIdentityInformation);
       }
       if (requestTypeCase_ == RequestTypeOneofCase.ApplicationServiceSendMessage) {
         output.WriteRawTag(50);
@@ -1436,8 +1455,8 @@ namespace Iop.Homenode {
       if (requestTypeCase_ == RequestTypeOneofCase.ListHomeNodePlans) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(ListHomeNodePlans);
       }
-      if (requestTypeCase_ == RequestTypeOneofCase.GetIdentityOnlineInformation) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(GetIdentityOnlineInformation);
+      if (requestTypeCase_ == RequestTypeOneofCase.GetIdentityInformation) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(GetIdentityInformation);
       }
       if (requestTypeCase_ == RequestTypeOneofCase.ApplicationServiceSendMessage) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(ApplicationServiceSendMessage);
@@ -1466,8 +1485,8 @@ namespace Iop.Homenode {
         case RequestTypeOneofCase.ListHomeNodePlans:
           ListHomeNodePlans = other.ListHomeNodePlans;
           break;
-        case RequestTypeOneofCase.GetIdentityOnlineInformation:
-          GetIdentityOnlineInformation = other.GetIdentityOnlineInformation;
+        case RequestTypeOneofCase.GetIdentityInformation:
+          GetIdentityInformation = other.GetIdentityInformation;
           break;
         case RequestTypeOneofCase.ApplicationServiceSendMessage:
           ApplicationServiceSendMessage = other.ApplicationServiceSendMessage;
@@ -1519,12 +1538,12 @@ namespace Iop.Homenode {
             break;
           }
           case 42: {
-            global::Iop.Homenode.GetIdentityOnlineInformationRequest subBuilder = new global::Iop.Homenode.GetIdentityOnlineInformationRequest();
-            if (requestTypeCase_ == RequestTypeOneofCase.GetIdentityOnlineInformation) {
-              subBuilder.MergeFrom(GetIdentityOnlineInformation);
+            global::Iop.Homenode.GetIdentityInformationRequest subBuilder = new global::Iop.Homenode.GetIdentityInformationRequest();
+            if (requestTypeCase_ == RequestTypeOneofCase.GetIdentityInformation) {
+              subBuilder.MergeFrom(GetIdentityInformation);
             }
             input.ReadMessage(subBuilder);
-            GetIdentityOnlineInformation = subBuilder;
+            GetIdentityInformation = subBuilder;
             break;
           }
           case 50: {
@@ -1589,8 +1608,8 @@ namespace Iop.Homenode {
         case ResponseTypeOneofCase.ListHomeNodePlans:
           ListHomeNodePlans = other.ListHomeNodePlans.Clone();
           break;
-        case ResponseTypeOneofCase.GetIdentityOnlineInformation:
-          GetIdentityOnlineInformation = other.GetIdentityOnlineInformation.Clone();
+        case ResponseTypeOneofCase.GetIdentityInformation:
+          GetIdentityInformation = other.GetIdentityInformation.Clone();
           break;
         case ResponseTypeOneofCase.ApplicationServiceSendMessage:
           ApplicationServiceSendMessage = other.ApplicationServiceSendMessage.Clone();
@@ -1654,14 +1673,14 @@ namespace Iop.Homenode {
       }
     }
 
-    /// <summary>Field number for the "getIdentityOnlineInformation" field.</summary>
-    public const int GetIdentityOnlineInformationFieldNumber = 5;
+    /// <summary>Field number for the "getIdentityInformation" field.</summary>
+    public const int GetIdentityInformationFieldNumber = 5;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Iop.Homenode.GetIdentityOnlineInformationResponse GetIdentityOnlineInformation {
-      get { return responseTypeCase_ == ResponseTypeOneofCase.GetIdentityOnlineInformation ? (global::Iop.Homenode.GetIdentityOnlineInformationResponse) responseType_ : null; }
+    public global::Iop.Homenode.GetIdentityInformationResponse GetIdentityInformation {
+      get { return responseTypeCase_ == ResponseTypeOneofCase.GetIdentityInformation ? (global::Iop.Homenode.GetIdentityInformationResponse) responseType_ : null; }
       set {
         responseType_ = value;
-        responseTypeCase_ = value == null ? ResponseTypeOneofCase.None : ResponseTypeOneofCase.GetIdentityOnlineInformation;
+        responseTypeCase_ = value == null ? ResponseTypeOneofCase.None : ResponseTypeOneofCase.GetIdentityInformation;
       }
     }
 
@@ -1694,7 +1713,7 @@ namespace Iop.Homenode {
       Ping = 2,
       ListRoles = 3,
       ListHomeNodePlans = 4,
-      GetIdentityOnlineInformation = 5,
+      GetIdentityInformation = 5,
       ApplicationServiceSendMessage = 6,
       ApplicationServiceReceiveMessageNotification = 7,
     }
@@ -1727,7 +1746,7 @@ namespace Iop.Homenode {
       if (!object.Equals(Ping, other.Ping)) return false;
       if (!object.Equals(ListRoles, other.ListRoles)) return false;
       if (!object.Equals(ListHomeNodePlans, other.ListHomeNodePlans)) return false;
-      if (!object.Equals(GetIdentityOnlineInformation, other.GetIdentityOnlineInformation)) return false;
+      if (!object.Equals(GetIdentityInformation, other.GetIdentityInformation)) return false;
       if (!object.Equals(ApplicationServiceSendMessage, other.ApplicationServiceSendMessage)) return false;
       if (!object.Equals(ApplicationServiceReceiveMessageNotification, other.ApplicationServiceReceiveMessageNotification)) return false;
       if (ResponseTypeCase != other.ResponseTypeCase) return false;
@@ -1741,7 +1760,7 @@ namespace Iop.Homenode {
       if (responseTypeCase_ == ResponseTypeOneofCase.Ping) hash ^= Ping.GetHashCode();
       if (responseTypeCase_ == ResponseTypeOneofCase.ListRoles) hash ^= ListRoles.GetHashCode();
       if (responseTypeCase_ == ResponseTypeOneofCase.ListHomeNodePlans) hash ^= ListHomeNodePlans.GetHashCode();
-      if (responseTypeCase_ == ResponseTypeOneofCase.GetIdentityOnlineInformation) hash ^= GetIdentityOnlineInformation.GetHashCode();
+      if (responseTypeCase_ == ResponseTypeOneofCase.GetIdentityInformation) hash ^= GetIdentityInformation.GetHashCode();
       if (responseTypeCase_ == ResponseTypeOneofCase.ApplicationServiceSendMessage) hash ^= ApplicationServiceSendMessage.GetHashCode();
       if (responseTypeCase_ == ResponseTypeOneofCase.ApplicationServiceReceiveMessageNotification) hash ^= ApplicationServiceReceiveMessageNotification.GetHashCode();
       hash ^= (int) responseTypeCase_;
@@ -1771,9 +1790,9 @@ namespace Iop.Homenode {
         output.WriteRawTag(34);
         output.WriteMessage(ListHomeNodePlans);
       }
-      if (responseTypeCase_ == ResponseTypeOneofCase.GetIdentityOnlineInformation) {
+      if (responseTypeCase_ == ResponseTypeOneofCase.GetIdentityInformation) {
         output.WriteRawTag(42);
-        output.WriteMessage(GetIdentityOnlineInformation);
+        output.WriteMessage(GetIdentityInformation);
       }
       if (responseTypeCase_ == ResponseTypeOneofCase.ApplicationServiceSendMessage) {
         output.WriteRawTag(50);
@@ -1800,8 +1819,8 @@ namespace Iop.Homenode {
       if (responseTypeCase_ == ResponseTypeOneofCase.ListHomeNodePlans) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(ListHomeNodePlans);
       }
-      if (responseTypeCase_ == ResponseTypeOneofCase.GetIdentityOnlineInformation) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(GetIdentityOnlineInformation);
+      if (responseTypeCase_ == ResponseTypeOneofCase.GetIdentityInformation) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(GetIdentityInformation);
       }
       if (responseTypeCase_ == ResponseTypeOneofCase.ApplicationServiceSendMessage) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(ApplicationServiceSendMessage);
@@ -1830,8 +1849,8 @@ namespace Iop.Homenode {
         case ResponseTypeOneofCase.ListHomeNodePlans:
           ListHomeNodePlans = other.ListHomeNodePlans;
           break;
-        case ResponseTypeOneofCase.GetIdentityOnlineInformation:
-          GetIdentityOnlineInformation = other.GetIdentityOnlineInformation;
+        case ResponseTypeOneofCase.GetIdentityInformation:
+          GetIdentityInformation = other.GetIdentityInformation;
           break;
         case ResponseTypeOneofCase.ApplicationServiceSendMessage:
           ApplicationServiceSendMessage = other.ApplicationServiceSendMessage;
@@ -1883,12 +1902,12 @@ namespace Iop.Homenode {
             break;
           }
           case 42: {
-            global::Iop.Homenode.GetIdentityOnlineInformationResponse subBuilder = new global::Iop.Homenode.GetIdentityOnlineInformationResponse();
-            if (responseTypeCase_ == ResponseTypeOneofCase.GetIdentityOnlineInformation) {
-              subBuilder.MergeFrom(GetIdentityOnlineInformation);
+            global::Iop.Homenode.GetIdentityInformationResponse subBuilder = new global::Iop.Homenode.GetIdentityInformationResponse();
+            if (responseTypeCase_ == ResponseTypeOneofCase.GetIdentityInformation) {
+              subBuilder.MergeFrom(GetIdentityInformation);
             }
             input.ReadMessage(subBuilder);
-            GetIdentityOnlineInformation = subBuilder;
+            GetIdentityInformation = subBuilder;
             break;
           }
           case 50: {
@@ -2942,6 +2961,11 @@ namespace Iop.Homenode {
   ///
   ///  An administrative message to test whether the peer is there and responds to requests.
   ///
+  ///  Each identity client is required to send a message not more than 60 seconds after the connection 
+  ///  was established, or after the last message has been send over the connection. For node clients,
+  ///  this limit is 300 seconds. Clients should use PingRequest if they have nothing else to send
+  ///  and want to keep the connection open.
+  ///
   ///  Roles: any
   /// </summary>
   public sealed partial class PingRequest : pb::IMessage<PingRequest> {
@@ -3340,7 +3364,7 @@ namespace Iop.Homenode {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public ListRolesResponse(ListRolesResponse other) : this() {
-      role_ = other.role_.Clone();
+      roles_ = other.roles_.Clone();
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -3348,17 +3372,17 @@ namespace Iop.Homenode {
       return new ListRolesResponse(this);
     }
 
-    /// <summary>Field number for the "role" field.</summary>
-    public const int RoleFieldNumber = 1;
-    private static readonly pb::FieldCodec<global::Iop.Homenode.ServerRole> _repeated_role_codec
+    /// <summary>Field number for the "roles" field.</summary>
+    public const int RolesFieldNumber = 1;
+    private static readonly pb::FieldCodec<global::Iop.Homenode.ServerRole> _repeated_roles_codec
         = pb::FieldCodec.ForMessage(10, global::Iop.Homenode.ServerRole.Parser);
-    private readonly pbc::RepeatedField<global::Iop.Homenode.ServerRole> role_ = new pbc::RepeatedField<global::Iop.Homenode.ServerRole>();
+    private readonly pbc::RepeatedField<global::Iop.Homenode.ServerRole> roles_ = new pbc::RepeatedField<global::Iop.Homenode.ServerRole>();
     /// <summary>
     ///  List of server roles.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<global::Iop.Homenode.ServerRole> Role {
-      get { return role_; }
+    public pbc::RepeatedField<global::Iop.Homenode.ServerRole> Roles {
+      get { return roles_; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -3374,14 +3398,14 @@ namespace Iop.Homenode {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if(!role_.Equals(other.role_)) return false;
+      if(!roles_.Equals(other.roles_)) return false;
       return true;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      hash ^= role_.GetHashCode();
+      hash ^= roles_.GetHashCode();
       return hash;
     }
 
@@ -3392,13 +3416,13 @@ namespace Iop.Homenode {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      role_.WriteTo(output, _repeated_role_codec);
+      roles_.WriteTo(output, _repeated_roles_codec);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      size += role_.CalculateSize(_repeated_role_codec);
+      size += roles_.CalculateSize(_repeated_roles_codec);
       return size;
     }
 
@@ -3407,7 +3431,7 @@ namespace Iop.Homenode {
       if (other == null) {
         return;
       }
-      role_.Add(other.role_);
+      roles_.Add(other.roles_);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -3419,7 +3443,7 @@ namespace Iop.Homenode {
             input.SkipLastField();
             break;
           case 10: {
-            role_.AddEntriesFrom(input, _repeated_role_codec);
+            roles_.AddEntriesFrom(input, _repeated_roles_codec);
             break;
           }
         }
@@ -5133,6 +5157,10 @@ namespace Iop.Homenode {
   ///  A customer client announces it is online and it "logs in".
   ///  The client has to provide a signature in 'ConversationRequest.signature'.
   ///
+  ///  Note that if a customer client that is authenticated already creates a second connection
+  ///  and performs the check-in process in it, the first connection has to be disconnected
+  ///  as there can not be multiple parallel connections in Authenticated state for a single identity.
+  ///
   ///  Roles: clCustomer
   ///
   ///  Conversation status: ConversationStarted
@@ -5264,6 +5292,8 @@ namespace Iop.Homenode {
   ///  Specific Error Responses:
   ///    * ERROR_INVALID_SIGNATURE - The client's signature of the challenge is not valid.
   ///    * ERROR_NOT_FOUND - The identity is not a client of the node.
+  ///    * ERROR_INVALID_VALUE
+  ///      * Response.details == "challenge" - 'CheckInRequest.challenge' is not the exact copy of 'StartConversationResponse.challenge' from the start of the conversation.
   /// </summary>
   public sealed partial class CheckInResponse : pb::IMessage<CheckInResponse> {
     private static readonly pb::MessageParser<CheckInResponse> _parser = new pb::MessageParser<CheckInResponse>(() => new CheckInResponse());
@@ -5489,6 +5519,8 @@ namespace Iop.Homenode {
   ///
   ///  Specific Error Responses:
   ///    * ERROR_INVALID_SIGNATURE - The client's signature of the challenge is not valid.
+  ///    * ERROR_INVALID_VALUE
+  ///      * Response.details == "challenge" - 'VerifyIdentityRequest.challenge' is not the exact copy of 'StartConversationResponse.challenge' from the start of the conversation.
   /// </summary>
   public sealed partial class VerifyIdentityResponse : pb::IMessage<VerifyIdentityResponse> {
     private static readonly pb::MessageParser<VerifyIdentityResponse> _parser = new pb::MessageParser<VerifyIdentityResponse>(() => new VerifyIdentityResponse());
@@ -5583,10 +5615,15 @@ namespace Iop.Homenode {
   ///
   ///  A customer client updates its profile hosted at the node.
   ///  The client must make sure that its profile is complete after processing the request.
-  ///  After sending HomeNodeRequest, its profile is almost empty - only identity type 
+  ///  After sending HomeNodeRequestRequest, its profile is almost empty - only identity type 
   ///  and public key are known. This means that the first call of this request 
   ///  has to contain all required information to make the profile complete. Namely the first 
   ///  UpdateProfileRequest has to have setVersion, setName, and setLocation set to true.
+  ///
+  ///  The customer client is required to initialize its profile just after finishing 
+  ///  the HomeNodeRequestRequest. Until the initialization of the profile is made, the identity 
+  ///  is not considered as being fully initialized and can not be queried or called by other 
+  ///  identities.
   ///  
   ///  Roles: clCustomer
   ///
@@ -6481,8 +6518,9 @@ namespace Iop.Homenode {
   ///
   ///  A response to ApplicationServiceAddRequest.
   ///
-  ///  Specific Error Responses:
-  ///    * ERROR_NOT_FOUND - The identity is not a client of the node.
+  ///    * ERROR_QUOTA_EXCEEDED - The given set of application services can not be added because the client would have more than the maximum number of enabled services.
+  ///    * ERROR_INVALID_VALUE
+  ///      * Response.details == "serviceNames[i]" - 'ApplicationServiceAddRequest.serviceNames[i]' is not a valid service name, where 'i' is the zero-based index.
   /// </summary>
   public sealed partial class ApplicationServiceAddResponse : pb::IMessage<ApplicationServiceAddResponse> {
     private static readonly pb::MessageParser<ApplicationServiceAddResponse> _parser = new pb::MessageParser<ApplicationServiceAddResponse>(() => new ApplicationServiceAddResponse());
@@ -6806,10 +6844,10 @@ namespace Iop.Homenode {
   ///
   ///  Roles: clNonCustomer, clCustomer
   /// </summary>
-  public sealed partial class GetIdentityOnlineInformationRequest : pb::IMessage<GetIdentityOnlineInformationRequest> {
-    private static readonly pb::MessageParser<GetIdentityOnlineInformationRequest> _parser = new pb::MessageParser<GetIdentityOnlineInformationRequest>(() => new GetIdentityOnlineInformationRequest());
+  public sealed partial class GetIdentityInformationRequest : pb::IMessage<GetIdentityInformationRequest> {
+    private static readonly pb::MessageParser<GetIdentityInformationRequest> _parser = new pb::MessageParser<GetIdentityInformationRequest>(() => new GetIdentityInformationRequest());
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pb::MessageParser<GetIdentityOnlineInformationRequest> Parser { get { return _parser; } }
+    public static pb::MessageParser<GetIdentityInformationRequest> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
@@ -6822,14 +6860,14 @@ namespace Iop.Homenode {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public GetIdentityOnlineInformationRequest() {
+    public GetIdentityInformationRequest() {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public GetIdentityOnlineInformationRequest(GetIdentityOnlineInformationRequest other) : this() {
+    public GetIdentityInformationRequest(GetIdentityInformationRequest other) : this() {
       identityNetworkId_ = other.identityNetworkId_;
       includeProfileImage_ = other.includeProfileImage_;
       includeThumbnailImage_ = other.includeThumbnailImage_;
@@ -6837,8 +6875,8 @@ namespace Iop.Homenode {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public GetIdentityOnlineInformationRequest Clone() {
-      return new GetIdentityOnlineInformationRequest(this);
+    public GetIdentityInformationRequest Clone() {
+      return new GetIdentityInformationRequest(this);
     }
 
     /// <summary>Field number for the "identityNetworkId" field.</summary>
@@ -6899,11 +6937,11 @@ namespace Iop.Homenode {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
-      return Equals(other as GetIdentityOnlineInformationRequest);
+      return Equals(other as GetIdentityInformationRequest);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(GetIdentityOnlineInformationRequest other) {
+    public bool Equals(GetIdentityInformationRequest other) {
       if (ReferenceEquals(other, null)) {
         return false;
       }
@@ -6971,7 +7009,7 @@ namespace Iop.Homenode {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(GetIdentityOnlineInformationRequest other) {
+    public void MergeFrom(GetIdentityInformationRequest other) {
       if (other == null) {
         return;
       }
@@ -7021,15 +7059,16 @@ namespace Iop.Homenode {
 
   /// <summary>
   ///
-  ///  A response to GetIdentityOnlineInformationRequest.
+  ///  A response to GetIdentityInformationRequest.
   ///
   ///  Specific Error Responses:
-  ///    * ERROR_NOT_FOUND - 'ApplicationServiceRemoveRequest.identityNetworkId' does not identify an identity hosted by the node.
+  ///    * ERROR_NOT_FOUND - 'GetIdentityInformationRequest.identityNetworkId' does not identify an identity hosted by the node.
+  ///    * ERROR_UNINITIALIZED - The target identity's profile has not been initialized yet.
   /// </summary>
-  public sealed partial class GetIdentityOnlineInformationResponse : pb::IMessage<GetIdentityOnlineInformationResponse> {
-    private static readonly pb::MessageParser<GetIdentityOnlineInformationResponse> _parser = new pb::MessageParser<GetIdentityOnlineInformationResponse>(() => new GetIdentityOnlineInformationResponse());
+  public sealed partial class GetIdentityInformationResponse : pb::IMessage<GetIdentityInformationResponse> {
+    private static readonly pb::MessageParser<GetIdentityInformationResponse> _parser = new pb::MessageParser<GetIdentityInformationResponse>(() => new GetIdentityInformationResponse());
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pb::MessageParser<GetIdentityOnlineInformationResponse> Parser { get { return _parser; } }
+    public static pb::MessageParser<GetIdentityInformationResponse> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
@@ -7042,14 +7081,17 @@ namespace Iop.Homenode {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public GetIdentityOnlineInformationResponse() {
+    public GetIdentityInformationResponse() {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public GetIdentityOnlineInformationResponse(GetIdentityOnlineInformationResponse other) : this() {
+    public GetIdentityInformationResponse(GetIdentityInformationResponse other) : this() {
+      isHosted_ = other.isHosted_;
+      isTargetHomeNodeKnown_ = other.isTargetHomeNodeKnown_;
+      targetHomeNodeNetworkId_ = other.targetHomeNodeNetworkId_;
       isOnline_ = other.isOnline_;
       identityPublicKey_ = other.identityPublicKey_;
       name_ = other.name_;
@@ -7060,15 +7102,57 @@ namespace Iop.Homenode {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public GetIdentityOnlineInformationResponse Clone() {
-      return new GetIdentityOnlineInformationResponse(this);
+    public GetIdentityInformationResponse Clone() {
+      return new GetIdentityInformationResponse(this);
+    }
+
+    /// <summary>Field number for the "isHosted" field.</summary>
+    public const int IsHostedFieldNumber = 1;
+    private bool isHosted_;
+    /// <summary>
+    ///  True if the requested identity is a customer of the node.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool IsHosted {
+      get { return isHosted_; }
+      set {
+        isHosted_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "isTargetHomeNodeKnown" field.</summary>
+    public const int IsTargetHomeNodeKnownFieldNumber = 2;
+    private bool isTargetHomeNodeKnown_;
+    /// <summary>
+    ///  If 'isHosted' is false then this is true if the identity's new home node is known to the node. In all other cases, this is false.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool IsTargetHomeNodeKnown {
+      get { return isTargetHomeNodeKnown_; }
+      set {
+        isTargetHomeNodeKnown_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "targetHomeNodeNetworkId" field.</summary>
+    public const int TargetHomeNodeNetworkIdFieldNumber = 3;
+    private pb::ByteString targetHomeNodeNetworkId_ = pb::ByteString.Empty;
+    /// <summary>
+    ///  If 'isTargetHomeNodeKnown' is true then this field contains the identity's new home node network ID.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString TargetHomeNodeNetworkId {
+      get { return targetHomeNodeNetworkId_; }
+      set {
+        targetHomeNodeNetworkId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
     }
 
     /// <summary>Field number for the "isOnline" field.</summary>
-    public const int IsOnlineFieldNumber = 1;
+    public const int IsOnlineFieldNumber = 4;
     private bool isOnline_;
     /// <summary>
-    ///  True if the requested identity is currently online.
+    ///  Following fields are valid only if 'isHosted' is true.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool IsOnline {
@@ -7079,7 +7163,7 @@ namespace Iop.Homenode {
     }
 
     /// <summary>Field number for the "identityPublicKey" field.</summary>
-    public const int IdentityPublicKeyFieldNumber = 2;
+    public const int IdentityPublicKeyFieldNumber = 5;
     private pb::ByteString identityPublicKey_ = pb::ByteString.Empty;
     /// <summary>
     ///  The requested identity's public key.
@@ -7093,7 +7177,7 @@ namespace Iop.Homenode {
     }
 
     /// <summary>Field number for the "name" field.</summary>
-    public const int NameFieldNumber = 3;
+    public const int NameFieldNumber = 6;
     private string name_ = "";
     /// <summary>
     ///  The requested identity's name.
@@ -7107,7 +7191,7 @@ namespace Iop.Homenode {
     }
 
     /// <summary>Field number for the "extraData" field.</summary>
-    public const int ExtraDataFieldNumber = 4;
+    public const int ExtraDataFieldNumber = 7;
     private string extraData_ = "";
     /// <summary>
     ///  The requested identity's extra data.
@@ -7121,10 +7205,10 @@ namespace Iop.Homenode {
     }
 
     /// <summary>Field number for the "profileImage" field.</summary>
-    public const int ProfileImageFieldNumber = 5;
+    public const int ProfileImageFieldNumber = 8;
     private pb::ByteString profileImage_ = pb::ByteString.Empty;
     /// <summary>
-    ///  If 'GetIdentityOnlineInformationRequest.includeProfileImage' was set, this contains the requested identity's profile image.
+    ///  If 'GetIdentityInformationRequest.includeProfileImage' was set, this contains the requested identity's profile image.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public pb::ByteString ProfileImage {
@@ -7135,10 +7219,10 @@ namespace Iop.Homenode {
     }
 
     /// <summary>Field number for the "thumbnailImage" field.</summary>
-    public const int ThumbnailImageFieldNumber = 6;
+    public const int ThumbnailImageFieldNumber = 9;
     private pb::ByteString thumbnailImage_ = pb::ByteString.Empty;
     /// <summary>
-    ///  If 'GetIdentityOnlineInformationRequest.includeThumbnailImage' was set, this contains the requested identity's thumbnail image.
+    ///  If 'GetIdentityInformationRequest.includeThumbnailImage' was set, this contains the requested identity's thumbnail image.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public pb::ByteString ThumbnailImage {
@@ -7154,7 +7238,7 @@ namespace Iop.Homenode {
         = pb::FieldCodec.ForString(82);
     private readonly pbc::RepeatedField<string> applicationServices_ = new pbc::RepeatedField<string>();
     /// <summary>
-    ///  If 'GetIdentityOnlineInformationRequest.includeApplicationServices' was set and if 'isOnline' is true, this contains 
+    ///  If 'GetIdentityInformationRequest.includeApplicationServices' was set and if 'isOnline' is true, this contains 
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public pbc::RepeatedField<string> ApplicationServices {
@@ -7163,17 +7247,20 @@ namespace Iop.Homenode {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
-      return Equals(other as GetIdentityOnlineInformationResponse);
+      return Equals(other as GetIdentityInformationResponse);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(GetIdentityOnlineInformationResponse other) {
+    public bool Equals(GetIdentityInformationResponse other) {
       if (ReferenceEquals(other, null)) {
         return false;
       }
       if (ReferenceEquals(other, this)) {
         return true;
       }
+      if (IsHosted != other.IsHosted) return false;
+      if (IsTargetHomeNodeKnown != other.IsTargetHomeNodeKnown) return false;
+      if (TargetHomeNodeNetworkId != other.TargetHomeNodeNetworkId) return false;
       if (IsOnline != other.IsOnline) return false;
       if (IdentityPublicKey != other.IdentityPublicKey) return false;
       if (Name != other.Name) return false;
@@ -7187,6 +7274,9 @@ namespace Iop.Homenode {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
+      if (IsHosted != false) hash ^= IsHosted.GetHashCode();
+      if (IsTargetHomeNodeKnown != false) hash ^= IsTargetHomeNodeKnown.GetHashCode();
+      if (TargetHomeNodeNetworkId.Length != 0) hash ^= TargetHomeNodeNetworkId.GetHashCode();
       if (IsOnline != false) hash ^= IsOnline.GetHashCode();
       if (IdentityPublicKey.Length != 0) hash ^= IdentityPublicKey.GetHashCode();
       if (Name.Length != 0) hash ^= Name.GetHashCode();
@@ -7204,28 +7294,40 @@ namespace Iop.Homenode {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (IsOnline != false) {
+      if (IsHosted != false) {
         output.WriteRawTag(8);
+        output.WriteBool(IsHosted);
+      }
+      if (IsTargetHomeNodeKnown != false) {
+        output.WriteRawTag(16);
+        output.WriteBool(IsTargetHomeNodeKnown);
+      }
+      if (TargetHomeNodeNetworkId.Length != 0) {
+        output.WriteRawTag(26);
+        output.WriteBytes(TargetHomeNodeNetworkId);
+      }
+      if (IsOnline != false) {
+        output.WriteRawTag(32);
         output.WriteBool(IsOnline);
       }
       if (IdentityPublicKey.Length != 0) {
-        output.WriteRawTag(18);
+        output.WriteRawTag(42);
         output.WriteBytes(IdentityPublicKey);
       }
       if (Name.Length != 0) {
-        output.WriteRawTag(26);
+        output.WriteRawTag(50);
         output.WriteString(Name);
       }
       if (ExtraData.Length != 0) {
-        output.WriteRawTag(34);
+        output.WriteRawTag(58);
         output.WriteString(ExtraData);
       }
       if (ProfileImage.Length != 0) {
-        output.WriteRawTag(42);
+        output.WriteRawTag(66);
         output.WriteBytes(ProfileImage);
       }
       if (ThumbnailImage.Length != 0) {
-        output.WriteRawTag(50);
+        output.WriteRawTag(74);
         output.WriteBytes(ThumbnailImage);
       }
       applicationServices_.WriteTo(output, _repeated_applicationServices_codec);
@@ -7234,6 +7336,15 @@ namespace Iop.Homenode {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
+      if (IsHosted != false) {
+        size += 1 + 1;
+      }
+      if (IsTargetHomeNodeKnown != false) {
+        size += 1 + 1;
+      }
+      if (TargetHomeNodeNetworkId.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(TargetHomeNodeNetworkId);
+      }
       if (IsOnline != false) {
         size += 1 + 1;
       }
@@ -7257,9 +7368,18 @@ namespace Iop.Homenode {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(GetIdentityOnlineInformationResponse other) {
+    public void MergeFrom(GetIdentityInformationResponse other) {
       if (other == null) {
         return;
+      }
+      if (other.IsHosted != false) {
+        IsHosted = other.IsHosted;
+      }
+      if (other.IsTargetHomeNodeKnown != false) {
+        IsTargetHomeNodeKnown = other.IsTargetHomeNodeKnown;
+      }
+      if (other.TargetHomeNodeNetworkId.Length != 0) {
+        TargetHomeNodeNetworkId = other.TargetHomeNodeNetworkId;
       }
       if (other.IsOnline != false) {
         IsOnline = other.IsOnline;
@@ -7291,26 +7411,38 @@ namespace Iop.Homenode {
             input.SkipLastField();
             break;
           case 8: {
-            IsOnline = input.ReadBool();
+            IsHosted = input.ReadBool();
             break;
           }
-          case 18: {
-            IdentityPublicKey = input.ReadBytes();
+          case 16: {
+            IsTargetHomeNodeKnown = input.ReadBool();
             break;
           }
           case 26: {
-            Name = input.ReadString();
+            TargetHomeNodeNetworkId = input.ReadBytes();
             break;
           }
-          case 34: {
-            ExtraData = input.ReadString();
+          case 32: {
+            IsOnline = input.ReadBool();
             break;
           }
           case 42: {
-            ProfileImage = input.ReadBytes();
+            IdentityPublicKey = input.ReadBytes();
             break;
           }
           case 50: {
+            Name = input.ReadString();
+            break;
+          }
+          case 58: {
+            ExtraData = input.ReadString();
+            break;
+          }
+          case 66: {
+            ProfileImage = input.ReadBytes();
+            break;
+          }
+          case 74: {
             ThumbnailImage = input.ReadBytes();
             break;
           }
@@ -7496,6 +7628,7 @@ namespace Iop.Homenode {
   ///  Specific Error Responses:
   ///    * ERROR_NOT_AVAILABLE - The callee is not online.
   ///    * ERROR_REJECTED - The callee rejected the call.
+  ///    * ERROR_UNINITIALIZED - The callee's profile has not been initialized yet.
   ///    * ERROR_INVALID_VALUE
   ///      * Response.details == "identityNetworkId" - 'CallIdentityApplicationServiceRequest.identityNetworkId' does not identify an identity hosted by the node.
   ///      * Response.details == "serviceName" - 'CallIdentityApplicationServiceRequest.serviceName' is not an application service supported by the callee in the current session.
@@ -7911,6 +8044,13 @@ namespace Iop.Homenode {
   ///  
   ///  This request is sent by a client to the node in order to deliver a message to the other client over the opened 
   ///  application service call session.
+  ///
+  ///  After the client connects to clAppService port, it sends an initialization message using this request 
+  ///  to inform the node about its identity. This initialization message is not delivered to the other party
+  ///  and the node responses to this initialization message only after the other party is also connected.
+  ///  In the initialization message, the 'message' field is ignored. If the other party fails to join the channel 
+  ///  within 30 seconds, the node closes the existing connection to the connected client.
+  ///  
   ///
   ///  Roles: clAppService
   /// </summary>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -142,6 +143,46 @@ namespace HomeNet.Data.Models
       return thumbnailImageData != null;
     }
 
+
+    /// <summary>
+    /// Returns profile image data if it exists. If it is not loaded, the data is loaded from disk.
+    /// </summary>
+    /// <returns>Profile image data if it exists, or null if the identity has no profile image set.</returns>
+    public async Task<byte[]> GetProfileImageDataAsync()
+    {
+      // If no profile image is set for the identity, return null.
+      if (ProfileImage == null)
+        return null;
+
+      // If the image data is loaded, return it.
+      if (profileImageData != null)
+        return profileImageData;
+
+      // Otherwise load the image data and return it.
+      await LoadProfileImageDataAsync();
+      return profileImageData;
+    }
+
+
+    /// <summary>
+    /// Returns thumbnail image data if it exists. If it is not loaded, the data is loaded from disk.
+    /// </summary>
+    /// <returns>Thumbnail image data if it exists, or null if the identity has no thumbnail image set.</returns>
+    public async Task<byte[]> GetThumbnailImageDataAsync()
+    {
+      // If no thumbnail image is set for the identity, return null.
+      if (ThumbnailImage == null)
+        return null;
+
+      // If the image data is loaded, return it.
+      if (thumbnailImageData != null)
+        return thumbnailImageData;
+
+      // Otherwise load the image data and return it.
+      await LoadThumbnailImageDataAsync();
+      return thumbnailImageData;
+    }
+
     /// <summary>
     /// Saves profile image data to a file provided that profileImageData field is initialized.
     /// </summary>
@@ -193,6 +234,16 @@ namespace HomeNet.Data.Models
 
       thumbnailImageData = Data;
       return await Utils.ImageHelper.SaveImageDataAsync(ThumbnailImage.Value, thumbnailImageData);
+    }
+
+
+    /// <summary>
+    /// Checks whether the profile was fully initialized.
+    /// </summary>
+    /// <returns>true if the identity's profile was initialized properly, false otherwise.</returns>
+    public bool IsProfileInitialized()
+    {
+      return StructuralComparisons.StructuralComparer.Compare(this.Version, new byte[] { 0, 0, 0 }) == 0;
     }
   }
 }

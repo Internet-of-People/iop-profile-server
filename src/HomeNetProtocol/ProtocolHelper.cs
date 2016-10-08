@@ -13,24 +13,23 @@ namespace HomeNetProtocol
   public static class ProtocolHelper
   {
     /// <summary>Length of the message prefix in bytes that contains the message length.</summary>
-    public const int HeaderSize = 4;
+    public const int HeaderSize = 5;
 
     /// <summary>Maximal size of the message.</summary>
     public const int MaxSize = 1 * 1024 * 1024;
 
     /// <summary>
-    /// Converts 
+    /// Converts an IoP protocol message to a binary format.
     /// </summary>
-    /// <param name="Data"></param>
-    /// <returns></returns>
+    /// <param name="Data">IoP protocol message.</param>
+    /// <returns>Binary representation of the message to be sent over the network.</returns>
     public static byte[] GetMessageBytes(Message Data)
     {
       int size = Data.CalculateSize();
-      byte[] bytes = new byte[HeaderSize + size];
-      byte[] header = GetBytesLittleEndian((uint)size);
-      Array.Copy(header, 0, bytes, 0, HeaderSize);
-      Array.Copy(Data.ToByteArray(), 0, bytes, HeaderSize, size);
-      return bytes;
+      MessageWithHeader mwh = new MessageWithHeader();
+      mwh.Body = Data;
+      mwh.Header = (uint)size;
+      return mwh.ToByteArray();
     }
 
     /// <summary>
@@ -62,17 +61,29 @@ namespace HomeNetProtocol
     /// <summary>
     /// Decodes 32-bit unsigned integer value from a little endian byte array.
     /// </summary>
-    /// <param name="Data">4 bytes long byte array with encoded value.</param>
+    /// <param name="Data">Byte array containing 4 byte long subarray with encoded value.</param>
+    /// <param name="Offset">Offset of the 4 byte long subarray within the array.</param>
     /// <returns>Decoded integer value.</returns>
-    public static uint GetValueLittleEndian(byte[] Data)
+    public static uint GetValueLittleEndian(byte[] Data, int Offset)
     {
-      byte b1 = Data[0];
-      byte b2 = Data[1];
-      byte b3 = Data[2];
-      byte b4 = Data[3];
+      byte b1 = Data[Offset + 0];
+      byte b2 = Data[Offset + 1];
+      byte b3 = Data[Offset + 2];
+      byte b4 = Data[Offset + 3];
 
       uint res = b1 + (uint)(b2 << 8) + (uint)(b3 << 16) + (uint)(b4 << 24);
       return res;
+    }
+
+    /// <summary>
+    /// Checks whether the version in binary form is a valid version.
+    /// Note that version 0.0.0 is not a valid version.
+    /// </summary>
+    /// <param name="Version">Version information in binary form</param>
+    /// <returns>true if the version is valid, false otherwise.</returns>
+    public static bool IsValidVersion(byte[] Version)
+    {
+      return !((Version == null) || (Version.Length != 3) || ((Version[0] == 0) && (Version[1] == 0) && (Version[2] == 0)));
     }
 
 

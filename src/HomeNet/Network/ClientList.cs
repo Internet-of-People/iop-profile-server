@@ -41,12 +41,12 @@ namespace HomeNet.Network
     private Dictionary<byte[], List<PeerListItem>> peersByIdentityId = new Dictionary<byte[], List<PeerListItem>>();
 
     /// <summary>
-    /// List of online clients by their Identity ID. Only node's clients are in this list.
+    /// List of online (checked-in) clients by their Identity ID. Only node's clients are in this list.
     /// A client is an identity for which the node acts as a home node.
     /// </summary>
     private Dictionary<byte[], PeerListItem> clientsByIdentityId = new Dictionary<byte[], PeerListItem>();
     
-    /// <summary>Creates </summary>
+    /// <summary>Initializes the client list and sets up the logger.</summary>
     /// <param name="IdBase">Base number of internal identifiers of clients. First client's ID is going to be IdBase + 1.</param>
     public ClientList(ulong IdBase, string LogPrefix)
     {
@@ -89,7 +89,7 @@ namespace HomeNet.Network
     /// <param name="Client">Network client to add.</param>
     public void AddNetworkPeer(Client Client)
     {
-      log.Trace("()", Client.Id);
+      log.Trace("()");
 
       PeerListItem peer = new PeerListItem();
       peer.Client = Client;
@@ -198,7 +198,7 @@ namespace HomeNet.Network
     /// <param name="Client">Network client to remove.</param>
     public void RemoveNetworkPeer(Client Client)
     {
-      log.Trace("()");
+      log.Trace("(Client.Id:0x{0:X16})", Client.Id);
 
       ulong internalId = Client.Id;
       byte[] identityId = Client.IdentityId;
@@ -251,6 +251,29 @@ namespace HomeNet.Network
         log.Error("Checked-in client Identity ID '{0}' not found in clientsByIdentityId list.", identityId);
 
       log.Trace("(-)");
+    }
+
+
+    /// <summary>
+    /// Finds a checked-in client by its identity ID.
+    /// </summary>
+    /// <param name="IdentityId">Identifier of the identity to search for.</param>
+    /// <returns>Client object of the requested online identity, or null if the identity is not online.</returns>
+    public Client GetCheckedInClient(byte[] IdentityId)
+    {
+      log.Trace("(IdentityId:'{0}')", Crypto.ToHex(IdentityId));
+
+      Client res = null;
+      lock (listLock)
+      {
+        PeerListItem peer;
+        if (clientsByIdentityId.TryGetValue(IdentityId, out peer))
+          res = peer.Client;
+      }
+
+      if (res != null) log.Trace("(-):0x{0:X16}", res.Id);
+      else log.Trace("(-):null");
+      return res;
     }
 
   }

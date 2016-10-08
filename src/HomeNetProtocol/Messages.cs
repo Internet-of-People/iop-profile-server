@@ -109,16 +109,6 @@ namespace HomeNetProtocol
     }
 
     /// <summary>
-    /// Creates a new error response for a specific request with ERROR_BAD_ROLE status code.
-    /// </summary>
-    /// <param name="Request">Request message for which the response is created.</param>
-    /// <returns>Error response message that is ready to be sent.</returns>
-    public Message CreateErrorBadRoleResponse(Message Request)
-    {
-      return CreateResponse(Request, Status.ErrorBadRole);
-    }
-
-    /// <summary>
     /// Creates a new error response for a specific request with ERROR_UNSUPPORTED status code.
     /// </summary>
     /// <param name="Request">Request message for which the response is created.</param>
@@ -126,6 +116,46 @@ namespace HomeNetProtocol
     public Message CreateErrorUnsupportedResponse(Message Request)
     {
       return CreateResponse(Request, Status.ErrorUnsupported);
+    }
+
+    /// <summary>
+    /// Creates a new error response for a specific request with ERROR_BANNED status code.
+    /// </summary>
+    /// <param name="Request">Request message for which the response is created.</param>
+    /// <returns>Error response message that is ready to be sent.</returns>
+    public Message CreateErrorBannedResponse(Message Request)
+    {
+      return CreateResponse(Request, Status.ErrorBanned);
+    }
+
+    /// <summary>
+    /// Creates a new error response for a specific request with ERROR_BUSY status code.
+    /// </summary>
+    /// <param name="Request">Request message for which the response is created.</param>
+    /// <returns>Error response message that is ready to be sent.</returns>
+    public Message CreateErrorBusyResponse(Message Request)
+    {
+      return CreateResponse(Request, Status.ErrorBusy);
+    }
+
+    /// <summary>
+    /// Creates a new error response for a specific request with ERROR_UNAUTHORIZED status code.
+    /// </summary>
+    /// <param name="Request">Request message for which the response is created.</param>
+    /// <returns>Error response message that is ready to be sent.</returns>
+    public Message CreateErrorUnauthorizedResponse(Message Request)
+    {
+      return CreateResponse(Request, Status.ErrorUnauthorized);
+    }
+
+    /// <summary>
+    /// Creates a new error response for a specific request with ERROR_BAD_ROLE status code.
+    /// </summary>
+    /// <param name="Request">Request message for which the response is created.</param>
+    /// <returns>Error response message that is ready to be sent.</returns>
+    public Message CreateErrorBadRoleResponse(Message Request)
+    {
+      return CreateResponse(Request, Status.ErrorBadRole);
     }
 
     /// <summary>
@@ -139,6 +169,17 @@ namespace HomeNetProtocol
     }
 
     /// <summary>
+    /// Creates a new error response for a specific request with ERROR_INTERNAL status code.
+    /// </summary>
+    /// <param name="Request">Request message for which the response is created.</param>
+    /// <returns>Error response message that is ready to be sent.</returns>
+    public Message CreateErrorInternalResponse(Message Request)
+    {
+      return CreateResponse(Request, Status.ErrorInternal);
+    }
+
+
+    /// <summary>
     /// Creates a new error response for a specific request with ERROR_QUOTA_EXCEEDED status code.
     /// </summary>
     /// <param name="Request">Request message for which the response is created.</param>
@@ -149,15 +190,24 @@ namespace HomeNetProtocol
     }
 
     /// <summary>
-    /// Creates a new error response for a specific request with ERROR_INTERNAL status code.
+    /// Creates a new error response for a specific request with ERROR_INVALID_SIGNATURE status code.
     /// </summary>
     /// <param name="Request">Request message for which the response is created.</param>
     /// <returns>Error response message that is ready to be sent.</returns>
-    public Message CreateErrorInternalResponse(Message Request)
+    public Message CreateErrorInvalidSignatureResponse(Message Request)
     {
-      return CreateResponse(Request, Status.ErrorInternal);
+      return CreateResponse(Request, Status.ErrorInvalidSignature);
     }
 
+    /// <summary>
+    /// Creates a new error response for a specific request with ERROR_NOT_FOUND status code.
+    /// </summary>
+    /// <param name="Request">Request message for which the response is created.</param>
+    /// <returns>Error response message that is ready to be sent.</returns>
+    public Message CreateErrorNotFoundResponse(Message Request)
+    {
+      return CreateResponse(Request, Status.ErrorNotFound);
+    }
 
     /// <summary>
     /// Creates a new error response for a specific request with ERROR_INVALID_VALUE status code.
@@ -173,17 +223,6 @@ namespace HomeNetProtocol
       return res;
     }
 
-
-    /// <summary>
-    /// Creates a new error response for a specific request with ERROR_INVALID_SIGNATURE status code.
-    /// </summary>
-    /// <param name="Request">Request message for which the response is created.</param>
-    /// <returns>Error response message that is ready to be sent.</returns>
-    public Message CreateErrorInvalidSignatureResponse(Message Request)
-    {
-      return CreateResponse(Request, Status.ErrorInvalidSignature);
-    }
-
     /// <summary>
     /// Creates a new error response for a specific request with ERROR_ALREADY_EXISTS status code.
     /// </summary>
@@ -195,14 +234,37 @@ namespace HomeNetProtocol
     }
 
     /// <summary>
-    /// Creates a new error response for a specific request with ERROR_NOT_FOUND status code.
+    /// Creates a new error response for a specific request with ERROR_NOT_AVAILABLE status code.
     /// </summary>
     /// <param name="Request">Request message for which the response is created.</param>
     /// <returns>Error response message that is ready to be sent.</returns>
-    public Message CreateErrorNotFoundResponse(Message Request)
+    public Message CreateErrorNotAvailableResponse(Message Request)
     {
-      return CreateResponse(Request, Status.ErrorNotFound);
+      return CreateResponse(Request, Status.ErrorNotAvailable);
     }
+
+    /// <summary>
+    /// Creates a new error response for a specific request with ERROR_REJECTED status code.
+    /// </summary>
+    /// <param name="Request">Request message for which the response is created.</param>
+    /// <returns>Error response message that is ready to be sent.</returns>
+    public Message CreateErrorRejectedResponse(Message Request)
+    {
+      return CreateResponse(Request, Status.ErrorRejected);
+    }
+
+    /// <summary>
+    /// Creates a new error response for a specific request with ERROR_UNINITIALIZED status code.
+    /// </summary>
+    /// <param name="Request">Request message for which the response is created.</param>
+    /// <returns>Error response message that is ready to be sent.</returns>
+    public Message CreateErrorUninitializedResponse(Message Request)
+    {
+      return CreateResponse(Request, Status.ErrorUninitialized);
+    }
+
+
+
 
 
 
@@ -361,7 +423,7 @@ namespace HomeNetProtocol
     public Message CreateListRolesResponse(Message Request, List<ServerRole> Roles)
     {
       ListRolesResponse listRolesResponse = new ListRolesResponse();
-      listRolesResponse.Role.AddRange(Roles);
+      listRolesResponse.Roles.AddRange(Roles);
 
       Message res = CreateSingleResponse(Request);
       res.Response.SingleResponse.ListRoles = listRolesResponse;
@@ -446,7 +508,7 @@ namespace HomeNetProtocol
 
       return res;
     }
-
+    
 
 
     /// <summary>
@@ -477,6 +539,39 @@ namespace HomeNetProtocol
 
       Message res = CreateConversationResponse(Request);
       res.Response.ConversationResponse.CheckIn = checkInResponse;
+
+      return res;
+    }
+
+
+    /// <summary>
+    /// Creates a new VerifyIdentityRequest message.
+    /// </summary>
+    /// <param name="Challenge">Challenge received in StartConversationRequest.Challenge.</param>
+    /// <returns>VerifyIdentityRequest message that is ready to be sent.</returns>
+    public Message CreateVerifyIdentityRequest(byte[] Challenge)
+    {
+      VerifyIdentityRequest verifyIdentityRequest = new VerifyIdentityRequest();
+      verifyIdentityRequest.Challenge = ProtocolHelper.ByteArrayToByteString(Challenge);
+
+      Message res = CreateConversationRequest();
+      res.Request.ConversationRequest.VerifyIdentity = verifyIdentityRequest;
+
+      SignConversationRequestBody(res, verifyIdentityRequest);
+      return res;
+    }
+
+    /// <summary>
+    /// Creates a response message to a VerifyIdentityRequest message.
+    /// </summary>
+    /// <param name="Request">VerifyIdentityRequest message for which the response is created.</param>
+    /// <returns>VerifyIdentityResponse message that is ready to be sent.</returns>
+    public Message CreateVerifyIdentityResponse(Message Request)
+    {
+      VerifyIdentityResponse verifyIdentityResponse = new VerifyIdentityResponse();
+
+      Message res = CreateConversationResponse(Request);
+      res.Response.ConversationResponse.VerifyIdentity = verifyIdentityResponse;
 
       return res;
     }
@@ -568,6 +663,139 @@ namespace HomeNetProtocol
 
       Message res = CreateConversationResponse(Request);
       res.Response.ConversationResponse.CancelHomeNodeAgreement = cancelHomeNodeAgreementResponse;
+
+      return res;
+    }
+
+
+    /// <summary>
+    /// Creates a new ApplicationServiceAddRequest message.
+    /// </summary>
+    /// <param name="ServiceNames">List of service names to add to the list of services supported in the currently opened session.</param>
+    /// <returns>ApplicationServiceAddRequest message that is ready to be sent.</returns>
+    public Message CreateApplicationServiceAddRequest(List<string> ServiceNames)
+    {
+      ApplicationServiceAddRequest applicationServiceAddRequest = new ApplicationServiceAddRequest();
+      applicationServiceAddRequest.ServiceNames.Add(ServiceNames);
+
+      Message res = CreateConversationRequest();
+      res.Request.ConversationRequest.ApplicationServiceAdd = applicationServiceAddRequest;
+
+      return res;
+    }
+
+
+    /// <summary>
+    /// Creates a response message to a ApplicationServiceAddRequest message.
+    /// </summary>
+    /// <param name="Request">ApplicationServiceAddRequest message for which the response is created.</param>
+    /// <returns>ApplicationServiceAddResponse message that is ready to be sent.</returns>
+    public Message CreateApplicationServiceAddResponse(Message Request)
+    {
+      ApplicationServiceAddResponse applicationServiceAddResponse = new ApplicationServiceAddResponse();
+
+      Message res = CreateConversationResponse(Request);
+      res.Response.ConversationResponse.ApplicationServiceAdd = applicationServiceAddResponse;
+
+      return res;
+    }
+
+
+    /// <summary>
+    /// Creates a new ApplicationServiceRemoveRequest message.
+    /// </summary>
+    /// <param name="ServiceName">Name of the application service to remove from the list of services supported in the currently opened session.</param>
+    /// <returns>ApplicationServiceRemoveRequest message that is ready to be sent.</returns>
+    public Message CreateApplicationServiceRemoveRequest(string ServiceName)
+    {
+      ApplicationServiceRemoveRequest applicationServiceRemoveRequest = new ApplicationServiceRemoveRequest();
+      applicationServiceRemoveRequest.ServiceName = ServiceName;
+
+      Message res = CreateConversationRequest();
+      res.Request.ConversationRequest.ApplicationServiceRemove = applicationServiceRemoveRequest;
+
+      return res;
+    }
+
+
+    /// <summary>
+    /// Creates a response message to a ApplicationServiceRemoveRequest message.
+    /// </summary>
+    /// <param name="Request">ApplicationServiceRemoveRequest message for which the response is created.</param>
+    /// <returns>ApplicationServiceRemoveResponse message that is ready to be sent.</returns>
+    public Message CreateApplicationServiceRemoveResponse(Message Request)
+    {
+      ApplicationServiceRemoveResponse applicationServiceRemoveResponse = new ApplicationServiceRemoveResponse();
+
+      Message res = CreateConversationResponse(Request);
+      res.Response.ConversationResponse.ApplicationServiceRemove = applicationServiceRemoveResponse;
+
+      return res;
+    }
+
+
+
+    /// <summary>
+    /// Creates a new GetIdentityInformationRequest message.
+    /// </summary>
+    /// <param name="IdentityId">Identifier of the identity to get information about.</param>
+    /// <param name="IncludeProfileImage">true if the caller wants to get the identity's profile image, false otherwise.</param>
+    /// <param name="IncludeThumbnailImage">true if the caller wants to get the identity's thumbnail image, false otherwise.</param>
+    /// <param name="IncludeApplicationServices">true if the caller wants to get the identity's list of application services, false otherwise.</param>
+    /// <returns>GetIdentityInformationRequest message that is ready to be sent.</returns>
+    public Message CreateGetIdentityInformationRequest(byte[] IdentityId, bool IncludeProfileImage = false, bool IncludeThumbnailImage = false, bool IncludeApplicationServices = false)
+    {
+      GetIdentityInformationRequest getIdentityInformationRequest = new GetIdentityInformationRequest();
+      getIdentityInformationRequest.IdentityNetworkId = ProtocolHelper.ByteArrayToByteString(IdentityId);
+      getIdentityInformationRequest.IncludeProfileImage = IncludeProfileImage;
+      getIdentityInformationRequest.IncludeThumbnailImage = IncludeThumbnailImage;
+      getIdentityInformationRequest.IncludeApplicationServices = IncludeApplicationServices;
+
+      Message res = CreateSingleRequest();
+      res.Request.SingleRequest.GetIdentityInformation = getIdentityInformationRequest;
+
+      return res;
+    }
+
+
+    /// <summary>
+    /// Creates a response message to a GetIdentityInformationRequest message.
+    /// </summary>
+    /// <param name="Request">GetIdentityInformationRequest message for which the response is created.</param>
+    /// <param name="IsHosted">True if the requested identity is hosted by this node.</param>
+    /// <param name="TargetHomeNodeId">If <paramref name="IsHosted"/> is false, then this is the identifier of the requested identity's new home node, or null if the node does not know network ID of the requested identity's new home node.</param>
+    /// <param name="IsOnline">If <paramref name="IsHosted"/> is true, this indicates whether the requested identity is currently online.</param>
+    /// <param name="PublicKey">If <paramref name="IsHosted"/> is true, this is the public key of the requested identity.</param>
+    /// <param name="Name">If <paramref name="IsHosted"/> is true, this is the name of the requested identity.</param>
+    /// <param name="ExtraData">If <paramref name="IsHosted"/> is true, this is the extra data information of the requested identity.</param>
+    /// <param name="ProfileImage">If <paramref name="IsHosted"/> is true, this is the identity's profile image, or null if it was not requested.</param>
+    /// <param name="ThumbnailImage">If <paramref name="IsHosted"/> is true, this is the identity's thumbnail image, or null if it was not requested.</param>
+    /// <param name="ApplicationServices">If <paramref name="IsHosted"/> is true, this is the identity's list of supported application services, or null if it was not requested.</param>
+    /// <returns>GetIdentityInformationResponse message that is ready to be sent.</returns>
+    public Message CreateGetIdentityInformationResponse(Message Request, bool IsHosted, byte[] TargetHomeNodeId, bool IsOnline = false, byte[] PublicKey = null, string Name = null, string ExtraData = null, byte[] ProfileImage = null, byte[] ThumbnailImage = null, HashSet<string> ApplicationServices = null)
+    {
+      GetIdentityInformationResponse getIdentityInformationResponse = new GetIdentityInformationResponse();
+      getIdentityInformationResponse.IsHosted = IsHosted;
+      getIdentityInformationResponse.IsTargetHomeNodeKnown = false;
+      if (IsHosted)
+      {
+        getIdentityInformationResponse.IsOnline = IsOnline;
+        getIdentityInformationResponse.IdentityPublicKey = ProtocolHelper.ByteArrayToByteString(PublicKey);
+        getIdentityInformationResponse.Name = Name;
+        getIdentityInformationResponse.ExtraData = ExtraData;
+        getIdentityInformationResponse.ProfileImage = ProtocolHelper.ByteArrayToByteString(ProfileImage);
+        getIdentityInformationResponse.ThumbnailImage = ProtocolHelper.ByteArrayToByteString(ThumbnailImage);
+        getIdentityInformationResponse.ApplicationServices.Add(ApplicationServices);
+      }
+      else
+      {
+        getIdentityInformationResponse.IsTargetHomeNodeKnown = TargetHomeNodeId != null;
+        if (TargetHomeNodeId != null)
+          getIdentityInformationResponse.TargetHomeNodeNetworkId = ProtocolHelper.ByteArrayToByteString(TargetHomeNodeId);
+      }
+
+      Message res = CreateSingleResponse(Request);
+      res.Response.SingleResponse.GetIdentityInformation = getIdentityInformationResponse;
 
       return res;
     }

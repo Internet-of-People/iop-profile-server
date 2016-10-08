@@ -41,10 +41,13 @@ namespace HomeNet.Network
     NodeColleague = 4,
 
     /// <summary>Customer Clients Interface server role.</summary>
-    ClientCustomer = 64,
+    ClientCustomer = 32,
 
     /// <summary>Non Customer Clients Interface server role.</summary>
-    ClientNonCustomer = 128
+    ClientNonCustomer = 64,
+
+    /// <summary>Application Service Interface server role.</summary>
+    ClientAppService = 128
   }
 
 
@@ -81,6 +84,7 @@ namespace HomeNet.Network
       { ServerRole.NodeColleague,     false },
       { ServerRole.ClientCustomer,    true  },
       { ServerRole.ClientNonCustomer, true  },
+      { ServerRole.ClientAppService,  true  },
     };
 
     /// <summary>
@@ -94,6 +98,7 @@ namespace HomeNet.Network
       { ServerRole.NodeColleague,     true  },
       { ServerRole.ClientCustomer,    false },
       { ServerRole.ClientNonCustomer, false },
+      { ServerRole.ClientAppService,  false },
     };
 
 
@@ -436,8 +441,7 @@ namespace HomeNet.Network
         int messageHeaderBytesRead = 0;
         int messageBytesRead = 0;
 
-        bool disconnect = false;
-        while (!shutdownSignaling.IsShutdown && !disconnect)
+        while (!shutdownSignaling.IsShutdown)
         {
           Task<int> readTask = null;
           int remain = 0;
@@ -478,6 +482,8 @@ namespace HomeNet.Network
 
           log.Trace("Read completed: {0} bytes.", readAmount);
 
+          bool protoViolationDisconnect = false;
+          bool disconnect = false;
           switch (clientStatus)
           {
             case ClientStatus.ReadingHeader:
@@ -485,18 +491,26 @@ namespace HomeNet.Network
                 messageHeaderBytesRead += readAmount;
                 if (readAmount == remain)
                 {
-                  uint hdr = ProtocolHelper.GetValueLittleEndian(messageHeaderBuffer);
-                  if (hdr + ProtocolHelper.HeaderSize <= ProtocolHelper.MaxSize)
+                  if (messageHeaderBuffer[0] == 0x0D)
                   {
-                    messageSize = hdr;
-                    clientStatus = ClientStatus.ReadingBody;
-                    messageBuffer = new byte[messageSize];
-                    log.Trace("Reading of message header completed. Message size is {0} bytes.", messageSize);
+                    uint hdr = ProtocolHelper.GetValueLittleEndian(messageHeaderBuffer, 1);
+                    if (hdr + ProtocolHelper.HeaderSize <= ProtocolHelper.MaxSize)
+                    {
+                      messageSize = hdr;
+                      clientStatus = ClientStatus.ReadingBody;
+                      messageBuffer = new byte[messageSize];
+                      log.Trace("Reading of message header completed. Message size is {0} bytes.", messageSize);
+                    }
+                    else
+                    {
+                      log.Warn("Client claimed message of size {0} which exceeds the maximum.", hdr + ProtocolHelper.HeaderSize);
+                      protoViolationDisconnect = true;
+                    }
                   }
                   else
                   {
-                    log.Warn("Client claimed message of size {0} which exceeds the maximum.", hdr + ProtocolHelper.HeaderSize);
-                    disconnect = true;
+                    log.Warn("Message has invalid format - it's first byte is 0x{0:X2}, should be 0x0D.", messageHeaderBuffer[0]);
+                    protoViolationDisconnect = true;
                   }
                 }
                 break;
@@ -512,11 +526,27 @@ namespace HomeNet.Network
                   messageHeaderBytesRead = 0;
                   log.Trace("Reading of message size {0} completed.", messageSize);
 
-                  await ProcessMessageAsync(messageBuffer, Client);
+                  disconnect = !await ProcessMessageAsync(messageBuffer, Client);
                 }
                 break;
               }
           }
+
+          if (protoViolationDisconnect)
+          {
+            MessageBuilder mb = new MessageBuilder(0x0BADC0DE, new List<byte[]>() { new byte[] { 1, 0, 0 } }, null);
+            Message response = mb.CreateErrorProtocolViolationResponse(new Message());
+
+            // Send response to client.
+            log.Trace("Sending response to client:\n{0}", response);
+            byte[] responseBytes = ProtocolHelper.GetMessageBytes(response);
+            await Client.Stream.WriteAsync(responseBytes, 0, responseBytes.Length);
+
+            break;
+          }
+
+          if (disconnect)
+            break;
         }
       }
       catch (Exception e)
@@ -553,17 +583,19 @@ namespace HomeNet.Network
 
 
     /// <summary>
-    /// Asynchronous processing of a message received from a client.
+    /// Processing of a message received from a client.
     /// </summary>
     /// <param name="Data">Full ProtoBuf message to be processed.</param>
     /// <param name="Client">TCP client who send the message.</param>
-    public async Task ProcessMessageAsync(byte[] Data, Client Client)
+    /// <returns>true if the conversation with the client should continue, false if a protocol violation error occurred and the client should be disconnected.</returns>
+    public async Task<bool> ProcessMessageAsync(byte[] Data, Client Client)
     {
       string prefix = string.Format("{0}[{1}] ", this.logPrefix, Client.RemoteEndPoint);
       PrefixLogger log = new PrefixLogger(this.logName, prefix);
 
       MessageBuilder messageBuilder = Client.MessageBuilder;
 
+      bool res = false;
       log.Debug("()");
       try
       {
@@ -588,10 +620,8 @@ namespace HomeNet.Network
                     SingleRequest singleRequest = request.SingleRequest;
                     log.Trace("Single request type is {0}, version is {1}.", singleRequest.RequestTypeCase, ProtocolHelper.VersionBytesToString(singleRequest.Version.ToByteArray()));
 
-                    
-                    if (singleRequest.Version.Length != 3)
+                    if (!ProtocolHelper.IsValidVersion(singleRequest.Version.ToByteArray()))
                     {
-                      // Protocol violation.
                       responseMessage.Response.Details = "version";
                       break; 
                     }
@@ -604,6 +634,10 @@ namespace HomeNet.Network
 
                       case SingleRequest.RequestTypeOneofCase.ListRoles:
                         responseMessage = ProcessMessageListRolesRequest(Client, requestMessage);
+                        break;
+
+                      case SingleRequest.RequestTypeOneofCase.GetIdentityInformation:
+                        responseMessage = await ProcessMessageGetIdentityInformationRequestAsync(Client, requestMessage);
                         break;
 
                       default:
@@ -634,12 +668,24 @@ namespace HomeNet.Network
                         responseMessage = await ProcessMessageCheckInRequestAsync(Client, requestMessage);
                         break;
 
+                      case ConversationRequest.RequestTypeOneofCase.VerifyIdentity:
+                        responseMessage = ProcessMessageVerifyIdentityRequest(Client, requestMessage);
+                        break;
+
                       case ConversationRequest.RequestTypeOneofCase.UpdateProfile:
                         responseMessage = await ProcessMessageUpdateProfileRequestAsync(Client, requestMessage);
                         break;
 
                       case ConversationRequest.RequestTypeOneofCase.CancelHomeNodeAgreement:
                         responseMessage = await ProcessMessageCancelHomeNodeAgreementRequestAsync(Client, requestMessage);
+                        break;
+
+                      case ConversationRequest.RequestTypeOneofCase.ApplicationServiceAdd:
+                        responseMessage = ProcessMessageApplicationServiceAddRequest(Client, requestMessage);
+                        break;
+
+                      case ConversationRequest.RequestTypeOneofCase.ApplicationServiceRemove:
+                        responseMessage = ProcessMessageApplicationServiceRemoveRequest(Client, requestMessage);
                         break;
 
                       default:
@@ -662,34 +708,36 @@ namespace HomeNet.Network
                 log.Trace("Sending response to client:\n{0}", responseMessage);
                 byte[] responseBytes = ProtocolHelper.GetMessageBytes(responseMessage);
                 await Client.Stream.WriteAsync(responseBytes, 0, responseBytes.Length);
+
+                res = responseMessage.Response.Status != Status.ErrorProtocolViolation;
               }
               catch (IOException)
               {
-                log.Info("Connection to client has been terminated, disposing client.");
-                Client.Dispose();
+                log.Info("Connection to client has been terminated, connection to the client will be closed.");
+                // Connection will be closed in ClientHandlerAsync.
               }
               break;
             }
 
           case Message.MessageTypeOneofCase.Response:
-            log.Fatal("NOT UNIMPLEMENTED");
+            log.Fatal("NOT UNIMPLEMENTED, connection to the client will be closed");
+            // Connection will be closed in ClientHandlerAsync.
             break;
 
           default:
-            log.Error("Unknown message type '{0}', disposing client.", requestMessage.MessageTypeCase);
-            
-            // Just close the connection.
-            Client.Dispose();
+            log.Error("Unknown message type '{0}', connection to the client will be closed.", requestMessage.MessageTypeCase);
+            // Connection will be closed in ClientHandlerAsync.
             break;
         }
       }
       catch (Exception e)
       {
         log.Error("Exception occurred, disposing client: {0}", e.ToString());
-        Client.Dispose();
+        // Connection will be closed in ClientHandlerAsync.
       }
 
-      log.Debug("(-)");
+      log.Debug("(-):{0}", res);
+      return res;
     }
 
 
@@ -800,21 +848,48 @@ namespace HomeNet.Network
 
       string requestName = RequestMessage.Request.ConversationTypeCase == Request.ConversationTypeOneofCase.SingleRequest ? "single request " + RequestMessage.Request.SingleRequest.RequestTypeCase.ToString() : "conversation request " + RequestMessage.Request.ConversationRequest.RequestTypeCase.ToString();
 
-      if ((RequiredRole == null) || Roles.HasFlag(RequiredRole.Value))
+      // RequiredRole contains one or more roles and the current server has to have at least one of them.
+      if ((RequiredRole == null) || ((Roles & RequiredRole.Value) != 0))
       {
-        if ((RequiredConversationStatus == null) || (Client.ConversationStatus == RequiredConversationStatus.Value))
+        if (RequiredConversationStatus == null)
         {
           res = true;
         }
         else
         {
-          log.Warn("Client sent {0} but the conversation state is {1}.", requestName, Client.ConversationStatus);
-          ResponseMessage = Client.MessageBuilder.CreateErrorBadConversationStatusResponse(RequestMessage);
+          switch (RequiredConversationStatus.Value)
+          {
+            case ClientConversationStatus.NoConversation:
+            case ClientConversationStatus.ConversationStarted:
+              res = Client.ConversationStatus == RequiredConversationStatus.Value;
+              if (!res)
+              {
+                log.Warn("Client sent {0} but the conversation status is {1}.", requestName, Client.ConversationStatus);
+                ResponseMessage = Client.MessageBuilder.CreateErrorBadConversationStatusResponse(RequestMessage);
+              }
+              break;
+
+            case ClientConversationStatus.Verified:
+            case ClientConversationStatus.Authenticated:
+              // In case of Verified status requirement, the Authenticated status satisfies the condition as well.
+              res = (Client.ConversationStatus == RequiredConversationStatus.Value) || (Client.ConversationStatus == ClientConversationStatus.Authenticated);
+              if (!res)
+              {
+                log.Warn("Client sent {0} but the conversation status is {1}.", requestName, Client.ConversationStatus);
+                ResponseMessage = Client.MessageBuilder.CreateErrorUnauthorizedResponse(RequestMessage);
+              }
+              break;
+
+            default:
+              log.Error("Unknown conversation status '{0}'.", Client.ConversationStatus);
+              ResponseMessage = Client.MessageBuilder.CreateErrorInternalResponse(RequestMessage);
+              break;
+          }
         }
       }
       else
       {
-        log.Warn("Received {0} on server without ClientNonCustomer role (server roles are {1}).", requestName, Roles);
+        log.Warn("Received {0} on server without {1} role(s) (server roles are {2}).", requestName, RequiredRole.Value, Roles);
         ResponseMessage = Client.MessageBuilder.CreateErrorBadRoleResponse(RequestMessage);
       }
 
@@ -825,6 +900,7 @@ namespace HomeNet.Network
 
     /// <summary>
     /// Processes PingRequest message from client.
+    /// <para>Simply copies the payload to a new ping response message.</para>
     /// </summary>
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
@@ -845,6 +921,7 @@ namespace HomeNet.Network
 
     /// <summary>
     /// Processes ListRolesRequest message from client.
+    /// <para>Obtains a list of role servers and returns it in the response.</para>
     /// </summary>
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
@@ -871,8 +948,95 @@ namespace HomeNet.Network
     }
 
 
+
+    /// <summary>
+    /// Processes GetIdentityInformationRequest message from client.
+    /// <para>Obtains information about identity that is hosted by the node.</para>
+    /// </summary>
+    /// <param name="Client">Client that sent the request.</param>
+    /// <param name="RequestMessage">Full request message.</param>
+    /// <returns>Response message to be sent to the client.</returns>
+    public async Task<Message> ProcessMessageGetIdentityInformationRequestAsync(Client Client, Message RequestMessage)
+    {
+      log.Trace("()");
+
+      Message res = null;
+      if (!CheckSessionConditions(Client, RequestMessage, ServerRole.ClientCustomer | ServerRole.ClientNonCustomer, null, out res))
+      {
+        log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+        return res;
+      }
+
+      MessageBuilder messageBuilder = Client.MessageBuilder;
+      GetIdentityInformationRequest getIdentityInformationRequest = RequestMessage.Request.SingleRequest.GetIdentityInformation;
+
+      byte[] identityId = getIdentityInformationRequest.IdentityNetworkId.ToByteArray();
+      if (identityId.Length == Identity.IdentifierLength)
+      {
+        using (UnitOfWork unitOfWork = new UnitOfWork())
+        {
+          Identity identity = (await unitOfWork.HomeIdentityRepository.GetAsync(i => i.IdentityId == identityId)).FirstOrDefault();
+          if (identity != null)
+          {
+            if (identity.IsProfileInitialized())
+            {
+              bool isHosted = identity.ExpirationDate != null;
+              if (isHosted)
+              {
+                Client targetClient = clientList.GetCheckedInClient(identityId);
+                bool isOnline = targetClient != null;
+                byte[] publicKey = identity.PublicKey;
+                string name = identity.Name;
+                string extraData = identity.ExtraData;
+
+                byte[] profileImage = null;
+                byte[] thumbnailImage = null;
+                HashSet<string> applicationServices = null;
+
+                if (getIdentityInformationRequest.IncludeProfileImage)
+                  profileImage = await identity.GetProfileImageDataAsync();
+
+                if (getIdentityInformationRequest.IncludeThumbnailImage)
+                  thumbnailImage = await identity.GetThumbnailImageDataAsync();
+
+                if (getIdentityInformationRequest.IncludeApplicationServices)
+                  applicationServices = targetClient.GetApplicationServices();
+
+                res = messageBuilder.CreateGetIdentityInformationResponse(RequestMessage, isHosted, null, isOnline, publicKey, name, extraData, profileImage, thumbnailImage, applicationServices);
+              }
+              else
+              {
+                byte[] targetHomeNode = identity.HomeNodeId;
+                res = messageBuilder.CreateGetIdentityInformationResponse(RequestMessage, isHosted, targetHomeNode);
+              }
+            }
+            else
+            {
+              log.Trace("Identity ID '{0}' profile not initialized.", Crypto.ToHex(identityId));
+              res = messageBuilder.CreateErrorUninitializedResponse(RequestMessage);
+            }
+          }
+          else 
+          {
+            log.Trace("Identity ID '{0}' is not hosted by this node.", Crypto.ToHex(identityId));
+            res = messageBuilder.CreateErrorNotFoundResponse(RequestMessage);
+          }
+        }
+      }
+      else
+      {
+        log.Trace("Invalid length of identity ID - {0} bytes.", identityId.Length);
+        res = messageBuilder.CreateErrorNotFoundResponse(RequestMessage);
+      }
+
+      log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+      return res;
+    }
+
+
     /// <summary>
     /// Processes StartConversationRequest message from client.
+    /// <para>Initiates a conversation with the client provided that there is a common version of the protocol supported by both sides.</para>
     /// </summary>
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
@@ -927,6 +1091,9 @@ namespace HomeNet.Network
 
     /// <summary>
     /// Processes HomeNodeRequestRequest message from client.
+    /// <para>Registers a new customer client identity. The identity must not be hosted by the node already 
+    /// and the node must not have reached the maximal number of hosted clients. The newly created profile 
+    /// is empty and has to be initialized by the identity using UpdateProfileRequest.</para>
     /// </summary>
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
@@ -1045,6 +1212,9 @@ namespace HomeNet.Network
 
     /// <summary>
     /// Processes CheckInRequest message from client.
+    /// <para>It verifies the identity's public key against the signature of the challenge provided during the start of the conversation. 
+    /// The identity must be hosted on this node. If everything is OK, the identity is checked-in and the status of the conversation
+    /// is upgraded to Authenticated.</para>
     /// </summary>
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
@@ -1065,48 +1235,61 @@ namespace HomeNet.Network
       CheckInRequest checkInRequest = RequestMessage.Request.ConversationRequest.CheckIn;
 
       byte[] challenge = checkInRequest.Challenge.ToByteArray();
-      if (messageBuilder.VerifySignedConversationRequestBody(RequestMessage, checkInRequest, Client.PublicKey))
+      if (StructuralComparisons.StructuralComparer.Compare(challenge, Client.AuthenticationChallenge) == 0)
       {
-        log.Debug("Identity '{0}' is about to check in ...", Crypto.ToHex(Client.IdentityId));
-
-        bool success = false;
-        res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
-        using (UnitOfWork unitOfWork = new UnitOfWork())
+        if (messageBuilder.VerifySignedConversationRequestBody(RequestMessage, checkInRequest, Client.PublicKey))
         {
-          try
+          log.Debug("Identity '{0}' is about to check in ...", Crypto.ToHex(Client.IdentityId));
+
+          bool success = false;
+          res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
+          using (UnitOfWork unitOfWork = new UnitOfWork())
           {
-            Identity identity = (await unitOfWork.HomeIdentityRepository.GetAsync(i => (i.IdentityId == Client.IdentityId) && (i.ExpirationDate == null))).FirstOrDefault();
-            if (identity != null)
+            try
             {
-              if (clientList.AddCheckedInClient(Client))
+              Identity identity = (await unitOfWork.HomeIdentityRepository.GetAsync(i => (i.IdentityId == Client.IdentityId) && (i.ExpirationDate == null))).FirstOrDefault();
+              if (identity != null)
               {
-                Client.ConversationStatus = ClientConversationStatus.Authenticated;
-                success = true;
+                if (clientList.AddCheckedInClient(Client))
+                {
+                  logPrefix = string.Format("[{0}:{1}:0x{2:X16}] ", this.EndPoint.Address, this.EndPoint.Port, Client.Id);
+                  Client.ApplicationServices = new ApplicationServices(logPrefix);
+                  Client.IsOurCheckedInClient = true;
+                  Client.ConversationStatus = ClientConversationStatus.Authenticated;
+
+                  success = true;
+                }
+                else log.Error("Identity '{0}' failed to check-in.", Crypto.ToHex(Client.IdentityId));
+              }
+              else
+              {
+                log.Debug("Identity '{0}' is not a client of this node.", Crypto.ToHex(Client.IdentityId));
+                res = messageBuilder.CreateErrorNotFoundResponse(RequestMessage);
               }
             }
-            else
+            catch (Exception e)
             {
-              log.Debug("Identity '{0}' is not a client of this node.", Crypto.ToHex(Client.IdentityId));
-              res = messageBuilder.CreateErrorNotFoundResponse(RequestMessage);
+              log.Info("Exception occurred: {0}", e.ToString());
             }
           }
-          catch (Exception e)
+
+
+          if (success)
           {
-            log.Info("Exception occurred: {0}", e.ToString());
+            log.Debug("Identity '{0}' successfully checked in ...", Crypto.ToHex(Client.IdentityId));
+            res = messageBuilder.CreateCheckInResponse(RequestMessage);
           }
         }
-
-
-        if (success)
+        else
         {
-          log.Debug("Identity '{0}' successfully checked in ...", Crypto.ToHex(Client.IdentityId));
-          res = messageBuilder.CreateCheckInResponse(RequestMessage);
+          log.Warn("Client's challenge signature is invalid.");
+          res = messageBuilder.CreateErrorInvalidSignatureResponse(RequestMessage);
         }
       }
       else
       {
-        log.Warn("Client's challenge signature is invalid.");
-        res = messageBuilder.CreateErrorInvalidSignatureResponse(RequestMessage);
+        log.Warn("Challenge provided in the request does not match the challenge created by the node.");
+        res = messageBuilder.CreateErrorInvalidValueResponse(RequestMessage, "challenge");
       }
 
       log.Trace("(-):*.Response.Status={0}", res.Response.Status);
@@ -1115,11 +1298,70 @@ namespace HomeNet.Network
 
 
     /// <summary>
-    /// Processes UpdateProfileRequest message from client.
+    /// Processes VerifyIdentityRequest message from client.
+    /// <para>It verifies the identity's public key against the signature of the challenge provided during the start of the conversation. 
+    /// If everything is OK, the status of the conversation is upgraded to Verified.</para>
     /// </summary>
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
+    public Message ProcessMessageVerifyIdentityRequest(Client Client, Message RequestMessage)
+    {
+      log.Trace("()");
+
+      Message res = null;
+      if (!CheckSessionConditions(Client, RequestMessage, ServerRole.ClientNonCustomer, ClientConversationStatus.ConversationStarted, out res))
+      {
+        log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+        return res;
+      }
+
+
+      MessageBuilder messageBuilder = Client.MessageBuilder;
+      VerifyIdentityRequest verifyIdentityRequest = RequestMessage.Request.ConversationRequest.VerifyIdentity;
+
+      byte[] challenge = verifyIdentityRequest.Challenge.ToByteArray();
+      if (StructuralComparisons.StructuralComparer.Compare(challenge, Client.AuthenticationChallenge) == 0)
+      {
+        if (messageBuilder.VerifySignedConversationRequestBody(RequestMessage, verifyIdentityRequest, Client.PublicKey))
+        {
+          log.Debug("Identity '{0}' successfully verified its public key.", Crypto.ToHex(Client.IdentityId));
+          Client.ConversationStatus = ClientConversationStatus.Verified;
+          res = messageBuilder.CreateVerifyIdentityResponse(RequestMessage);
+        }
+        else
+        {
+          log.Warn("Client's challenge signature is invalid.");
+          res = messageBuilder.CreateErrorInvalidSignatureResponse(RequestMessage);
+        }
+      }
+      else
+      {
+        log.Warn("Challenge provided in the request does not match the challenge created by the node.");
+        res = messageBuilder.CreateErrorInvalidValueResponse(RequestMessage, "challenge");
+      }
+
+      log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+      return res;
+    }
+
+
+
+    /// <summary>
+    /// Processes UpdateProfileRequest message from client.
+    /// <para>Updates one or more fields in the identity's profile.</para>
+    /// </summary>
+    /// <param name="Client">Client that sent the request.</param>
+    /// <param name="RequestMessage">Full request message.</param>
+    /// <returns>Response message to be sent to the client.</returns>
+    /// <remarks>If a profile image or a thumbnail image is changed during this process, 
+    /// the old files are deleted. It may happen that if the machine loses a power during 
+    /// this process just before old files are to be deleted, they will remain 
+    /// on the disk without any reference from the database, thus possibly creates a resource leak.
+    /// As this should not occur very often, we the implementation is left unsafe 
+    /// and if this is a problem for a long term existance of the node, 
+    /// the unreferenced files can be cleaned using some kind of maintanence process that will 
+    /// delete all image files unreferenced from the database.</remarks>
     public async Task<Message> ProcessMessageUpdateProfileRequestAsync(Client Client, Message RequestMessage)
     {
       log.Trace("()");
@@ -1272,8 +1514,7 @@ namespace HomeNet.Network
       // Check if the update is a valid profile initialization.
       // If the profile is updated for the first time (aka is being initialized),
       // SetVersion, SetName and SetLocation must be true.
-      bool profileUninitialized = StructuralComparisons.StructuralComparer.Compare(Identity.Version, new byte[] { 0, 0, 0 }) == 0;
-      if (profileUninitialized)
+      if (!Identity.IsProfileInitialized())
       {
         log.Debug("Profile initialization detected.");
 
@@ -1357,8 +1598,8 @@ namespace HomeNet.Network
           // Extra data is semicolon separated 'key=value' list, max Identity.MaxProfileExtraDataLengthBytes bytes long.
           if (Encoding.UTF8.GetByteCount(extraData) > Identity.MaxProfileNameLengthBytes)
           {
-            log.Debug("Invalid location.");
-            details = "location";
+            log.Debug("Extra data too large ({0} bytes, limit is {1}).", Encoding.UTF8.GetByteCount(extraData), Identity.MaxProfileNameLengthBytes);
+            details = "extraData";
           }
         }
 
@@ -1376,6 +1617,7 @@ namespace HomeNet.Network
 
     /// <summary>
     /// Processes CancelHomeNodeAgreementRequest message from client.
+    /// <para>Cancels a home node agreement with an identity.</para>
     /// </summary>
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
@@ -1476,6 +1718,99 @@ namespace HomeNet.Network
       return res;
     }
 
+
+
+    /// <summary>
+    /// Processes ApplicationServiceAddRequest message from client.
+    /// <para>Adds one or more application services to the list of available services of a customer client.</para>
+    /// </summary>
+    /// <param name="Client">Client that sent the request.</param>
+    /// <param name="RequestMessage">Full request message.</param>
+    /// <returns>Response message to be sent to the client.</returns>
+    public Message ProcessMessageApplicationServiceAddRequest(Client Client, Message RequestMessage)
+    {
+      log.Trace("()");
+
+      Message res = null;
+      if (!CheckSessionConditions(Client, RequestMessage, ServerRole.ClientCustomer, ClientConversationStatus.Authenticated, out res))
+      {
+        log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+        return res;
+      }
+
+      MessageBuilder messageBuilder = Client.MessageBuilder;
+      ApplicationServiceAddRequest applicationServiceAddRequest = RequestMessage.Request.ConversationRequest.ApplicationServiceAdd;
+
+      // Validation of service names.
+      for (int i = 0; i < applicationServiceAddRequest.ServiceNames.Count; i++)
+      {
+        string serviceName = applicationServiceAddRequest.ServiceNames[i];
+        if (string.IsNullOrEmpty(serviceName) || (Encoding.UTF8.GetByteCount(serviceName) > Client.MaxApplicationServiceNameLengthBytes))
+        {
+          log.Warn("Invalid service name '{0}'.", serviceName);
+          res = messageBuilder.CreateErrorInvalidValueResponse(RequestMessage, string.Format("serviceNames[{0}]", i));
+          break;
+        }
+      }
+
+      if (res == null)
+      {
+        if (Client.ApplicationServices.AddLimit(applicationServiceAddRequest.ServiceNames))
+        {
+          log.Debug("Service names added to identity '{0}': {1}", Crypto.ToHex(Client.IdentityId), string.Join(", ", applicationServiceAddRequest.ServiceNames));
+          res = messageBuilder.CreateApplicationServiceAddResponse(RequestMessage);
+        }
+        else
+        {
+          log.Error("Identity '{0}' application services list not changed, number of services would exceed the limit {1}.", Crypto.ToHex(Client.IdentityId), Client.MaxClientApplicationServices);
+          res = messageBuilder.CreateErrorQuotaExceededResponse(RequestMessage);
+        }
+      }
+
+      log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+      return res;
+    }
+
+
+
+
+
+    /// <summary>
+    /// Processes ApplicationServiceRemoveRequest message from client.
+    /// <para>Removes an application service from the list of available services of a customer client.</para>
+    /// </summary>
+    /// <param name="Client">Client that sent the request.</param>
+    /// <param name="RequestMessage">Full request message.</param>
+    /// <returns>Response message to be sent to the client.</returns>
+    public Message ProcessMessageApplicationServiceRemoveRequest(Client Client, Message RequestMessage)
+    {
+      log.Trace("()");
+
+      Message res = null;
+      if (!CheckSessionConditions(Client, RequestMessage, ServerRole.ClientCustomer, ClientConversationStatus.Authenticated, out res))
+      {
+        log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+        return res;
+      }
+
+      MessageBuilder messageBuilder = Client.MessageBuilder;
+      ApplicationServiceRemoveRequest applicationServiceRemoveRequest = RequestMessage.Request.ConversationRequest.ApplicationServiceRemove;
+
+      string serviceName = applicationServiceRemoveRequest.ServiceName;
+      if (Client.ApplicationServices.Remove(serviceName))
+      {
+        res = messageBuilder.CreateApplicationServiceRemoveResponse(RequestMessage);
+        log.Debug("Service name '{0}' removed from identity '{1}'.", serviceName, Crypto.ToHex(Client.IdentityId));
+      }
+      else
+      {
+        log.Warn("Service name '{0}' not found on the list of supported services of identity '{1}'.", serviceName, Crypto.ToHex(Client.IdentityId));
+        res = messageBuilder.CreateErrorNotFoundResponse(RequestMessage);
+      }
+
+      log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+      return res;
+    }
 
     /// <summary>
     /// Checks whether binary data represent a valid PNG or JPEG image.
