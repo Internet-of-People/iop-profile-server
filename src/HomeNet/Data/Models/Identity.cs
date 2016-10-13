@@ -243,7 +243,7 @@ namespace HomeNet.Data.Models
     /// <returns>true if the identity's profile was initialized properly, false otherwise.</returns>
     public bool IsProfileInitialized()
     {
-      return StructuralComparisons.StructuralComparer.Compare(this.Version, new byte[] { 0, 0, 0 }) == 0;
+      return StructuralComparisons.StructuralComparer.Compare(this.Version, new byte[] { 0, 0, 0 }) != 0;
     }
   }
 }

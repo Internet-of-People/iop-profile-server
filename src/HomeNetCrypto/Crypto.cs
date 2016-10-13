@@ -130,7 +130,7 @@ namespace HomeNetCrypto
     /// <summary>Cryptographically secure random number generator.</summary>
     public static RandomNumberGenerator Rng = RandomNumberGenerator.Create();
 
-    public static SHA1 Sha1Engine = SHA1.Create();
+    private static SHA1 sha1Engine = SHA1.Create();
 
     /// <summary>
     /// Converts a binary data to an uppercase hexadecimal string representation.
@@ -161,9 +161,9 @@ namespace HomeNetCrypto
     public static byte[] Sha1(byte[] Data)
     {
       byte[] res = null;
-      lock (Sha1Engine)
+      lock (sha1Engine)
       {
-        res = Sha1Engine.ComputeHash(Data);
+        res = sha1Engine.ComputeHash(Data);
       }
       return res;
     }

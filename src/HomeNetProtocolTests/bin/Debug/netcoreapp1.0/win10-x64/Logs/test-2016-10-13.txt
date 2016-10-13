@@ -1,0 +1,181 @@
+[2016-10-13 09:49:29.1461 1] DEBUG: HomeNetProtocolTests.Program.Main (args:'HN04013 127.0.0.1 16988 16988')
+[2016-10-13 09:49:29.2061 1] TRACE: HomeNetProtocolTests.ProtocolTest.ParseArguments (args:'HN04013 127.0.0.1 16988 16988')
+[2016-10-13 09:49:29.2151 1] TRACE: HomeNetProtocolTests.ProtocolTest.ParseArguments (-):True
+[2016-10-13 09:49:29.2151 1] TRACE: HomeNetProtocolTests.ProtocolTest.Run ()
+[2016-10-13 09:49:29.2691 1] TRACE: HomeNetProtocolTests.Tests.HN04013.RunAsync (NodeIp:'127.0.0.1',ClNonCustomerPort:16988,ClCustomerPort:16988)
+[2016-10-13 09:49:29.4541 1] TRACE: HomeNetProtocolTests.ProtocolClient.ConnectAsync (Address:'127.0.0.1',Port:16988,UseTls:True)
+[2016-10-13 09:49:29.8321 3] TRACE: HomeNetProtocolTests.ProtocolClient+<ConnectAsync>d__11.MoveNext (-)
+[2016-10-13 09:49:29.8351 3] TRACE: HomeNetProtocolTests.ProtocolClient.EstablishHomeNodeAsync ()
+[2016-10-13 09:49:29.8351 3] TRACE: HomeNetProtocolTests.ProtocolClient.StartConversationAsync ()
+[2016-10-13 09:49:29.8351 3] TRACE: HomeNetProtocolTests.ProtocolClient.SendMessageAsync ()
+{ "id": 1, "request": { "conversationRequest": { "start": { "supportedVersions": [ "AQAA" ], "publicKey": "1QTUbEGfqgIBqMfFGFVFfAm1Qoq3qgx0Wa8D676zEkE=" } } } }
+[2016-10-13 09:49:30.3922 4] TRACE: HomeNetProtocolTests.ProtocolClient+<SendMessageAsync>d__13.MoveNext (-)
+[2016-10-13 09:49:30.3952 4] TRACE: HomeNetProtocolTests.ProtocolClient.ReceiveMessageAsync ()
+[2016-10-13 09:49:30.3952 4] TRACE: HomeNetProtocolTests.ProtocolClient.ReceiveMessageAsync Reading message header.
+[2016-10-13 09:49:30.7432 3] TRACE: HomeNetProtocolTests.ProtocolClient+<ReceiveMessageAsync>d__14.MoveNext Message body size is 83 bytes.
+[2016-10-13 09:49:30.7432 3] TRACE: HomeNetProtocolTests.ProtocolClient+<ReceiveMessageAsync>d__14.MoveNext (-):
+{ "id": 1, "response": { "conversationResponse": { "start": { "version": "AQAA", "publicKey": "APEc5Ahpt4ehcLgWwbeXUtKlNWE+TNe3gtntRmOr9HM=", "challenge": "pWalO/olU1E6QKSA1AHOtrOchHqR0ROrEAQAMowf0bs=" } } } }
+[2016-10-13 09:49:30.7432 3] TRACE: HomeNetProtocolTests.ProtocolClient+<StartConversationAsync>d__15.MoveNext (-):True
+[2016-10-13 09:49:30.7682 3] TRACE: HomeNetProtocolTests.ProtocolClient.SendMessageAsync ()
+{ "id": 2, "request": { "conversationRequest": { "signature": "g/ZzGJM5+LQWBHnG7joRx8fTkJs0PYvQY9L7OVaK7oxy9hLiz9e2+8Firi9xEA52Bt2VuXkiaO2w2fWRgHlcBA==", "homeNodeRequest": { } } } }
+[2016-10-13 09:49:30.7702 4] TRACE: HomeNetProtocolTests.ProtocolClient+<SendMessageAsync>d__13.MoveNext (-)
+[2016-10-13 09:49:30.7702 4] TRACE: HomeNetProtocolTests.ProtocolClient.ReceiveMessageAsync ()
+[2016-10-13 09:49:30.7702 4] TRACE: HomeNetProtocolTests.ProtocolClient.ReceiveMessageAsync Reading message header.
+[2016-10-13 09:49:31.0482 3] TRACE: HomeNetProtocolTests.ProtocolClient+<ReceiveMessageAsync>d__14.MoveNext Message body size is 76 bytes.
+[2016-10-13 09:49:31.0482 3] TRACE: HomeNetProtocolTests.ProtocolClient+<ReceiveMessageAsync>d__14.MoveNext (-):
+{ "id": 2, "response": { "conversationResponse": { "signature": "KtM85Ckf1FL5Am+SvDYrVDAVckuwxxzGbH3kadhE3fbNF0pDYzuAZkm7E/QwMTtc1aO/0ICmbfUpWzWdT/khBA==", "homeNodeRequest": { } } } }
+[2016-10-13 09:49:31.0522 3] TRACE: HomeNetProtocolTests.ProtocolClient+<EstablishHomeNodeAsync>d__16.MoveNext (-):True
+[2016-10-13 09:49:31.0682 3] TRACE: HomeNetProtocolTests.ProtocolClient.ConnectAsync (Address:'127.0.0.1',Port:16988,UseTls:True)
+[2016-10-13 09:49:31.0962 4] TRACE: HomeNetProtocolTests.ProtocolClient+<ConnectAsync>d__11.MoveNext (-)
+[2016-10-13 09:49:31.0992 4] TRACE: HomeNetProtocolTests.ProtocolClient.CheckInAsync ()
+[2016-10-13 09:49:31.0992 4] TRACE: HomeNetProtocolTests.ProtocolClient.StartConversationAsync ()
+[2016-10-13 09:49:31.0992 4] TRACE: HomeNetProtocolTests.ProtocolClient.SendMessageAsync ()
+{ "id": 1, "request": { "conversationRequest": { "start": { "supportedVersions": [ "AQAA" ], "publicKey": "1QTUbEGfqgIBqMfFGFVFfAm1Qoq3qgx0Wa8D676zEkE=" } } } }
+[2016-10-13 09:49:31.0992 3] TRACE: HomeNetProtocolTests.ProtocolClient+<SendMessageAsync>d__13.MoveNext (-)
+[2016-10-13 09:49:31.0992 3] TRACE: HomeNetProtocolTests.ProtocolClient.ReceiveMessageAsync ()
+[2016-10-13 09:49:31.0992 3] TRACE: HomeNetProtocolTests.ProtocolClient.ReceiveMessageAsync Reading message header.
+[2016-10-13 09:49:31.1152 4] TRACE: HomeNetProtocolTests.ProtocolClient+<ReceiveMessageAsync>d__14.MoveNext Message body size is 83 bytes.
+[2016-10-13 09:49:31.1152 4] TRACE: HomeNetProtocolTests.ProtocolClient+<ReceiveMessageAsync>d__14.MoveNext (-):
+{ "id": 1, "response": { "conversationResponse": { "start": { "version": "AQAA", "publicKey": "APEc5Ahpt4ehcLgWwbeXUtKlNWE+TNe3gtntRmOr9HM=", "challenge": "8XT6fVKJwKFg5bLMHqaYd7D0jLXhaCZx7MlW9yBwMIc=" } } } }
+[2016-10-13 09:49:31.1152 4] TRACE: HomeNetProtocolTests.ProtocolClient+<StartConversationAsync>d__15.MoveNext (-):True
+[2016-10-13 09:49:31.1152 4] TRACE: HomeNetProtocolTests.ProtocolClient.SendMessageAsync ()
+{ "id": 2, "request": { "conversationRequest": { "signature": "GuZR6OGfmtkgUDukBM5vJmCPqcEKHs54sYdgKHDRIAQhhhyZWav1QUXqnUiu3RpHm9GPyYwxDs78ln989xqpCw==", "checkIn": { "challenge": "8XT6fVKJwKFg5bLMHqaYd7D0jLXhaCZx7MlW9yBwMIc=" } } } }
+[2016-10-13 09:49:31.1152 3] TRACE: HomeNetProtocolTests.ProtocolClient+<SendMessageAsync>d__13.MoveNext (-)
+[2016-10-13 09:49:31.1152 3] TRACE: HomeNetProtocolTests.ProtocolClient.ReceiveMessageAsync ()
+[2016-10-13 09:49:31.1152 3] TRACE: HomeNetProtocolTests.ProtocolClient.ReceiveMessageAsync Reading message header.
+[2016-10-13 09:49:31.1862 4] TRACE: HomeNetProtocolTests.ProtocolClient+<ReceiveMessageAsync>d__14.MoveNext Message body size is 10 bytes.
+[2016-10-13 09:49:31.1862 4] TRACE: HomeNetProtocolTests.ProtocolClient+<ReceiveMessageAsync>d__14.MoveNext (-):
+{ "id": 2, "response": { "conversationResponse": { "checkIn": { } } } }
+[2016-10-13 09:49:31.1862 4] TRACE: HomeNetProtocolTests.ProtocolClient+<CheckInAsync>d__17.MoveNext (-):True
+[2016-10-13 09:49:31.1862 4] TRACE: HomeNetProtocolTests.ProtocolClient.SendMessageAsync ()
+{ "id": 3, "request": { "conversationRequest": { "updateProfile": { "setVersion": true, "setName": true, "setLocation": true, "version": "AQAA", "name": "Test Identity", "location": 305419896 } } } }
+[2016-10-13 09:49:31.1972 3] TRACE: HomeNetProtocolTests.ProtocolClient+<SendMessageAsync>d__13.MoveNext (-)
+[2016-10-13 09:49:31.1972 3] TRACE: HomeNetProtocolTests.ProtocolClient.ReceiveMessageAsync ()
+[2016-10-13 09:49:31.1972 3] TRACE: HomeNetProtocolTests.ProtocolClient.ReceiveMessageAsync Reading message header.
+[2016-10-13 09:49:31.2972 4] TRACE: HomeNetProtocolTests.ProtocolClient+<ReceiveMessageAsync>d__14.MoveNext Message body size is 10 bytes.
+[2016-10-13 09:49:31.2972 4] TRACE: HomeNetProtocolTests.ProtocolClient+<ReceiveMessageAsync>d__14.MoveNext (-):
+{ "id": 3, "response": { "conversationResponse": { "updateProfile": { } } } }
+[2016-10-13 09:49:31.2972 4] TRACE: HomeNetProtocolTests.ProtocolClient.SendMessageAsync ()
+{ "id": 4, "request": { "conversationRequest": { "applicationServiceAdd": { "serviceNames": [ "a", "b", "c", "d", "a" ] } } } }
+[2016-10-13 09:49:31.3022 3] TRACE: HomeNetProtocolTests.ProtocolClient+<SendMessageAsync>d__13.MoveNext (-)
+[2016-10-13 09:49:31.3022 3] TRACE: HomeNetProtocolTests.ProtocolClient.ReceiveMessageAsync ()
+[2016-10-13 09:49:31.3022 3] TRACE: HomeNetProtocolTests.ProtocolClient.ReceiveMessageAsync Reading message header.
+[2016-10-13 09:49:31.3242 4] TRACE: HomeNetProtocolTests.ProtocolClient+<ReceiveMessageAsync>d__14.MoveNext Message body size is 10 bytes.
+[2016-10-13 09:49:31.3242 4] TRACE: HomeNetProtocolTests.ProtocolClient+<ReceiveMessageAsync>d__14.MoveNext (-):
+{ "id": 4, "response": { "conversationResponse": { "applicationServiceAdd": { } } } }
+[2016-10-13 09:49:31.3242 4] TRACE: HomeNetProtocolTests.ProtocolClient.SendMessageAsync ()
+{ "id": 5, "request": { "singleRequest": { "version": "AQAA", "getIdentityInformation": { "identityNetworkId": "AUjIah4mjbTD8Ln0BO42L9bLc2o=", "includeApplicationServices": true } } } }
+[2016-10-13 09:49:31.3342 3] TRACE: HomeNetProtocolTests.ProtocolClient+<SendMessageAsync>d__13.MoveNext (-)
+[2016-10-13 09:49:31.3342 3] TRACE: HomeNetProtocolTests.ProtocolClient.ReceiveMessageAsync ()
+[2016-10-13 09:49:31.3342 3] TRACE: HomeNetProtocolTests.ProtocolClient.ReceiveMessageAsync Reading message header.
+[2016-10-13 09:49:31.3842 4] TRACE: HomeNetProtocolTests.ProtocolClient+<ReceiveMessageAsync>d__14.MoveNext Message body size is 80 bytes.
+[2016-10-13 09:49:31.3842 4] TRACE: HomeNetProtocolTests.ProtocolClient+<ReceiveMessageAsync>d__14.MoveNext (-):
+{ "id": 5, "response": { "singleResponse": { "version": "AQAA", "getIdentityInformation": { "isHosted": true, "isOnline": true, "identityPublicKey": "1QTUbEGfqgIBqMfFGFVFfAm1Qoq3qgx0Wa8D676zEkE=", "name": "Test Identity", "applicationServices": [ "a", "b", "c", "d" ] } } } }
+[2016-10-13 09:49:31.3982 4] TRACE: HomeNetProtocolTests.ProtocolClient.SendMessageAsync ()
+{ "id": 6, "request": { "conversationRequest": { "applicationServiceAdd": { "serviceNames": [ "c", "d", "a", "e" ] } } } }
+[2016-10-13 09:49:31.3982 3] TRACE: HomeNetProtocolTests.ProtocolClient+<SendMessageAsync>d__13.MoveNext (-)
+[2016-10-13 09:49:31.3982 3] TRACE: HomeNetProtocolTests.ProtocolClient.ReceiveMessageAsync ()
+[2016-10-13 09:49:31.3982 3] TRACE: HomeNetProtocolTests.ProtocolClient.ReceiveMessageAsync Reading message header.
+[2016-10-13 09:49:31.4112 4] TRACE: HomeNetProtocolTests.ProtocolClient+<ReceiveMessageAsync>d__14.MoveNext Message body size is 10 bytes.
+[2016-10-13 09:49:31.4112 4] TRACE: HomeNetProtocolTests.ProtocolClient+<ReceiveMessageAsync>d__14.MoveNext (-):
+{ "id": 6, "response": { "conversationResponse": { "applicationServiceAdd": { } } } }
+[2016-10-13 09:49:31.4112 4] TRACE: HomeNetProtocolTests.ProtocolClient.SendMessageAsync ()
+{ "id": 7, "request": { "singleRequest": { "version": "AQAA", "getIdentityInformation": { "identityNetworkId": "AUjIah4mjbTD8Ln0BO42L9bLc2o=", "includeApplicationServices": true } } } }
+[2016-10-13 09:49:31.4112 3] TRACE: HomeNetProtocolTests.ProtocolClient+<SendMessageAsync>d__13.MoveNext (-)
+[2016-10-13 09:49:31.4112 3] TRACE: HomeNetProtocolTests.ProtocolClient.ReceiveMessageAsync ()
+[2016-10-13 09:49:31.4112 3] TRACE: HomeNetProtocolTests.ProtocolClient.ReceiveMessageAsync Reading message header.
+[2016-10-13 09:49:31.4322 4] TRACE: HomeNetProtocolTests.ProtocolClient+<ReceiveMessageAsync>d__14.MoveNext Message body size is 83 bytes.
+[2016-10-13 09:49:31.4322 4] TRACE: HomeNetProtocolTests.ProtocolClient+<ReceiveMessageAsync>d__14.MoveNext (-):
+{ "id": 7, "response": { "singleResponse": { "version": "AQAA", "getIdentityInformation": { "isHosted": true, "isOnline": true, "identityPublicKey": "1QTUbEGfqgIBqMfFGFVFfAm1Qoq3qgx0Wa8D676zEkE=", "name": "Test Identity", "applicationServices": [ "a", "b", "c", "d", "e" ] } } } }
+[2016-10-13 09:49:31.4322 4] TRACE: HomeNetProtocolTests.ProtocolClient.SendMessageAsync ()
+{ "id": 8, "request": { "conversationRequest": { "applicationServiceRemove": { "serviceName": "a" } } } }
+[2016-10-13 09:49:31.4322 3] TRACE: HomeNetProtocolTests.ProtocolClient+<SendMessageAsync>d__13.MoveNext (-)
+[2016-10-13 09:49:31.4322 3] TRACE: HomeNetProtocolTests.ProtocolClient.ReceiveMessageAsync ()
+[2016-10-13 09:49:31.4322 3] TRACE: HomeNetProtocolTests.ProtocolClient.ReceiveMessageAsync Reading message header.
+[2016-10-13 09:49:31.4532 4] TRACE: HomeNetProtocolTests.ProtocolClient+<ReceiveMessageAsync>d__14.MoveNext Message body size is 10 bytes.
+[2016-10-13 09:49:31.4532 4] TRACE: HomeNetProtocolTests.ProtocolClient+<ReceiveMessageAsync>d__14.MoveNext (-):
+{ "id": 8, "response": { "conversationResponse": { "applicationServiceRemove": { } } } }
+[2016-10-13 09:49:31.4532 4] TRACE: HomeNetProtocolTests.ProtocolClient.SendMessageAsync ()
+{ "id": 9, "request": { "singleRequest": { "version": "AQAA", "getIdentityInformation": { "identityNetworkId": "AUjIah4mjbTD8Ln0BO42L9bLc2o=", "includeApplicationServices": true } } } }
+[2016-10-13 09:49:31.4532 3] TRACE: HomeNetProtocolTests.ProtocolClient+<SendMessageAsync>d__13.MoveNext (-)
+[2016-10-13 09:49:31.4532 3] TRACE: HomeNetProtocolTests.ProtocolClient.ReceiveMessageAsync ()
+[2016-10-13 09:49:31.4532 3] TRACE: HomeNetProtocolTests.ProtocolClient.ReceiveMessageAsync Reading message header.
+[2016-10-13 09:49:31.4732 4] TRACE: HomeNetProtocolTests.ProtocolClient+<ReceiveMessageAsync>d__14.MoveNext Message body size is 80 bytes.
+[2016-10-13 09:49:31.4732 4] TRACE: HomeNetProtocolTests.ProtocolClient+<ReceiveMessageAsync>d__14.MoveNext (-):
+{ "id": 9, "response": { "singleResponse": { "version": "AQAA", "getIdentityInformation": { "isHosted": true, "isOnline": true, "identityPublicKey": "1QTUbEGfqgIBqMfFGFVFfAm1Qoq3qgx0Wa8D676zEkE=", "name": "Test Identity", "applicationServices": [ "b", "c", "d", "e" ] } } } }
+[2016-10-13 09:49:31.4732 4] TRACE: HomeNetProtocolTests.ProtocolClient.SendMessageAsync ()
+{ "id": 10, "request": { "conversationRequest": { "applicationServiceRemove": { "serviceName": "a" } } } }
+[2016-10-13 09:49:31.4732 3] TRACE: HomeNetProtocolTests.ProtocolClient+<SendMessageAsync>d__13.MoveNext (-)
+[2016-10-13 09:49:31.4732 3] TRACE: HomeNetProtocolTests.ProtocolClient.ReceiveMessageAsync ()
+[2016-10-13 09:49:31.4732 3] TRACE: HomeNetProtocolTests.ProtocolClient.ReceiveMessageAsync Reading message header.
+[2016-10-13 09:49:31.4932 4] TRACE: HomeNetProtocolTests.ProtocolClient+<ReceiveMessageAsync>d__14.MoveNext Message body size is 8 bytes.
+[2016-10-13 09:49:31.4932 4] TRACE: HomeNetProtocolTests.ProtocolClient+<ReceiveMessageAsync>d__14.MoveNext (-):
+{ "id": 10, "response": { "status": "ERROR_NOT_FOUND" } }
+[2016-10-13 09:49:31.4932 4] TRACE: HomeNetProtocolTests.ProtocolClient.SendMessageAsync ()
+{ "id": 11, "request": { "singleRequest": { "version": "AQAA", "getIdentityInformation": { "identityNetworkId": "AUjIah4mjbTD8Ln0BO42L9bLc2o=", "includeApplicationServices": true } } } }
+[2016-10-13 09:49:31.4932 3] TRACE: HomeNetProtocolTests.ProtocolClient+<SendMessageAsync>d__13.MoveNext (-)
+[2016-10-13 09:49:31.4932 3] TRACE: HomeNetProtocolTests.ProtocolClient.ReceiveMessageAsync ()
+[2016-10-13 09:49:31.5052 3] TRACE: HomeNetProtocolTests.ProtocolClient.ReceiveMessageAsync Reading message header.
+[2016-10-13 09:49:31.5212 4] TRACE: HomeNetProtocolTests.ProtocolClient+<ReceiveMessageAsync>d__14.MoveNext Message body size is 80 bytes.
+[2016-10-13 09:49:31.5212 4] TRACE: HomeNetProtocolTests.ProtocolClient+<ReceiveMessageAsync>d__14.MoveNext (-):
+{ "id": 11, "response": { "singleResponse": { "version": "AQAA", "getIdentityInformation": { "isHosted": true, "isOnline": true, "identityPublicKey": "1QTUbEGfqgIBqMfFGFVFfAm1Qoq3qgx0Wa8D676zEkE=", "name": "Test Identity", "applicationServices": [ "b", "c", "d", "e" ] } } } }
+[2016-10-13 09:49:31.5212 4] TRACE: HomeNetProtocolTests.ProtocolClient.SendMessageAsync ()
+{ "id": 12, "request": { "conversationRequest": { "applicationServiceAdd": { "serviceNames": [ "d", "1234567890-1234567890-1234567890-1234567890", "a", "e" ] } } } }
+[2016-10-13 09:49:31.5212 3] TRACE: HomeNetProtocolTests.ProtocolClient+<SendMessageAsync>d__13.MoveNext (-)
+[2016-10-13 09:49:31.5212 3] TRACE: HomeNetProtocolTests.ProtocolClient.ReceiveMessageAsync ()
+[2016-10-13 09:49:31.5212 3] TRACE: HomeNetProtocolTests.ProtocolClient.ReceiveMessageAsync Reading message header.
+[2016-10-13 09:49:31.5212 4] TRACE: HomeNetProtocolTests.ProtocolClient+<ReceiveMessageAsync>d__14.MoveNext Message body size is 25 bytes.
+[2016-10-13 09:49:31.5362 4] TRACE: HomeNetProtocolTests.ProtocolClient+<ReceiveMessageAsync>d__14.MoveNext (-):
+{ "id": 12, "response": { "status": "ERROR_INVALID_VALUE", "details": "serviceNames[1]" } }
+[2016-10-13 09:49:31.5362 4] TRACE: HomeNetProtocolTests.ProtocolClient.SendMessageAsync ()
+{ "id": 13, "request": { "singleRequest": { "version": "AQAA", "getIdentityInformation": { "identityNetworkId": "AUjIah4mjbTD8Ln0BO42L9bLc2o=", "includeApplicationServices": true } } } }
+[2016-10-13 09:49:31.5362 3] TRACE: HomeNetProtocolTests.ProtocolClient+<SendMessageAsync>d__13.MoveNext (-)
+[2016-10-13 09:49:31.5362 3] TRACE: HomeNetProtocolTests.ProtocolClient.ReceiveMessageAsync ()
+[2016-10-13 09:49:31.5362 3] TRACE: HomeNetProtocolTests.ProtocolClient.ReceiveMessageAsync Reading message header.
+[2016-10-13 09:49:31.5552 4] TRACE: HomeNetProtocolTests.ProtocolClient+<ReceiveMessageAsync>d__14.MoveNext Message body size is 80 bytes.
+[2016-10-13 09:49:31.5552 4] TRACE: HomeNetProtocolTests.ProtocolClient+<ReceiveMessageAsync>d__14.MoveNext (-):
+{ "id": 13, "response": { "singleResponse": { "version": "AQAA", "getIdentityInformation": { "isHosted": true, "isOnline": true, "identityPublicKey": "1QTUbEGfqgIBqMfFGFVFfAm1Qoq3qgx0Wa8D676zEkE=", "name": "Test Identity", "applicationServices": [ "b", "c", "d", "e" ] } } } }
+[2016-10-13 09:49:31.5552 4] TRACE: HomeNetProtocolTests.ProtocolClient.SendMessageAsync ()
+{ "id": 14, "request": { "conversationRequest": { "applicationServiceAdd": { "serviceNames": [ "a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8", "a9", "a10" ] } } } }
+[2016-10-13 09:49:31.5552 3] TRACE: HomeNetProtocolTests.ProtocolClient+<SendMessageAsync>d__13.MoveNext (-)
+[2016-10-13 09:49:31.5552 3] TRACE: HomeNetProtocolTests.ProtocolClient.ReceiveMessageAsync ()
+[2016-10-13 09:49:31.5552 3] TRACE: HomeNetProtocolTests.ProtocolClient.ReceiveMessageAsync Reading message header.
+[2016-10-13 09:49:31.5712 4] TRACE: HomeNetProtocolTests.ProtocolClient+<ReceiveMessageAsync>d__14.MoveNext Message body size is 10 bytes.
+[2016-10-13 09:49:31.5712 4] TRACE: HomeNetProtocolTests.ProtocolClient+<ReceiveMessageAsync>d__14.MoveNext (-):
+{ "id": 14, "response": { "conversationResponse": { "applicationServiceAdd": { } } } }
+[2016-10-13 09:49:31.5712 4] TRACE: HomeNetProtocolTests.ProtocolClient.SendMessageAsync ()
+{ "id": 15, "request": { "conversationRequest": { "applicationServiceAdd": { "serviceNames": [ "b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "b10" ] } } } }
+[2016-10-13 09:49:31.5712 3] TRACE: HomeNetProtocolTests.ProtocolClient+<SendMessageAsync>d__13.MoveNext (-)
+[2016-10-13 09:49:31.5712 3] TRACE: HomeNetProtocolTests.ProtocolClient.ReceiveMessageAsync ()
+[2016-10-13 09:49:31.5712 3] TRACE: HomeNetProtocolTests.ProtocolClient.ReceiveMessageAsync Reading message header.
+[2016-10-13 09:49:31.5872 4] TRACE: HomeNetProtocolTests.ProtocolClient+<ReceiveMessageAsync>d__14.MoveNext Message body size is 10 bytes.
+[2016-10-13 09:49:31.5872 4] TRACE: HomeNetProtocolTests.ProtocolClient+<ReceiveMessageAsync>d__14.MoveNext (-):
+{ "id": 15, "response": { "conversationResponse": { "applicationServiceAdd": { } } } }
+[2016-10-13 09:49:31.5872 4] TRACE: HomeNetProtocolTests.ProtocolClient.SendMessageAsync ()
+{ "id": 16, "request": { "singleRequest": { "version": "AQAA", "getIdentityInformation": { "identityNetworkId": "AUjIah4mjbTD8Ln0BO42L9bLc2o=", "includeApplicationServices": true } } } }
+[2016-10-13 09:49:31.5872 3] TRACE: HomeNetProtocolTests.ProtocolClient+<SendMessageAsync>d__13.MoveNext (-)
+[2016-10-13 09:49:31.5872 3] TRACE: HomeNetProtocolTests.ProtocolClient.ReceiveMessageAsync ()
+[2016-10-13 09:49:31.5872 3] TRACE: HomeNetProtocolTests.ProtocolClient.ReceiveMessageAsync Reading message header.
+[2016-10-13 09:49:31.6083 4] TRACE: HomeNetProtocolTests.ProtocolClient+<ReceiveMessageAsync>d__14.MoveNext Message body size is 166 bytes.
+[2016-10-13 09:49:31.6083 4] TRACE: HomeNetProtocolTests.ProtocolClient+<ReceiveMessageAsync>d__14.MoveNext (-):
+{ "id": 16, "response": { "singleResponse": { "version": "AQAA", "getIdentityInformation": { "isHosted": true, "isOnline": true, "identityPublicKey": "1QTUbEGfqgIBqMfFGFVFfAm1Qoq3qgx0Wa8D676zEkE=", "name": "Test Identity", "applicationServices": [ "a1", "b", "c", "d", "e", "a2", "a3", "a4", "a5", "a6", "a7", "a8", "a9", "a10", "b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "b10" ] } } } }
+[2016-10-13 09:49:31.6083 4] TRACE: HomeNetProtocolTests.ProtocolClient.SendMessageAsync ()
+{ "id": 17, "request": { "conversationRequest": { "applicationServiceAdd": { "serviceNames": [ "c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8", "c9", "c10", "d1", "d2", "d3", "d4", "d5", "d6", "d7", "d8", "d9", "d10", "e1", "e2", "e3", "e4", "e5", "e6", "e7", "e8", "e9", "e10" ] } } } }
+[2016-10-13 09:49:31.6083 3] TRACE: HomeNetProtocolTests.ProtocolClient+<SendMessageAsync>d__13.MoveNext (-)
+[2016-10-13 09:49:31.6083 3] TRACE: HomeNetProtocolTests.ProtocolClient.ReceiveMessageAsync ()
+[2016-10-13 09:49:31.6083 3] TRACE: HomeNetProtocolTests.ProtocolClient.ReceiveMessageAsync Reading message header.
+[2016-10-13 09:49:31.6243 4] TRACE: HomeNetProtocolTests.ProtocolClient+<ReceiveMessageAsync>d__14.MoveNext Message body size is 8 bytes.
+[2016-10-13 09:49:31.6243 4] TRACE: HomeNetProtocolTests.ProtocolClient+<ReceiveMessageAsync>d__14.MoveNext (-):
+{ "id": 17, "response": { "status": "ERROR_QUOTA_EXCEEDED" } }
+[2016-10-13 09:49:31.6243 4] TRACE: HomeNetProtocolTests.ProtocolClient.SendMessageAsync ()
+{ "id": 18, "request": { "singleRequest": { "version": "AQAA", "getIdentityInformation": { "identityNetworkId": "AUjIah4mjbTD8Ln0BO42L9bLc2o=", "includeApplicationServices": true } } } }
+[2016-10-13 09:49:31.6243 3] TRACE: HomeNetProtocolTests.ProtocolClient+<SendMessageAsync>d__13.MoveNext (-)
+[2016-10-13 09:49:31.6243 3] TRACE: HomeNetProtocolTests.ProtocolClient.ReceiveMessageAsync ()
+[2016-10-13 09:49:31.6243 3] TRACE: HomeNetProtocolTests.ProtocolClient.ReceiveMessageAsync Reading message header.
+[2016-10-13 09:49:31.6443 4] TRACE: HomeNetProtocolTests.ProtocolClient+<ReceiveMessageAsync>d__14.MoveNext Message body size is 166 bytes.
+[2016-10-13 09:49:31.6443 4] TRACE: HomeNetProtocolTests.ProtocolClient+<ReceiveMessageAsync>d__14.MoveNext (-):
+{ "id": 18, "response": { "singleResponse": { "version": "AQAA", "getIdentityInformation": { "isHosted": true, "isOnline": true, "identityPublicKey": "1QTUbEGfqgIBqMfFGFVFfAm1Qoq3qgx0Wa8D676zEkE=", "name": "Test Identity", "applicationServices": [ "a1", "b", "c", "d", "e", "a2", "a3", "a4", "a5", "a6", "a7", "a8", "a9", "a10", "b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "b10" ] } } } }
+[2016-10-13 09:49:31.6463 4] TRACE: HomeNetProtocolTests.Tests.HN04013+<RunAsync>d__7.MoveNext (-):True
+[2016-10-13 09:49:31.6463 1] TRACE: HomeNetProtocolTests.ProtocolTest.Run (-):True,Passed=True
+[2016-10-13 09:49:31.6463 1] INFO: HomeNetProtocolTests.Program.Main HN04013 - PASSED
+[2016-10-13 09:49:31.6463 1] DEBUG: HomeNetProtocolTests.Program.Main (-):0

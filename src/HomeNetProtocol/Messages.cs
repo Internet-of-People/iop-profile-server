@@ -15,7 +15,10 @@ namespace HomeNetProtocol
   /// </summary>
   public class MessageBuilder
   {
-    /// <summary>Identifier that is unique per class instance for each message</summary>
+    /// <summary>Original identifier base.</summary>
+    private int idBase;
+
+    /// <summary>Identifier that is unique per class instance for each message.</summary>
     private int id;
 
     /// <summary>Supported protocol versions ordered by preference.</summary>
@@ -35,7 +38,8 @@ namespace HomeNetProtocol
     /// <param name="Keys">Cryptographic key set representing the caller's identity.</param>
     public MessageBuilder(uint IdBase, List<byte[]> SupportedVersions, KeysEd25519 Keys)
     {
-      id = (int)IdBase;
+      idBase = (int)IdBase;
+      id = idBase;
       supportedVersions = new List<ByteString>();
       foreach (byte[] version in SupportedVersions)
         supportedVersions.Add(ProtocolHelper.VersionToByteString(version));
@@ -54,6 +58,13 @@ namespace HomeNetProtocol
       version = ProtocolHelper.VersionToByteString(SelectedVersion);
     }
 
+    /// <summary>
+    /// Resets message identifier to its original value.
+    /// </summary>
+    public void ResetId()
+    {
+      id = idBase;
+    }
 
     /// <summary>
     /// Creates a new request template and sets its ID to ID of the last message + 1.
@@ -781,11 +792,11 @@ namespace HomeNetProtocol
       {
         getIdentityInformationResponse.IsOnline = IsOnline;
         getIdentityInformationResponse.IdentityPublicKey = ProtocolHelper.ByteArrayToByteString(PublicKey);
-        getIdentityInformationResponse.Name = Name;
-        getIdentityInformationResponse.ExtraData = ExtraData;
-        getIdentityInformationResponse.ProfileImage = ProtocolHelper.ByteArrayToByteString(ProfileImage);
-        getIdentityInformationResponse.ThumbnailImage = ProtocolHelper.ByteArrayToByteString(ThumbnailImage);
-        getIdentityInformationResponse.ApplicationServices.Add(ApplicationServices);
+        if (Name != null) getIdentityInformationResponse.Name = Name;
+        if (ExtraData != null) getIdentityInformationResponse.ExtraData = ExtraData;
+        if (ProfileImage != null) getIdentityInformationResponse.ProfileImage = ProtocolHelper.ByteArrayToByteString(ProfileImage);
+        if (ThumbnailImage != null) getIdentityInformationResponse.ThumbnailImage = ProtocolHelper.ByteArrayToByteString(ThumbnailImage);
+        if (ApplicationServices != null) getIdentityInformationResponse.ApplicationServices.Add(ApplicationServices);
       }
       else
       {

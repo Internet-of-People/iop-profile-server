@@ -459,7 +459,7 @@ namespace HomeNet.Network
             case ClientStatus.ReadingBody:
               {
                 remain = (int)messageSize - messageBytesRead;
-                readTask = Client.Stream.ReadAsync(messageBuffer, messageBytesRead, remain, shutdownSignaling.ShutdownCancellationTokenSource.Token);
+                readTask = Client.Stream.ReadAsync(messageBuffer, ProtocolHelper.HeaderSize + messageBytesRead, remain, shutdownSignaling.ShutdownCancellationTokenSource.Token);
                 break;
               }
 
@@ -498,7 +498,8 @@ namespace HomeNet.Network
                     {
                       messageSize = hdr;
                       clientStatus = ClientStatus.ReadingBody;
-                      messageBuffer = new byte[messageSize];
+                      messageBuffer = new byte[ProtocolHelper.HeaderSize + messageSize];
+                      Array.Copy(messageHeaderBuffer, messageBuffer, messageHeaderBuffer.Length);
                       log.Trace("Reading of message header completed. Message size is {0} bytes.", messageSize);
                     }
                     else
@@ -534,14 +535,7 @@ namespace HomeNet.Network
 
           if (protoViolationDisconnect)
           {
-            MessageBuilder mb = new MessageBuilder(0x0BADC0DE, new List<byte[]>() { new byte[] { 1, 0, 0 } }, null);
-            Message response = mb.CreateErrorProtocolViolationResponse(new Message());
-
-            // Send response to client.
-            log.Trace("Sending response to client:\n{0}", response);
-            byte[] responseBytes = ProtocolHelper.GetMessageBytes(response);
-            await Client.Stream.WriteAsync(responseBytes, 0, responseBytes.Length);
-
+            await SendProtocolViolation(Client);
             break;
           }
 
@@ -562,6 +556,21 @@ namespace HomeNet.Network
       log.Info("(-)");
     }
 
+
+    /// <summary>
+    /// Sends ERROR_PROTOCOL_VIOLATION to client with message ID set to 0x0BADC0DE.
+    /// </summary>
+    /// <param name="Client">Client to send the error to.</param>
+    public async Task SendProtocolViolation(Client Client)
+    {
+      MessageBuilder mb = new MessageBuilder(0, new List<byte[]>() { new byte[] { 1, 0, 0 } }, null);
+      Message response = mb.CreateErrorProtocolViolationResponse(new Message() { Id = 0x0BADC0DE });
+
+      // Send response to client.
+      log.Trace("Sending response to client:\n{0}", response);
+      byte[] responseBytes = ProtocolHelper.GetMessageBytes(response);
+      await Client.Stream.WriteAsync(responseBytes, 0, responseBytes.Length);
+    }
 
 
 
@@ -603,14 +612,13 @@ namespace HomeNet.Network
         Client.NextKeepAliveTime = DateTime.UtcNow.AddSeconds(Client.KeepAliveIntervalSeconds);
         log.Trace("Client ID 0x{0:X16} NextKeepAliveTime updated to {1}.", Client.Id, Client.NextKeepAliveTime.ToString("yyyy-MM-dd HH:mm:ss"));
 
-        Message requestMessage = Message.Parser.ParseFrom(Data);
+        Message requestMessage = MessageWithHeader.Parser.ParseFrom(Data).Body;
         log.Trace("Received message type is {0}, message ID is {1}:\n{2}", requestMessage.MessageTypeCase, requestMessage.Id, requestMessage);
         switch (requestMessage.MessageTypeCase)
         {
           case Message.MessageTypeOneofCase.Request:
             {
               Message responseMessage = messageBuilder.CreateErrorProtocolViolationResponse(requestMessage);
-
               Request request = requestMessage.Request;
               log.Trace("Request conversation type is {0}.", request.ConversationTypeCase);
               switch (request.ConversationTypeCase)
@@ -721,11 +729,13 @@ namespace HomeNet.Network
 
           case Message.MessageTypeOneofCase.Response:
             log.Fatal("NOT UNIMPLEMENTED, connection to the client will be closed");
+            await SendProtocolViolation(Client);
             // Connection will be closed in ClientHandlerAsync.
             break;
 
           default:
             log.Error("Unknown message type '{0}', connection to the client will be closed.", requestMessage.MessageTypeCase);
+            await SendProtocolViolation(Client);
             // Connection will be closed in ClientHandlerAsync.
             break;
         }
@@ -733,6 +743,7 @@ namespace HomeNet.Network
       catch (Exception e)
       {
         log.Error("Exception occurred, disposing client: {0}", e.ToString());
+        await SendProtocolViolation(Client);
         // Connection will be closed in ClientHandlerAsync.
       }
 
@@ -764,11 +775,12 @@ namespace HomeNet.Network
             ServerRoleType srt = ServerRoleType.Primary;
             switch (role)
             {
-              case ServerRole.ClientCustomer: srt = ServerRoleType.ClCustomer; break;
-              case ServerRole.ClientNonCustomer: srt = ServerRoleType.ClNonCustomer; break;
-              case ServerRole.NodeColleague: srt = ServerRoleType.NdColleague; break;
-              case ServerRole.NodeNeighbor: srt = ServerRoleType.NdNeighbor; break;
               case ServerRole.PrimaryUnrelated: srt = ServerRoleType.Primary; break;
+              case ServerRole.NodeNeighbor: srt = ServerRoleType.NdNeighbor; break;
+              case ServerRole.NodeColleague: srt = ServerRoleType.NdColleague; break;
+              case ServerRole.ClientNonCustomer: srt = ServerRoleType.ClNonCustomer; break;
+              case ServerRole.ClientCustomer: srt = ServerRoleType.ClCustomer; break;
+              case ServerRole.ClientAppService: srt = ServerRoleType.ClAppService; break;
               default:
                 skip = true;
                 break;
@@ -980,7 +992,7 @@ namespace HomeNet.Network
           {
             if (identity.IsProfileInitialized())
             {
-              bool isHosted = identity.ExpirationDate != null;
+              bool isHosted = identity.ExpirationDate == null;
               if (isHosted)
               {
                 Client targetClient = clientList.GetCheckedInClient(identityId);
@@ -1134,9 +1146,10 @@ namespace HomeNet.Network
             // We need to recheck the number of hosted identities within the transaction.
             int hostedIdentities = await unitOfWork.HomeIdentityRepository.CountAsync(null);
             log.Trace("Currently hosting {0} clients.", hostedIdentities);
-            if (hostedIdentities <= Base.Configuration.MaxHostedIdentities)
+            if (hostedIdentities < Base.Configuration.MaxHostedIdentities)
             {
               Identity existingIdentity = (await unitOfWork.HomeIdentityRepository.GetAsync(i => i.IdentityId == Client.IdentityId)).FirstOrDefault();
+              // Identity does not exist at all, or it has been cancelled so that ExpirationDate was set.
               if ((existingIdentity == null) || (existingIdentity.ExpirationDate != null))
               {
                 // We do not have the identity in our client's database,
@@ -1252,9 +1265,8 @@ namespace HomeNet.Network
               {
                 if (clientList.AddCheckedInClient(Client))
                 {
-                  logPrefix = string.Format("[{0}:{1}:0x{2:X16}] ", this.EndPoint.Address, this.EndPoint.Port, Client.Id);
-                  Client.ApplicationServices = new ApplicationServices(logPrefix);
-                  Client.IsOurCheckedInClient = true;
+                  string prefix = string.Format("[{0}:{1}:0x{2:X16}] ", this.EndPoint.Address, this.EndPoint.Port, Client.Id);
+                  Client.ApplicationServices = new ApplicationServices(prefix);
                   Client.ConversationStatus = ClientConversationStatus.Authenticated;
 
                   success = true;
@@ -1568,7 +1580,7 @@ namespace HomeNet.Network
           if (string.IsNullOrEmpty(name) || (Encoding.UTF8.GetByteCount(name) > Identity.MaxProfileNameLengthBytes))
           {
             log.Debug("Invalid name '{0}'.", name);
-            details = "version";
+            details = "name";
           }
         }
 
@@ -1656,6 +1668,10 @@ namespace HomeNet.Network
             Identity identity = (await unitOfWork.HomeIdentityRepository.GetAsync(i => (i.IdentityId == Client.IdentityId) && (i.ExpirationDate == null))).FirstOrDefault();
             if (identity != null)
             {
+              // We artificially initialize the profile when we cancel it in order to allow queries towards this profile.
+              if (!identity.IsProfileInitialized())
+                identity.Version = new byte[] { 1, 0, 0 };
+
               profileImageToDelete = identity.ProfileImage;
               thumbnailImageToDelete = identity.ThumbnailImage;
 
@@ -1827,7 +1843,7 @@ namespace HomeNet.Network
       //   or https://magick.codeplex.com/documentation to support all OS with NET Core releases
       log.Fatal("TODO UNIMPLEMENTED");
 
-      bool res = true;
+      bool res = Data.Length > 2;
 
       log.Trace("(-):{0}", res);
       return res;

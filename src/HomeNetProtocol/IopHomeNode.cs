@@ -101,70 +101,69 @@ namespace Iop.Homenode {
             "CgRwb3J0GAIgASgNEg0KBWlzVGNwGAMgASgIEg0KBWlzVGxzGAQgASgIIjAK",
             "GExpc3RIb21lTm9kZVBsYW5zUmVxdWVzdBIUCgxpZGVudGl0eVR5cGUYASAB",
             "KAkiRgoZTGlzdEhvbWVOb2RlUGxhbnNSZXNwb25zZRIpCgVwbGFucxgBIAMo",
-            "CzIaLmlvcC5ob21lbm9kZS5Ib21lTm9kZVBsYW4imgEKDEhvbWVOb2RlUGxh",
-            "bhIOCgZwbGFuSWQYASABKAwSFAoMaWRlbnRpdHlUeXBlGAIgASgJEgsKA2Zl",
-            "ZRgDIAEoBBIcChRiaWxsaW5nUGVyaW9kU2Vjb25kcxgEIAEoDRI5Cg5wbGFu",
-            "UGFyYW1ldGVycxgJIAMoCzIhLmlvcC5ob21lbm9kZS5OYW1lU3RyaW5nVmFs",
-            "dWVQYWlyIjIKE05hbWVTdHJpbmdWYWx1ZVBhaXISDAoEbmFtZRgBIAEoCRIN",
-            "CgV2YWx1ZRgCIAEoCSJIChhTdGFydENvbnZlcnNhdGlvblJlcXVlc3QSGQoR",
-            "c3VwcG9ydGVkVmVyc2lvbnMYASADKAwSEQoJcHVibGljS2V5GAIgASgMIlIK",
-            "GVN0YXJ0Q29udmVyc2F0aW9uUmVzcG9uc2USDwoHdmVyc2lvbhgBIAEoDBIR",
-            "CglwdWJsaWNLZXkYAiABKAwSEQoJY2hhbGxlbmdlGAMgASgMIk4KFkhvbWVO",
-            "b2RlUmVxdWVzdFJlcXVlc3QSNAoIY29udHJhY3QYASABKAsyIi5pb3AuaG9t",
-            "ZW5vZGUuSG9tZU5vZGVQbGFuQ29udHJhY3QiTwoXSG9tZU5vZGVSZXF1ZXN0",
-            "UmVzcG9uc2USNAoIY29udHJhY3QYASABKAsyIi5pb3AuaG9tZW5vZGUuSG9t",
-            "ZU5vZGVQbGFuQ29udHJhY3QihQEKFEhvbWVOb2RlUGxhbkNvbnRyYWN0EigK",
-            "BHBsYW4YASABKAsyGi5pb3AuaG9tZW5vZGUuSG9tZU5vZGVQbGFuEhUKDW5v",
-            "ZGVQdWJsaWNLZXkYAiABKAwSGQoRaWRlbnRpdHlQdWJsaWNLZXkYAyABKAwS",
-            "EQoJc3RhcnRUaW1lGAQgASgSIiMKDkNoZWNrSW5SZXF1ZXN0EhEKCWNoYWxs",
-            "ZW5nZRgBIAEoDCIRCg9DaGVja0luUmVzcG9uc2UiKgoVVmVyaWZ5SWRlbnRp",
-            "dHlSZXF1ZXN0EhEKCWNoYWxsZW5nZRgBIAEoDCIYChZWZXJpZnlJZGVudGl0",
-            "eVJlc3BvbnNlIssBChRVcGRhdGVQcm9maWxlUmVxdWVzdBISCgpzZXRWZXJz",
-            "aW9uGAEgASgIEg8KB3NldE5hbWUYAiABKAgSEAoIc2V0SW1hZ2UYAyABKAgS",
-            "EwoLc2V0TG9jYXRpb24YBCABKAgSFAoMc2V0RXh0cmFEYXRhGAUgASgIEg8K",
-            "B3ZlcnNpb24YCCABKAwSDAoEbmFtZRgJIAEoCRINCgVpbWFnZRgKIAEoDBIQ",
-            "Cghsb2NhdGlvbhgLIAEoBxIRCglleHRyYURhdGEYDCABKAkiFwoVVXBkYXRl",
-            "UHJvZmlsZVJlc3BvbnNlIl0KHkNhbmNlbEhvbWVOb2RlQWdyZWVtZW50UmVx",
-            "dWVzdBIdChVyZWRpcmVjdFRvTmV3SG9tZU5vZGUYASABKAgSHAoUbmV3SG9t",
-            "ZU5vZGVOZXR3b3JrSWQYAiABKAwiIQofQ2FuY2VsSG9tZU5vZGVBZ3JlZW1l",
-            "bnRSZXNwb25zZSI0ChxBcHBsaWNhdGlvblNlcnZpY2VBZGRSZXF1ZXN0EhQK",
-            "DHNlcnZpY2VOYW1lcxgBIAMoCSIfCh1BcHBsaWNhdGlvblNlcnZpY2VBZGRS",
-            "ZXNwb25zZSI2Ch9BcHBsaWNhdGlvblNlcnZpY2VSZW1vdmVSZXF1ZXN0EhMK",
-            "C3NlcnZpY2VOYW1lGAEgASgJIiIKIEFwcGxpY2F0aW9uU2VydmljZVJlbW92",
-            "ZVJlc3BvbnNlIpoBCh1HZXRJZGVudGl0eUluZm9ybWF0aW9uUmVxdWVzdBIZ",
-            "ChFpZGVudGl0eU5ldHdvcmtJZBgBIAEoDBIbChNpbmNsdWRlUHJvZmlsZUlt",
-            "YWdlGAIgASgIEh0KFWluY2x1ZGVUaHVtYm5haWxJbWFnZRgDIAEoCBIiChpp",
-            "bmNsdWRlQXBwbGljYXRpb25TZXJ2aWNlcxgEIAEoCCKLAgoeR2V0SWRlbnRp",
-            "dHlJbmZvcm1hdGlvblJlc3BvbnNlEhAKCGlzSG9zdGVkGAEgASgIEh0KFWlz",
-            "VGFyZ2V0SG9tZU5vZGVLbm93bhgCIAEoCBIfChd0YXJnZXRIb21lTm9kZU5l",
-            "dHdvcmtJZBgDIAEoDBIQCghpc09ubGluZRgEIAEoCBIZChFpZGVudGl0eVB1",
-            "YmxpY0tleRgFIAEoDBIMCgRuYW1lGAYgASgJEhEKCWV4dHJhRGF0YRgHIAEo",
-            "CRIUCgxwcm9maWxlSW1hZ2UYCCABKAwSFgoOdGh1bWJuYWlsSW1hZ2UYCSAB",
-            "KAwSGwoTYXBwbGljYXRpb25TZXJ2aWNlcxgKIAMoCSJXCiVDYWxsSWRlbnRp",
-            "dHlBcHBsaWNhdGlvblNlcnZpY2VSZXF1ZXN0EhkKEWlkZW50aXR5TmV0d29y",
-            "a0lkGAEgASgMEhMKC3NlcnZpY2VOYW1lGAIgASgJIj0KJkNhbGxJZGVudGl0",
-            "eUFwcGxpY2F0aW9uU2VydmljZVJlc3BvbnNlEhMKC2NhbGxlclRva2VuGAEg",
-            "ASgMImQKH0luY29taW5nQ2FsbE5vdGlmaWNhdGlvblJlcXVlc3QSFwoPY2Fs",
-            "bGVyUHVibGljS2V5GAEgASgMEhMKC3NlcnZpY2VOYW1lGAIgASgJEhMKC2Nh",
-            "bGxlZVRva2VuGAMgASgMIiIKIEluY29taW5nQ2FsbE5vdGlmaWNhdGlvblJl",
-            "c3BvbnNlIkYKJEFwcGxpY2F0aW9uU2VydmljZVNlbmRNZXNzYWdlUmVxdWVz",
-            "dBINCgV0b2tlbhgBIAEoDBIPCgdtZXNzYWdlGAIgASgMIicKJUFwcGxpY2F0",
-            "aW9uU2VydmljZVNlbmRNZXNzYWdlUmVzcG9uc2UiRgozQXBwbGljYXRpb25T",
-            "ZXJ2aWNlUmVjZWl2ZU1lc3NhZ2VOb3RpZmljYXRpb25SZXF1ZXN0Eg8KB21l",
-            "c3NhZ2UYASABKAwiNgo0QXBwbGljYXRpb25TZXJ2aWNlUmVjZWl2ZU1lc3Nh",
-            "Z2VOb3RpZmljYXRpb25SZXNwb25zZSqWAwoGU3RhdHVzEg0KCVNUQVRVU19P",
-            "SxAAEhwKGEVSUk9SX1BST1RPQ09MX1ZJT0xBVElPThABEhUKEUVSUk9SX1VO",
-            "U1VQUE9SVEVEEAISEAoMRVJST1JfQkFOTkVEEAMSDgoKRVJST1JfQlVTWRAE",
-            "EhYKEkVSUk9SX1VOQVVUSE9SSVpFRBAFEhIKDkVSUk9SX0JBRF9ST0xFEAYS",
-            "IQodRVJST1JfQkFEX0NPTlZFUlNBVElPTl9TVEFUVVMQBxISCg5FUlJPUl9J",
-            "TlRFUk5BTBAIEhgKFEVSUk9SX1FVT1RBX0VYQ0VFREVEEDMSGwoXRVJST1Jf",
-            "SU5WQUxJRF9TSUdOQVRVUkUQNBITCg9FUlJPUl9OT1RfRk9VTkQQNRIXChNF",
-            "UlJPUl9JTlZBTElEX1ZBTFVFEDYSGAoURVJST1JfQUxSRUFEWV9FWElTVFMQ",
-            "NxIXChNFUlJPUl9OT1RfQVZBSUxBQkxFEDgSEgoORVJST1JfUkVKRUNURUQQ",
-            "ORIXChNFUlJPUl9VTklOSVRJQUxJWkVEEDoqegoOU2VydmVyUm9sZVR5cGUS",
-            "CwoHUFJJTUFSWRAAEg8KC05EX05FSUdIQk9SEAESEAoMTkRfQ09MTEVBR1VF",
-            "EAISEwoPQ0xfTk9OX0NVU1RPTUVSEAMSDwoLQ0xfQ1VTVE9NRVIQBBISCg5D",
-            "TF9BUFBfU0VSVklDRRAFYgZwcm90bzM="));
+            "CzIaLmlvcC5ob21lbm9kZS5Ib21lTm9kZVBsYW4isQEKDEhvbWVOb2RlUGxh",
+            "bhIOCgZwbGFuSWQYASABKAwSFQoNbm9kZU5ldHdvcmtJZBgCIAEoDBIUCgxp",
+            "ZGVudGl0eVR5cGUYAyABKAkSCwoDZmVlGAQgASgEEhwKFGJpbGxpbmdQZXJp",
+            "b2RTZWNvbmRzGAUgASgNEjkKDnBsYW5QYXJhbWV0ZXJzGAkgAygLMiEuaW9w",
+            "LmhvbWVub2RlLk5hbWVTdHJpbmdWYWx1ZVBhaXIiMgoTTmFtZVN0cmluZ1Zh",
+            "bHVlUGFpchIMCgRuYW1lGAEgASgJEg0KBXZhbHVlGAIgASgJIkgKGFN0YXJ0",
+            "Q29udmVyc2F0aW9uUmVxdWVzdBIZChFzdXBwb3J0ZWRWZXJzaW9ucxgBIAMo",
+            "DBIRCglwdWJsaWNLZXkYAiABKAwiUgoZU3RhcnRDb252ZXJzYXRpb25SZXNw",
+            "b25zZRIPCgd2ZXJzaW9uGAEgASgMEhEKCXB1YmxpY0tleRgCIAEoDBIRCglj",
+            "aGFsbGVuZ2UYAyABKAwiTgoWSG9tZU5vZGVSZXF1ZXN0UmVxdWVzdBI0Cghj",
+            "b250cmFjdBgBIAEoCzIiLmlvcC5ob21lbm9kZS5Ib21lTm9kZVBsYW5Db250",
+            "cmFjdCJPChdIb21lTm9kZVJlcXVlc3RSZXNwb25zZRI0Cghjb250cmFjdBgB",
+            "IAEoCzIiLmlvcC5ob21lbm9kZS5Ib21lTm9kZVBsYW5Db250cmFjdCJUChRI",
+            "b21lTm9kZVBsYW5Db250cmFjdBIOCgZwbGFuSWQYASABKAwSGQoRaWRlbnRp",
+            "dHlQdWJsaWNLZXkYAiABKAwSEQoJc3RhcnRUaW1lGAMgASgSIiMKDkNoZWNr",
+            "SW5SZXF1ZXN0EhEKCWNoYWxsZW5nZRgBIAEoDCIRCg9DaGVja0luUmVzcG9u",
+            "c2UiKgoVVmVyaWZ5SWRlbnRpdHlSZXF1ZXN0EhEKCWNoYWxsZW5nZRgBIAEo",
+            "DCIYChZWZXJpZnlJZGVudGl0eVJlc3BvbnNlIssBChRVcGRhdGVQcm9maWxl",
+            "UmVxdWVzdBISCgpzZXRWZXJzaW9uGAEgASgIEg8KB3NldE5hbWUYAiABKAgS",
+            "EAoIc2V0SW1hZ2UYAyABKAgSEwoLc2V0TG9jYXRpb24YBCABKAgSFAoMc2V0",
+            "RXh0cmFEYXRhGAUgASgIEg8KB3ZlcnNpb24YCCABKAwSDAoEbmFtZRgJIAEo",
+            "CRINCgVpbWFnZRgKIAEoDBIQCghsb2NhdGlvbhgLIAEoBxIRCglleHRyYURh",
+            "dGEYDCABKAkiFwoVVXBkYXRlUHJvZmlsZVJlc3BvbnNlIl0KHkNhbmNlbEhv",
+            "bWVOb2RlQWdyZWVtZW50UmVxdWVzdBIdChVyZWRpcmVjdFRvTmV3SG9tZU5v",
+            "ZGUYASABKAgSHAoUbmV3SG9tZU5vZGVOZXR3b3JrSWQYAiABKAwiIQofQ2Fu",
+            "Y2VsSG9tZU5vZGVBZ3JlZW1lbnRSZXNwb25zZSI0ChxBcHBsaWNhdGlvblNl",
+            "cnZpY2VBZGRSZXF1ZXN0EhQKDHNlcnZpY2VOYW1lcxgBIAMoCSIfCh1BcHBs",
+            "aWNhdGlvblNlcnZpY2VBZGRSZXNwb25zZSI2Ch9BcHBsaWNhdGlvblNlcnZp",
+            "Y2VSZW1vdmVSZXF1ZXN0EhMKC3NlcnZpY2VOYW1lGAEgASgJIiIKIEFwcGxp",
+            "Y2F0aW9uU2VydmljZVJlbW92ZVJlc3BvbnNlIpoBCh1HZXRJZGVudGl0eUlu",
+            "Zm9ybWF0aW9uUmVxdWVzdBIZChFpZGVudGl0eU5ldHdvcmtJZBgBIAEoDBIb",
+            "ChNpbmNsdWRlUHJvZmlsZUltYWdlGAIgASgIEh0KFWluY2x1ZGVUaHVtYm5h",
+            "aWxJbWFnZRgDIAEoCBIiChppbmNsdWRlQXBwbGljYXRpb25TZXJ2aWNlcxgE",
+            "IAEoCCKLAgoeR2V0SWRlbnRpdHlJbmZvcm1hdGlvblJlc3BvbnNlEhAKCGlz",
+            "SG9zdGVkGAEgASgIEh0KFWlzVGFyZ2V0SG9tZU5vZGVLbm93bhgCIAEoCBIf",
+            "Chd0YXJnZXRIb21lTm9kZU5ldHdvcmtJZBgDIAEoDBIQCghpc09ubGluZRgE",
+            "IAEoCBIZChFpZGVudGl0eVB1YmxpY0tleRgFIAEoDBIMCgRuYW1lGAYgASgJ",
+            "EhEKCWV4dHJhRGF0YRgHIAEoCRIUCgxwcm9maWxlSW1hZ2UYCCABKAwSFgoO",
+            "dGh1bWJuYWlsSW1hZ2UYCSABKAwSGwoTYXBwbGljYXRpb25TZXJ2aWNlcxgK",
+            "IAMoCSJXCiVDYWxsSWRlbnRpdHlBcHBsaWNhdGlvblNlcnZpY2VSZXF1ZXN0",
+            "EhkKEWlkZW50aXR5TmV0d29ya0lkGAEgASgMEhMKC3NlcnZpY2VOYW1lGAIg",
+            "ASgJIj0KJkNhbGxJZGVudGl0eUFwcGxpY2F0aW9uU2VydmljZVJlc3BvbnNl",
+            "EhMKC2NhbGxlclRva2VuGAEgASgMImQKH0luY29taW5nQ2FsbE5vdGlmaWNh",
+            "dGlvblJlcXVlc3QSFwoPY2FsbGVyUHVibGljS2V5GAEgASgMEhMKC3NlcnZp",
+            "Y2VOYW1lGAIgASgJEhMKC2NhbGxlZVRva2VuGAMgASgMIiIKIEluY29taW5n",
+            "Q2FsbE5vdGlmaWNhdGlvblJlc3BvbnNlIkYKJEFwcGxpY2F0aW9uU2Vydmlj",
+            "ZVNlbmRNZXNzYWdlUmVxdWVzdBINCgV0b2tlbhgBIAEoDBIPCgdtZXNzYWdl",
+            "GAIgASgMIicKJUFwcGxpY2F0aW9uU2VydmljZVNlbmRNZXNzYWdlUmVzcG9u",
+            "c2UiRgozQXBwbGljYXRpb25TZXJ2aWNlUmVjZWl2ZU1lc3NhZ2VOb3RpZmlj",
+            "YXRpb25SZXF1ZXN0Eg8KB21lc3NhZ2UYASABKAwiNgo0QXBwbGljYXRpb25T",
+            "ZXJ2aWNlUmVjZWl2ZU1lc3NhZ2VOb3RpZmljYXRpb25SZXNwb25zZSqWAwoG",
+            "U3RhdHVzEg0KCVNUQVRVU19PSxAAEhwKGEVSUk9SX1BST1RPQ09MX1ZJT0xB",
+            "VElPThABEhUKEUVSUk9SX1VOU1VQUE9SVEVEEAISEAoMRVJST1JfQkFOTkVE",
+            "EAMSDgoKRVJST1JfQlVTWRAEEhYKEkVSUk9SX1VOQVVUSE9SSVpFRBAFEhIK",
+            "DkVSUk9SX0JBRF9ST0xFEAYSIQodRVJST1JfQkFEX0NPTlZFUlNBVElPTl9T",
+            "VEFUVVMQBxISCg5FUlJPUl9JTlRFUk5BTBAIEhgKFEVSUk9SX1FVT1RBX0VY",
+            "Q0VFREVEEDMSGwoXRVJST1JfSU5WQUxJRF9TSUdOQVRVUkUQNBITCg9FUlJP",
+            "Ul9OT1RfRk9VTkQQNRIXChNFUlJPUl9JTlZBTElEX1ZBTFVFEDYSGAoURVJS",
+            "T1JfQUxSRUFEWV9FWElTVFMQNxIXChNFUlJPUl9OT1RfQVZBSUxBQkxFEDgS",
+            "EgoORVJST1JfUkVKRUNURUQQORIXChNFUlJPUl9VTklOSVRJQUxJWkVEEDoq",
+            "egoOU2VydmVyUm9sZVR5cGUSCwoHUFJJTUFSWRAAEg8KC05EX05FSUdIQk9S",
+            "EAESEAoMTkRfQ09MTEVBR1VFEAISEwoPQ0xfTk9OX0NVU1RPTUVSEAMSDwoL",
+            "Q0xfQ1VTVE9NRVIQBBISCg5DTF9BUFBfU0VSVklDRRAFYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Iop.Homenode.Status), typeof(global::Iop.Homenode.ServerRoleType), }, new pbr::GeneratedClrTypeInfo[] {
@@ -183,13 +182,13 @@ namespace Iop.Homenode {
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ServerRole), global::Iop.Homenode.ServerRole.Parser, new[]{ "Role", "Port", "IsTcp", "IsTls" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ListHomeNodePlansRequest), global::Iop.Homenode.ListHomeNodePlansRequest.Parser, new[]{ "IdentityType" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ListHomeNodePlansResponse), global::Iop.Homenode.ListHomeNodePlansResponse.Parser, new[]{ "Plans" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.HomeNodePlan), global::Iop.Homenode.HomeNodePlan.Parser, new[]{ "PlanId", "IdentityType", "Fee", "BillingPeriodSeconds", "PlanParameters" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.HomeNodePlan), global::Iop.Homenode.HomeNodePlan.Parser, new[]{ "PlanId", "NodeNetworkId", "IdentityType", "Fee", "BillingPeriodSeconds", "PlanParameters" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.NameStringValuePair), global::Iop.Homenode.NameStringValuePair.Parser, new[]{ "Name", "Value" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.StartConversationRequest), global::Iop.Homenode.StartConversationRequest.Parser, new[]{ "SupportedVersions", "PublicKey" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.StartConversationResponse), global::Iop.Homenode.StartConversationResponse.Parser, new[]{ "Version", "PublicKey", "Challenge" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.HomeNodeRequestRequest), global::Iop.Homenode.HomeNodeRequestRequest.Parser, new[]{ "Contract" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.HomeNodeRequestResponse), global::Iop.Homenode.HomeNodeRequestResponse.Parser, new[]{ "Contract" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.HomeNodePlanContract), global::Iop.Homenode.HomeNodePlanContract.Parser, new[]{ "Plan", "NodePublicKey", "IdentityPublicKey", "StartTime" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.HomeNodePlanContract), global::Iop.Homenode.HomeNodePlanContract.Parser, new[]{ "PlanId", "IdentityPublicKey", "StartTime" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.CheckInRequest), global::Iop.Homenode.CheckInRequest.Parser, new[]{ "Challenge" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.CheckInResponse), global::Iop.Homenode.CheckInResponse.Parser, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.VerifyIdentityRequest), global::Iop.Homenode.VerifyIdentityRequest.Parser, new[]{ "Challenge" }, null, null, null),
@@ -3941,6 +3940,7 @@ namespace Iop.Homenode {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public HomeNodePlan(HomeNodePlan other) : this() {
       planId_ = other.planId_;
+      nodeNetworkId_ = other.nodeNetworkId_;
       identityType_ = other.identityType_;
       fee_ = other.fee_;
       billingPeriodSeconds_ = other.billingPeriodSeconds_;
@@ -3956,7 +3956,7 @@ namespace Iop.Homenode {
     public const int PlanIdFieldNumber = 1;
     private pb::ByteString planId_ = pb::ByteString.Empty;
     /// <summary>
-    ///  GUID of the plan. If a node wants to change the plan, it has to change the GUID as well,
+    ///  Identifier of the plan is an SHA1 hash of the HomeNodePlan structure in Google Protobuf v3 encoding 
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public pb::ByteString PlanId {
@@ -3966,11 +3966,25 @@ namespace Iop.Homenode {
       }
     }
 
+    /// <summary>Field number for the "nodeNetworkId" field.</summary>
+    public const int NodeNetworkIdFieldNumber = 2;
+    private pb::ByteString nodeNetworkId_ = pb::ByteString.Empty;
+    /// <summary>
+    ///  with planId initialized to a byte array of 20 zero bytes.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString NodeNetworkId {
+      get { return nodeNetworkId_; }
+      set {
+        nodeNetworkId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
     /// <summary>Field number for the "identityType" field.</summary>
-    public const int IdentityTypeFieldNumber = 2;
+    public const int IdentityTypeFieldNumber = 3;
     private string identityType_ = "";
     /// <summary>
-    ///  thus effectively creating a new plan.
+    ///  Type of identity this plan is created for. This can include "*" as a wildcard character
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string IdentityType {
@@ -3981,7 +3995,7 @@ namespace Iop.Homenode {
     }
 
     /// <summary>Field number for the "fee" field.</summary>
-    public const int FeeFieldNumber = 3;
+    public const int FeeFieldNumber = 4;
     private ulong fee_;
     /// <summary>
     ///  at the end of the type to support multiple types to be served with a single plan. 
@@ -3998,7 +4012,7 @@ namespace Iop.Homenode {
     }
 
     /// <summary>Field number for the "billingPeriodSeconds" field.</summary>
-    public const int BillingPeriodSecondsFieldNumber = 4;
+    public const int BillingPeriodSecondsFieldNumber = 5;
     private uint billingPeriodSeconds_;
     /// <summary>
     ///  Length of the billing period in seconds.
@@ -4038,6 +4052,7 @@ namespace Iop.Homenode {
         return true;
       }
       if (PlanId != other.PlanId) return false;
+      if (NodeNetworkId != other.NodeNetworkId) return false;
       if (IdentityType != other.IdentityType) return false;
       if (Fee != other.Fee) return false;
       if (BillingPeriodSeconds != other.BillingPeriodSeconds) return false;
@@ -4049,6 +4064,7 @@ namespace Iop.Homenode {
     public override int GetHashCode() {
       int hash = 1;
       if (PlanId.Length != 0) hash ^= PlanId.GetHashCode();
+      if (NodeNetworkId.Length != 0) hash ^= NodeNetworkId.GetHashCode();
       if (IdentityType.Length != 0) hash ^= IdentityType.GetHashCode();
       if (Fee != 0UL) hash ^= Fee.GetHashCode();
       if (BillingPeriodSeconds != 0) hash ^= BillingPeriodSeconds.GetHashCode();
@@ -4067,16 +4083,20 @@ namespace Iop.Homenode {
         output.WriteRawTag(10);
         output.WriteBytes(PlanId);
       }
-      if (IdentityType.Length != 0) {
+      if (NodeNetworkId.Length != 0) {
         output.WriteRawTag(18);
+        output.WriteBytes(NodeNetworkId);
+      }
+      if (IdentityType.Length != 0) {
+        output.WriteRawTag(26);
         output.WriteString(IdentityType);
       }
       if (Fee != 0UL) {
-        output.WriteRawTag(24);
+        output.WriteRawTag(32);
         output.WriteUInt64(Fee);
       }
       if (BillingPeriodSeconds != 0) {
-        output.WriteRawTag(32);
+        output.WriteRawTag(40);
         output.WriteUInt32(BillingPeriodSeconds);
       }
       planParameters_.WriteTo(output, _repeated_planParameters_codec);
@@ -4087,6 +4107,9 @@ namespace Iop.Homenode {
       int size = 0;
       if (PlanId.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeBytesSize(PlanId);
+      }
+      if (NodeNetworkId.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(NodeNetworkId);
       }
       if (IdentityType.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(IdentityType);
@@ -4108,6 +4131,9 @@ namespace Iop.Homenode {
       }
       if (other.PlanId.Length != 0) {
         PlanId = other.PlanId;
+      }
+      if (other.NodeNetworkId.Length != 0) {
+        NodeNetworkId = other.NodeNetworkId;
       }
       if (other.IdentityType.Length != 0) {
         IdentityType = other.IdentityType;
@@ -4134,14 +4160,18 @@ namespace Iop.Homenode {
             break;
           }
           case 18: {
+            NodeNetworkId = input.ReadBytes();
+            break;
+          }
+          case 26: {
             IdentityType = input.ReadString();
             break;
           }
-          case 24: {
+          case 32: {
             Fee = input.ReadUInt64();
             break;
           }
-          case 32: {
+          case 40: {
             BillingPeriodSeconds = input.ReadUInt32();
             break;
           }
@@ -4796,12 +4826,11 @@ namespace Iop.Homenode {
   ///
   ///  Specific Error Responses:
   ///    * ERROR_QUOTA_EXCEEDED - A node uses this error code in case it wants to express that it will not accept any new clients because it has no free slots.
-  ///    * ERROR_NOT_FOUND - 'HomeNodePlanContract.contract.plan.planId' does not correspond to a node's plan, or the plan values are different from what the node offers.
+  ///    * ERROR_NOT_FOUND - 'HomeNodePlanContract.contract.planId' does not correspond to a node's plan, or the plan values are different from what the node offers.
   ///    * ERROR_INVALID_SIGNATURE - The client's signature of the contract is not valid.
   ///    * ERROR_ALREADY_EXISTS - The identity is hosted by the node already.
   ///    * ERROR_INVALID_VALUE
   ///      * Response.details == "contract.startTime" - 'HomeNodeRequestRequest.contract.startTime' is more than 1 hour in the past. 
-  ///      * Response.details == "contract.nodePublicKey" - 'HomeNodeRequestRequest.contract.nodePublicKey' does not match node's public key. 
   ///      * Response.details == "contract.identityPublicKey" - 'HomeNodeRequestRequest.contract.identityPublicKey' does not match identity's public key.
   /// </summary>
   public sealed partial class HomeNodeRequestResponse : pb::IMessage<HomeNodeRequestResponse> {
@@ -4957,8 +4986,7 @@ namespace Iop.Homenode {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public HomeNodePlanContract(HomeNodePlanContract other) : this() {
-      Plan = other.plan_ != null ? other.Plan.Clone() : null;
-      nodePublicKey_ = other.nodePublicKey_;
+      planId_ = other.planId_;
       identityPublicKey_ = other.identityPublicKey_;
       startTime_ = other.startTime_;
     }
@@ -4968,39 +4996,25 @@ namespace Iop.Homenode {
       return new HomeNodePlanContract(this);
     }
 
-    /// <summary>Field number for the "plan" field.</summary>
-    public const int PlanFieldNumber = 1;
-    private global::Iop.Homenode.HomeNodePlan plan_;
+    /// <summary>Field number for the "planId" field.</summary>
+    public const int PlanIdFieldNumber = 1;
+    private pb::ByteString planId_ = pb::ByteString.Empty;
     /// <summary>
-    ///  Description of the home node hosting plan.
+    ///  Identifier of the home node hosting plan.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Iop.Homenode.HomeNodePlan Plan {
-      get { return plan_; }
+    public pb::ByteString PlanId {
+      get { return planId_; }
       set {
-        plan_ = value;
-      }
-    }
-
-    /// <summary>Field number for the "nodePublicKey" field.</summary>
-    public const int NodePublicKeyFieldNumber = 2;
-    private pb::ByteString nodePublicKey_ = pb::ByteString.Empty;
-    /// <summary>
-    ///  Public key of the node.
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pb::ByteString NodePublicKey {
-      get { return nodePublicKey_; }
-      set {
-        nodePublicKey_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+        planId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
     }
 
     /// <summary>Field number for the "identityPublicKey" field.</summary>
-    public const int IdentityPublicKeyFieldNumber = 3;
+    public const int IdentityPublicKeyFieldNumber = 2;
     private pb::ByteString identityPublicKey_ = pb::ByteString.Empty;
     /// <summary>
-    ///  Public key of the identity.
+    ///  Public key of the client's identity.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public pb::ByteString IdentityPublicKey {
@@ -5011,7 +5025,7 @@ namespace Iop.Homenode {
     }
 
     /// <summary>Field number for the "startTime" field.</summary>
-    public const int StartTimeFieldNumber = 4;
+    public const int StartTimeFieldNumber = 3;
     private long startTime_;
     /// <summary>
     ///  TimestampType. Specifies the start time of the contract.
@@ -5037,8 +5051,7 @@ namespace Iop.Homenode {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (!object.Equals(Plan, other.Plan)) return false;
-      if (NodePublicKey != other.NodePublicKey) return false;
+      if (PlanId != other.PlanId) return false;
       if (IdentityPublicKey != other.IdentityPublicKey) return false;
       if (StartTime != other.StartTime) return false;
       return true;
@@ -5047,8 +5060,7 @@ namespace Iop.Homenode {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      if (plan_ != null) hash ^= Plan.GetHashCode();
-      if (NodePublicKey.Length != 0) hash ^= NodePublicKey.GetHashCode();
+      if (PlanId.Length != 0) hash ^= PlanId.GetHashCode();
       if (IdentityPublicKey.Length != 0) hash ^= IdentityPublicKey.GetHashCode();
       if (StartTime != 0L) hash ^= StartTime.GetHashCode();
       return hash;
@@ -5061,20 +5073,16 @@ namespace Iop.Homenode {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (plan_ != null) {
+      if (PlanId.Length != 0) {
         output.WriteRawTag(10);
-        output.WriteMessage(Plan);
-      }
-      if (NodePublicKey.Length != 0) {
-        output.WriteRawTag(18);
-        output.WriteBytes(NodePublicKey);
+        output.WriteBytes(PlanId);
       }
       if (IdentityPublicKey.Length != 0) {
-        output.WriteRawTag(26);
+        output.WriteRawTag(18);
         output.WriteBytes(IdentityPublicKey);
       }
       if (StartTime != 0L) {
-        output.WriteRawTag(32);
+        output.WriteRawTag(24);
         output.WriteSInt64(StartTime);
       }
     }
@@ -5082,11 +5090,8 @@ namespace Iop.Homenode {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      if (plan_ != null) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Plan);
-      }
-      if (NodePublicKey.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeBytesSize(NodePublicKey);
+      if (PlanId.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(PlanId);
       }
       if (IdentityPublicKey.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeBytesSize(IdentityPublicKey);
@@ -5102,14 +5107,8 @@ namespace Iop.Homenode {
       if (other == null) {
         return;
       }
-      if (other.plan_ != null) {
-        if (plan_ == null) {
-          plan_ = new global::Iop.Homenode.HomeNodePlan();
-        }
-        Plan.MergeFrom(other.Plan);
-      }
-      if (other.NodePublicKey.Length != 0) {
-        NodePublicKey = other.NodePublicKey;
+      if (other.PlanId.Length != 0) {
+        PlanId = other.PlanId;
       }
       if (other.IdentityPublicKey.Length != 0) {
         IdentityPublicKey = other.IdentityPublicKey;
@@ -5128,21 +5127,14 @@ namespace Iop.Homenode {
             input.SkipLastField();
             break;
           case 10: {
-            if (plan_ == null) {
-              plan_ = new global::Iop.Homenode.HomeNodePlan();
-            }
-            input.ReadMessage(plan_);
+            PlanId = input.ReadBytes();
             break;
           }
           case 18: {
-            NodePublicKey = input.ReadBytes();
-            break;
-          }
-          case 26: {
             IdentityPublicKey = input.ReadBytes();
             break;
           }
-          case 32: {
+          case 24: {
             StartTime = input.ReadSInt64();
             break;
           }
@@ -6520,7 +6512,7 @@ namespace Iop.Homenode {
   ///
   ///    * ERROR_QUOTA_EXCEEDED - The given set of application services can not be added because the client would have more than the maximum number of enabled services.
   ///    * ERROR_INVALID_VALUE
-  ///      * Response.details == "serviceNames[i]" - 'ApplicationServiceAddRequest.serviceNames[i]' is not a valid service name, where 'i' is the zero-based index.
+  ///      * Response.details == "serviceNames[i]" - 'ApplicationServiceAddRequest.serviceNames[i]' is not a valid service name, where 'i' is a zero-based index.
   /// </summary>
   public sealed partial class ApplicationServiceAddResponse : pb::IMessage<ApplicationServiceAddResponse> {
     private static readonly pb::MessageParser<ApplicationServiceAddResponse> _parser = new pb::MessageParser<ApplicationServiceAddResponse>(() => new ApplicationServiceAddResponse());
