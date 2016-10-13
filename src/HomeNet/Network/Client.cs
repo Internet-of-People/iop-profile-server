@@ -38,6 +38,9 @@ namespace HomeNet.Network
     /// <summary>There is an established conversation with the client, but no authentication has been done.</summary>
     ConversationStarted,
 
+    /// <summary>There is an established conversation with the non-customer client and the verification process has already been completed.</summary>
+    Verified,
+
     /// <summary>There is an established conversation with the client and the authentication process has already been completed.</summary>
     Authenticated
   };
@@ -48,6 +51,14 @@ namespace HomeNet.Network
   public class Client : IDisposable
   {
     private PrefixLogger log;
+
+    
+    /// <summary>Maximum number of bytes that application service name can occupy.</summary>
+    public const int MaxApplicationServiceNameLengthBytes = 32;
+
+    /// <summary>Maximum number of application services that a client can have enabled within a session.</summary>
+    public const int MaxClientApplicationServices = 50;
+
 
     /// <summary>Role server assigned client identifier.</summary>
     public ulong Id;
@@ -92,6 +103,9 @@ namespace HomeNet.Network
     /// <summary>true if the network client represents identity hosted by the node that is checked-in, false otherwise.</summary>
     public bool IsOurCheckedInClient;
 
+    /// <summary>true if the network client represents identity hosted by the node that is checked-in, false otherwise.</summary>
+    public ApplicationServices ApplicationServices;
+
     // \Client Context Section
 
 
@@ -132,6 +146,18 @@ namespace HomeNet.Network
       IsOurCheckedInClient = false;
 
       log.Trace("(-)");
+    }
+
+
+    public HashSet<string> GetApplicationServices()
+    {
+      log.Trace("()");
+
+      HashSet<string> res = ApplicationServices != null ? ApplicationServices.Get() : null;
+
+      if (res != null) log.Trace("(-):*.Count={0}", res.Count);
+      else log.Trace("(-):null");
+      return res;
     }
 
     /// <summary>
