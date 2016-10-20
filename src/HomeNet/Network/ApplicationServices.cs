@@ -17,10 +17,14 @@ namespace HomeNet.Network
     private PrefixLogger log;
 
     /// <summary>Lock object for synchronized access to application services.</summary>
-    private object listLock = new object();
+    private object lockObject = new object();
 
     /// <summary>Server assigned client identifier for internal client maintanence purposes.</summary>
     private HashSet<string> serviceNames = new HashSet<string>();
+
+    /// <summary>List of open relays mapped by relay ID.</summary>
+    private Dictionary<Guid, RelayConnection> openRelays = new Dictionary<Guid, RelayConnection>(StructuralEqualityComparer<Guid>.Default);
+
 
     /// <summary>Initializes the class logger.</summary>
     public ApplicationServices(string LogPrefix)
@@ -33,17 +37,17 @@ namespace HomeNet.Network
     }
 
     /// <summary>
-    /// Safely adds a service name to the list of supported services within the current session.
+    /// Adds a service name to the list of supported services within the current session.
     /// </summary>
     /// <param name="ServiceName">Name of the application service to add.</param>
     /// <returns>true if the function succeeds, false if the number of client's application services exceeded the limit.</returns>
     /// <remarks>If the function fails, the set of enabled services is not changed.</remarks>
-    public bool AddLimit(IEnumerable<string> ServiceNames)
+    public bool AddServices(IEnumerable<string> ServiceNames)
     {
       log.Trace("(ServiceName:'{0}')", string.Join(",", ServiceNames));
 
       bool res = false;
-      lock (listLock)
+      lock (lockObject)
       {
         HashSet<string> newSet = new HashSet<string>(serviceNames);
         foreach (string serviceName in ServiceNames)
@@ -64,16 +68,16 @@ namespace HomeNet.Network
 
 
     /// <summary>
-    /// Safely removes a service name from the list of supported services within the current session.
+    /// Removes a service name from the list of supported services within the current session.
     /// </summary>
     /// <param name="ServiceName">Name of the application service to remove.</param>
     /// <returns>true if the function succeeds, false if the given service name was not found in the list.</returns>
-    public bool Remove(string ServiceName)
+    public bool RemoveService(string ServiceName)
     {
       log.Trace("(ServiceName:'{0}')", ServiceName);
 
       bool res = false;
-      lock (listLock)
+      lock (lockObject)
       {
         res = serviceNames.Remove(ServiceName);
       }
@@ -87,12 +91,12 @@ namespace HomeNet.Network
     /// Obtains a copy of the list of all application services.
     /// </summary>
     /// <returns>List of all services.</returns>
-    public HashSet<string> Get()
+    public HashSet<string> GetServices()
     {
       log.Trace("()");
 
       HashSet<string> res = null;
-      lock (listLock)
+      lock (lockObject)
       {
         res = new HashSet<string>(serviceNames);
       }
@@ -101,5 +105,84 @@ namespace HomeNet.Network
       return res;
     }
 
+    /// <summary>
+    /// Checks whether the list contains a specific service name.
+    /// </summary>
+    /// <param name="ServiceName">Name of the application service to look for.</param>
+    /// <returns>true if the list contains the specified service name, false otherwise.</returns>
+    public bool ContainsService(string ServiceName)
+    {
+      log.Trace("(ServiceName:'{0}')", ServiceName);
+
+      bool res = false;
+      lock (lockObject)
+      {
+        res = serviceNames.Contains(ServiceName);
+      }
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+
+    /// <summary>
+    /// Adds a new open relay to the list.
+    /// </summary>
+    /// <param name="Relay">Open relay to add.</param>
+    /// <returns>true if the function succeeds, false if the relay already exists in the list.</returns>
+    public bool AddRelay(RelayConnection Relay)
+    {
+      log.Trace("(Relay.Id:'{0}')", Relay.GetId());
+
+      bool res = false;
+      lock (lockObject)
+      {
+        if (!openRelays.ContainsKey(Relay.GetId()))
+        {
+          openRelays.Add(Relay.GetId(), Relay);
+          res = true;
+        }
+      }
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+    /// <summary>
+    /// Removes an open relay from the list.
+    /// </summary>
+    /// <param name="Relay">Open relay to remove.</param>
+    /// <returns>true if the function succeeds, false if the relay was not found in the list.</returns>
+    public bool RemoveRelay(RelayConnection Relay)
+    {
+      log.Trace("(Relay.Id:'{0}')", Relay.GetId());
+
+      bool res = false;
+      lock (lockObject)
+      {
+        res = openRelays.Remove(Relay.GetId());
+      }
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+    /// <summary>
+    /// Obtains a list of open relays.
+    /// </summary>
+    /// <returns>List of open relays.</returns>
+    public List<RelayConnection> GetRelays()
+    {
+      log.Trace("()");
+
+      List<RelayConnection> res = new List<RelayConnection>();
+      lock (lockObject)
+      {
+        res = openRelays.Values.ToList();
+      }
+
+      log.Trace("(-):*.Count={0}", res.Count);
+      return res;
+    }
   }
 }

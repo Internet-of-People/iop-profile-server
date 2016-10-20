@@ -186,7 +186,7 @@ namespace HomeNet.Data
     public virtual TEntity GetById(object id)
     {
       log.Trace("(id:{0})", id);
-#warning Not implemented, need .NET Core 1.1.0.
+#warning TODO: Not implemented, need .NET Core 1.1.0.
       throw new NotImplementedException("Wait for .NET Core 1.1.0");
       /*TEntity result = dbSet.Find(id);
 
@@ -203,7 +203,7 @@ namespace HomeNet.Data
     {
       log.Trace("(id:{0})", id);
 
-#warning Not implemented, need .NET Core 1.1.0.
+#warning TODO: Not implemented, need .NET Core 1.1.0.
       throw new NotImplementedException("Wait for .NET Core 1.1.0");
       /*TEntity result = dbSet.Find(id);
 

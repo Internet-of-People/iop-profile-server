@@ -13,6 +13,8 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using HomeNet.Utils;
 using HomeNet.Data.Models;
+using Iop.Homenode;
+using HomeNetCrypto;
 
 namespace HomeNet.Network
 {
@@ -72,6 +74,9 @@ namespace HomeNet.Network
     /// <summary>Network or SSL stream to the client.</summary>
     public Stream Stream;
 
+    /// <summary>Lock object for writing to the stream.</summary>
+    public SemaphoreSlim StreamWriteLock = new SemaphoreSlim(1);
+
     /// <summary>true if the client is connected to the TLS port, false otherwise.</summary>
     public bool UseTls;
 
@@ -85,6 +90,9 @@ namespace HomeNet.Network
     /// <summary>Protocol message builder.</summary>
     public MessageBuilder MessageBuilder;
 
+
+    /// <summary>If set to true, the client should be disconnected as soon as possible.</summary>
+    public bool ForceDisconnect;
 
     // Client Context Section
     
@@ -103,11 +111,25 @@ namespace HomeNet.Network
     /// <summary>true if the network client represents identity hosted by the node that is checked-in, false otherwise.</summary>
     public bool IsOurCheckedInClient;
 
-    /// <summary>true if the network client represents identity hosted by the node that is checked-in, false otherwise.</summary>
+    /// <summary>Client's application services available for the current session.</summary>
     public ApplicationServices ApplicationServices;
+
+    /// <summary>
+    /// If the client is connected to clAppService because of the application service call,
+    /// this represents the relay object. Otherwise, this is null, including the situation 
+    /// when this client is connected to clCustomerPort and is a callee of the relay, 
+    /// but this connection is not the one being relayed.
+    /// </summary>
+    public RelayConnection Relay;
 
     // \Client Context Section
 
+
+    /// <summary>List of unprocessed requests that we expect to receive responses to mapped by Message.id.</summary>
+    private Dictionary<uint, UnfinishedRequest> unfinishedRequests = new Dictionary<uint, UnfinishedRequest>();
+
+    /// <summary>Lock for access to unfinishedRequests list.</summary>
+    private object unfinishedRequestsLock = new object();
 
 
     /// <summary>Server to which the client is connected to.</summary>
@@ -117,15 +139,19 @@ namespace HomeNet.Network
     /// <summary>
     /// Creates the encapsulation for a new TCP server client.
     /// </summary>
+    /// <param name="Server">Role server that the client connected to.</param>
     /// <param name="TcpClient">TCP client class that holds the connection and allows communication with the client.</param>
+    /// <param name="Id">Unique identifier of the client's connection.</param>
     /// <param name="UseTls">true if the client is connected to the TLS port, false otherwise.</param>
     /// <param name="KeepAliveIntervalSeconds">Number of seconds for the connection to this client to be without any message until the node can close it for inactivity.</param>
-    public Client(TcpRoleServer Server, TcpClient TcpClient, bool UseTls, int KeepAliveIntervalSeconds)
+    public Client(TcpRoleServer Server, TcpClient TcpClient, ulong Id, bool UseTls, int KeepAliveIntervalSeconds)
     {
       this.TcpClient = TcpClient;
+      this.Id = Id;
       RemoteEndPoint = this.TcpClient.Client.RemoteEndPoint;
 
-      string logPrefix = string.Format("[{0}]", RemoteEndPoint);
+      server = Server;
+      string logPrefix = string.Format("[{0}<=>{1}|0x{2:X16}] ", server.EndPoint, RemoteEndPoint, Id);
       string logName = "HomeNet.Network.Client";
       this.log = new PrefixLogger(logName, logPrefix);
 
@@ -135,30 +161,204 @@ namespace HomeNet.Network
       NextKeepAliveTime = DateTime.UtcNow.AddSeconds(this.KeepAliveIntervalSeconds);
     
       this.TcpClient.LingerState = new LingerOption(true, 0);
+      this.TcpClient.NoDelay = true;
+
       this.UseTls = UseTls;
       Stream = this.TcpClient.GetStream();
       if (this.UseTls)
         Stream = new SslStream(Stream, false, PeerCertificateValidationCallback);
 
-      server = Server;
       MessageBuilder = new MessageBuilder(server.IdBase, new List<byte[]>() { new byte[] { 1, 0, 0 } }, Base.Configuration.Keys);
       ConversationStatus = ClientConversationStatus.NoConversation;
       IsOurCheckedInClient = false;
+
+      ApplicationServices = new ApplicationServices(logPrefix);
 
       log.Trace("(-)");
     }
 
 
-    public HashSet<string> GetApplicationServices()
+    /// <summary>
+    /// Sends a request message to the client over the open network stream and stores the request to the list of unfinished requests.
+    /// </summary>
+    /// <param name="Message">Message to send.</param>
+    /// <param name="Context">Caller's defined context to store information required for later response processing.</param>
+    /// <returns>true if the connection to the client should remain open, false otherwise.</returns>
+    public async Task<bool> SendMessageAndSaveUnfinishedRequestAsync(Message Message, object Context)
+    {
+      log.Trace("()");
+      UnfinishedRequest unfinishedRequest = new UnfinishedRequest(Message, Context);
+      AddUnfinishedRequest(unfinishedRequest);
+
+      bool res = await SendMessageInternalAsync(Message);
+      if (res)
+      {
+        // If the message was sent successfully to the target, we close the connection only in case it was a protocol violation error response.
+        if (Message.MessageTypeCase == Message.MessageTypeOneofCase.Response)
+          res = Message.Response.Status != Status.ErrorProtocolViolation;
+      }
+      else RemoveUnfinishedRequest(unfinishedRequest.RequestMessage.Id);
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+    /// <summary>
+    /// Sends a message to the client over the open network stream.
+    /// </summary>
+    /// <param name="Message">Message to send.</param>
+    /// <returns>true if the connection to the client should remain open, false otherwise.</returns>
+    public async Task<bool> SendMessageAsync(Message Message)
     {
       log.Trace("()");
 
-      HashSet<string> res = ApplicationServices != null ? ApplicationServices.Get() : null;
+      bool res = await SendMessageInternalAsync(Message);
+      if (res)
+      {
+        // If the message was sent successfully to the target, we close the connection only in case of protocol violation error.
+        res = Message.Response.Status != Status.ErrorProtocolViolation;
+      }
 
-      if (res != null) log.Trace("(-):*.Count={0}", res.Count);
-      else log.Trace("(-):null");
+      log.Trace("(-):{0}", res);
       return res;
     }
+
+
+    /// <summary>
+    /// Sends a message to the client over the open network stream.
+    /// </summary>
+    /// <param name="Message">Message to send.</param>
+    /// <returns>true if the message was sent successfully to the target recipient.</returns>
+    private async Task<bool> SendMessageInternalAsync(Message Message)
+    {
+      log.Trace("()");
+
+      bool res = false;
+
+      string msgStr = Message.ToString();
+      log.Trace("Sending response to client:\n{0}", msgStr.Substring(0, Math.Min(msgStr.Length, 512)));
+      byte[] responseBytes = ProtocolHelper.GetMessageBytes(Message);
+
+      await StreamWriteLock.WaitAsync();
+      try
+      {
+        await Stream.WriteAsync(responseBytes, 0, responseBytes.Length);
+        res = true;
+      }
+      catch (IOException)
+      {
+        log.Info("Connection to the client has been terminated.");
+      }
+      finally
+      {
+        StreamWriteLock.Release();
+      }
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+
+    /// <summary>
+    /// Handles client disconnection. Destroys objects that are connected to this client 
+    /// and frees the resources.
+    /// </summary>
+    public async Task HandleDisconnect()
+    {
+      log.Trace("()");
+
+      if (Relay != null)
+      {
+        // This connection is on clAppService port. There might be the other peer still connected 
+        // to this relay, so we have to make sure that other peer is disconnected as well.
+        await Relay.HandleDisconnectedClient(this, true);
+      }
+      else
+      {
+        // This connection is not being relayed, but it might be the administrative connection 
+        // of the client with relay being initialized.
+        List<RelayConnection> relays = ApplicationServices.GetRelays();
+        foreach (RelayConnection relay in relays)
+          await relay.HandleDisconnectedClient(this, false);
+      }
+
+      log.Trace("(-)");
+    }
+
+
+    /// <summary>
+    /// Adds unfinished request to the list of unfinished requests.
+    /// </summary>
+    /// <param name="Request">Request to add to the list.</param>
+    public void AddUnfinishedRequest(UnfinishedRequest Request)
+    {
+      log.Trace("(Request.RequestMessage.Id:{0})", Request.RequestMessage.Id);
+
+      lock (unfinishedRequestsLock)
+      {
+        unfinishedRequests.Add(Request.RequestMessage.Id, Request);
+      }
+
+      log.Trace("(-):unfinishedRequests.Count={0}", unfinishedRequests.Count);
+    }
+
+    /// <summary>
+    /// Removes unfinished request from the list of unfinished requests.
+    /// </summary>
+    /// <param name="Id">Identifier of the unfinished request message to remove from the list.</param>
+    public bool RemoveUnfinishedRequest(uint Id)
+    {
+      log.Trace("(Id:{0})", Id);
+
+      bool res = false;
+      lock (unfinishedRequestsLock)
+      {
+        res = unfinishedRequests.Remove(Id);
+      }
+
+      log.Trace("(-):{0},unfinishedRequests.Count={1}", res, unfinishedRequests.Count);
+      return res;
+    }
+
+
+    /// <summary>
+    /// Finds an unfinished request message by its ID and removes it from the list.
+    /// </summary>
+    /// <param name="Id">Identifier of the message to find.</param>
+    /// <returns>Unfinished request with the given ID, or null if no such request is in the list.</returns>
+    public UnfinishedRequest GetAndRemoveUnfinishedRequest(uint Id)
+    {
+      log.Trace("(Id:{0})", Id);
+
+      UnfinishedRequest res = null;
+      lock (unfinishedRequestsLock)
+      {
+        if (unfinishedRequests.TryGetValue(Id, out res))
+          unfinishedRequests.Remove(Id);
+      }
+
+      log.Trace("(-):{0},unfinishedRequests.Count={1}", res != null ? "UnfinishedRequest" : "null", unfinishedRequests.Count);
+      return res;
+    }
+
+    /// <summary>
+    /// Closes connection if it is opened and frees used resources.
+    /// </summary>
+    public void CloseConnection()
+    {
+      log.Trace("()");
+
+      Stream stream = Stream;
+      Stream = null;
+      if (stream != null) stream.Dispose();
+
+      TcpClient tcpClient = TcpClient;
+      TcpClient = null;
+      if (tcpClient != null) tcpClient.Dispose();
+
+      log.Trace("(-)");
+    }
+
 
     /// <summary>
     /// Callback routine that validates client connection to TLS port.
@@ -202,12 +402,7 @@ namespace HomeNet.Network
       {
         lock (disposingLock)
         {
-          if (Stream != null) Stream.Dispose();
-          Stream = null;
-
-          if (TcpClient != null) TcpClient.Dispose();
-          TcpClient = null;
-
+          CloseConnection();
           disposed = true;
         }
       }

@@ -80,6 +80,8 @@ namespace HomeNetProtocolTests
     public ProtocolClient(uint IdBase, byte[] ProtocolVersion, KeysEd25519 Keys)
     {
       client = new TcpClient();
+      client.NoDelay = true;
+      client.LingerState = new LingerOption(true, 0);
       keys = Keys;
       MessageBuilder = new MessageBuilder(IdBase, new List<byte[]>() { ProtocolVersion }, keys);
     }
@@ -127,7 +129,8 @@ namespace HomeNetProtocolTests
     /// <param name="Data">Message to send.</param>
     public async Task SendMessageAsync(Message Data)
     {
-      log.Trace("()\n{0}", Data);
+      string dataStr = Data.ToString();
+      log.Trace("()\n{0}", dataStr.Substring(0, Math.Min(dataStr.Length, 512)));
 
       byte[] rawData = ProtocolHelper.GetMessageBytes(Data);
       await stream.WriteAsync(rawData, 0, rawData.Length);
@@ -190,7 +193,8 @@ namespace HomeNetProtocolTests
 
       res = MessageWithHeader.Parser.ParseFrom(messageBytes).Body;
 
-      log.Trace("(-):\n{0}", res);
+      string resStr = res.ToString();
+      log.Trace("(-):\n{0}", resStr.Substring(0, Math.Min(resStr.Length, 512)));
       return res;
     }
 
@@ -306,16 +310,106 @@ namespace HomeNetProtocolTests
 
 
     /// <summary>
+    /// Obtains list of node's service ports.
+    /// </summary>
+    /// <param name="RolePorts">An empty dictionary that will be filled with mapping of server roles to network ports if the function succeeds.</param>
+    /// <returns>true if the function succeeds, false otherwise.</returns>
+    public async Task<bool> ListNodePorts(Dictionary<ServerRoleType, uint> RolePorts)
+    {
+      log.Trace("()");
+
+      Message requestMessage = MessageBuilder.CreateListRolesRequest();
+      await SendMessageAsync(requestMessage);
+
+      Message responseMessage = await ReceiveMessageAsync();
+
+      bool idOk = responseMessage.Id == requestMessage.Id;
+      bool statusOk = responseMessage.Response.Status == Status.Ok;
+
+      foreach (ServerRole serverRole in responseMessage.Response.SingleResponse.ListRoles.Roles)
+        RolePorts.Add(serverRole.Role, serverRole.Port);
+
+      bool primaryPortOk = RolePorts.ContainsKey(ServerRoleType.Primary);
+      bool ndNeighborPortOk = RolePorts.ContainsKey(ServerRoleType.NdNeighbor);
+      bool ndColleaguePortOk = RolePorts.ContainsKey(ServerRoleType.NdColleague);
+      bool clNonCustomerPortOk = RolePorts.ContainsKey(ServerRoleType.ClNonCustomer);
+      bool clCustomerPortOk = RolePorts.ContainsKey(ServerRoleType.ClCustomer);
+      bool clAppServicePortOk = RolePorts.ContainsKey(ServerRoleType.ClAppService);
+
+      bool portsOk = primaryPortOk && ndNeighborPortOk && ndColleaguePortOk && clNonCustomerPortOk && clCustomerPortOk && clAppServicePortOk;
+      bool res = idOk && statusOk && portsOk;
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+    /// <summary>
+    /// Initializes a new identity profile on the node.
+    /// </summary>
+    /// <param name="Name">Name of the profile.</param>
+    /// <param name="Image">Optionally, a profile image data.</param>
+    /// <param name="Location">Encoded GPS location of the identity.</param>
+    /// <param name="ExtraData">Optionally, identity's extra data.</param>
+    /// <returns>true if the function succeeds, false otherwise.</returns>
+    public async Task<bool> InitializeProfileAsync(string Name, byte[] Image, uint Location, string ExtraData)
+    {
+      log.Trace("()");
+
+      Message requestMessage = MessageBuilder.CreateUpdateProfileRequest(new byte[] { 1, 0, 0 }, Name, Image, Location, ExtraData);
+      await SendMessageAsync(requestMessage);
+      Message responseMessage = await ReceiveMessageAsync();
+
+      bool idOk = responseMessage.Id == requestMessage.Id;
+      bool statusOk = responseMessage.Response.Status == Status.Ok;
+
+      bool res = idOk && statusOk;
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+
+    /// <summary>
+    /// Adds application service to the current checked-in client's session.
+    /// </summary>
+    /// <param name="ServiceNames">List of service names to add.</param>
+    /// <returns>true if the function succeeds, false otherwise.</returns>
+    public async Task<bool> AddApplicationServicesAsync(List<string> ServiceNames)
+    {
+      log.Trace("()");
+
+      Message requestMessage = MessageBuilder.CreateApplicationServiceAddRequest(ServiceNames);
+      await SendMessageAsync(requestMessage);
+      Message responseMessage = await ReceiveMessageAsync();
+
+      bool idOk = responseMessage.Id == requestMessage.Id;
+      bool statusOk = responseMessage.Response.Status == Status.Ok;
+
+      bool res = idOk && statusOk;
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+    
+
+    /// <summary>
     /// Closes an open connection and reinitialize the TCP client so that it can be used again.
     /// </summary>
     public void CloseConnection()
     {
+      log.Trace("()");
+
       if (stream != null) stream.Dispose();
       if (client != null) client.Dispose();
       client = new TcpClient();
+      client.NoDelay = true;
+      client.LingerState = new LingerOption(true, 0);
       NodeKey = null;
       Challenge = null;
       MessageBuilder.ResetId();
+
+      log.Trace("(-)");
     }
 
 

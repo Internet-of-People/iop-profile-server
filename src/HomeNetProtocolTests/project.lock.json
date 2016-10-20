@@ -3,7 +3,7 @@
   "version": 2,
   "targets": {
     ".NETCoreApp,Version=v1.0": {
-      "Google.Protobuf/3.0.0": {
+      "Google.Protobuf/3.1.0": {
         "type": "package",
         "dependencies": {
           "System.Collections": "4.0.11",
@@ -2340,7 +2340,7 @@
         "type": "project",
         "framework": ".NETStandard,Version=v1.6",
         "dependencies": {
-          "Google.Protobuf": "3.0.0",
+          "Google.Protobuf": "3.1.0",
           "HomeNetCrypto": "1.0.0",
           "NETStandard.Library": "1.6.0"
         },
@@ -2353,7 +2353,7 @@
       }
     },
     ".NETCoreApp,Version=v1.0/win10-x64": {
-      "Google.Protobuf/3.0.0": {
+      "Google.Protobuf/3.1.0": {
         "type": "package",
         "dependencies": {
           "System.Collections": "4.0.11",
@@ -4897,7 +4897,7 @@
         "type": "project",
         "framework": ".NETStandard,Version=v1.6",
         "dependencies": {
-          "Google.Protobuf": "3.0.0",
+          "Google.Protobuf": "3.1.0",
           "HomeNetCrypto": "1.0.0",
           "NETStandard.Library": "1.6.0"
         },
@@ -4911,12 +4911,12 @@
     }
   },
   "libraries": {
-    "Google.Protobuf/3.0.0": {
-      "sha512": "l5CH4IoWys8hIQR53F+nM3RpFOX12Jj9iXVOh30ejoz0TRHApzvAHc+5T5mGnMWa/vCVfYFZkhqStn+IuK8+5g==",
+    "Google.Protobuf/3.1.0": {
+      "sha512": "ce4+CWfPl1bLpPG83mnN4tpWgZY+6YXzv8p7OHFRYZ5Ly2RQE3YrdCwSj0ZSSJgaPXY9aTjoGOkm1rQOnMjyRQ==",
       "type": "package",
-      "path": "Google.Protobuf/3.0.0",
+      "path": "Google.Protobuf/3.1.0",
       "files": [
-        "Google.Protobuf.3.0.0.nupkg.sha512",
+        "Google.Protobuf.3.1.0.nupkg.sha512",
         "Google.Protobuf.nuspec",
         "lib/net45/Google.Protobuf.dll",
         "lib/net45/Google.Protobuf.xml",

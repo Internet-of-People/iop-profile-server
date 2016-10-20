@@ -121,5 +121,53 @@ namespace HomeNet.Utils
       log.Trace("(-):{0}", res);
       return res;
     }
+
+
+
+    /// <summary>
+    /// Checks whether binary data represent a valid PNG or JPEG image.
+    /// </summary>
+    /// <param name="Data">Binary data to check.</param>
+    /// <returns>true if the data represents a valid PNG or JPEG image, false otherwise</returns>
+    public static bool ValidateImageFormat(byte[] Data)
+    {
+      log.Trace("(Data.Length:{0})", Data.Length);
+#warning TODO: This function currently does nothing, waiting for some libraries to be released.
+      // TODO: 
+      // * check image is valid PNG or JPEG format
+      // * waiting for https://github.com/JimBobSquarePants/ImageProcessor/ to release
+      //   or https://magick.codeplex.com/documentation to support all OS with NET Core releases
+      log.Fatal("TODO UNIMPLEMENTED");
+
+      bool res = Data.Length > 2;
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+
+    /// <summary>
+    /// Creates a thumbnail image from a profile image.
+    /// </summary>
+    /// <param name="ProfileImage">Binary data of the profile image data.</param>
+    /// <param name="ThumbnailImage">On the output, this is filled with thumbnail image data.</param>
+    public static void ProfileImageToThumbnailImage(byte[] ProfileImage, out byte[] ThumbnailImage)
+    {
+      log.Trace("(ProfileImage.Length:{0})", ProfileImage.Length);
+
+#warning TODO: This function currently does nothing, waiting for some libraries to be released.
+      // TODO: 
+      // * check if ProfileImage is small enough to represent thumbnail image without changes
+      // * if it is too big, check if it is PNG or JPEG
+      // * if it is PNG, convert to JPEG
+      // * resize and increase compression until small enough
+      // * waiting for https://github.com/JimBobSquarePants/ImageProcessor/ to release
+
+      log.Fatal("TODO UNIMPLEMENTED");
+
+      ThumbnailImage = ProfileImage;
+
+      log.Trace("(-):{0})", ThumbnailImage.Length);
+    }
   }
 }
