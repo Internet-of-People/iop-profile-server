@@ -1,6 +1,7 @@
 ﻿using HomeNet.Utils;
 using HomeNetCrypto;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -38,14 +39,14 @@ namespace HomeNet.Network
     /// <summary>
     /// List of network peers by their Identity ID. Only peers with known Identity ID are in this list.
     /// </summary>
-    private Dictionary<byte[], List<PeerListItem>> peersByIdentityId = new Dictionary<byte[], List<PeerListItem>>();
+    private Dictionary<byte[], List<PeerListItem>> peersByIdentityId = new Dictionary<byte[], List<PeerListItem>>(StructuralEqualityComparer<byte[]>.Default);
 
     /// <summary>
     /// List of online (checked-in) clients by their Identity ID. Only node's clients are in this list.
     /// A client is an identity for which the node acts as a home node.
     /// </summary>
-    private Dictionary<byte[], PeerListItem> clientsByIdentityId = new Dictionary<byte[], PeerListItem>();
-    
+    private Dictionary<byte[], PeerListItem> clientsByIdentityId = new Dictionary<byte[], PeerListItem>(StructuralEqualityComparer<byte[]>.Default);
+
     /// <summary>Initializes the client list and sets up the logger.</summary>
     /// <param name="IdBase">Base number of internal identifiers of clients. First client's ID is going to be IdBase + 1.</param>
     public ClientList(ulong IdBase, string LogPrefix)
@@ -175,13 +176,18 @@ namespace HomeNet.Network
           clientsByIdentityId.TryGetValue(identityId, out clientToCheckOut);
           clientsByIdentityId[identityId] = peer;
 
+          if (clientToCheckOut != null)
+            clientToCheckOut.Client.IsOurCheckedInClient = false;
+
+          Client.IsOurCheckedInClient = true;
+
           res = true;
         }
       }
 
       if (res && (clientToCheckOut != null))
       {
-        log.Info("Identity ID '{0}' has been checked-in already via network peer internal ID 0x{1:X16} and will now be disconnected.", clientToCheckOut.Client.Id);
+        log.Info("Identity ID '{0}' has been checked-in already via network peer internal ID 0x{1:X16} and will now be disconnected.", Crypto.ToHex(identityId), clientToCheckOut.Client.Id);
         clientToCheckOut.Client.Dispose();
       }
 
@@ -236,8 +242,12 @@ namespace HomeNet.Network
           }
 
           // Only checked-in clients are in clientsByIdentityId list.
-          if (clientsByIdentityId.ContainsKey(identityId)) clientsByIdentityId.Remove(identityId);
-          else clientByIdentityIdRemoveError = Client.IsOurCheckedInClient;
+          // If a checked-in client was replaced by a new connection, its IsOurCheckedInClient field was set to false.
+          if (Client.IsOurCheckedInClient)
+          {
+            if (clientsByIdentityId.ContainsKey(identityId)) clientsByIdentityId.Remove(identityId);
+            else clientByIdentityIdRemoveError = true;
+          }
         }
       }
 
@@ -245,10 +255,10 @@ namespace HomeNet.Network
         log.Error("Peer internal ID 0x{0:X16} not found in peersByInternalId list.", internalId);
 
       if (peerByIdentityIdRemoveError)
-        log.Error("Peer Identity ID '{0}' not found in peersByIdentityId list.", identityId);
+        log.Error("Peer Identity ID '{0}' not found in peersByIdentityId list.", Crypto.ToHex(identityId));
 
       if (clientByIdentityIdRemoveError)
-        log.Error("Checked-in client Identity ID '{0}' not found in clientsByIdentityId list.", identityId);
+        log.Error("Checked-in client Identity ID '{0}' not found in clientsByIdentityId list.", Crypto.ToHex(identityId));
 
       log.Trace("(-)");
     }

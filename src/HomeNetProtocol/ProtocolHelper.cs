@@ -25,10 +25,11 @@ namespace HomeNetProtocol
     /// <returns>Binary representation of the message to be sent over the network.</returns>
     public static byte[] GetMessageBytes(Message Data)
     {
-      int size = Data.CalculateSize();
       MessageWithHeader mwh = new MessageWithHeader();
       mwh.Body = Data;
-      mwh.Header = (uint)size;
+      // We have to initialize the header before calling CalculateSize.
+      mwh.Header = 1;
+      mwh.Header = (uint)mwh.CalculateSize() - HeaderSize;
       return mwh.ToByteArray();
     }
 
@@ -40,6 +41,15 @@ namespace HomeNetProtocol
     {
       long res = (long)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalMilliseconds;
       return res;
+    }
+
+    /// <summary>
+    /// Converts 64-bit Unix timestamp with milliseconds precision to DateTime.
+    /// </summary>
+    /// <returns>Corresponding DateTime.</returns>
+    public static DateTime UnixTimestampMsToDateTime(long UnixTimeStampMs)
+    {
+      return new DateTime(1970, 1, 1).AddMilliseconds(UnixTimeStampMs);
     }
 
     /// <summary>

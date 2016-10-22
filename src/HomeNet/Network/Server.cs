@@ -221,7 +221,7 @@ namespace HomeNet.Network
                 // We want to disconnect the client and remove it from the list.
                 // If we dispose the client this will terminate the read loop in TcpRoleServer.ClientHandlerAsync,
                 // which will then remove the client from the list, so we do not need to care about that.
-                log.Debug("Client ID 0x{0:X16} did not send any requests before {1} and is now considered as inactive. Disposing client.", id, client.NextKeepAliveTime);
+                log.Debug("Client ID 0x{0:X16} did not send any requests before {1} and is now considered as inactive. Disposing client.", id, client.NextKeepAliveTime.ToString("yyyy-MM-dd HH:mm:ss"));
                 client.Dispose();
               }
             }
@@ -240,6 +240,10 @@ namespace HomeNet.Network
       log.Trace("(-)");
     }
 
+    /// <summary>
+    /// Obtains list of running role servers.
+    /// </summary>
+    /// <returns>List of running role servers.</returns>
     public List<TcpRoleServer> GetRoleServers()
     {
       log.Trace("()");

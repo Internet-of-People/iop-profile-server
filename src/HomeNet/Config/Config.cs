@@ -175,6 +175,7 @@ namespace HomeNet.Config
           { "node_colleague_interface_port",        ConfigValueType.Port           },
           { "client_non_customer_interface_port",   ConfigValueType.Port           },
           { "client_customer_interface_port",       ConfigValueType.Port           },
+          { "client_app_service_interface_port",    ConfigValueType.Port           },          
           { "tls_server_certificate",               ConfigValueType.StringNonEmpty },
           { "image_data_folder",                    ConfigValueType.StringNonEmpty },
           { "max_hosted_identities",                ConfigValueType.Int            },
@@ -189,6 +190,7 @@ namespace HomeNet.Config
           int nodeColleagueInterfacePort = (int)nameVal["node_colleague_interface_port"];
           int clientNonCustomerInterfacePort = (int)nameVal["client_non_customer_interface_port"];
           int clientCustomerInterfacePort = (int)nameVal["client_customer_interface_port"];
+          int clientAppServiceInterfacePort = (int)nameVal["client_app_service_interface_port"];
 
           tcpServerTlsCertificateFileName = (string)nameVal["tls_server_certificate"];
           imageDataFolder = (string)nameVal["image_data_folder"];
@@ -200,7 +202,8 @@ namespace HomeNet.Config
                  && serverRoles.AddRoleServer(nodeNeighborInterfacePort, ServerRole.NodeNeighbor)
                  && serverRoles.AddRoleServer(nodeColleagueInterfacePort, ServerRole.NodeColleague)
                  && serverRoles.AddRoleServer(clientNonCustomerInterfacePort, ServerRole.ClientNonCustomer)
-                 && serverRoles.AddRoleServer(clientCustomerInterfacePort, ServerRole.ClientCustomer));
+                 && serverRoles.AddRoleServer(clientCustomerInterfacePort, ServerRole.ClientCustomer)
+                 && serverRoles.AddRoleServer(clientAppServiceInterfacePort, ServerRole.ClientAppService));
         }
 
         if (!error)
