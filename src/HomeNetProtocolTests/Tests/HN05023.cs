@@ -15,12 +15,12 @@ using System.Threading.Tasks;
 namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
-  /// HN05001 - Application Service Call
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn05001---application-service-call
+  /// HN05023 - Application Service Call - Two Customers
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn05023---application-service-call---two-customers
   /// </summary>
-  public class HN05001 : ProtocolTest
+  public class HN05023 : ProtocolTest
   {
-    public const string TestName = "HN05001";
+    public const string TestName = "HN05023";
     private static NLog.Logger log = NLog.LogManager.GetLogger("Test." + TestName);
 
     public override string Name { get { return TestName; } }
@@ -97,8 +97,31 @@ namespace HomeNetProtocolTests.Tests
         bool addAppServiceOk = await clientCallee.AddApplicationServicesAsync(new List<string>() { serviceName });
 
 
+
+        bool firstIdentityOk = listPortsOk && establishHomeNodeOk && checkInOk && initializeProfileOk && addAppServiceOk;
+
+
+
+        // Establish home node for identity 2.
+        await clientCaller.ConnectAsync(NodeIp, (int)rolePorts[ServerRoleType.ClNonCustomer], true);
+        establishHomeNodeOk = await clientCaller.EstablishHomeNodeAsync();
+
+        clientCaller.CloseConnection();
+
+
+        // Check-in and initialize the profile of identity 2.
+
+        await clientCaller.ConnectAsync(NodeIp, (int)rolePorts[ServerRoleType.ClCustomer], true);
+        checkInOk = await clientCaller.CheckInAsync();
+        initializeProfileOk = await clientCaller.InitializeProfileAsync("Test Identity", null, 0x12345678, null);
+
+
+        bool secondIdentityOk = establishHomeNodeOk && checkInOk && initializeProfileOk;
+
+
+
         // Step 1 Acceptance
-        bool step1Ok = listPortsOk && establishHomeNodeOk && checkInOk && initializeProfileOk && addAppServiceOk;
+        bool step1Ok = firstIdentityOk && secondIdentityOk;
 
         log.Trace("Step 1: {0}", step1Ok ? "PASSED" : "FAILED");
 
@@ -106,31 +129,11 @@ namespace HomeNetProtocolTests.Tests
 
         // Step 2
         log.Trace("Step 2");
-        await clientCaller.ConnectAsync(NodeIp, (int)rolePorts[ServerRoleType.ClNonCustomer], true);
-        bool verifyIdentityOk = await clientCaller.VerifyIdentityAsync();
-
-
-        Message requestMessage = mbCaller.CreateGetIdentityInformationRequest(identityIdCallee, false, false, true);
+        Message requestMessage = mbCaller.CreateCallIdentityApplicationServiceRequest(identityIdCallee, serviceName);
         await clientCaller.SendMessageAsync(requestMessage);
-        Message responseMessage = await clientCaller.ReceiveMessageAsync();
-
-        bool idOk = responseMessage.Id == requestMessage.Id;
-        bool statusOk = responseMessage.Response.Status == Status.Ok;
-
-        bool isHostedOk = responseMessage.Response.SingleResponse.GetIdentityInformation.IsHosted;
-        bool isOnlineOk = responseMessage.Response.SingleResponse.GetIdentityInformation.IsOnline;
-
-        byte[] receivedPubKey = responseMessage.Response.SingleResponse.GetIdentityInformation.IdentityPublicKey.ToByteArray();
-        bool pubKeyOk = StructuralComparisons.StructuralComparer.Compare(receivedPubKey, pubKeyCallee) == 0;
-
-        HashSet<string> receivedAsList = new HashSet<string>(responseMessage.Response.SingleResponse.GetIdentityInformation.ApplicationServices);
-        bool appServiceReadyOk = receivedAsList.Contains(serviceName);
-
-        bool getInfoOk = idOk && statusOk && isHostedOk && isOnlineOk && pubKeyOk && appServiceReadyOk;
-
 
         // Step 2 Acceptance
-        bool step2Ok = verifyIdentityOk && getInfoOk;
+        bool step2Ok = true;
 
         log.Trace("Step 2: {0}", step2Ok ? "PASSED" : "FAILED");
 
@@ -138,22 +141,10 @@ namespace HomeNetProtocolTests.Tests
 
         // Step 3
         log.Trace("Step 3");
-        requestMessage = mbCaller.CreateCallIdentityApplicationServiceRequest(identityIdCallee, serviceName);
-        await clientCaller.SendMessageAsync(requestMessage);
-
-        // Step 3 Acceptance
-        bool step3Ok = true;
-
-        log.Trace("Step 3: {0}", step3Ok ? "PASSED" : "FAILED");
-
-
-
-        // Step 4
-        log.Trace("Step 4");
         Message nodeRequestMessage = await clientCallee.ReceiveMessageAsync();
 
-        receivedPubKey = nodeRequestMessage.Request.ConversationRequest.IncomingCallNotification.CallerPublicKey.ToByteArray();
-        pubKeyOk = StructuralComparisons.StructuralComparer.Compare(receivedPubKey, pubKeyCaller) == 0;
+        byte[] receivedPubKey = nodeRequestMessage.Request.ConversationRequest.IncomingCallNotification.CallerPublicKey.ToByteArray();
+        bool pubKeyOk = StructuralComparisons.StructuralComparer.Compare(receivedPubKey, pubKeyCaller) == 0;
         bool serviceNameOk = nodeRequestMessage.Request.ConversationRequest.IncomingCallNotification.ServiceName == serviceName;
 
         bool incomingCallNotificationOk = pubKeyOk && serviceNameOk;
@@ -171,17 +162,17 @@ namespace HomeNetProtocolTests.Tests
         await clientCalleeAppService.SendMessageAsync(requestMessageAppServiceCallee);
 
 
-        // Step 4 Acceptance
-        bool step4Ok = incomingCallNotificationOk;
+        // Step 3 Acceptance
+        bool step3Ok = incomingCallNotificationOk;
 
-        log.Trace("Step 4: {0}", step4Ok ? "PASSED" : "FAILED");
+        log.Trace("Step 3: {0}", step3Ok ? "PASSED" : "FAILED");
 
 
-        // Step 5
-        log.Trace("Step 5");
-        responseMessage = await clientCaller.ReceiveMessageAsync();
-        idOk = responseMessage.Id == requestMessage.Id;
-        statusOk = responseMessage.Response.Status == Status.Ok;
+        // Step 4
+        log.Trace("Step 4");
+        Message responseMessage = await clientCaller.ReceiveMessageAsync();
+        bool idOk = responseMessage.Id == requestMessage.Id;
+        bool statusOk = responseMessage.Response.Status == Status.Ok;
         byte[] callerToken = responseMessage.Response.ConversationResponse.CallIdentityApplicationService.CallerToken.ToByteArray();
 
         bool callIdentityOk = idOk && statusOk;
@@ -199,19 +190,16 @@ namespace HomeNetProtocolTests.Tests
         bool initAppServiceMessageOk = idOk && statusOk;
 
 
-        // And close connection to clNonCustomer port.
-        clientCaller.CloseConnection();
 
+        // Step 4 Acceptance
+        bool step4Ok = callIdentityOk && initAppServiceMessageOk;
 
-        // Step 5 Acceptance
-        bool step5Ok = callIdentityOk && initAppServiceMessageOk;
-
-        log.Trace("Step 5: {0}", step5Ok ? "PASSED" : "FAILED");
+        log.Trace("Step 4: {0}", step4Ok ? "PASSED" : "FAILED");
 
 
 
-        // Step 6
-        log.Trace("Step 6");
+        // Step 5
+        log.Trace("Step 5");
         Message responseMessageAppServiceCallee = await clientCalleeAppService.ReceiveMessageAsync();
         idOk = responseMessageAppServiceCallee.Id == requestMessageAppServiceCallee.Id;
         statusOk = responseMessageAppServiceCallee.Response.Status == Status.Ok;
@@ -222,14 +210,14 @@ namespace HomeNetProtocolTests.Tests
 
         bool appServiceSendOk = idOk && statusOk && typeOk;
 
-        // Step 6 Acceptance
-        bool step6Ok = appServiceSendOk;
+        // Step 5 Acceptance
+        bool step5Ok = appServiceSendOk;
 
-        log.Trace("Step 6: {0}", step6Ok ? "PASSED" : "FAILED");
+        log.Trace("Step 5: {0}", step5Ok ? "PASSED" : "FAILED");
 
 
-        // Step 7
-        log.Trace("Step 7");
+        // Step 6
+        log.Trace("Step 6");
         string callerMessage1 = "Message #1 to callee.";
         byte[] messageBytes = Encoding.UTF8.GetBytes(callerMessage1);
         requestMessageAppServiceCaller = mbCallerAppService.CreateApplicationServiceSendMessageRequest(callerToken, messageBytes);
@@ -249,14 +237,14 @@ namespace HomeNetProtocolTests.Tests
         await clientCallerAppService.SendMessageAsync(requestMessageAppServiceCaller);
 
 
-        // Step 7 Acceptance
-        bool step7Ok = true;
+        // Step 6 Acceptance
+        bool step6Ok = true;
 
-        log.Trace("Step 7: {0}", step7Ok ? "PASSED" : "FAILED");
+        log.Trace("Step 6: {0}", step6Ok ? "PASSED" : "FAILED");
 
 
         // Step 8
-        log.Trace("Step 8");
+        log.Trace("Step 7");
         // Receive message #1.
         Message nodeRequestAppServiceCallee = await clientCalleeAppService.ReceiveMessageAsync();
         byte[] receivedVersion = nodeRequestAppServiceCallee.Request.SingleRequest.Version.ToByteArray();
@@ -305,16 +293,6 @@ namespace HomeNetProtocolTests.Tests
         await clientCalleeAppService.SendMessageAsync(requestMessageAppServiceCallee);
 
 
-        await Task.Delay(3000);
-
-
-        // Send ping request.
-        byte[] payload = Encoding.UTF8.GetBytes("test");
-        requestMessageAppServiceCallee = mbCalleeAppService.CreatePingRequest(payload);
-        await clientCalleeAppService.SendMessageAsync(requestMessageAppServiceCallee);
-
-
-
         // Receive message #3.
         nodeRequestAppServiceCallee = await clientCalleeAppService.ReceiveMessageAsync();
         receivedVersion = nodeRequestAppServiceCallee.Request.SingleRequest.Version.ToByteArray();
@@ -328,24 +306,6 @@ namespace HomeNetProtocolTests.Tests
         messageOk = receivedMessage == callerMessage3;
 
         bool receiveMessageOk3 = versionOk && typeOk && messageOk;
-
-
-        // Read ping response.
-        responseMessageAppServiceCallee = await clientCalleeAppService.ReceiveMessageAsync();
-        idOk = responseMessageAppServiceCallee.Id == requestMessageAppServiceCallee.Id;
-        statusOk = responseMessageAppServiceCallee.Response.Status == Status.Ok;
-        receivedVersion = responseMessageAppServiceCallee.Response.SingleResponse.Version.ToByteArray();
-        versionOk = StructuralComparisons.StructuralComparer.Compare(receivedVersion, new byte[] { 1, 0, 0 }) == 0;
-
-
-        typeOk = (responseMessageAppServiceCallee.MessageTypeCase == Message.MessageTypeOneofCase.Response)
-          && (responseMessageAppServiceCallee.Response.ConversationTypeCase == Response.ConversationTypeOneofCase.SingleResponse)
-          && (responseMessageAppServiceCallee.Response.SingleResponse.ResponseTypeCase == SingleResponse.ResponseTypeOneofCase.Ping);
-
-        byte[] receivedPayload = responseMessageAppServiceCallee.Response.SingleResponse.Ping.Payload.ToByteArray();
-        bool payloadOk = StructuralComparisons.StructuralComparer.Compare(receivedPayload, payload) == 0;
-
-        bool pingOk = idOk && statusOk && versionOk && typeOk && payloadOk;
 
 
         // ACK message #2.
@@ -364,17 +324,17 @@ namespace HomeNetProtocolTests.Tests
         await Task.Delay(3000);
 
 
-        // Step 8 Acceptance
-        bool step8Ok = receiveMessageOk1 && receiveMessageOk2 && pingOk && receiveMessageOk3;
+        // Step 7 Acceptance
+        bool step7Ok = receiveMessageOk1 && receiveMessageOk2 && receiveMessageOk3;
 
-        log.Trace("Step 8: {0}", step8Ok ? "PASSED" : "FAILED");
-
-
+        log.Trace("Step 7: {0}", step7Ok ? "PASSED" : "FAILED");
 
 
 
-        // Step 9
-        log.Trace("Step 9");
+
+
+        // Step 8
+        log.Trace("Step 8");
         // Receive ACK message #1.
         responseMessageAppServiceCaller = await clientCallerAppService.ReceiveMessageAsync();
         idOk = responseMessageAppServiceCaller.Id == callerMessage1Id;
@@ -453,15 +413,15 @@ namespace HomeNetProtocolTests.Tests
         await clientCallerAppService.SendMessageAsync(nodeResponseAppServiceCaller);
 
 
-        // Step 9 Acceptance
-        bool step9Ok = receiveAck1Ok && receiveAck2Ok && receiveMessageOk1 && receiveAck3Ok && receiveMessageOk2;
+        // Step 8 Acceptance
+        bool step8Ok = receiveAck1Ok && receiveAck2Ok && receiveMessageOk1 && receiveAck3Ok && receiveMessageOk2;
 
-        log.Trace("Step 9: {0}", step9Ok ? "PASSED" : "FAILED");
+        log.Trace("Step 8: {0}", step8Ok ? "PASSED" : "FAILED");
 
 
 
-        // Step 10
-        log.Trace("Step 10");
+        // Step 9
+        log.Trace("Step 9");
 
         // Receive ACK message #1.
         responseMessageAppServiceCallee = await clientCalleeAppService.ReceiveMessageAsync();
@@ -482,13 +442,13 @@ namespace HomeNetProtocolTests.Tests
         receiveAck2Ok = idOk && statusOk && versionOk;
 
 
-        // Step 10 Acceptance
-        bool step10Ok = receiveAck1Ok && receiveAck2Ok;
+        // Step 9 Acceptance
+        bool step9Ok = receiveAck1Ok && receiveAck2Ok;
 
-        log.Trace("Step 10: {0}", step10Ok ? "PASSED" : "FAILED");
+        log.Trace("Step 9: {0}", step9Ok ? "PASSED" : "FAILED");
 
 
-        Passed = step1Ok && step2Ok && step3Ok && step4Ok && step5Ok && step6Ok && step7Ok && step8Ok && step9Ok && step10Ok;
+        Passed = step1Ok && step2Ok && step3Ok && step4Ok && step5Ok && step6Ok && step7Ok && step8Ok && step9Ok;
 
         res = true;
       }

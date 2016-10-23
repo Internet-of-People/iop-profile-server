@@ -61,6 +61,9 @@ namespace HomeNet.Network
     /// <summary>Maximum number of application services that a client can have enabled within a session.</summary>
     public const int MaxClientApplicationServices = 50;
 
+    /// <summary>Maximal number of unconfirmed messages that one relay client can send to the other one.</summary>
+    public const int MaxUnfinishedRequests = 20;
+
 
     /// <summary>Role server assigned client identifier.</summary>
     public ulong Id;
@@ -187,17 +190,20 @@ namespace HomeNet.Network
     public async Task<bool> SendMessageAndSaveUnfinishedRequestAsync(Message Message, object Context)
     {
       log.Trace("()");
-      UnfinishedRequest unfinishedRequest = new UnfinishedRequest(Message, Context);
-      AddUnfinishedRequest(unfinishedRequest);
+      bool res = false;
 
-      bool res = await SendMessageInternalAsync(Message);
-      if (res)
+      UnfinishedRequest unfinishedRequest = new UnfinishedRequest(Message, Context);
+      if (AddUnfinishedRequest(unfinishedRequest))
       {
-        // If the message was sent successfully to the target, we close the connection only in case it was a protocol violation error response.
-        if (Message.MessageTypeCase == Message.MessageTypeOneofCase.Response)
-          res = Message.Response.Status != Status.ErrorProtocolViolation;
+        res = await SendMessageInternalAsync(Message);
+        if (res)
+        {
+          // If the message was sent successfully to the target, we close the connection only in case it was a protocol violation error response.
+          if (Message.MessageTypeCase == Message.MessageTypeOneofCase.Response)
+            res = Message.Response.Status != Status.ErrorProtocolViolation;
+        }
+        else RemoveUnfinishedRequest(unfinishedRequest.RequestMessage.Id);
       }
-      else RemoveUnfinishedRequest(unfinishedRequest.RequestMessage.Id);
 
       log.Trace("(-):{0}", res);
       return res;
@@ -242,8 +248,12 @@ namespace HomeNet.Network
       await StreamWriteLock.WaitAsync();
       try
       {
-        await Stream.WriteAsync(responseBytes, 0, responseBytes.Length);
-        res = true;
+        if (Stream != null)
+        {
+          await Stream.WriteAsync(responseBytes, 0, responseBytes.Length);
+          res = true;
+        }
+        else log.Info("Connection to the client has been terminated.");
       }
       catch (IOException)
       {
@@ -290,16 +300,23 @@ namespace HomeNet.Network
     /// Adds unfinished request to the list of unfinished requests.
     /// </summary>
     /// <param name="Request">Request to add to the list.</param>
-    public void AddUnfinishedRequest(UnfinishedRequest Request)
+    /// <returns>true if the function succeeds, false if the number of unfinished requests is over the limit.</returns>
+    public bool AddUnfinishedRequest(UnfinishedRequest Request)
     {
       log.Trace("(Request.RequestMessage.Id:{0})", Request.RequestMessage.Id);
 
+      bool res = false;
       lock (unfinishedRequestsLock)
       {
-        unfinishedRequests.Add(Request.RequestMessage.Id, Request);
+        if (unfinishedRequests.Count < MaxUnfinishedRequests)
+        {
+          unfinishedRequests.Add(Request.RequestMessage.Id, Request);
+          res = true;
+        }
       }
 
-      log.Trace("(-):unfinishedRequests.Count={0}", unfinishedRequests.Count);
+      log.Trace("(-):{0},unfinishedRequests.Count={1}", res, unfinishedRequests.Count);
+      return res;
     }
 
     /// <summary>
@@ -341,10 +358,49 @@ namespace HomeNet.Network
       return res;
     }
 
+
+    /// <summary>
+    /// Finds all unfinished request message and removes them from the list.
+    /// </summary>
+    /// <returns>Unfinished request messages of the client.</returns>
+    public List<UnfinishedRequest> GetAndRemoveUnfinishedRequests()
+    {
+      log.Trace("()");
+
+      List<UnfinishedRequest> res = new List<UnfinishedRequest>();
+      lock (unfinishedRequestsLock)
+      {
+        res = unfinishedRequests.Values.ToList();
+        unfinishedRequests.Clear();
+      }
+
+      log.Trace("(-):*.Count={0}", res.Count);
+      return res;
+    }
+
+
+
     /// <summary>
     /// Closes connection if it is opened and frees used resources.
     /// </summary>
-    public void CloseConnection()
+    public async Task CloseConnection()
+    {
+      log.Trace("()");
+
+      await StreamWriteLock.WaitAsync();
+
+      CloseConnectionLocked();
+
+      StreamWriteLock.Release();
+
+      log.Trace("(-)");
+    }
+
+
+    /// <summary>
+    /// Closes connection if it is opened and frees used resources, assuming StreamWriteLock is acquired.
+    /// </summary>
+    public void CloseConnectionLocked()
     {
       log.Trace("()");
 
@@ -402,7 +458,7 @@ namespace HomeNet.Network
       {
         lock (disposingLock)
         {
-          CloseConnection();
+          CloseConnection().Wait();
           disposed = true;
         }
       }

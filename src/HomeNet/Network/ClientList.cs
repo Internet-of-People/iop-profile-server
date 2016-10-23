@@ -168,7 +168,7 @@ namespace HomeNet.Network
     /// <param name="Client">Checked-in node's client to add.</param>
     /// <returns>true if the function succeeds, false otherwise. The function may fail only 
     /// if there is an asynchrony in internal peer lists, which should never happen.</returns>
-    public bool AddCheckedInClient(Client Client)
+    public async Task<bool> AddCheckedInClient(Client Client)
     {
       log.Trace("(Client.Id:0x{0:X16})", Client.Id);
 
@@ -202,7 +202,7 @@ namespace HomeNet.Network
       if (res && (clientToCheckOut != null))
       {
         log.Info("Identity ID '{0}' has been checked-in already via network peer internal ID 0x{1:X16} and will now be disconnected.", Crypto.ToHex(identityId), clientToCheckOut.Client.Id);
-        clientToCheckOut.Client.CloseConnection();
+        await clientToCheckOut.Client.CloseConnection();
       }
 
       if (!res)

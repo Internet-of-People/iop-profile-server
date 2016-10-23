@@ -439,9 +439,10 @@ namespace HomeNet.Network
 
       try
       {
+        Stream clientStream = Client.Stream;
         if (UseTls)
         {
-          SslStream sslStream = (SslStream)Client.Stream;
+          SslStream sslStream = (SslStream)clientStream;
           await sslStream.AuthenticateAsServerAsync(Base.Configuration.TcpServerTlsCertificate, false, SslProtocols.Tls12, false);
         }
 
@@ -463,14 +464,14 @@ namespace HomeNet.Network
             case ClientStatus.ReadingHeader:
               {
                 remain = ProtocolHelper.HeaderSize - messageHeaderBytesRead;
-                readTask = Client.Stream.ReadAsync(messageHeaderBuffer, messageHeaderBytesRead, remain, shutdownSignaling.ShutdownCancellationTokenSource.Token);
+                readTask = clientStream.ReadAsync(messageHeaderBuffer, messageHeaderBytesRead, remain, shutdownSignaling.ShutdownCancellationTokenSource.Token);
                 break;
               }
 
             case ClientStatus.ReadingBody:
               {
                 remain = (int)messageSize - messageBytesRead;
-                readTask = Client.Stream.ReadAsync(messageBuffer, ProtocolHelper.HeaderSize + messageBytesRead, remain, shutdownSignaling.ShutdownCancellationTokenSource.Token);
+                readTask = clientStream.ReadAsync(messageBuffer, ProtocolHelper.HeaderSize + messageBytesRead, remain, shutdownSignaling.ShutdownCancellationTokenSource.Token);
                 break;
               }
 

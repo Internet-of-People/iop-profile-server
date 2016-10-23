@@ -134,7 +134,7 @@ namespace HomeNet.Network
       {
         log.Info("Closing {0} existing client connections of role servers.", clients.Count);
         foreach (Client client in clients)
-          client.CloseConnection();
+          client.CloseConnection().Wait();
       }
       catch
       {
@@ -230,7 +230,7 @@ namespace HomeNet.Network
                 // If we dispose the client this will terminate the read loop in TcpRoleServer.ClientHandlerAsync,
                 // which will then remove the client from the list, so we do not need to care about that.
                 log.Debug("Client ID 0x{0:X16} did not send any requests before {1} and is now considered as inactive. Closing client's connection.", id, client.NextKeepAliveTime.ToString("yyyy-MM-dd HH:mm:ss"));
-                client.CloseConnection();
+                client.CloseConnection().Wait();
               }
             }
             catch (Exception e)

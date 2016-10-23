@@ -215,14 +215,16 @@ namespace HomeNetProtocolTests.Tests
 
 
         // Step 6
+        UnfinishedRequestCounter callerCounter = new UnfinishedRequestCounter() { Name = "Caller" };
+        UnfinishedRequestCounter calleeCounter = new UnfinishedRequestCounter() { Name = "Callee" };
         SemaphoreSlim callerWriteLock = new SemaphoreSlim(1);
         SemaphoreSlim calleeWriteLock = new SemaphoreSlim(1);
 
-        Task<byte[]> messageReceivingTaskCaller = MessageReceivingLoop(clientCallerAppService, mbCallerAppService, "CallerReceiving", callerWriteLock);
-        Task<byte[]> messageReceivingTaskCallee = MessageReceivingLoop(clientCalleeAppService, mbCalleeAppService, "CalleeReceiving", calleeWriteLock);
+        Task<byte[]> messageReceivingTaskCaller = MessageReceivingLoop(clientCallerAppService, mbCallerAppService, "CallerReceiving", callerWriteLock, callerCounter);
+        Task<byte[]> messageReceivingTaskCallee = MessageReceivingLoop(clientCalleeAppService, mbCalleeAppService, "CalleeReceiving", calleeWriteLock, calleeCounter);
 
-        Task<byte[]> messageSendingTaskCaller = MessageSendingLoop(clientCallerAppService, mbCallerAppService, "CallerSending", callerToken, callerWriteLock);
-        Task<byte[]> messageSendingTaskCallee = MessageSendingLoop(clientCalleeAppService, mbCalleeAppService, "CalleeSending", calleeToken, calleeWriteLock);
+        Task<byte[]> messageSendingTaskCaller = MessageSendingLoop(clientCallerAppService, mbCallerAppService, "CallerSending", callerToken, callerWriteLock, callerCounter);
+        Task<byte[]> messageSendingTaskCallee = MessageSendingLoop(clientCalleeAppService, mbCalleeAppService, "CalleeSending", calleeToken, calleeWriteLock, calleeCounter);
 
         byte[] callerSendMessageHash = messageSendingTaskCaller.Result;
         byte[] calleeSendMessageHash = messageSendingTaskCallee.Result;
@@ -270,8 +272,9 @@ namespace HomeNetProtocolTests.Tests
     /// <param name="Name">Log prefix.</param>
     /// <param name="Token">Client's open relay token.</param>
     /// <param name="WriteLock">Lock object to protect write access to client's stream.</param>
+    /// <param name="UnfinishedRequestCounter">Unfinished request counter object.</param>
     /// <returns></returns>
-    public static async Task<byte[]> MessageSendingLoop(ProtocolClient Client, MessageBuilder Builder, string Name, byte[] Token, SemaphoreSlim WriteLock)
+    public static async Task<byte[]> MessageSendingLoop(ProtocolClient Client, MessageBuilder Builder, string Name, byte[] Token, SemaphoreSlim WriteLock, UnfinishedRequestCounter UnfinishedRequestCounter)
     {
       string prefix = string.Format("[{0}] ", Name);
       log.Trace(prefix + "()");
@@ -290,6 +293,7 @@ namespace HomeNetProtocolTests.Tests
 
 
         // Send message.
+        await UnfinishedRequestCounter.WaitAndIncrement();
         await WriteLock.WaitAsync();
 
         Message appServiceMessageRequest = Builder.CreateApplicationServiceSendMessageRequest(Token, msg);
@@ -310,7 +314,7 @@ namespace HomeNetProtocolTests.Tests
         Array.Copy(chunk, 0, data, offset, chunk.Length);
         offset += chunk.Length;
       }
-        
+
       byte[] finalHash = Crypto.Sha1(data);
 
       log.Trace(prefix + "(-):{0}", Crypto.ToHex(finalHash));
@@ -326,8 +330,9 @@ namespace HomeNetProtocolTests.Tests
     /// <param name="Builder">Client's message builder.</param>
     /// <param name="Name">Log prefix.</param>
     /// <param name="WriteLock">Lock object to protect write access to client's stream.</param>
+    /// <param name="UnfinishedRequestCounter">Unfinished request counter object.</param>
     /// <returns></returns>
-    public static async Task<byte[]> MessageReceivingLoop(ProtocolClient Client, MessageBuilder Builder, string Name, SemaphoreSlim WriteLock)
+    public static async Task<byte[]> MessageReceivingLoop(ProtocolClient Client, MessageBuilder Builder, string Name, SemaphoreSlim WriteLock, UnfinishedRequestCounter UnfinishedRequestCounter)
     {
       string prefix = string.Format("[{0}] ", Name);
       log.Trace(prefix + "()");
@@ -372,6 +377,7 @@ namespace HomeNetProtocolTests.Tests
             && (incomingMessage.Response.SingleResponse.ResponseTypeCase == SingleResponse.ResponseTypeOneofCase.ApplicationServiceSendMessage))
           {
             ackReceived++;
+            UnfinishedRequestCounter.Decrement();
             log.Trace(prefix + "Received ACK to message ID {0}, ack count {1}.", incomingMessage.Id, ackReceived);
           }
           else
@@ -396,6 +402,66 @@ namespace HomeNetProtocolTests.Tests
 
       log.Trace(prefix + "(-):{0}", Crypto.ToHex(finalHash));
       return finalHash;
+    }
+
+
+    /// <summary>
+    /// Holds number of unfinished requests sent by a client and protects the sender from having too many pending requests.
+    /// </summary>
+    public class UnfinishedRequestCounter
+    {
+      /// <summary>Name for the counter for logging purposes.</summary>
+      public string Name;
+
+      /// <summary>Number of unfinished requests.</summary>
+      public int Counter = 0;
+
+      /// <summary>
+      /// Lock for access protection to Counter field.
+      /// </summary>
+      public object Lock = new object();
+
+      /// <summary>
+      /// Increments the counter if it is below limit, or waits until it can be incremented and then increments it.
+      /// </summary>
+      public async Task WaitAndIncrement()
+      {
+        log.Trace("[{0}]()", Name);
+        bool done = false;
+
+        int newCnt = 0;
+        while (!done)
+        {
+          lock (Lock)
+          {
+            if (Counter < 20)
+            {
+              Counter++;
+              newCnt = Counter;
+              done = true;
+            }
+          }
+
+          if (!done)
+            await Task.Delay(500);
+        }
+
+        log.Trace("[{0}](-):{1}", Name, newCnt);
+      }
+
+      /// <summary>
+      /// Decrements the counter. 
+      /// </summary>
+      public void Decrement()
+      {
+        log.Trace("[{0}]()", Name);
+        int newCnt = 0;
+        lock (Lock)
+        {
+          newCnt = Counter--;
+        }
+        log.Trace("[{0}](-):{1}", Name, newCnt);
+      }
     }
   }
 }

@@ -4,6 +4,7 @@ using HomeNetCrypto;
 using HomeNetProtocol;
 using Iop.Homenode;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -257,7 +258,7 @@ namespace HomeNet.Network
               log.Debug("{0} failed to join the relay on time, closing relay.", callee != null ? "Caller" : "Callee");
 
               clientToSendMessage = callee != null ? callee : caller;
-              messageToSend = clientToSendMessage.MessageBuilder.CreateErrorNotAvailableResponse(pendingMessage);
+              messageToSend = clientToSendMessage.MessageBuilder.CreateErrorNotFoundResponse(pendingMessage);
               break;
             }
 
@@ -328,25 +329,7 @@ namespace HomeNet.Network
       return callerToken;
     }
 
-    /*
-    /// <summary>
-    /// Obtains relay callee network client.
-    /// </summary>
-    /// <returns>Relay callee network client.</returns>
-    public Client GetCallee()
-    {
-      return callee;
-    }
-
-    /// <summary>
-    /// Obtains relay caller network client.
-    /// </summary>
-    /// <returns>Relay caller network client.</returns>
-    public Client GetCaller()
-    {
-      return caller;
-    }*/
-
+    
 
     /// <summary>
     /// Cancels timeoutTimer.
@@ -384,7 +367,7 @@ namespace HomeNet.Network
     /// <param name="ResponseMessage">Full response message from the callee.</param>
     /// <param name="Request">Unfinished call request message of the caller that corresponds to the response message.</param>
     /// <returns></returns>
-    public async Task<bool> CalleeAcceptedCall(Message ResponseMessage, UnfinishedRequest Request)
+    public async Task<bool> CalleeRepliedToIncomingCallNotification(Message ResponseMessage, UnfinishedRequest Request)
     {
       log.Trace("()");
 
@@ -429,14 +412,14 @@ namespace HomeNet.Network
           if (ResponseMessage.Response.Status == Status.ErrorRejected)
           {
             log.Debug("Callee ID '0x{0:X16}' rejected the call from caller identity ID '0x{1:X16}', relay '{2}'.", callee.Id, caller.Id, id);
-            messageToSend = caller.MessageBuilder.CreateErrorRejectedResponse(Request.RequestMessage);
+            messageToSend = caller.MessageBuilder.CreateErrorRejectedResponse(pendingMessage);
           }
           else
           {
             log.Warn("Callee ID '0x{0:X16}' sent error response '{1}' for call request from caller identity ID '0x{2:X16}', relay '{3}'.", 
               callee.Id, ResponseMessage.Response.Status, caller.Id, id);
 
-            messageToSend = caller.MessageBuilder.CreateErrorNotAvailableResponse(Request.RequestMessage);
+            messageToSend = caller.MessageBuilder.CreateErrorNotAvailableResponse(pendingMessage);
           }
 
           clientToSendMessage = caller;
@@ -526,9 +509,9 @@ namespace HomeNet.Network
             {
               // Client already sent us the initialization message, this is protocol violation error, destroy the relay.
               // Since the relay should be upgraded to WaitingForSecondInitMessage status, this can happen 
-              // only if a client violates the protocol and does not use a separate connection for each clAppService session.
-              log.Debug("Client ID '0x{0:X16}' on relay '{1}' sent a message before receiving a reply to its initialization message. Relay will be destroyed.", Client.Id, id);
-              res = Client.MessageBuilder.CreateErrorProtocolViolationResponse(RequestMessage);
+              // only if a client does not use a separate connection for each clAppService session, which is forbidden.
+              log.Debug("Client ID '0x{0:X16}' on relay '{1}' probably uses a single connection for two relays. Relay will be destroyed.", Client.Id, id);
+              res = Client.MessageBuilder.CreateErrorNotFoundResponse(RequestMessage);
               destroyRelay = true;
             }
             break;
@@ -567,9 +550,9 @@ namespace HomeNet.Network
             }
             else
             {
-              // Client already sent us the initialization message, this is protocol violation error, destroy the relay.
+              // Client already sent us the initialization message, this is error, destroy the relay.
               log.Debug("Client ID '0x{0:X16}' on relay '{1}' sent a message before receiving a reply to its initialization message. Relay will be destroyed.", Client.Id, id);
-              res = Client.MessageBuilder.CreateErrorProtocolViolationResponse(RequestMessage);
+              res = Client.MessageBuilder.CreateErrorNotFoundResponse(RequestMessage);
               destroyRelay = true;
             }
 
@@ -708,15 +691,17 @@ namespace HomeNet.Network
     /// <param name="IsRelayConnection">true if the closed connection was to clAppService port, false otherwise.</param>
     public async Task HandleDisconnectedClient(Client Client, bool IsRelayConnection)
     {
-      log.Trace("(Client.Id:'0x{0:X16}')", Client.Id);
+      log.Trace("(Client.Id:'0x{0:X16}',IsRelayConnection:{1})", Client.Id, IsRelayConnection);
 
-      Client clientToSendMessage = null;
-      Message messageToSend = null;
+      Client clientToSendMessages = null;
+      List<Message> messagesToSend = new List<Message>();
+      Client clientToClose = null;
 
       await lockObject.WaitAsync();
 
       bool isCallee = Client == callee;
-      log.Trace("Client ({0}) ID '0x{1:X16}' disconnected, relay '{2}' status {3}.", isCallee ? "callee" : "caller", Client.Id, id, status);
+      if (IsRelayConnection) log.Trace("Client ({0}) ID '0x{1:X16}' disconnected, relay '{2}' status {3}.", isCallee ? "callee" : "caller", Client.Id, id, status);
+      else log.Trace("Client (customer) ID '0x{0:X16}' disconnected, relay '{1}' status {2}.", Client.Id, id, status);
 
       bool destroyRelay = false;
       switch (status)
@@ -729,10 +714,9 @@ namespace HomeNet.Network
               // from the node. This is situation 1) from the comment in ProcessMessageCallIdentityApplicationServiceRequestAsync.
               // We have to send ERROR_NOT_AVAILABLE to the caller and destroy the relay.
               log.Trace("Callee disconnected from clCustomer port of relay '{0}', message will be sent to the caller and relay destroyed.", id);
-              clientToSendMessage = caller;
-              messageToSend = caller.MessageBuilder.CreateErrorNotAvailableResponse(pendingMessage);
+              clientToSendMessages = caller;
+              messagesToSend.Add(caller.MessageBuilder.CreateErrorNotAvailableResponse(pendingMessage));
               destroyRelay = true;
-
             }
             else
             {
@@ -752,11 +736,8 @@ namespace HomeNet.Network
             // In this relay status we do not care about connection to other than clAppService port.
             if (IsRelayConnection)
             {
-              // Neither client has sent its initialization message to clAppService port.
-              // This means that the client connected to clAppService port and then disconnected.
-              // We do not need to destroy the relay as the client may still connect again 
-              // and send its initialization message on time.
-              log.Trace("Client disconnected from clAppService port of relay '{0}', but no init message received so far, no action taken.", id);
+              // This should never happen because client's Relay is initialized only after 
+              // its initialization message is received and that would upgrade the relay to WaitingForSecondInitMessage.
             }
 
             break;
@@ -795,11 +776,33 @@ namespace HomeNet.Network
             // In this relay status we do not care about connection to other than clAppService port.
             if (IsRelayConnection)
             {
-              // Both clients are connected. We disconnect the other client and destroy the relay.
+              // Both clients were connected. We disconnect the other client and destroy the relay.
+              // However, there might be some unfinished ApplicationServiceSendMessageRequest requests 
+              // that we have to send responses to.
 
               Client otherClient = isCallee ? caller : callee;
               log.Trace("{0} disconnected from relay '{1}', closing connection of {2}.", isCallee ? "Callee" : "Caller", id, isCallee ? "caller" : "callee");
-              otherClient.CloseConnection();
+              clientToSendMessages = otherClient;
+              clientToClose = otherClient;
+
+              // Find all unfinished requests from this relay.
+              // When a client sends ApplicationServiceSendMessageRequest, the node creates ApplicationServiceReceiveMessageNotificationRequest 
+              // and adds it as an unfinished request with context set to RelayMessageContext, which contains the sender's ApplicationServiceSendMessageRequest.
+              // This unfinished message is in the list of unfinished message of the recipient.
+              List<UnfinishedRequest> unfinishedRelayRequests = Client.GetAndRemoveUnfinishedRequests();
+              foreach (UnfinishedRequest unfinishedRequest in unfinishedRelayRequests)
+              {
+                // Find ApplicationServiceReceiveMessageNotificationRequest request messages sent to the client who closed the connection.
+                if ((unfinishedRequest.RequestMessage.MessageTypeCase == Message.MessageTypeOneofCase.Request)
+                  && (unfinishedRequest.RequestMessage.Request.ConversationTypeCase == Request.ConversationTypeOneofCase.SingleRequest)
+                  && (unfinishedRequest.RequestMessage.Request.SingleRequest.RequestTypeCase == SingleRequest.RequestTypeOneofCase.ApplicationServiceReceiveMessageNotification))
+                {
+                  // This unfinished request's context holds ApplicationServiceSendMessageRequest message of the client that is still connected.
+                  RelayMessageContext ctx = (RelayMessageContext)unfinishedRequest.Context;
+                  Message responseError = clientToSendMessages.MessageBuilder.CreateErrorNotFoundResponse(ctx.SenderRequest);
+                  messagesToSend.Add(responseError);
+                }
+              }
 
               destroyRelay = true;
             }
@@ -815,11 +818,21 @@ namespace HomeNet.Network
       lockObject.Release();
 
 
-      if (messageToSend != null)
+      if (messagesToSend.Count > 0)
       {
-        if (!await clientToSendMessage.SendMessageAsync(messageToSend))
-          log.Warn("Unable to send message to the caller of relay '{0}', maybe it is not connected anymore.", id);
+        foreach (Message messageToSend in messagesToSend)
+        {
+          if (!await clientToSendMessages.SendMessageAsync(messageToSend))
+          {
+            log.Warn("Unable to send message to the client ID '{0:X16}', relay '{1}', maybe it is not connected anymore.", clientToSendMessages.Id, id);
+            break;
+          }
+        }
       }
+
+
+      if (clientToClose != null)
+        clientToClose.CloseConnectionLocked();
 
 
       if (destroyRelay)
@@ -831,6 +844,7 @@ namespace HomeNet.Network
 
       log.Trace("(-)");
     }
+
 
 
     /// <summary>Signals whether the instance has been disposed already or not.</summary>

@@ -205,10 +205,10 @@ namespace HomeNet.Network
               // but as this is a reponse, we have no how to inform the client about it, 
               // so we just disconnect it.
               UnfinishedRequest unfinishedRequest = Client.GetAndRemoveUnfinishedRequest(incomingMessage.Id);
-              Message requestMessage = unfinishedRequest.RequestMessage;
-              Request request = requestMessage.Request;
-              if (requestMessage != null)
+              if ((unfinishedRequest != null) && (unfinishedRequest.RequestMessage != null))
               {
+                Message requestMessage = unfinishedRequest.RequestMessage;
+                Request request = requestMessage.Request;
                 // We now check whether the response message type corresponds with the request type.
                 // This is only valid if the status is Ok. If the message types do not match, we disconnect 
                 // for the protocol violation again.
@@ -843,7 +843,7 @@ namespace HomeNet.Network
               Identity identity = (await unitOfWork.HomeIdentityRepository.GetAsync(i => (i.IdentityId == Client.IdentityId) && (i.ExpirationDate == null))).FirstOrDefault();
               if (identity != null)
               {
-                if (clientList.AddCheckedInClient(Client))
+                if (await clientList.AddCheckedInClient(Client))
                 {
                   Client.ConversationStatus = ClientConversationStatus.Authenticated;
 
@@ -1450,7 +1450,7 @@ namespace HomeNet.Network
           else
           {
             log.Warn("Identity ID '{0}' not found.", Crypto.ToHex(calleeIdentityId));
-            res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
+            res = messageBuilder.CreateErrorInvalidValueResponse(RequestMessage, "identityNetworkId");
           }
         }
         catch (Exception e)
@@ -1535,7 +1535,7 @@ namespace HomeNet.Network
       bool res = false;
       
       RelayConnection relay = (RelayConnection)Request.Context;
-      res = await relay.CalleeAcceptedCall(ResponseMessage, Request);
+      res = await relay.CalleeRepliedToIncomingCallNotification(ResponseMessage, Request);
 
       log.Trace("(-):{0}", res);
       return res;

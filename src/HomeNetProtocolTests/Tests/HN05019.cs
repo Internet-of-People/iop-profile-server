@@ -16,12 +16,12 @@ using System.Threading.Tasks;
 namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
-  /// HN05005 - Disconnection of Inactive TCP Client from AppService Port
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn05005---disconnection-of-inactive-tcp-client-from-appservice-port
+  /// HN05019 - Application Service Callee Disconnects Administrative Connection
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn05019---application-service-callee-disconnects-administrative-connection
   /// </summary>
-  public class HN05005 : ProtocolTest
+  public class HN05019 : ProtocolTest
   {
-    public const string TestName = "HN05005";
+    public const string TestName = "HN05019";
     private static NLog.Logger log = NLog.LogManager.GetLogger("Test." + TestName);
 
     public override string Name { get { return TestName; } }
@@ -136,13 +136,9 @@ namespace HomeNetProtocolTests.Tests
         Message nodeResponseMessage = mbCallee.CreateIncomingCallNotificationResponse(nodeRequestMessage);
         await clientCallee.SendMessageAsync(nodeResponseMessage);
 
+        clientCallee.CloseConnection();
 
-        // Connect to clAppService and send initialization message.
-        await clientCalleeAppService.ConnectAsync(NodeIp, (int)rolePorts[ServerRoleType.ClAppService], true);
-
-        Message requestMessageAppServiceCallee = mbCalleeAppService.CreateApplicationServiceSendMessageRequest(calleeToken, null);
-        await clientCalleeAppService.SendMessageAsync(requestMessageAppServiceCallee);
-
+        await Task.Delay(3000);
 
         // Step 3 Acceptance
         bool step3Ok = incomingCallNotificationOk;
@@ -159,6 +155,37 @@ namespace HomeNetProtocolTests.Tests
 
         bool callIdentityOk = idOk && statusOk;
 
+        clientCaller.CloseConnection();
+
+
+        // Step 4 Acceptance
+        bool step4Ok = callIdentityOk;
+
+        log.Trace("Step 4: {0}", step4Ok ? "PASSED" : "FAILED");
+
+        await Task.Delay(3000);
+
+
+
+        // Step 5
+        log.Trace("Step 5");
+
+        // Connect to clAppService and send initialization message.
+        await clientCalleeAppService.ConnectAsync(NodeIp, (int)rolePorts[ServerRoleType.ClAppService], true);
+
+        Message requestMessageAppServiceCallee = mbCalleeAppService.CreateApplicationServiceSendMessageRequest(calleeToken, null);
+        await clientCalleeAppService.SendMessageAsync(requestMessageAppServiceCallee);
+
+
+        // Step 5 Acceptance
+        bool step5Ok = true;
+
+        log.Trace("Step 5: {0}", step5Ok ? "PASSED" : "FAILED");
+
+
+        // Step 6
+        log.Trace("Step 6");
+
         // Connect to clAppService and send initialization message.
         await clientCallerAppService.ConnectAsync(NodeIp, (int)rolePorts[ServerRoleType.ClAppService], true);
         Message requestMessageAppServiceCaller = mbCallerAppService.CreateApplicationServiceSendMessageRequest(callerToken, null);
@@ -171,59 +198,54 @@ namespace HomeNetProtocolTests.Tests
 
         bool initAppServiceMessageOk = idOk && statusOk;
 
-        // And close connection to clNonCustomer port.
-        clientCaller.CloseConnection();
-
-
-        // Step 4 Acceptance
-        bool step4Ok = callIdentityOk && initAppServiceMessageOk;
-
-        log.Trace("Step 4: {0}", step4Ok ? "PASSED" : "FAILED");
-
-
-
-        // Step 5
-        log.Trace("Step 5");
-        Message responseMessageAppServiceCallee = await clientCalleeAppService.ReceiveMessageAsync();
-        idOk = responseMessageAppServiceCallee.Id == requestMessageAppServiceCallee.Id;
-        statusOk = responseMessageAppServiceCallee.Response.Status == Status.Ok;
-
-        bool typeOk = (responseMessageAppServiceCallee.MessageTypeCase == Message.MessageTypeOneofCase.Response)
-          && (responseMessageAppServiceCallee.Response.ConversationTypeCase == Response.ConversationTypeOneofCase.SingleResponse)
-          && (responseMessageAppServiceCallee.Response.SingleResponse.ResponseTypeCase == SingleResponse.ResponseTypeOneofCase.ApplicationServiceSendMessage);
-
-        bool appServiceSendOk = idOk && statusOk && typeOk;
-
-        // Step 5 Acceptance
-        bool step5Ok = appServiceSendOk;
-
-        log.Trace("Step 5: {0}", step5Ok ? "PASSED" : "FAILED");
-
-
-
-        // Step 6
-        log.Trace("Step 6");
-        string callerMessage1 = "Message #1 to callee.";
-        byte[] messageBytes = Encoding.UTF8.GetBytes(callerMessage1);
-        requestMessageAppServiceCaller = mbCallerAppService.CreateApplicationServiceSendMessageRequest(callerToken, messageBytes);
-        uint callerMessage1Id = requestMessageAppServiceCaller.Id;
-        await clientCallerAppService.SendMessageAsync(requestMessageAppServiceCaller);
-
-
+        
         // Step 6 Acceptance
-        bool step6Ok = true;
+        bool step6Ok = initAppServiceMessageOk;
 
         log.Trace("Step 6: {0}", step6Ok ? "PASSED" : "FAILED");
 
 
+
         // Step 7
         log.Trace("Step 7");
+        Message responseMessageAppServiceCallee = await clientCalleeAppService.ReceiveMessageAsync();
+        idOk = responseMessageAppServiceCallee.Id == requestMessageAppServiceCallee.Id;
+        statusOk = responseMessageAppServiceCallee.Response.Status == Status.Ok;
+
+        bool appServiceSendOk = idOk && statusOk;
+
+        // Step 7 Acceptance
+        bool step7Ok = appServiceSendOk;
+
+        log.Trace("Step 7: {0}", step7Ok ? "PASSED" : "FAILED");
+
+
+
+        // Step 8
+        log.Trace("Step 8");
+        string callerMessage1 = "Message #1 to callee.";
+        byte[] messageBytes = Encoding.UTF8.GetBytes(callerMessage1);
+        requestMessageAppServiceCaller = mbCallerAppService.CreateApplicationServiceSendMessageRequest(callerToken, messageBytes);
+        uint callerMessage1Id = requestMessageAppServiceCaller.Id;
+
+        await clientCallerAppService.SendMessageAsync(requestMessageAppServiceCaller);
+
+
+        // Step 8 Acceptance
+        bool step8Ok = true;
+
+        log.Trace("Step 8: {0}", step8Ok ? "PASSED" : "FAILED");
+
+
+
+        // Step 9
+        log.Trace("Step 9");
         // Receive message #1.
         Message nodeRequestAppServiceCallee = await clientCalleeAppService.ReceiveMessageAsync();
         byte[] receivedVersion = nodeRequestAppServiceCallee.Request.SingleRequest.Version.ToByteArray();
         bool versionOk = StructuralComparisons.StructuralComparer.Compare(receivedVersion, new byte[] { 1, 0, 0 }) == 0;
 
-        typeOk = (nodeRequestAppServiceCallee.MessageTypeCase == Message.MessageTypeOneofCase.Request)
+        bool typeOk = (nodeRequestAppServiceCallee.MessageTypeCase == Message.MessageTypeOneofCase.Request)
           && (nodeRequestAppServiceCallee.Request.ConversationTypeCase == Request.ConversationTypeOneofCase.SingleRequest)
           && (nodeRequestAppServiceCallee.Request.SingleRequest.RequestTypeCase == SingleRequest.RequestTypeOneofCase.ApplicationServiceReceiveMessageNotification);
 
@@ -246,15 +268,17 @@ namespace HomeNetProtocolTests.Tests
         await clientCalleeAppService.SendMessageAsync(requestMessageAppServiceCallee);
 
 
+        // Step 9 Acceptance
+        bool step9Ok = receiveMessageOk;
 
-        // Step 7 Acceptance
-        bool step7Ok = receiveMessageOk;
-
-        log.Trace("Step 7: {0}", step7Ok ? "PASSED" : "FAILED");
+        log.Trace("Step 9: {0}", step9Ok ? "PASSED" : "FAILED");
 
 
-        // Step 8 
-        log.Trace("Step 8");
+
+        
+        // Step 10
+        log.Trace("Step 10");
+
         // Receive ACK message #1.
         responseMessageAppServiceCaller = await clientCallerAppService.ReceiveMessageAsync();
         idOk = responseMessageAppServiceCaller.Id == callerMessage1Id;
@@ -264,7 +288,7 @@ namespace HomeNetProtocolTests.Tests
 
         bool receiveAckOk = idOk && statusOk && versionOk;
 
-
+        
         // Receive message #1 from callee.
         Message nodeRequestAppServiceCaller = await clientCallerAppService.ReceiveMessageAsync();
         receivedVersion = nodeRequestAppServiceCaller.Request.SingleRequest.Version.ToByteArray();
@@ -285,14 +309,17 @@ namespace HomeNetProtocolTests.Tests
         await clientCallerAppService.SendMessageAsync(nodeResponseAppServiceCaller);
 
 
-        // Step 8 Acceptance
-        bool step8Ok = receiveAckOk && receiveMessageOk;
+        // Step 10 Acceptance
+        bool step10Ok = receiveAckOk && receiveMessageOk;
 
-        log.Trace("Step 8: {0}", step8Ok ? "PASSED" : "FAILED");
+        log.Trace("Step 10: {0}", step10Ok ? "PASSED" : "FAILED");
 
 
-        // Step 9
-        log.Trace("Step 9");
+
+
+        // Step 11
+        log.Trace("Step 11");
+
         // Receive ACK message #1.
         responseMessageAppServiceCallee = await clientCalleeAppService.ReceiveMessageAsync();
         idOk = responseMessageAppServiceCallee.Id == calleeMessage1Id;
@@ -302,65 +329,11 @@ namespace HomeNetProtocolTests.Tests
 
         receiveAckOk = idOk && statusOk && versionOk;
 
-        log.Trace("Going to wait for 3 minutes...");
-        await Task.Delay(180 * 1000);
-        log.Trace("Waiting done.");
-
-
-        // Step 9 Acceptance
-        bool step9Ok = receiveAckOk;
-
-        log.Trace("Step 9: {0}", step9Ok ? "PASSED" : "FAILED");
-
-
-        // Step 10
-        string callerMessage2 = "Message #1 to callee.";
-        messageBytes = Encoding.UTF8.GetBytes(callerMessage2);
-        requestMessageAppServiceCaller = mbCallerAppService.CreateApplicationServiceSendMessageRequest(callerToken, messageBytes);
-
-        // We should be disconnected now, send or receive should throw.
-        bool disconnectedOk = false;
-        try
-        {
-          await clientCallerAppService.SendMessageAsync(requestMessageAppServiceCaller);
-          await clientCallerAppService.ReceiveMessageAsync();
-        }
-        catch
-        {
-          log.Trace("Expected exception occurred.");
-          disconnectedOk = true;
-        }
-
         // Step 10 Acceptance
-        bool step10Ok = disconnectedOk;
-
-        log.Trace("Step 10: {0}", step10Ok ? "PASSED" : "FAILED");
-
-
-
-        // Step 11
-        string calleeMessage2 = "Message #1 to CALLER.";
-        messageBytes = Encoding.UTF8.GetBytes(calleeMessage2);
-        requestMessageAppServiceCallee = mbCalleeAppService.CreateApplicationServiceSendMessageRequest(calleeToken, messageBytes);
-
-        // We should be disconnected now, send or receive should throw.
-        disconnectedOk = false;
-        try
-        {
-          await clientCalleeAppService.SendMessageAsync(requestMessageAppServiceCallee);
-          await clientCalleeAppService.ReceiveMessageAsync();
-        }
-        catch
-        {
-          log.Trace("Expected exception occurred.");
-          disconnectedOk = true;
-        }
-
-        // Step 11 Acceptance
-        bool step11Ok = disconnectedOk;
+        bool step11Ok = receiveAckOk && receiveMessageOk;
 
         log.Trace("Step 11: {0}", step11Ok ? "PASSED" : "FAILED");
-
+        
 
         Passed = step1Ok && step2Ok && step3Ok && step4Ok && step5Ok && step6Ok && step7Ok && step8Ok && step9Ok && step10Ok && step11Ok;
 
