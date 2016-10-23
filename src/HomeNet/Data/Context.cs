@@ -24,7 +24,8 @@ namespace HomeNet.Data
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-      optionsBuilder.UseSqlite(string.Format("Filename={0}", DatabaseFileName));
+      var currentDirectory = System.IO.Directory.GetCurrentDirectory();
+      optionsBuilder.UseSqlite(string.Format("Filename={0}", System.IO.Path.Combine(currentDirectory, DatabaseFileName)));
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
