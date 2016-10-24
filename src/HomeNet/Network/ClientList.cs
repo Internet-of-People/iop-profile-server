@@ -317,33 +317,18 @@ namespace HomeNet.Network
       RelayConnection res = null;
 
       RelayConnection relay = new RelayConnection(Caller, Callee, ServiceName, RequestMessage);
-      if (Caller.ApplicationServices.AddRelay(relay))
+      lock (lockObject)
       {
-        if (Callee.ApplicationServices.AddRelay(relay))
-        {
-          lock (lockObject)
-          {
-            relaysByGuid.Add(relay.GetId(), relay);
-            relaysByGuid.Add(relay.GetCallerToken(), relay);
-            relaysByGuid.Add(relay.GetCalleeToken(), relay);
-          }
-
-          log.Debug("Relay ID '{0}' added to the relay list.", relay.GetId());
-          log.Debug("Caller token '{0}' added to the relay list.", relay.GetCallerToken());
-          log.Debug("Callee token '{0}' added to the relay list.", relay.GetCalleeToken());
-
-          res = relay;
-
-          // if (res == null) Callee.ApplicationServices.RemoveRelay(relay);
-        }
-        else log.Error("Failed to add relay '{0}' to client ID '{1:X16}'.", relay.GetId(), Callee.Id);
-
-        if (res == null) Caller.ApplicationServices.RemoveRelay(relay);
+        relaysByGuid.Add(relay.GetId(), relay);
+        relaysByGuid.Add(relay.GetCallerToken(), relay);
+        relaysByGuid.Add(relay.GetCalleeToken(), relay);
       }
-      else log.Error("Failed to add relay '{0}' to client ID '{1:X16}'.", relay.GetId(), Caller.Id);
 
-      if (res == null) relay.Dispose();
+      log.Debug("Relay ID '{0}' added to the relay list.", relay.GetId());
+      log.Debug("Caller token '{0}' added to the relay list.", relay.GetCallerToken());
+      log.Debug("Callee token '{0}' added to the relay list.", relay.GetCalleeToken());
 
+      res = relay;
 
       log.Trace("(-):{0}", res);
       return res;      

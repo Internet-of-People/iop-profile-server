@@ -22,9 +22,6 @@ namespace HomeNet.Network
     /// <summary>Server assigned client identifier for internal client maintanence purposes.</summary>
     private HashSet<string> serviceNames = new HashSet<string>();
 
-    /// <summary>List of open relays mapped by relay ID.</summary>
-    private Dictionary<Guid, RelayConnection> openRelays = new Dictionary<Guid, RelayConnection>(StructuralEqualityComparer<Guid>.Default);
-
 
     /// <summary>Initializes the class logger.</summary>
     public ApplicationServices(string LogPrefix)
@@ -122,67 +119,6 @@ namespace HomeNet.Network
 
       log.Trace("(-):{0}", res);
       return res;
-    }
-
-
-    /// <summary>
-    /// Adds a new open relay to the list.
-    /// </summary>
-    /// <param name="Relay">Open relay to add.</param>
-    /// <returns>true if the function succeeds, false if the relay already exists in the list.</returns>
-    public bool AddRelay(RelayConnection Relay)
-    {
-      log.Trace("(Relay.Id:'{0}')", Relay.GetId());
-
-      bool res = false;
-      lock (lockObject)
-      {
-        if (!openRelays.ContainsKey(Relay.GetId()))
-        {
-          openRelays.Add(Relay.GetId(), Relay);
-          res = true;
-        }
-      }
-
-      log.Trace("(-):{0}", res);
-      return res;
-    }
-
-    /// <summary>
-    /// Removes an open relay from the list.
-    /// </summary>
-    /// <param name="Relay">Open relay to remove.</param>
-    /// <returns>true if the function succeeds, false if the relay was not found in the list.</returns>
-    public bool RemoveRelay(RelayConnection Relay)
-    {
-      log.Trace("(Relay.Id:'{0}')", Relay.GetId());
-
-      bool res = false;
-      lock (lockObject)
-      {
-        res = openRelays.Remove(Relay.GetId());
-      }
-
-      log.Trace("(-):{0}", res);
-      return res;
-    }
-
-    /// <summary>
-    /// Obtains a list of open relays.
-    /// </summary>
-    /// <returns>List of open relays.</returns>
-    public List<RelayConnection> GetRelays()
-    {
-      log.Trace("()");
-
-      List<RelayConnection> res = new List<RelayConnection>();
-      lock (lockObject)
-      {
-        res = openRelays.Values.ToList();
-      }
-
-      log.Trace("(-):*.Count={0}", res.Count);
-      return res;
-    }
+    }    
   }
 }

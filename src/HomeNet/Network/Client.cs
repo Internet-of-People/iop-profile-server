@@ -283,14 +283,6 @@ namespace HomeNet.Network
         // to this relay, so we have to make sure that other peer is disconnected as well.
         await Relay.HandleDisconnectedClient(this, true);
       }
-      else
-      {
-        // This connection is not being relayed, but it might be the administrative connection 
-        // of the client with relay being initialized.
-        List<RelayConnection> relays = ApplicationServices.GetRelays();
-        foreach (RelayConnection relay in relays)
-          await relay.HandleDisconnectedClient(this, false);
-      }
 
       log.Trace("(-)");
     }

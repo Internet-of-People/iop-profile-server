@@ -16,12 +16,12 @@ using System.Threading.Tasks;
 namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
-  /// HN05024 - Application Service Callee Uses Same Connection Twice
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn05024---application-service-callee-uses-same-connection-twice
+  /// HN05025 - Application Service Callee Uses Same Connection Twice 2
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn05024---application-service-callee-uses-same-connection-twice-2
   /// </summary>
-  public class HN05024 : ProtocolTest
+  public class HN05025 : ProtocolTest
   {
-    public const string TestName = "HN05024";
+    public const string TestName = "HN05025";
     private static NLog.Logger log = NLog.LogManager.GetLogger("Test." + TestName);
 
     public override string Name { get { return TestName; } }
@@ -50,7 +50,8 @@ namespace HomeNetProtocolTests.Tests
       Passed = false;
 
       ProtocolClient clientCallee = new ProtocolClient();
-      ProtocolClient clientCalleeAppService = new ProtocolClient(0, new byte[] { 1, 0, 0 }, clientCallee.GetIdentityKeys());
+      ProtocolClient clientCallee1AppService = new ProtocolClient(0, new byte[] { 1, 0, 0 }, clientCallee.GetIdentityKeys());
+      ProtocolClient clientCallee2AppService = new ProtocolClient(0, new byte[] { 1, 0, 0 }, clientCallee.GetIdentityKeys());
 
       ProtocolClient clientCaller1 = new ProtocolClient();
       ProtocolClient clientCaller1AppService = new ProtocolClient(0, new byte[] { 1, 0, 0 }, clientCaller1.GetIdentityKeys());
@@ -60,7 +61,8 @@ namespace HomeNetProtocolTests.Tests
       try
       {
         MessageBuilder mbCallee = clientCallee.MessageBuilder;
-        MessageBuilder mbCalleeAppService = clientCalleeAppService.MessageBuilder;
+        MessageBuilder mbCallee1AppService = clientCallee1AppService.MessageBuilder;
+        MessageBuilder mbCallee2AppService = clientCallee2AppService.MessageBuilder;
 
         MessageBuilder mbCaller1 = clientCaller1.MessageBuilder;
         MessageBuilder mbCaller1AppService = clientCaller1AppService.MessageBuilder;
@@ -159,7 +161,6 @@ namespace HomeNetProtocolTests.Tests
 
 
 
-
         nodeRequestMessage = await clientCallee.ReceiveMessageAsync();
 
         receivedPubKey = nodeRequestMessage.Request.ConversationRequest.IncomingCallNotification.CallerPublicKey.ToByteArray();
@@ -175,13 +176,18 @@ namespace HomeNetProtocolTests.Tests
 
 
 
+        // Connect to clAppService and send initialization message (FIRST connection).
+        await clientCallee1AppService.ConnectAsync(NodeIp, (int)rolePorts[ServerRoleType.ClAppService], true);
+
+        Message requestMessageAppServiceCallee = mbCallee1AppService.CreateApplicationServiceSendMessageRequest(calleeToken1, null);
+        await clientCallee1AppService.SendMessageAsync(requestMessageAppServiceCallee);
 
 
-        // Connect to clAppService and send initialization message.
-        await clientCalleeAppService.ConnectAsync(NodeIp, (int)rolePorts[ServerRoleType.ClAppService], true);
+        // Connect to clAppService and send initialization message (SECOND connection).
+        await clientCallee2AppService.ConnectAsync(NodeIp, (int)rolePorts[ServerRoleType.ClAppService], true);
 
-        Message requestMessageAppServiceCallee = mbCalleeAppService.CreateApplicationServiceSendMessageRequest(calleeToken1, null);
-        await clientCalleeAppService.SendMessageAsync(requestMessageAppServiceCallee);
+        requestMessageAppServiceCallee = mbCallee2AppService.CreateApplicationServiceSendMessageRequest(calleeToken2, null);
+        await clientCallee2AppService.SendMessageAsync(requestMessageAppServiceCallee);
 
 
         // Step 3 Acceptance
@@ -190,18 +196,19 @@ namespace HomeNetProtocolTests.Tests
         log.Trace("Step 3: {0}", step3Ok ? "PASSED" : "FAILED");
 
 
+
         // Step 4
         log.Trace("Step 4");
         Message responseMessage = await clientCaller1.ReceiveMessageAsync();
         bool idOk = responseMessage.Id == initMessageCaller1Id;
         bool statusOk = responseMessage.Response.Status == Status.Ok;
-        byte[] callerToken = responseMessage.Response.ConversationResponse.CallIdentityApplicationService.CallerToken.ToByteArray();
+        byte[] callerToken1 = responseMessage.Response.ConversationResponse.CallIdentityApplicationService.CallerToken.ToByteArray();
 
-        bool callIdentityOk = idOk && statusOk;
+        bool callIdentityOk1 = idOk && statusOk;
 
         // Connect to clAppService and send initialization message.
         await clientCaller1AppService.ConnectAsync(NodeIp, (int)rolePorts[ServerRoleType.ClAppService], true);
-        Message requestMessageAppServiceCaller = mbCaller1AppService.CreateApplicationServiceSendMessageRequest(callerToken, null);
+        Message requestMessageAppServiceCaller = mbCaller1AppService.CreateApplicationServiceSendMessageRequest(callerToken1, null);
         await clientCaller1AppService.SendMessageAsync(requestMessageAppServiceCaller);
 
         Message responseMessageAppServiceCaller = await clientCaller1AppService.ReceiveMessageAsync();
@@ -209,11 +216,33 @@ namespace HomeNetProtocolTests.Tests
         idOk = responseMessageAppServiceCaller.Id == requestMessageAppServiceCaller.Id;
         statusOk = responseMessageAppServiceCaller.Response.Status == Status.Ok;
 
-        bool initAppServiceMessageOk = idOk && statusOk;
+        bool initAppServiceMessageOk1 = idOk && statusOk;
+
+
+
+
+        responseMessage = await clientCaller2.ReceiveMessageAsync();
+        idOk = responseMessage.Id == initMessageCaller1Id;
+        statusOk = responseMessage.Response.Status == Status.Ok;
+        byte[] callerToken2 = responseMessage.Response.ConversationResponse.CallIdentityApplicationService.CallerToken.ToByteArray();
+
+        bool callIdentityOk2 = idOk && statusOk;
+
+        // Connect to clAppService and send initialization message.
+        await clientCaller2AppService.ConnectAsync(NodeIp, (int)rolePorts[ServerRoleType.ClAppService], true);
+        requestMessageAppServiceCaller = mbCaller2AppService.CreateApplicationServiceSendMessageRequest(callerToken2, null);
+        await clientCaller2AppService.SendMessageAsync(requestMessageAppServiceCaller);
+
+        responseMessageAppServiceCaller = await clientCaller2AppService.ReceiveMessageAsync();
+
+        idOk = responseMessageAppServiceCaller.Id == requestMessageAppServiceCaller.Id;
+        statusOk = responseMessageAppServiceCaller.Response.Status == Status.Ok;
+
+        bool initAppServiceMessageOk2 = idOk && statusOk;
 
 
         // Step 4 Acceptance
-        bool step4Ok = callIdentityOk && initAppServiceMessageOk;
+        bool step4Ok = callIdentityOk1 && initAppServiceMessageOk1 && callIdentityOk2 && initAppServiceMessageOk2;
 
         log.Trace("Step 4: {0}", step4Ok ? "PASSED" : "FAILED");
 
@@ -221,7 +250,7 @@ namespace HomeNetProtocolTests.Tests
 
         // Step 5
         log.Trace("Step 5");
-        Message responseMessageAppServiceCallee = await clientCalleeAppService.ReceiveMessageAsync();
+        Message responseMessageAppServiceCallee = await clientCallee1AppService.ReceiveMessageAsync();
         idOk = responseMessageAppServiceCallee.Id == requestMessageAppServiceCallee.Id;
         statusOk = responseMessageAppServiceCallee.Response.Status == Status.Ok;
 
@@ -229,10 +258,21 @@ namespace HomeNetProtocolTests.Tests
           && (responseMessageAppServiceCallee.Response.ConversationTypeCase == Response.ConversationTypeOneofCase.SingleResponse)
           && (responseMessageAppServiceCallee.Response.SingleResponse.ResponseTypeCase == SingleResponse.ResponseTypeOneofCase.ApplicationServiceSendMessage);
 
-        bool appServiceSendOk = idOk && statusOk && typeOk;
+        bool appServiceSendOk1 = idOk && statusOk && typeOk;
+
+
+        responseMessageAppServiceCallee = await clientCallee2AppService.ReceiveMessageAsync();
+        idOk = responseMessageAppServiceCallee.Id == requestMessageAppServiceCallee.Id;
+        statusOk = responseMessageAppServiceCallee.Response.Status == Status.Ok;
+
+        typeOk = (responseMessageAppServiceCallee.MessageTypeCase == Message.MessageTypeOneofCase.Response)
+          && (responseMessageAppServiceCallee.Response.ConversationTypeCase == Response.ConversationTypeOneofCase.SingleResponse)
+          && (responseMessageAppServiceCallee.Response.SingleResponse.ResponseTypeCase == SingleResponse.ResponseTypeOneofCase.ApplicationServiceSendMessage);
+
+        bool appServiceSendOk2 = idOk && statusOk && typeOk;
 
         // Step 5 Acceptance
-        bool step5Ok = appServiceSendOk;
+        bool step5Ok = appServiceSendOk1 && appServiceSendOk2;
 
         log.Trace("Step 5: {0}", step5Ok ? "PASSED" : "FAILED");
 
@@ -240,9 +280,9 @@ namespace HomeNetProtocolTests.Tests
 
         // Step 6
         log.Trace("Step 6");
-        string caller1Message1 = "Message #1 to callee.";
+        string caller1Message1 = "Message #1 to callee from caller1.";
         byte[] messageBytes = Encoding.UTF8.GetBytes(caller1Message1);
-        requestMessageAppServiceCaller = mbCaller1AppService.CreateApplicationServiceSendMessageRequest(callerToken, messageBytes);
+        requestMessageAppServiceCaller = mbCaller1AppService.CreateApplicationServiceSendMessageRequest(callerToken1, messageBytes);
         uint callerMessage1Id = requestMessageAppServiceCaller.Id;
         await clientCaller1AppService.SendMessageAsync(requestMessageAppServiceCaller);
 
@@ -256,7 +296,7 @@ namespace HomeNetProtocolTests.Tests
         // Step 7
         log.Trace("Step 7");
         // Receive message #1.
-        Message nodeRequestAppServiceCallee = await clientCalleeAppService.ReceiveMessageAsync();
+        Message nodeRequestAppServiceCallee = await clientCallee1AppService.ReceiveMessageAsync();
         byte[] receivedVersion = nodeRequestAppServiceCallee.Request.SingleRequest.Version.ToByteArray();
         bool versionOk = StructuralComparisons.StructuralComparer.Compare(receivedVersion, new byte[] { 1, 0, 0 }) == 0;
 
@@ -271,43 +311,50 @@ namespace HomeNetProtocolTests.Tests
 
 
         // ACK message #1.
-        Message nodeResponseAppServiceCallee = mbCalleeAppService.CreateApplicationServiceReceiveMessageNotificationResponse(nodeRequestAppServiceCallee);
-        await clientCalleeAppService.SendMessageAsync(nodeResponseAppServiceCallee);
+        Message nodeResponseAppServiceCallee = mbCallee1AppService.CreateApplicationServiceReceiveMessageNotificationResponse(nodeRequestAppServiceCallee);
+        await clientCallee1AppService.SendMessageAsync(nodeResponseAppServiceCallee);
 
 
 
 
-        // Send second intialization message
+        // Send invalid message - over the FIRST connection with token from the SECOND connection.
         await Task.Delay(3000);
-        requestMessageAppServiceCallee = mbCalleeAppService.CreateApplicationServiceSendMessageRequest(calleeToken2, null);
-        await clientCalleeAppService.SendMessageAsync(requestMessageAppServiceCallee);
+        string calleeMessage = "Invalid Message";
+        messageBytes = Encoding.UTF8.GetBytes(calleeMessage);
+        requestMessageAppServiceCallee = mbCallee1AppService.CreateApplicationServiceSendMessageRequest(calleeToken2, messageBytes);
+        await clientCallee1AppService.SendMessageAsync(requestMessageAppServiceCallee);
 
-        Message responseAppServiceCallee = await clientCalleeAppService.ReceiveMessageAsync();
+        Message responseAppServiceCallee = await clientCallee1AppService.ReceiveMessageAsync();
         idOk = responseAppServiceCallee.Id == requestMessageAppServiceCallee.Id;
         statusOk = responseAppServiceCallee.Response.Status == Status.ErrorNotFound;
 
-        bool secondInitOk = idOk && statusOk;
+        bool sendMessageOk = idOk && statusOk;
 
 
         // Step 7 Acceptance
-        bool step7Ok = secondInitOk;
+        bool step7Ok = sendMessageOk;
 
         log.Trace("Step 7: {0}", step7Ok ? "PASSED" : "FAILED");
 
 
         // Step 8 
         log.Trace("Step 8");
+        await Task.Delay(3000);
+        string caller2Message1 = "Message #1 to callee from caller2.";
+        messageBytes = Encoding.UTF8.GetBytes(caller2Message1);
+        requestMessageAppServiceCaller = mbCaller2AppService.CreateApplicationServiceSendMessageRequest(callerToken2, messageBytes);
 
-        // Receive init message response.
-        bool initMessageOk = false;
+        // Either the third client is disconnected and this should prevent sending a message or receiving a response,
+        // OR just the relay was destroyed and the client will receive error not found.
         bool disconnectOk = false;
+        messageOk = false;
         try
         {
-          Message initMessageResponseAppServiceCaller2 = await clientCaller2AppService.ReceiveMessageAsync();
-          idOk = initMessageResponseAppServiceCaller2.Id == initMessageCaller2Id;
-          statusOk = initMessageResponseAppServiceCaller2.Response.Status == Status.ErrorNotFound;
-
-          initMessageOk = idOk && statusOk;
+          await clientCaller2AppService.SendMessageAsync(requestMessageAppServiceCaller);
+          responseMessage = await clientCaller2AppService.ReceiveMessageAsync();
+          idOk = responseMessage.Id == requestMessageAppServiceCaller.Id;
+          statusOk = responseMessage.Response.Status == Status.ErrorNotFound;
+          messageOk = idOk && statusOk;
         }
         catch
         {
@@ -316,7 +363,7 @@ namespace HomeNetProtocolTests.Tests
         }
 
         // Step 8 Acceptance
-        bool step8Ok = initMessageOk || disconnectOk;
+        bool step8Ok = disconnectOk || messageOk;
 
         log.Trace("Step 8: {0}", step8Ok ? "PASSED" : "FAILED");
 
@@ -347,7 +394,8 @@ namespace HomeNetProtocolTests.Tests
         log.Error("Exception occurred: {0}", e.ToString());
       }
       clientCallee.Dispose();
-      clientCalleeAppService.Dispose();
+      clientCallee1AppService.Dispose();
+      clientCallee2AppService.Dispose();
       clientCaller1.Dispose();
       clientCaller1AppService.Dispose();
       clientCaller2.Dispose();

@@ -510,7 +510,7 @@ namespace HomeNet.Network
               // Client already sent us the initialization message, this is protocol violation error, destroy the relay.
               // Since the relay should be upgraded to WaitingForSecondInitMessage status, this can happen 
               // only if a client does not use a separate connection for each clAppService session, which is forbidden.
-              log.Debug("Client ID '0x{0:X16}' on relay '{1}' probably uses a single connection for two relays. Relay will be destroyed.", Client.Id, id);
+              log.Debug("Client ID '0x{0:X16}' on relay '{1}' probably uses a single connection for two relays. Both relays will be destroyed.", Client.Id, id);
               res = Client.MessageBuilder.CreateErrorNotFoundResponse(RequestMessage);
               destroyRelay = true;
             }
@@ -562,18 +562,29 @@ namespace HomeNet.Network
 
         case RelayConnectionStatus.Open:
           {
-            // Relay is open, this means that all incoming messages are sent to the other client.
-            byte[] messageForOtherClient = RequestMessage.Request.SingleRequest.ApplicationServiceSendMessage.Message.ToByteArray();
-            Message otherClientMessage = otherClient.MessageBuilder.CreateApplicationServiceReceiveMessageNotificationRequest(messageForOtherClient);
-            RelayMessageContext context = new RelayMessageContext(this, RequestMessage);
-            if (await otherClient.SendMessageAndSaveUnfinishedRequestAsync(otherClientMessage, context))
+            if (Client.Relay == this)
             {
-              // res is null, which is fine, the sender is put on hold and we will get back to it once the recipient confirms that it received the message.
-              log.Debug("Message from client ID '0x{0:X16}' has been relayed to other client ID '0x{1:X16}'.", Client.Id, otherClient.Id);
+              // Relay is open, this means that all incoming messages are sent to the other client.
+              byte[] messageForOtherClient = RequestMessage.Request.SingleRequest.ApplicationServiceSendMessage.Message.ToByteArray();
+              Message otherClientMessage = otherClient.MessageBuilder.CreateApplicationServiceReceiveMessageNotificationRequest(messageForOtherClient);
+              RelayMessageContext context = new RelayMessageContext(this, RequestMessage);
+              if (await otherClient.SendMessageAndSaveUnfinishedRequestAsync(otherClientMessage, context))
+              {
+                // res is null, which is fine, the sender is put on hold and we will get back to it once the recipient confirms that it received the message.
+                log.Debug("Message from client ID '0x{0:X16}' has been relayed to other client ID '0x{1:X16}'.", Client.Id, otherClient.Id);
+              }
+              else
+              {
+                log.Warn("Unable to relay message to other client ID '0x{0:X16}', closing connection to client and destroying the relay.", otherClient.Id);
+                res = Client.MessageBuilder.CreateErrorNotFoundResponse(RequestMessage);
+                Client.ForceDisconnect = true;
+                destroyRelay = true;
+              }
             }
             else
             {
-              log.Warn("Unable to relay message to other client ID '0x{0:X16}', closing connection to client and destroying the relay.", otherClient.Id);
+              // This means that the client used a single clAppService port connection for two different relays, which is forbidden.
+              log.Warn("Client ID '0x{0:X16}' mixed relay '{1}' with relay '{2}', closing connection to client and destroying both relays.", otherClient.Id, Client.Relay.id, id);
               res = Client.MessageBuilder.CreateErrorNotFoundResponse(RequestMessage);
               Client.ForceDisconnect = true;
               destroyRelay = true;
@@ -605,6 +616,8 @@ namespace HomeNet.Network
         Server serverComponent = (Server)Base.ComponentDictionary["Network.Server"];
         ClientList clientList = serverComponent.GetClientList();
         clientList.DestroyNetworkRelay(this);
+        if (this != Client.Relay)
+          clientList.DestroyNetworkRelay(Client.Relay);
       }
 
       log.Trace("(-)");
