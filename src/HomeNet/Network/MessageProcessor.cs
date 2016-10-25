@@ -54,10 +54,10 @@ namespace HomeNet.Network
     /// <summary>
     /// Processing of a message received from a client.
     /// </summary>
-    /// <param name="Data">Full ProtoBuf message to be processed.</param>
     /// <param name="Client">TCP client who send the message.</param>
+    /// <param name="IncomingMessage">Full ProtoBuf message to be processed.</param>
     /// <returns>true if the conversation with the client should continue, false if a protocol violation error occurred and the client should be disconnected.</returns>
-    public async Task<bool> ProcessMessageAsync(byte[] Data, Client Client)
+    public async Task<bool> ProcessMessageAsync(Client Client, Message IncomingMessage)
     {
       string prefix = string.Format("{0}[{1}] ", logPrefix, Client.RemoteEndPoint);
       PrefixLogger log = new PrefixLogger("HomeNet.Network.MessageProcessor", prefix);
@@ -72,15 +72,14 @@ namespace HomeNet.Network
         Client.NextKeepAliveTime = DateTime.UtcNow.AddSeconds(Client.KeepAliveIntervalSeconds);
         log.Trace("Client ID 0x{0:X16} NextKeepAliveTime updated to {1}.", Client.Id, Client.NextKeepAliveTime.ToString("yyyy-MM-dd HH:mm:ss"));
 
-        Message incomingMessage = MessageWithHeader.Parser.ParseFrom(Data).Body;
-        string msgStr = incomingMessage.ToString();
-        log.Trace("Received message type is {0}, message ID is {1}:\n{2}", incomingMessage.MessageTypeCase, incomingMessage.Id, msgStr.Substring(0, Math.Min(msgStr.Length, 512)));
-        switch (incomingMessage.MessageTypeCase)
+        string msgStr = IncomingMessage.ToString();
+        log.Trace("Received message type is {0}, message ID is {1}:\n{2}", IncomingMessage.MessageTypeCase, IncomingMessage.Id, msgStr.Substring(0, Math.Min(msgStr.Length, 512)));
+        switch (IncomingMessage.MessageTypeCase)
         {
           case Message.MessageTypeOneofCase.Request:
             {
-              Message responseMessage = messageBuilder.CreateErrorProtocolViolationResponse(incomingMessage);
-              Request request = incomingMessage.Request;
+              Message responseMessage = messageBuilder.CreateErrorProtocolViolationResponse(IncomingMessage);
+              Request request = IncomingMessage.Request;
               log.Trace("Request conversation type is {0}.", request.ConversationTypeCase);
               switch (request.ConversationTypeCase)
               {
@@ -98,19 +97,19 @@ namespace HomeNet.Network
                     switch (singleRequest.RequestTypeCase)
                     {
                       case SingleRequest.RequestTypeOneofCase.Ping:
-                        responseMessage = ProcessMessagePingRequest(Client, incomingMessage);
+                        responseMessage = ProcessMessagePingRequest(Client, IncomingMessage);
                         break;
 
                       case SingleRequest.RequestTypeOneofCase.ListRoles:
-                        responseMessage = ProcessMessageListRolesRequest(Client, incomingMessage);
+                        responseMessage = ProcessMessageListRolesRequest(Client, IncomingMessage);
                         break;
 
                       case SingleRequest.RequestTypeOneofCase.GetIdentityInformation:
-                        responseMessage = await ProcessMessageGetIdentityInformationRequestAsync(Client, incomingMessage);
+                        responseMessage = await ProcessMessageGetIdentityInformationRequestAsync(Client, IncomingMessage);
                         break;
 
                       case SingleRequest.RequestTypeOneofCase.ApplicationServiceSendMessage:
-                        responseMessage = await ProcessMessageApplicationServiceSendMessageRequestAsync(Client, incomingMessage);
+                        responseMessage = await ProcessMessageApplicationServiceSendMessageRequestAsync(Client, IncomingMessage);
                         break;
 
                       default:
@@ -131,44 +130,44 @@ namespace HomeNet.Network
                     switch (conversationRequest.RequestTypeCase)
                     {
                       case ConversationRequest.RequestTypeOneofCase.Start:
-                        responseMessage = ProcessMessageStartConversationRequest(Client, incomingMessage);
+                        responseMessage = ProcessMessageStartConversationRequest(Client, IncomingMessage);
                         break;
 
                       case ConversationRequest.RequestTypeOneofCase.HomeNodeRequest:
-                        responseMessage = await ProcessMessageHomeNodeRequestRequestAsync(Client, incomingMessage);
+                        responseMessage = await ProcessMessageHomeNodeRequestRequestAsync(Client, IncomingMessage);
                         break;
 
                       case ConversationRequest.RequestTypeOneofCase.CheckIn:
-                        responseMessage = await ProcessMessageCheckInRequestAsync(Client, incomingMessage);
+                        responseMessage = await ProcessMessageCheckInRequestAsync(Client, IncomingMessage);
                         break;
 
                       case ConversationRequest.RequestTypeOneofCase.VerifyIdentity:
-                        responseMessage = ProcessMessageVerifyIdentityRequest(Client, incomingMessage);
+                        responseMessage = ProcessMessageVerifyIdentityRequest(Client, IncomingMessage);
                         break;
 
                       case ConversationRequest.RequestTypeOneofCase.UpdateProfile:
-                        responseMessage = await ProcessMessageUpdateProfileRequestAsync(Client, incomingMessage);
+                        responseMessage = await ProcessMessageUpdateProfileRequestAsync(Client, IncomingMessage);
                         break;
 
                       case ConversationRequest.RequestTypeOneofCase.CancelHomeNodeAgreement:
-                        responseMessage = await ProcessMessageCancelHomeNodeAgreementRequestAsync(Client, incomingMessage);
+                        responseMessage = await ProcessMessageCancelHomeNodeAgreementRequestAsync(Client, IncomingMessage);
                         break;
 
                       case ConversationRequest.RequestTypeOneofCase.ApplicationServiceAdd:
-                        responseMessage = ProcessMessageApplicationServiceAddRequest(Client, incomingMessage);
+                        responseMessage = ProcessMessageApplicationServiceAddRequest(Client, IncomingMessage);
                         break;
 
                       case ConversationRequest.RequestTypeOneofCase.ApplicationServiceRemove:
-                        responseMessage = ProcessMessageApplicationServiceRemoveRequest(Client, incomingMessage);
+                        responseMessage = ProcessMessageApplicationServiceRemoveRequest(Client, IncomingMessage);
                         break;
 
                       case ConversationRequest.RequestTypeOneofCase.CallIdentityApplicationService:
-                        responseMessage = await ProcessMessageCallIdentityApplicationServiceRequestAsync(Client, incomingMessage);
+                        responseMessage = await ProcessMessageCallIdentityApplicationServiceRequestAsync(Client, IncomingMessage);
                         break;
 
                       default:
                         log.Warn("Invalid request type '{0}'.", conversationRequest.RequestTypeCase);
-                        // Connection will be closed in ClientHandlerAsync.
+                        // Connection will be closed in ReceiveMessageLoop.
                         break;
                     }
 
@@ -177,7 +176,7 @@ namespace HomeNet.Network
 
                 default:
                   log.Error("Unknown conversation type '{0}'.", request.ConversationTypeCase);
-                  // Connection will be closed in ClientHandlerAsync.
+                  // Connection will be closed in ReceiveMessageLoop.
                   break;
               }
 
@@ -197,14 +196,14 @@ namespace HomeNet.Network
 
           case Message.MessageTypeOneofCase.Response:
             {
-              Response response = incomingMessage.Response;
+              Response response = IncomingMessage.Response;
               log.Trace("Response status is {0}, details are '{1}', conversation type is {0}.", response.Status, response.Details, response.ConversationTypeCase);
 
               // Find associated request. If it does not exist, disconnect the client as it 
               // send a response without receiving a request. This is protocol violation, 
               // but as this is a reponse, we have no how to inform the client about it, 
               // so we just disconnect it.
-              UnfinishedRequest unfinishedRequest = Client.GetAndRemoveUnfinishedRequest(incomingMessage.Id);
+              UnfinishedRequest unfinishedRequest = Client.GetAndRemoveUnfinishedRequest(IncomingMessage.Id);
               if ((unfinishedRequest != null) && (unfinishedRequest.RequestMessage != null))
               {
                 Message requestMessage = unfinishedRequest.RequestMessage;
@@ -240,12 +239,12 @@ namespace HomeNet.Network
                         switch (singleRequest.RequestTypeCase)
                         {
                           case SingleRequest.RequestTypeOneofCase.ApplicationServiceReceiveMessageNotification:
-                            res = await ProcessMessageApplicationServiceReceiveMessageNotificationResponseAsync(Client, incomingMessage, unfinishedRequest);
+                            res = await ProcessMessageApplicationServiceReceiveMessageNotificationResponseAsync(Client, IncomingMessage, unfinishedRequest);
                             break;
 
                           default:
                             log.Warn("Invalid conversation type '{0}' of the corresponding request.", request.ConversationTypeCase);
-                            // Connection will be closed in ClientHandlerAsync.
+                            // Connection will be closed in ReceiveMessageLoop.
                             break;
                         }
 
@@ -258,12 +257,12 @@ namespace HomeNet.Network
                         switch (conversationRequest.RequestTypeCase)
                         {
                           case ConversationRequest.RequestTypeOneofCase.IncomingCallNotification:
-                            res = await ProcessMessageIncomingCallNotificationResponseAsync(Client, incomingMessage, unfinishedRequest);
+                            res = await ProcessMessageIncomingCallNotificationResponseAsync(Client, IncomingMessage, unfinishedRequest);
                             break;
 
                           default:
                             log.Warn("Invalid type '{0}' of the corresponding request.", conversationRequest.RequestTypeCase);
-                            // Connection will be closed in ClientHandlerAsync.
+                            // Connection will be closed in ReceiveMessageLoop.
                             break;
                         }
                         break;
@@ -271,29 +270,29 @@ namespace HomeNet.Network
 
                     default:
                       log.Error("Unknown conversation type '{0}' of the corresponding request.", request.ConversationTypeCase);
-                      // Connection will be closed in ClientHandlerAsync.
+                      // Connection will be closed in ReceiveMessageLoop.
                       break;
                   }
                 }
                 else
                 {
-                  log.Warn("Message type of the response ID {0} does not match the message type of the request ID {1}, the connection will be closed.", incomingMessage.Id);
-                  // Connection will be closed in ClientHandlerAsync.
+                  log.Warn("Message type of the response ID {0} does not match the message type of the request ID {1}, the connection will be closed.", IncomingMessage.Id);
+                  // Connection will be closed in ReceiveMessageLoop.
                 }
               }
               else
               {
-                log.Warn("No unfinished request found for incoming response ID {0}, the connection will be closed.", incomingMessage.Id);
-                // Connection will be closed in ClientHandlerAsync.
+                log.Warn("No unfinished request found for incoming response ID {0}, the connection will be closed.", IncomingMessage.Id);
+                // Connection will be closed in ReceiveMessageLoop.
               }
 
               break;
             }
 
           default:
-            log.Error("Unknown message type '{0}', connection to the client will be closed.", incomingMessage.MessageTypeCase);
+            log.Error("Unknown message type '{0}', connection to the client will be closed.", IncomingMessage.MessageTypeCase);
             await SendProtocolViolation(Client);
-            // Connection will be closed in ClientHandlerAsync.
+            // Connection will be closed in ReceiveMessageLoop.
             break;
         }
       }
@@ -301,7 +300,7 @@ namespace HomeNet.Network
       {
         log.Error("Exception occurred, connection to the client will be closed: {0}", e.ToString());
         await SendProtocolViolation(Client);
-        // Connection will be closed in ClientHandlerAsync.
+        // Connection will be closed in ReceiveMessageLoop.
       }
 
       if (res &&  Client.ForceDisconnect)

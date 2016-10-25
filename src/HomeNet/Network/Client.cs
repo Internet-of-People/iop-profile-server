@@ -15,6 +15,7 @@ using HomeNet.Utils;
 using HomeNet.Data.Models;
 using Iop.Homenode;
 using HomeNetCrypto;
+using System.Security.Authentication;
 
 namespace HomeNet.Network
 {
@@ -138,6 +139,9 @@ namespace HomeNet.Network
     /// <summary>Server to which the client is connected to.</summary>
     private TcpRoleServer server;
 
+    /// <summary>Component responsible for processing logic behind incoming messages.</summary>
+    private MessageProcessor messageProcessor;
+
 
     /// <summary>
     /// Creates the encapsulation for a new TCP server client.
@@ -160,6 +164,8 @@ namespace HomeNet.Network
 
       log.Trace("(UseTls:{0},KeepAliveIntervalSeconds:{1})", UseTls, KeepAliveIntervalSeconds);
 
+      messageProcessor = new MessageProcessor(server, logPrefix);
+
       this.KeepAliveIntervalSeconds = KeepAliveIntervalSeconds;
       NextKeepAliveTime = DateTime.UtcNow.AddSeconds(this.KeepAliveIntervalSeconds);
     
@@ -178,6 +184,168 @@ namespace HomeNet.Network
       ApplicationServices = new ApplicationServices(logPrefix);
 
       log.Trace("(-)");
+    }
+
+    /// <summary>
+    /// Reads messages from the client stream and processes them in a loop until the client disconnects 
+    /// or until an action (such as a protocol violation) that leads to disconnecting of the client occurs.
+    /// </summary>
+    public async Task ReceiveMessageLoop()
+    {
+      log.Trace("()");
+
+      try
+      {
+        if (UseTls) 
+        {
+          SslStream sslStream = (SslStream)Stream;
+          await sslStream.AuthenticateAsServerAsync(Base.Configuration.TcpServerTlsCertificate, false, SslProtocols.Tls12, false);
+        }
+
+        Stream clientStream = Stream;
+        byte[] messageHeaderBuffer = new byte[ProtocolHelper.HeaderSize];
+        byte[] messageBuffer = null;
+        ClientStatus clientStatus = ClientStatus.ReadingHeader;
+        uint messageSize = 0;
+        int messageHeaderBytesRead = 0;
+        int messageBytesRead = 0;
+
+        while (!server.ShutdownSignaling.IsShutdown)
+        {
+          Task<int> readTask = null;
+          int remain = 0;
+
+          log.Trace("Client status is '{0}'.", clientStatus);
+          switch (clientStatus)
+          {
+            case ClientStatus.ReadingHeader:
+              {
+                remain = ProtocolHelper.HeaderSize - messageHeaderBytesRead;
+                readTask = clientStream.ReadAsync(messageHeaderBuffer, messageHeaderBytesRead, remain, server.ShutdownSignaling.ShutdownCancellationTokenSource.Token);
+                break;
+              }
+
+            case ClientStatus.ReadingBody:
+              {
+                remain = (int)messageSize - messageBytesRead;
+                readTask = clientStream.ReadAsync(messageBuffer, ProtocolHelper.HeaderSize + messageBytesRead, remain, server.ShutdownSignaling.ShutdownCancellationTokenSource.Token);
+                break;
+              }
+
+            default:
+              log.Error("Invalid client status '{0}'.", clientStatus);
+              break;
+          }
+
+          if (readTask == null)
+            break;
+
+          log.Trace("{0} bytes remains to be read.", remain);
+
+          int readAmount = await readTask;
+          if (readAmount == 0)
+          {
+            log.Info("Connection has been closed.");
+            break;
+          }
+
+          log.Trace("Read completed: {0} bytes.", readAmount);
+
+          bool protoViolationDisconnect = false;
+          bool disconnect = false;
+          switch (clientStatus)
+          {
+            case ClientStatus.ReadingHeader:
+              {
+                messageHeaderBytesRead += readAmount;
+                if (readAmount == remain)
+                {
+                  if (messageHeaderBuffer[0] == 0x0D)
+                  {
+                    uint hdr = ProtocolHelper.GetValueLittleEndian(messageHeaderBuffer, 1);
+                    if (hdr + ProtocolHelper.HeaderSize <= ProtocolHelper.MaxSize)
+                    {
+                      messageSize = hdr;
+                      clientStatus = ClientStatus.ReadingBody;
+                      messageBuffer = new byte[ProtocolHelper.HeaderSize + messageSize];
+                      Array.Copy(messageHeaderBuffer, messageBuffer, messageHeaderBuffer.Length);
+                      log.Trace("Reading of message header completed. Message size is {0} bytes.", messageSize);
+                    }
+                    else
+                    {
+                      log.Warn("Client claimed message of size {0} which exceeds the maximum.", hdr + ProtocolHelper.HeaderSize);
+                      protoViolationDisconnect = true;
+                    }
+                  }
+                  else
+                  {
+                    log.Warn("Message has invalid format - it's first byte is 0x{0:X2}, should be 0x0D.", messageHeaderBuffer[0]);
+                    protoViolationDisconnect = true;
+                  }
+                }
+                break;
+              }
+
+            case ClientStatus.ReadingBody:
+              {
+                messageBytesRead += readAmount;
+                if (readAmount == remain)
+                {
+                  clientStatus = ClientStatus.ReadingHeader;
+                  messageBytesRead = 0;
+                  messageHeaderBytesRead = 0;
+                  log.Trace("Reading of message size {0} completed.", messageSize);
+
+                  Message incomingMessage = CreateMessageFromRawData(messageBuffer);
+                  if (incomingMessage != null) disconnect = !await messageProcessor.ProcessMessageAsync(this, incomingMessage);
+                  else protoViolationDisconnect = true;
+                }
+                break;
+              }
+          }
+
+          if (protoViolationDisconnect)
+          {
+            await messageProcessor.SendProtocolViolation(this);
+            break;
+          }
+
+          if (disconnect)
+            break;
+        }
+      }
+      catch (Exception e)
+      {
+        if ((e is ObjectDisposedException) || (e is IOException)) log.Info("Connection to client has been terminated.");
+        else log.Error("Exception occurred: {0}", e.ToString());
+      }
+
+      log.Trace("(-)");
+    }
+
+
+    /// <summary>
+    /// Constructs ProtoBuf message from raw data read from the network stream.
+    /// </summary>
+    /// <param name="Data">Raw data to be decoded to the message.</param>
+    /// <returns>ProtoBuf message or null if the data do not represent a valid message.</returns>
+    public Message CreateMessageFromRawData(byte[] Data)
+    {
+      log.Trace("()");
+
+      Message res = null;
+      try
+      {
+        res = MessageWithHeader.Parser.ParseFrom(Data).Body;
+      }
+      catch (Exception e)
+      {
+        log.Error("Exception occurred, connection to the client will be closed: {0}", e.ToString());
+        // Connection will be closed in ReceiveMessageLoop.
+      }
+
+      log.Trace("(-):{0}", res != null ? "Message" : "null");
+      return res;
     }
 
 
