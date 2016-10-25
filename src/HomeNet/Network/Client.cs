@@ -340,7 +340,7 @@ namespace HomeNet.Network
       }
       catch (Exception e)
       {
-        log.Error("Exception occurred, connection to the client will be closed: {0}", e.ToString());
+        log.Warn("Exception occurred, connection to the client will be closed: {0}", e.ToString());
         // Connection will be closed in ReceiveMessageLoop.
       }
 

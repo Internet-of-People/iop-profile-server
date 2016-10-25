@@ -1355,7 +1355,7 @@ namespace HomeNet.Network
         }
         else
         {
-          log.Error("Identity '{0}' application services list not changed, number of services would exceed the limit {1}.", Crypto.ToHex(Client.IdentityId), Client.MaxClientApplicationServices);
+          log.Debug("Identity '{0}' application services list not changed, number of services would exceed the limit {1}.", Crypto.ToHex(Client.IdentityId), Client.MaxClientApplicationServices);
           res = messageBuilder.CreateErrorQuotaExceededResponse(RequestMessage);
         }
       }
@@ -1491,7 +1491,7 @@ namespace HomeNet.Network
                 error = true;
               }
 
-              if (error) clientList.DestroyNetworkRelay(relay);
+              if (error) await clientList.DestroyNetworkRelay(relay);
             }
             else
             {

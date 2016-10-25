@@ -285,7 +285,7 @@ namespace HomeNet.Network
       {
         Server serverComponent = (Server)Base.ComponentDictionary["Network.Server"];
         ClientList clientList = serverComponent.GetClientList();
-        clientList.DestroyNetworkRelay(this);
+        await clientList.DestroyNetworkRelay(this);
       }
 
       log.Trace("(-)");
@@ -448,7 +448,7 @@ namespace HomeNet.Network
       {
         Server serverComponent = (Server)Base.ComponentDictionary["Network.Server"];
         ClientList clientList = serverComponent.GetClientList();
-        clientList.DestroyNetworkRelay(this);
+        await clientList.DestroyNetworkRelay(this);
       }
 
       log.Trace("(-):{0}", res);
@@ -615,9 +615,9 @@ namespace HomeNet.Network
       {
         Server serverComponent = (Server)Base.ComponentDictionary["Network.Server"];
         ClientList clientList = serverComponent.GetClientList();
-        clientList.DestroyNetworkRelay(this);
+        await clientList.DestroyNetworkRelay(this);
         if (this != Client.Relay)
-          clientList.DestroyNetworkRelay(Client.Relay);
+          await clientList.DestroyNetworkRelay(Client.Relay);
       }
 
       log.Trace("(-)");
@@ -687,7 +687,7 @@ namespace HomeNet.Network
       {
         Server serverComponent = (Server)Base.ComponentDictionary["Network.Server"];
         ClientList clientList = serverComponent.GetClientList();
-        clientList.DestroyNetworkRelay(this);
+        await clientList.DestroyNetworkRelay(this);
       }
 
       log.Trace("(-)");
@@ -852,12 +852,33 @@ namespace HomeNet.Network
       {
         Server serverComponent = (Server)Base.ComponentDictionary["Network.Server"];
         ClientList clientList = serverComponent.GetClientList();
-        clientList.DestroyNetworkRelay(this);
+        await clientList.DestroyNetworkRelay(this);
       }
 
       log.Trace("(-)");
     }
 
+
+    /// <summary>
+    /// Checks if the the relay has been destroyed already and if changes its status to Destroyed.
+    /// </summary>
+    /// <returns>true if the relay has been destroyed already, false otherwise.</returns>
+    public async Task<bool> TestAndSetDestroyed()
+    {
+      log.Trace("()");
+
+      bool res = false;
+
+      await lockObject.WaitAsync();
+
+      res = status == RelayConnectionStatus.Destroyed;
+      status = RelayConnectionStatus.Destroyed;
+
+      lockObject.Release();
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
 
 
     /// <summary>Signals whether the instance has been disposed already or not.</summary>

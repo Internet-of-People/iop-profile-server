@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace HomeNet.Network
@@ -26,11 +27,11 @@ namespace HomeNet.Network
   {
     private static NLog.Logger log = NLog.LogManager.GetLogger("HomeNet.Network.ClientList");
 
-    /// <summary>Lock object for synchronized access to client list.</summary>
+    /// <summary>Lock object for synchronized access to client list structures.</summary>
     private object lockObject = new object();
 
     /// <summary>Server assigned client identifier for internal client maintanence purposes.</summary>
-    private ulong clientLastId = 0;
+    private long clientLastId = 0;
 
     /// <summary>
     /// List of network peers mapped by their internal ID. All network peers are in this list.
@@ -87,11 +88,8 @@ namespace HomeNet.Network
       log.Trace("()");
       ulong res = 0;
 
-      lock (lockObject)
-      {
-        res = clientLastId;
-        clientLastId++;
-      }
+      long newId = Interlocked.Increment(ref clientLastId);
+      res = (ulong)newId;
 
       log.Trace("(-):0x{0:X16}", res);
       return res;
@@ -339,25 +337,30 @@ namespace HomeNet.Network
     /// Destroys relay connection and all references to it.
     /// </summary>
     /// <param name="Relay">Relay connection to destroy.</param>
-    public void DestroyNetworkRelay(RelayConnection Relay)
+    public async Task DestroyNetworkRelay(RelayConnection Relay)
     {
-      log.Trace("()");
+      log.Trace("(Relay.id:'{0}')", Relay.GetId());
 
-      bool relayIdRemoved = false;
-      bool callerTokenRemoved = false;
-      bool calleeTokenRemoved = false;
-      lock (lockObject)
+      bool destroyed = await Relay.TestAndSetDestroyed();
+      if (!destroyed)
       {
-        relayIdRemoved = relaysByGuid.Remove(Relay.GetId());
-        callerTokenRemoved = relaysByGuid.Remove(Relay.GetCallerToken());
-        calleeTokenRemoved = relaysByGuid.Remove(Relay.GetCalleeToken());
+        bool relayIdRemoved = false;
+        bool callerTokenRemoved = false;
+        bool calleeTokenRemoved = false;
+        lock (lockObject)
+        {
+          relayIdRemoved = relaysByGuid.Remove(Relay.GetId());
+          callerTokenRemoved = relaysByGuid.Remove(Relay.GetCallerToken());
+          calleeTokenRemoved = relaysByGuid.Remove(Relay.GetCalleeToken());
+        }
+
+        if (!relayIdRemoved) log.Error("Relay ID '{0}' not found in relay list.", Relay.GetId());
+        if (!callerTokenRemoved) log.Error("Caller token '{0}' not found in relay list.", Relay.GetCallerToken());
+        if (!calleeTokenRemoved) log.Error("Callee token '{0}' not found in relay list.", Relay.GetCalleeToken());
+
+        Relay.Dispose();
       }
-
-      if (!relayIdRemoved) log.Error("Relay ID '{0}' not found in relay list.", Relay.GetId());
-      if (!callerTokenRemoved) log.Error("Caller token '{0}' not found in relay list.", Relay.GetCallerToken());
-      if (!calleeTokenRemoved) log.Error("Callee token '{0}' not found in relay list.", Relay.GetCalleeToken());
-
-      Relay.Dispose();
+      else log.Trace("Relay ID '{0}' has been destroyed already.", Relay.GetId());
 
       log.Trace("(-)");
     }
