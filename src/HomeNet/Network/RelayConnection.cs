@@ -845,7 +845,7 @@ namespace HomeNet.Network
 
 
       if (clientToClose != null)
-        clientToClose.CloseConnectionLocked();
+        await clientToClose.CloseConnection();
 
 
       if (destroyRelay)

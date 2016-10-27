@@ -445,6 +445,8 @@ namespace HomeNet.Network
     {
       log.Trace("()");
 
+      await EmptyStream();
+
       if (Relay != null)
       {
         // This connection is on clAppService port. There might be the other peer still connected 
@@ -558,6 +560,38 @@ namespace HomeNet.Network
 
 
     /// <summary>
+    /// The function attempts to read all pending data on the stream in order to clear it. 
+    /// This is necessary in order for all pending outgoing data to be delivered to the other party
+    /// before we close the connection.
+    /// </summary>
+    public async Task EmptyStream()
+    {
+      log.Trace("()");
+
+      bool clear = false;
+      byte[] buf = new byte[8192];
+
+      await StreamWriteLock.WaitAsync();
+
+      while (!clear)
+      {
+        try
+        {
+          Task<int> readTask = Stream.ReadAsync(buf, 0, buf.Length);
+          if (readTask.Wait(50)) clear = readTask.Result < buf.Length;
+          else clear = true;
+        }
+        catch
+        {
+          clear = true;
+        }
+      }
+
+      StreamWriteLock.Release();
+      log.Trace("(-)");
+    }
+
+    /// <summary>
     /// Closes connection if it is opened and frees used resources, assuming StreamWriteLock is acquired.
     /// </summary>
     public void CloseConnectionLocked()
@@ -612,15 +646,17 @@ namespace HomeNet.Network
     /// <param name="Disposing">Indicates whether the method was invoked from the IDisposable.Dispose implementation or from the finalizer.</param>
     protected virtual void Dispose(bool Disposing)
     {
-      if (disposed) return;
+      bool disposedAlready = false;
+      lock (disposingLock)
+      {
+        disposedAlready = disposed;
+        disposed = true;
+      }
+      if (disposedAlready) return;
 
       if (Disposing)
       {
-        lock (disposingLock)
-        {
-          CloseConnection().Wait();
-          disposed = true;
-        }
+        CloseConnection().Wait();
       }
     }
   }
