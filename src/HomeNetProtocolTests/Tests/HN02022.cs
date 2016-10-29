@@ -1,4 +1,6 @@
-﻿using HomeNetProtocol;
+﻿using Google.Protobuf;
+using HomeNetCrypto;
+using HomeNetProtocol;
 using Iop.Homenode;
 using System;
 using System.Collections;
@@ -13,12 +15,12 @@ using System.Threading.Tasks;
 namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
-  /// HN01006 - Check-In - Bad Role
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn01006---check-in---bad-role
+  /// HN02022 - Start Conversation - Invalid Challenge
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn02022---start-conversation---invalid-challenge
   /// </summary>
-  public class HN01006 : ProtocolTest
+  public class HN02022 : ProtocolTest
   {
-    public const string TestName = "HN01006";
+    public const string TestName = "HN02022";
     private static NLog.Logger log = NLog.LogManager.GetLogger("Test." + TestName);
 
     public override string Name { get { return TestName; } }
@@ -27,7 +29,7 @@ namespace HomeNetProtocolTests.Tests
     private List<ProtocolTestArgument> argumentDescriptions = new List<ProtocolTestArgument>()
     {
       new ProtocolTestArgument("Node IP", ProtocolTestArgumentType.IpAddress),
-      new ProtocolTestArgument("primary Port", ProtocolTestArgumentType.Port),
+      new ProtocolTestArgument("clNonCustomer Port", ProtocolTestArgumentType.Port),
     };
 
     public override List<ProtocolTestArgument> ArgumentDescriptions { get { return argumentDescriptions; } }
@@ -40,8 +42,8 @@ namespace HomeNetProtocolTests.Tests
     public override async Task<bool> RunAsync()
     {
       IPAddress NodeIp = (IPAddress)ArgumentValues["Node IP"];
-      int PrimaryPort = (int)ArgumentValues["primary Port"];
-      log.Trace("(NodeIp:'{0}',PrimaryPort:{1})", NodeIp, PrimaryPort);
+      int ClNonCustomerPort = (int)ArgumentValues["clNonCustomer Port"];
+      log.Trace("(NodeIp:'{0}',ClNonCustomerPort:{1})", NodeIp, ClNonCustomerPort);
 
       bool res = false;
       Passed = false;
@@ -52,30 +54,26 @@ namespace HomeNetProtocolTests.Tests
         MessageBuilder mb = client.MessageBuilder;
 
         // Step 1
-        await client.ConnectAsync(NodeIp, PrimaryPort, false);
+        await client.ConnectAsync(NodeIp, ClNonCustomerPort, true);
 
         Message requestMessage = client.CreateStartConversationRequest();
+        ByteString myKey = requestMessage.Request.ConversationRequest.Start.PublicKey;
+        byte[] badChallenge = new byte[4];
+        Crypto.Rng.GetBytes(badChallenge);
+        requestMessage.Request.ConversationRequest.Start = new StartConversationRequest();
+        requestMessage.Request.ConversationRequest.Start.PublicKey = myKey;
+        requestMessage.Request.ConversationRequest.Start.ClientChallenge = ProtocolHelper.ByteArrayToByteString(badChallenge);
+        requestMessage.Request.ConversationRequest.Start.SupportedVersions.Add(ProtocolHelper.ByteArrayToByteString(new byte[] { 1, 0, 0 }));
+
         await client.SendMessageAsync(requestMessage);
         Message responseMessage = await client.ReceiveMessageAsync();
 
-        bool idOk = responseMessage.Id == requestMessage.Id;
-        bool statusOk = responseMessage.Response.Status == Status.Ok;
-        bool verifyChallengeOk = client.VerifyNodeChallengeSignature(responseMessage);
-        bool startConversationOk = idOk && statusOk && verifyChallengeOk;
-
-        byte[] challenge = responseMessage.Response.ConversationResponse.Start.Challenge.ToByteArray();
-
-        requestMessage = mb.CreateCheckInRequest(challenge);
-        await client.SendMessageAsync(requestMessage);
-        responseMessage = await client.ReceiveMessageAsync();
-
-        idOk = responseMessage.Id == requestMessage.Id;
-        statusOk = responseMessage.Response.Status == Status.ErrorBadRole;
-        bool checkInOk = idOk && statusOk;
-
         // Step 1 Acceptance
+        bool idOk = responseMessage.Id == requestMessage.Id;
+        bool statusOk = responseMessage.Response.Status == Status.ErrorInvalidValue;
+        bool detailsOk = responseMessage.Response.Details == "clientChallenge";
 
-        Passed = startConversationOk && checkInOk;
+        Passed = idOk && statusOk && detailsOk;
 
         res = true;
       }

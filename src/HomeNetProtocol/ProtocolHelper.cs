@@ -18,6 +18,9 @@ namespace HomeNetProtocol
     /// <summary>Maximal size of the message.</summary>
     public const int MaxSize = 1 * 1024 * 1024;
 
+    /// <summary>Size in bytes of an authentication challenge data.</summary>
+    public const int ChallengeDataSize = 32;
+
     /// <summary>
     /// Converts an IoP protocol message to a binary format.
     /// </summary>

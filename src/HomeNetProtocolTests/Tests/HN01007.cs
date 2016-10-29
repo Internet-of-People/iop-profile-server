@@ -54,13 +54,14 @@ namespace HomeNetProtocolTests.Tests
         // Step 1
         await client.ConnectAsync(NodeIp, PrimaryPort, false);
 
-        Message requestMessage = mb.CreateStartConversationRequest();
+        Message requestMessage = client.CreateStartConversationRequest();
         await client.SendMessageAsync(requestMessage);
         Message responseMessage = await client.ReceiveMessageAsync();
 
         bool idOk = responseMessage.Id == requestMessage.Id;
         bool statusOk = responseMessage.Response.Status == Status.Ok;
-        bool startConversationOk = idOk && statusOk;
+        bool verifyChallengeOk = client.VerifyNodeChallengeSignature(responseMessage);
+        bool startConversationOk = idOk && statusOk && verifyChallengeOk;
 
         byte[] challenge = responseMessage.Response.ConversationResponse.Start.Challenge.ToByteArray();
 

@@ -40,10 +40,12 @@ namespace HomeNetProtocolTests
     /// <summary>Node's public key received when starting conversation.</summary>
     public byte[] NodeKey;
 
-    /// <summary>Challenge that the node send to the client when starting conversation.</summary>
+    /// <summary>Challenge that the node sent to the client when starting conversation.</summary>
     public byte[] Challenge;
-    
-    
+
+    /// <summary>Challenge that the client sent to the node when starting conversation.</summary>
+    public byte[] ClientChallenge;
+
     /// <summary>
     /// Initializes the instance.
     /// </summary>
@@ -200,19 +202,32 @@ namespace HomeNetProtocolTests
 
 
     /// <summary>
+    /// Generates client's challenge and creates start conversation request with it.
+    /// </summary>
+    /// <returns>StartConversationRequest message that is ready to be sent to the node.</returns>
+    public Message CreateStartConversationRequest()
+    {
+      ClientChallenge = new byte[ProtocolHelper.ChallengeDataSize];
+      Crypto.Rng.GetBytes(ClientChallenge);
+      Message res = MessageBuilder.CreateStartConversationRequest(ClientChallenge);
+      return res;
+    }
+
+    /// <summary>
     /// Starts conversation with the server the client is connected to and checks whether the server response contains expected values.
     /// </summary>
     /// <returns>true if the function succeeds, false otherwise.</returns>
     public async Task<bool> StartConversationAsync()
     {
-      log.Trace("()");
+      log.Trace("()");      
 
-      Message requestMessage = MessageBuilder.CreateStartConversationRequest();
+      Message requestMessage = CreateStartConversationRequest();
       await SendMessageAsync(requestMessage);
       Message responseMessage = await ReceiveMessageAsync();
 
       bool idOk = responseMessage.Id == requestMessage.Id;
       bool statusOk = responseMessage.Response.Status == Status.Ok;
+      bool challengeVerifyOk = VerifyNodeChallengeSignature(responseMessage);
 
       byte[] receivedVersion = responseMessage.Response.ConversationResponse.Start.Version.ToByteArray();
       byte[] expectedVersion = new byte[] { 1, 0, 0 };
@@ -224,7 +239,7 @@ namespace HomeNetProtocolTests
       NodeKey = responseMessage.Response.ConversationResponse.Start.PublicKey.ToByteArray();
       Challenge = responseMessage.Response.ConversationResponse.Start.Challenge.ToByteArray();
 
-      bool res = idOk && statusOk && versionOk && pubKeyLenOk && challengeOk;
+      bool res = idOk && statusOk && challengeVerifyOk && versionOk && pubKeyLenOk && challengeOk;
 
       log.Trace("(-):{0}", res);
       return res;
@@ -441,6 +456,24 @@ namespace HomeNetProtocolTests
       return keys;
     }
 
+
+    /// <summary>
+    /// Verifies whether the node successfully signed the correct start conversation challenge.
+    /// </summary>
+    /// <param name="StartConversationResponse">StartConversationResponse received from the node.</param>
+    /// <returns>true if the signature is valid, false otherwise.</returns>
+    public bool VerifyNodeChallengeSignature(Message StartConversationResponse)
+    {
+      log.Trace("()");
+
+      byte[] receivedChallenge = StartConversationResponse.Response.ConversationResponse.Start.ClientChallenge.ToByteArray();
+      byte[] nodePublicKey = StartConversationResponse.Response.ConversationResponse.Start.PublicKey.ToByteArray();
+      bool res = (StructuralComparisons.StructuralComparer.Compare(receivedChallenge, ClientChallenge) == 0) 
+        && MessageBuilder.VerifySignedConversationResponseBodyPart(StartConversationResponse, receivedChallenge, nodePublicKey);
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
 
     /// <summary>
     /// Callback routine that validates server TLS certificate.

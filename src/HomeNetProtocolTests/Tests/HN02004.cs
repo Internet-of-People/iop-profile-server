@@ -55,10 +55,12 @@ namespace HomeNetProtocolTests.Tests
         // Step 1
         await client.ConnectAsync(NodeIp, ClNonCustomerPort, true);
 
-        Message requestMessage = mb.CreateStartConversationRequest();
+        Message requestMessage = client.CreateStartConversationRequest();
         ByteString myKey = requestMessage.Request.ConversationRequest.Start.PublicKey;
+        ByteString myChallenge = requestMessage.Request.ConversationRequest.Start.ClientChallenge;
         requestMessage.Request.ConversationRequest.Start = new StartConversationRequest();
         requestMessage.Request.ConversationRequest.Start.PublicKey = myKey;
+        requestMessage.Request.ConversationRequest.Start.ClientChallenge = myChallenge;
         requestMessage.Request.ConversationRequest.Start.SupportedVersions.Add(ProtocolHelper.ByteArrayToByteString(new byte[] { 255, 255, 255 }));
         requestMessage.Request.ConversationRequest.Start.SupportedVersions.Add(ProtocolHelper.ByteArrayToByteString(new byte[] { 255, 255, 254 }));
 
