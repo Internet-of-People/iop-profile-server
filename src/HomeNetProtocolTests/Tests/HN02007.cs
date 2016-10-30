@@ -55,6 +55,7 @@ namespace HomeNetProtocolTests.Tests
         MessageBuilder mb2 = client2.MessageBuilder;
 
         // Step 1
+        log.Trace("Step 1");
         await client1.ConnectAsync(NodeIp, ClNonCustomerPort, true);
         bool startConversationOk = await client1.StartConversationAsync();
 
@@ -68,12 +69,13 @@ namespace HomeNetProtocolTests.Tests
         // Step 1 Acceptance
         bool step1Ok = idOk && statusOk;
 
+        log.Trace("Step 1: {0}", step1Ok ? "PASSED" : "FAILED");
 
-        client1.Dispose();
-        client1 = null;
+        client1.CloseConnection();
 
 
         // Step 2
+        log.Trace("Step 2");
         await client2.ConnectAsync(NodeIp, ClNonCustomerPort, true);
         startConversationOk = await client2.StartConversationAsync();
 
@@ -87,6 +89,7 @@ namespace HomeNetProtocolTests.Tests
         // Step 2 Acceptance
         bool step2Ok = idOk && statusOk;
 
+        log.Trace("Step 2: {0}", step1Ok ? "PASSED" : "FAILED");
 
         Passed = step1Ok && step2Ok;
 

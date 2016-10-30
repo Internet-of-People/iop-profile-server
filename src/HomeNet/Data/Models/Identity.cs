@@ -18,6 +18,9 @@ namespace HomeNet.Data.Models
     /// <summary>Maximum number of bytes that identity name can occupy.</summary>
     public const int MaxProfileNameLengthBytes = 64;
 
+    /// <summary>Maximum number of bytes that identity type can occupy.</summary>
+    public const int MaxProfileTypeLengthBytes = 64;
+
     /// <summary>Maximum number of bytes that profile image can occupy.</summary>
     public const int MaxProfileImageLengthBytes = 20 * 1024;
 
@@ -62,7 +65,7 @@ namespace HomeNet.Data.Models
     /// <summary>Profile type.</summary>
     /// <remarks>This is index - see HomeNet.Data.Context.OnModelCreating.</remarks>
     [Required]
-    [MaxLength(32)]
+    [MaxLength(MaxProfileTypeLengthBytes)]
     public string Type { get; set; }
 
 

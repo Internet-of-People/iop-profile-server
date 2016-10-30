@@ -94,8 +94,9 @@ namespace HomeNetProtocolTests.Tests
 
         bool nameOk = responseMessage.Response.SingleResponse.GetIdentityInformation.Name == "Test Identity";
         bool extraDataOk = responseMessage.Response.SingleResponse.GetIdentityInformation.ExtraData == "";
+        bool locationOk = responseMessage.Response.SingleResponse.GetIdentityInformation.Location == 0x12345678;
 
-        bool getIdentityInfoOk = idOk && statusOk && isHostedOk && isOnlineOk && pubKeyOk && nameOk && extraDataOk;
+        bool getIdentityInfoOk = idOk && statusOk && isHostedOk && isOnlineOk && pubKeyOk && nameOk && extraDataOk && locationOk;
 
 
         byte[] imageData = File.ReadAllBytes(string.Format("images{0}HN04006.jpg", Path.DirectorySeparatorChar));
@@ -121,6 +122,8 @@ namespace HomeNetProtocolTests.Tests
         pubKeyOk = StructuralComparisons.StructuralComparer.Compare(testPubKey, receivedPubKey) == 0;
         nameOk = responseMessage.Response.SingleResponse.GetIdentityInformation.Name == "Test Identity Renamed";
         extraDataOk = responseMessage.Response.SingleResponse.GetIdentityInformation.ExtraData == "a=b";
+        locationOk = responseMessage.Response.SingleResponse.GetIdentityInformation.Location == 0x12345678;
+
 
         byte[] receivedProfileImage = responseMessage.Response.SingleResponse.GetIdentityInformation.ProfileImage.ToByteArray();
         bool profileImageOk = StructuralComparisons.StructuralComparer.Compare(receivedProfileImage, imageData) == 0;

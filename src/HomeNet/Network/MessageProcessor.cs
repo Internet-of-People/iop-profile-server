@@ -577,6 +577,7 @@ namespace HomeNet.Network
                 byte[] publicKey = identity.PublicKey;
                 string type = identity.Type;
                 string name = identity.Name;
+                uint location = identity.InitialLocationEncoded;
                 string extraData = identity.ExtraData;
 
                 byte[] profileImage = null;
@@ -592,7 +593,7 @@ namespace HomeNet.Network
                 if (getIdentityInformationRequest.IncludeApplicationServices)
                   applicationServices = targetClient.ApplicationServices.GetServices();
 
-                res = messageBuilder.CreateGetIdentityInformationResponse(RequestMessage, isHosted, null, isOnline, publicKey, name, type, extraData, profileImage, thumbnailImage, applicationServices);
+                res = messageBuilder.CreateGetIdentityInformationResponse(RequestMessage, isHosted, null, isOnline, publicKey, name, type, location, extraData, profileImage, thumbnailImage, applicationServices);
               }
               else
               {
