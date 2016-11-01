@@ -208,11 +208,16 @@ namespace HomeNet.Config
 
         if (!error)
         {
-          if (!FindFile(tcpServerTlsCertificateFileName, out tcpServerTlsCertificateFileName))
+          string finalTlsCertFileName;
+          if (FindFile(tcpServerTlsCertificateFileName, out finalTlsCertFileName))
+          {
+            tcpServerTlsCertificateFileName = finalTlsCertFileName;
+          }
+          else 
           {
             log.Error("File '{0}' not found.", tcpServerTlsCertificateFileName);
             error = true;
-          }
+          }          
         }
 
         if (!error)
@@ -273,6 +278,8 @@ namespace HomeNet.Config
     /// <returns>true if the file is found, false otherwise.</returns>
     public bool FindFile(string FileName, out string ExistingFileName)
     {
+      log.Trace("(FileName:'{0}')", FileName);
+
       bool res = false;
       ExistingFileName = null;
       if (File.Exists(FileName))
@@ -285,12 +292,16 @@ namespace HomeNet.Config
         string path = System.Reflection.Assembly.GetEntryAssembly().Location;
         path = Path.GetDirectoryName(path);
         path = Path.Combine(path, FileName);
+        log.Trace("Checking path '{0}'.", path);
         if (File.Exists(path))
         {
           ExistingFileName = path;
           res = true;
         }
       }
+
+      if (res) log.Trace("(-):{0},ExistingFileName='{1}'", res, ExistingFileName);
+      else log.Trace("(-):{0}", res);
       return res;
     }
 

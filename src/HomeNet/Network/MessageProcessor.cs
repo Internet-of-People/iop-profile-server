@@ -700,7 +700,7 @@ namespace HomeNet.Network
     /// <returns>Response message to be sent to the client.</returns>
     public async Task<Message> ProcessMessageHomeNodeRequestRequestAsync(Client Client, Message RequestMessage)
     {
-#warning TODO: This function is currently implemented only to ignore contracts.
+#warning TODO: This function is currently implemented to mostly contracts, they can only be used for specifying identity type.
       // TODO: CHECK CONTRACT:
       // * signature is valid 
       // * planId is valid
@@ -720,6 +720,7 @@ namespace HomeNet.Network
       MessageBuilder messageBuilder = Client.MessageBuilder;
       HomeNodeRequestRequest homeNodeRequestRequest = RequestMessage.Request.ConversationRequest.HomeNodeRequest;
       HomeNodePlanContract contract = homeNodeRequestRequest.Contract;
+      string identityType = contract != null ? contract.IdentityType : "<new>";
 
 
       bool success = false;
@@ -754,7 +755,7 @@ namespace HomeNet.Network
                 identity.PublicKey = Client.PublicKey;
                 identity.Version = new byte[] { 0, 0, 0 };
                 identity.Name = "";
-                identity.Type = "<new>";
+                identity.Type = identityType;
                 // Existing cancelled identity profile does not have images, no need to delete anything at this point.
                 identity.ProfileImage = null;
                 identity.ThumbnailImage = null;
