@@ -444,7 +444,7 @@ namespace HomeNetProtocolTests
     /// <returns>Network identifier in its binary form.</returns>
     public byte[] GetIdentityId()
     {
-      return Crypto.Sha1(keys.PublicKey);
+      return Crypto.Sha256(keys.PublicKey);
     }
 
     /// <summary>

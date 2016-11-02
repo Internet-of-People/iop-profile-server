@@ -315,7 +315,7 @@ namespace HomeNetProtocolTests.Tests
         offset += chunk.Length;
       }
 
-      byte[] finalHash = Crypto.Sha1(data);
+      byte[] finalHash = Crypto.Sha256(data);
 
       log.Trace(prefix + "(-):{0}", Crypto.ToHex(finalHash));
       return finalHash;
@@ -398,7 +398,7 @@ namespace HomeNetProtocolTests.Tests
         offset += chunk.Length;
       }
 
-      byte[] finalHash = Crypto.Sha1(data);
+      byte[] finalHash = Crypto.Sha256(data);
 
       log.Trace(prefix + "(-):{0}", Crypto.ToHex(finalHash));
       return finalHash;

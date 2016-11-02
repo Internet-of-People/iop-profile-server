@@ -56,7 +56,7 @@ namespace HomeNetProtocolTests.Tests
         await client.ConnectAsync(NodeIp, PrimaryPort, false);
 
         byte[] data = Encoding.UTF8.GetBytes("test");
-        byte[] token = Crypto.Sha1(data);
+        byte[] token = Crypto.Sha256(data);
         Message requestMessage = mb.CreateIncomingCallNotificationRequest(client.GetIdentityKeys().PublicKey, "Test Service", token);
         await client.SendMessageAsync(requestMessage);
 
@@ -70,7 +70,7 @@ namespace HomeNetProtocolTests.Tests
         // We should be disconnected by now, so sending or receiving should throw.
         bool disconnectedOk = false;
         data = Encoding.UTF8.GetBytes("Hello");
-        byte[] payload = Crypto.Sha1(data);
+        byte[] payload = Crypto.Sha256(data);
         requestMessage = mb.CreatePingRequest(payload);
 
         try

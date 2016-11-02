@@ -31,9 +31,9 @@ namespace HomeNet.Data.Models
     public const int MaxProfileExtraDataLengthBytes = 200;
 
     /// <summary>Length in bytes of node/identity identifiers.</summary>
-    public const int IdentifierLength = 20;
+    public const int IdentifierLength = 32;
 
-    /// <summary>Identity identifier is SHA1 hash of identity's public key.</summary>
+    /// <summary>Identity identifier is SHA256 hash of identity's public key.</summary>
     /// <remarks>This is index - see HomeNet.Data.Context.OnModelCreating.</remarks>
     [MaxLength(IdentifierLength)]
     public byte[] IdentityId { get; set; }

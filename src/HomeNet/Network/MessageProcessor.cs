@@ -654,7 +654,7 @@ namespace HomeNet.Network
         if (GetCommonSupportedVersion(startConversationRequest.SupportedVersions, out version))
         {
           Client.PublicKey = startConversationRequest.PublicKey.ToByteArray();
-          Client.IdentityId = Crypto.Sha1(Client.PublicKey);
+          Client.IdentityId = Crypto.Sha256(Client.PublicKey);
 
           if (clientList.AddNetworkPeerWithIdentity(Client))
           {

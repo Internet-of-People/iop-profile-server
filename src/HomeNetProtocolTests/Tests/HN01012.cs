@@ -69,7 +69,7 @@ namespace HomeNetProtocolTests.Tests
         // We should be disconnected by now, so sending or receiving should throw.
         bool disconnectedOk = false;
         byte[] data = Encoding.UTF8.GetBytes("Hello");
-        byte[] payload = Crypto.Sha1(data);
+        byte[] payload = Crypto.Sha256(data);
         requestMessage = mb.CreatePingRequest(payload);
 
         try

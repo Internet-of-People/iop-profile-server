@@ -56,7 +56,7 @@ namespace HomeNetProtocolTests.Tests
         await client.ConnectAsync(NodeIp, PrimaryPort, false);
 
         byte[] data = Encoding.UTF8.GetBytes("test");
-        byte[] token = Crypto.Sha1(data);
+        byte[] token = Crypto.Sha256(data);
         byte[] messageData = Encoding.UTF8.GetBytes("Test message");
         Message requestMessage = mb.CreateApplicationServiceSendMessageRequest(token, messageData);
         await client.SendMessageAsync(requestMessage);
