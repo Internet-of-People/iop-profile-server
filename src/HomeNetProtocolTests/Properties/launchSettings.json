@@ -2,7 +2,7 @@
   "profiles": {
     "HomeNetProtocolTests": {
       "commandName": "Project",
-      "commandLineArgs": "HN04006 127.0.0.1 16988 16988"
+      "commandLineArgs": "HN05004 127.0.0.1 16987"
     }
   }
 }

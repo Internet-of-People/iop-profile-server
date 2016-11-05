@@ -778,12 +778,13 @@ namespace HomeNetProtocol
     /// <param name="IsOnline">If <paramref name="IsHosted"/> is true, this indicates whether the requested identity is currently online.</param>
     /// <param name="PublicKey">If <paramref name="IsHosted"/> is true, this is the public key of the requested identity.</param>
     /// <param name="Name">If <paramref name="IsHosted"/> is true, this is the name of the requested identity.</param>
+    /// <param name="Type">If <paramref name="IsHosted"/> is true, this is the type of the requested identity.</param>
     /// <param name="ExtraData">If <paramref name="IsHosted"/> is true, this is the extra data information of the requested identity.</param>
     /// <param name="ProfileImage">If <paramref name="IsHosted"/> is true, this is the identity's profile image, or null if it was not requested.</param>
     /// <param name="ThumbnailImage">If <paramref name="IsHosted"/> is true, this is the identity's thumbnail image, or null if it was not requested.</param>
     /// <param name="ApplicationServices">If <paramref name="IsHosted"/> is true, this is the identity's list of supported application services, or null if it was not requested.</param>
     /// <returns>GetIdentityInformationResponse message that is ready to be sent.</returns>
-    public Message CreateGetIdentityInformationResponse(Message Request, bool IsHosted, byte[] TargetHomeNodeId, bool IsOnline = false, byte[] PublicKey = null, string Name = null, string ExtraData = null, byte[] ProfileImage = null, byte[] ThumbnailImage = null, HashSet<string> ApplicationServices = null)
+    public Message CreateGetIdentityInformationResponse(Message Request, bool IsHosted, byte[] TargetHomeNodeId, bool IsOnline = false, byte[] PublicKey = null, string Name = null, string Type = null, string ExtraData = null, byte[] ProfileImage = null, byte[] ThumbnailImage = null, HashSet<string> ApplicationServices = null)
     {
       GetIdentityInformationResponse getIdentityInformationResponse = new GetIdentityInformationResponse();
       getIdentityInformationResponse.IsHosted = IsHosted;
@@ -793,6 +794,7 @@ namespace HomeNetProtocol
         getIdentityInformationResponse.IsOnline = IsOnline;
         getIdentityInformationResponse.IdentityPublicKey = ProtocolHelper.ByteArrayToByteString(PublicKey);
         if (Name != null) getIdentityInformationResponse.Name = Name;
+        if (Type != null) getIdentityInformationResponse.Type = Type;
         if (ExtraData != null) getIdentityInformationResponse.ExtraData = ExtraData;
         if (ProfileImage != null) getIdentityInformationResponse.ProfileImage = ProtocolHelper.ByteArrayToByteString(ProfileImage);
         if (ThumbnailImage != null) getIdentityInformationResponse.ThumbnailImage = ProtocolHelper.ByteArrayToByteString(ThumbnailImage);
@@ -807,6 +809,150 @@ namespace HomeNetProtocol
 
       Message res = CreateSingleResponse(Request);
       res.Response.SingleResponse.GetIdentityInformation = getIdentityInformationResponse;
+
+      return res;
+    }
+
+
+    /// <summary>
+    /// Creates a new CallIdentityApplicationServiceRequest message.
+    /// </summary>
+    /// <param name="IdentityId">Network identifier of the callee's identity.</param>
+    /// <param name="ServiceName">Name of the application service to use for the call.</param>
+    /// <returns>CallIdentityApplicationServiceRequest message that is ready to be sent.</returns>
+    public Message CreateCallIdentityApplicationServiceRequest(byte[] IdentityId, string ServiceName)
+    {
+      CallIdentityApplicationServiceRequest callIdentityApplicationServiceRequest = new CallIdentityApplicationServiceRequest();
+      callIdentityApplicationServiceRequest.IdentityNetworkId = ProtocolHelper.ByteArrayToByteString(IdentityId);
+      callIdentityApplicationServiceRequest.ServiceName = ServiceName;
+
+      Message res = CreateConversationRequest();
+      res.Request.ConversationRequest.CallIdentityApplicationService = callIdentityApplicationServiceRequest;
+
+      return res;
+    }
+
+
+    /// <summary>
+    /// Creates a response message to a CallIdentityApplicationServiceRequest message.
+    /// </summary>
+    /// <param name="Request">CallIdentityApplicationServiceRequest message for which the response is created.</param>
+    /// <param name="CallerToken">Token issued for the caller for clAppService connection.</param>
+    /// <returns>CallIdentityApplicationServiceResponse message that is ready to be sent.</returns>
+    public Message CreateCallIdentityApplicationServiceResponse(Message Request, byte[] CallerToken)
+    {
+      CallIdentityApplicationServiceResponse callIdentityApplicationServiceResponse = new CallIdentityApplicationServiceResponse();
+      callIdentityApplicationServiceResponse.CallerToken = ProtocolHelper.ByteArrayToByteString(CallerToken);
+
+      Message res = CreateConversationResponse(Request);
+      res.Response.ConversationResponse.CallIdentityApplicationService = callIdentityApplicationServiceResponse;
+
+      return res;
+    }
+
+
+    /// <summary>
+    /// Creates a new IncomingCallNotificationRequest message.
+    /// </summary>
+    /// <param name="CallerPublicKey">Public key of the caller.</param>
+    /// <param name="ServiceName">Name of the application service the caller wants to use.</param>
+    /// <param name="CalleeToken">Token issued for the callee for clAppService connection.</param>
+    /// <returns>IncomingCallNotificationRequest message that is ready to be sent.</returns>
+    public Message CreateIncomingCallNotificationRequest(byte[] CallerPublicKey, string ServiceName, byte[] CalleeToken)
+    {
+      IncomingCallNotificationRequest incomingCallNotificationRequest = new IncomingCallNotificationRequest();
+      incomingCallNotificationRequest.CallerPublicKey = ProtocolHelper.ByteArrayToByteString(CallerPublicKey);
+      incomingCallNotificationRequest.ServiceName = ServiceName;
+      incomingCallNotificationRequest.CalleeToken = ProtocolHelper.ByteArrayToByteString(CalleeToken);
+
+      Message res = CreateConversationRequest();
+      res.Request.ConversationRequest.IncomingCallNotification = incomingCallNotificationRequest;
+
+      return res;
+    }
+
+
+    /// <summary>
+    /// Creates a response message to a IncomingCallNotificationRequest message.
+    /// </summary>
+    /// <param name="Request">IncomingCallNotificationRequest message for which the response is created.</param>
+    /// <returns>IncomingCallNotificationResponse message that is ready to be sent.</returns>
+    public Message CreateIncomingCallNotificationResponse(Message Request)
+    {
+      IncomingCallNotificationResponse incomingCallNotificationResponse = new IncomingCallNotificationResponse();
+
+      Message res = CreateConversationResponse(Request);
+      res.Response.ConversationResponse.IncomingCallNotification = incomingCallNotificationResponse;
+
+      return res;
+    }
+
+
+    /// <summary>
+    /// Creates a new ApplicationServiceSendMessageRequest message.
+    /// </summary>
+    /// <param name="Token">Client's token for clAppService connection.</param>
+    /// <param name="Message">Message to be sent to the other peer, or null for channel initialization message.</param>
+    /// <returns>ApplicationServiceSendMessageRequest message that is ready to be sent.</returns>
+    public Message CreateApplicationServiceSendMessageRequest(byte[] Token, byte[] Message)
+    {
+      ApplicationServiceSendMessageRequest applicationServiceSendMessageRequest = new ApplicationServiceSendMessageRequest();
+      applicationServiceSendMessageRequest.Token = ProtocolHelper.ByteArrayToByteString(Token);
+      if (Message != null)
+        applicationServiceSendMessageRequest.Message = ProtocolHelper.ByteArrayToByteString(Message);
+
+      Message res = CreateSingleRequest();
+      res.Request.SingleRequest.ApplicationServiceSendMessage = applicationServiceSendMessageRequest;
+
+      return res;
+    }
+
+
+    /// <summary>
+    /// Creates a response message to a ApplicationServiceSendMessageRequest message.
+    /// </summary>
+    /// <param name="Request">ApplicationServiceSendMessageRequest message for which the response is created.</param>
+    /// <returns>ApplicationServiceSendMessageResponse message that is ready to be sent.</returns>
+    public Message CreateApplicationServiceSendMessageResponse(Message Request)
+    {
+      ApplicationServiceSendMessageResponse applicationServiceSendMessageResponse = new ApplicationServiceSendMessageResponse();
+
+      Message res = CreateSingleResponse(Request);
+      res.Response.SingleResponse.ApplicationServiceSendMessage = applicationServiceSendMessageResponse;
+
+      return res;
+    }
+
+
+
+    /// <summary>
+    /// Creates a new ApplicationServiceReceiveMessageNotificationRequest message.
+    /// </summary>
+    /// <param name="Message">Message sent by the other peer.</param>
+    /// <returns>ApplicationServiceReceiveMessageNotificationRequest message that is ready to be sent.</returns>
+    public Message CreateApplicationServiceReceiveMessageNotificationRequest(byte[] Message)
+    {
+      ApplicationServiceReceiveMessageNotificationRequest applicationServiceReceiveMessageNotificationRequest = new ApplicationServiceReceiveMessageNotificationRequest();
+      applicationServiceReceiveMessageNotificationRequest.Message = ProtocolHelper.ByteArrayToByteString(Message);
+
+      Message res = CreateSingleRequest();
+      res.Request.SingleRequest.ApplicationServiceReceiveMessageNotification = applicationServiceReceiveMessageNotificationRequest;
+
+      return res;
+    }
+
+
+    /// <summary>
+    /// Creates a response message to a ApplicationServiceReceiveMessageNotificationRequest message.
+    /// </summary>
+    /// <param name="Request">ApplicationServiceReceiveMessageNotificationRequest message for which the response is created.</param>
+    /// <returns>ApplicationServiceReceiveMessageNotificationResponse message that is ready to be sent.</returns>
+    public Message CreateApplicationServiceReceiveMessageNotificationResponse(Message Request)
+    {
+      ApplicationServiceReceiveMessageNotificationResponse applicationServiceReceiveMessageNotificationResponse = new ApplicationServiceReceiveMessageNotificationResponse();
+
+      Message res = CreateSingleResponse(Request);
+      res.Response.SingleResponse.ApplicationServiceReceiveMessageNotification = applicationServiceReceiveMessageNotificationResponse;
 
       return res;
     }

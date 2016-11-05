@@ -38,6 +38,10 @@ namespace HomeNet.Network
     private Thread serversMaintenanceThread;
 
 
+    /// <summary>List of network peers and clients across all role servers.</summary>
+    private ClientList clientList;
+
+
 
     public override bool Init()
     {
@@ -48,6 +52,8 @@ namespace HomeNet.Network
 
       try
       {
+        clientList = new ClientList();
+
         checkInactiveClientConnectionsTimer = new Timer(CheckInactiveClientConnectionsTimerCallback, null, CheckInactiveClientConnectionsTimerInterval, CheckInactiveClientConnectionsTimerInterval);
 
         serversMaintenanceThread = new Thread(new ThreadStart(ServersMaintenanceThread));
@@ -110,6 +116,7 @@ namespace HomeNet.Network
       return res;
     }
 
+
     public override void Shutdown()
     {
       log.Info("()");
@@ -122,18 +129,19 @@ namespace HomeNet.Network
       if ((serversMaintenanceThread != null) && !serversMaintenanceThreadFinished.WaitOne(10000))
         log.Error("Servers maintenance thread did not terminated in 10 seconds.");
 
+      List<Client> clients = clientList.GetNetworkClientList();
+      try
+      {
+        log.Info("Closing {0} existing client connections of role servers.", clients.Count);
+        foreach (Client client in clients)
+          client.CloseConnection().Wait();
+      }
+      catch
+      {
+      }
+
       foreach (TcpRoleServer server in tcpServers.Values)
       {
-        List<Client> clients = server.GetClientListCopy();
-        try
-        {
-          log.Info("Closing {0} existing client connections of server {1}.", clients.Count, server.EndPoint);
-          foreach (Client client in clients)
-            client.Dispose();
-        } catch
-        {
-        }
-
         if (server.IsRunning)
           server.Stop();
       }
@@ -207,7 +215,7 @@ namespace HomeNet.Network
       {
         foreach (TcpRoleServer server in servers)
         {
-          List<Client> clients = server.GetClientListCopy();
+          List<Client> clients = clientList.GetNetworkClientList();
           foreach (Client client in clients)
           {
             ulong id = 0;
@@ -221,8 +229,8 @@ namespace HomeNet.Network
                 // We want to disconnect the client and remove it from the list.
                 // If we dispose the client this will terminate the read loop in TcpRoleServer.ClientHandlerAsync,
                 // which will then remove the client from the list, so we do not need to care about that.
-                log.Debug("Client ID 0x{0:X16} did not send any requests before {1} and is now considered as inactive. Disposing client.", id, client.NextKeepAliveTime.ToString("yyyy-MM-dd HH:mm:ss"));
-                client.Dispose();
+                log.Debug("Client ID 0x{0:X16} did not send any requests before {1} and is now considered as inactive. Closing client's connection.", id, client.NextKeepAliveTime.ToString("yyyy-MM-dd HH:mm:ss"));
+                client.CloseConnection().Wait();
               }
             }
             catch (Exception e)
@@ -251,6 +259,20 @@ namespace HomeNet.Network
       List<TcpRoleServer> res = new List<TcpRoleServer>(tcpServers.Values);
 
       log.Trace("(-):*.Count={0}", res.Count);
+      return res;
+    }
+
+    /// <summary>
+    /// Obtains the client list.
+    /// </summary>
+    /// <returns>List of all server's clients.</returns>
+    public ClientList GetClientList()
+    {
+      log.Trace("()");
+
+      ClientList res = clientList;
+
+      log.Trace("(-)");
       return res;
     }
   }
