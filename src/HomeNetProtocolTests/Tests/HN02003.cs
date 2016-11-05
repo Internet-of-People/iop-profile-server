@@ -54,13 +54,14 @@ namespace HomeNetProtocolTests.Tests
         // Step 1
         await client.ConnectAsync(NodeIp, ClNonCustomerPort, true);
 
-        Message requestMessage = mb.CreateStartConversationRequest();
+        Message requestMessage = client.CreateStartConversationRequest();
         await client.SendMessageAsync(requestMessage);
         Message responseMessage = await client.ReceiveMessageAsync();
 
         // Step 1 Acceptance
         bool idOk = responseMessage.Id == requestMessage.Id;
         bool statusOk = responseMessage.Response.Status == Status.Ok;
+        bool verifyChallengeOk = client.VerifyNodeChallengeSignature(responseMessage);
 
         byte[] receivedVersion = responseMessage.Response.ConversationResponse.Start.Version.ToByteArray();
         byte[] expectedVersion = new byte[] { 1, 0, 0 };
@@ -69,7 +70,7 @@ namespace HomeNetProtocolTests.Tests
         bool pubKeyLenOk = responseMessage.Response.ConversationResponse.Start.PublicKey.Length == 32;
         bool challengeOk = responseMessage.Response.ConversationResponse.Start.Challenge.Length == 32;
 
-        Passed = idOk && statusOk && versionOk && pubKeyLenOk && challengeOk;
+        Passed = idOk && statusOk && verifyChallengeOk && versionOk && pubKeyLenOk && challengeOk;
 
         res = true;
       }

@@ -645,33 +645,42 @@ namespace HomeNet.Network
 
       MessageBuilder messageBuilder = Client.MessageBuilder;
       StartConversationRequest startConversationRequest = RequestMessage.Request.ConversationRequest.Start;
+      byte[] clientChallenge = startConversationRequest.ClientChallenge.ToByteArray();
 
-      byte[] version;
-      if (GetCommonSupportedVersion(startConversationRequest.SupportedVersions, out version))
+      if (clientChallenge.Length == ProtocolHelper.ChallengeDataSize)
       {
-        Client.PublicKey = startConversationRequest.PublicKey.ToByteArray();
-        Client.IdentityId = Crypto.Sha1(Client.PublicKey);
-
-        if (clientList.AddNetworkPeerWithIdentity(Client))
+        byte[] version;
+        if (GetCommonSupportedVersion(startConversationRequest.SupportedVersions, out version))
         {
-          Client.ConversationStatus = ClientConversationStatus.ConversationStarted;
-          Client.MessageBuilder.SetProtocolVersion(version);
+          Client.PublicKey = startConversationRequest.PublicKey.ToByteArray();
+          Client.IdentityId = Crypto.Sha1(Client.PublicKey);
 
-          byte[] challenge = new byte[32];
-          Crypto.Rng.GetBytes(challenge);
-          Client.AuthenticationChallenge = challenge;
+          if (clientList.AddNetworkPeerWithIdentity(Client))
+          {
+            Client.ConversationStatus = ClientConversationStatus.ConversationStarted;
+            Client.MessageBuilder.SetProtocolVersion(version);
 
-          log.Debug("Client {0} conversation status updated to {1}, selected version is '{2}', client public key set to '{3}', client identity ID set to '{4}', challenge set to '{5}'.",
-            Client.RemoteEndPoint, Client.ConversationStatus, ProtocolHelper.VersionBytesToString(version), Crypto.ToHex(Client.PublicKey), Crypto.ToHex(Client.IdentityId), Crypto.ToHex(Client.AuthenticationChallenge));
+            byte[] challenge = new byte[ProtocolHelper.ChallengeDataSize];
+            Crypto.Rng.GetBytes(challenge);
+            Client.AuthenticationChallenge = challenge;
 
-          res = messageBuilder.CreateStartConversationResponse(RequestMessage, version, Base.Configuration.Keys.PublicKey, Client.AuthenticationChallenge);
+            log.Debug("Client {0} conversation status updated to {1}, selected version is '{2}', client public key set to '{3}', client identity ID set to '{4}', challenge set to '{5}'.",
+              Client.RemoteEndPoint, Client.ConversationStatus, ProtocolHelper.VersionBytesToString(version), Crypto.ToHex(Client.PublicKey), Crypto.ToHex(Client.IdentityId), Crypto.ToHex(Client.AuthenticationChallenge));
+
+            res = messageBuilder.CreateStartConversationResponse(RequestMessage, version, Base.Configuration.Keys.PublicKey, Client.AuthenticationChallenge, clientChallenge);
+          }
+          else res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
         }
-        else res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
+        else
+        {
+          log.Warn("Client and server are incompatible in protocol versions.");
+          res = messageBuilder.CreateErrorUnsupportedResponse(RequestMessage);
+        }
       }
       else
       {
-        log.Warn("Client and server are incompatible in protocol versions.");
-        res = messageBuilder.CreateErrorUnsupportedResponse(RequestMessage);
+        log.Warn("Client send clientChallenge, which is {0} bytes, but it should be {1} bytes.", clientChallenge.Length, ProtocolHelper.ChallengeDataSize);
+        res = messageBuilder.CreateErrorInvalidValueResponse(RequestMessage, "clientChallenge");
       }
 
       log.Trace("(-):*.Response.Status={0}", res.Response.Status);

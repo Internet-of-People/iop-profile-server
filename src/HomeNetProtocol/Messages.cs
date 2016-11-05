@@ -319,6 +319,18 @@ namespace HomeNetProtocol
 
 
     /// <summary>
+    /// Signs a part of the request body with identity private key and puts the signature to the ConversationRequest.Signature.
+    /// </summary>
+    /// <param name="Message">Whole message which contains an initialized ConversationRequest.</param>
+    /// <param name="BodyPart">Part of the request to sign.</param>
+    public void SignConversationRequestBodyPart(Message Message, byte[] BodyPart)
+    {
+      byte[] signature = Ed25519.Sign(BodyPart, keys.ExpandedPrivateKey);
+      Message.Request.ConversationRequest.Signature = ProtocolHelper.ByteArrayToByteString(signature);
+    }
+
+
+    /// <summary>
     /// Verifies ConversationRequest.Signature signature of a request body with a given public key.
     /// </summary>
     /// <param name="Message">Whole message which contains an initialized ConversationRequest.</param>
@@ -336,10 +348,26 @@ namespace HomeNetProtocol
 
 
     /// <summary>
+    /// Verifies ConversationRequest.Signature signature of a request body part with a given public key.
+    /// </summary>
+    /// <param name="Message">Whole message which contains an initialized ConversationRequest.</param>
+    /// <param name="BodyPart">Part of the request body that was signed.</param>
+    /// <param name="PublicKey">Public key of the identity that created the signature.</param>
+    /// <returns>true if the signature is valid, false otherwise including missing signature.</returns>
+    public bool VerifySignedConversationRequestBodyPart(Message Message, byte[] BodyPart, byte[] PublicKey)
+    {
+      byte[] signature = Message.Request.ConversationRequest.Signature.ToByteArray();
+
+      bool res = Ed25519.Verify(signature, BodyPart, PublicKey);
+      return res;
+    }
+
+
+    /// <summary>
     /// Signs a response body with identity private key and puts the signature to the ConversationResponse.Signature.
     /// </summary>
     /// <param name="Message">Whole message which contains an initialized ConversationResponse.</param>
-    /// <param name="RequestBody">Part of the request to sign.</param>
+    /// <param name="ResponseBody">Part of the response to sign.</param>
     public void SignConversationResponseBody(Message Message, IMessage ResponseBody)
     {
       byte[] msg = ResponseBody.ToByteArray();
@@ -347,6 +375,50 @@ namespace HomeNetProtocol
       Message.Response.ConversationResponse.Signature = ProtocolHelper.ByteArrayToByteString(signature);
     }
 
+
+    /// <summary>
+    /// Signs a part of the response body with identity private key and puts the signature to the ConversationResponse.Signature.
+    /// </summary>
+    /// <param name="Message">Whole message which contains an initialized ConversationResponse.</param>
+    /// <param name="BodyPart">Part of the response to sign.</param>
+    public void SignConversationResponseBodyPart(Message Message, byte[] BodyPart)
+    {
+      byte[] signature = Ed25519.Sign(BodyPart, keys.ExpandedPrivateKey);
+      Message.Response.ConversationResponse.Signature = ProtocolHelper.ByteArrayToByteString(signature);
+    }
+
+
+    /// <summary>
+    /// Verifies ConversationResponse.Signature signature of a response body with a given public key.
+    /// </summary>
+    /// <param name="Message">Whole message which contains an initialized ConversationResponse.</param>
+    /// <param name="ResponseBody">Part of the request that was signed.</param>
+    /// <param name="PublicKey">Public key of the identity that created the signature.</param>
+    /// <returns>true if the signature is valid, false otherwise including missing signature.</returns>
+    public bool VerifySignedConversationResponseBody(Message Message, IMessage ResponseBody, byte[] PublicKey)
+    {
+      byte[] msg = ResponseBody.ToByteArray();
+      byte[] signature = Message.Response.ConversationResponse.Signature.ToByteArray();
+
+      bool res = Ed25519.Verify(signature, msg, PublicKey);
+      return res;
+    }
+
+
+    /// <summary>
+    /// Verifies ConversationResponse.Signature signature of a response body part with a given public key.
+    /// </summary>
+    /// <param name="Message">Whole message which contains an initialized ConversationResponse.</param>
+    /// <param name="BodyPart">Part of the response body that was signed.</param>
+    /// <param name="PublicKey">Public key of the identity that created the signature.</param>
+    /// <returns>true if the signature is valid, false otherwise including missing signature.</returns>
+    public bool VerifySignedConversationResponseBodyPart(Message Message, byte[] BodyPart, byte[] PublicKey)
+    {
+      byte[] signature = Message.Response.ConversationResponse.Signature.ToByteArray();
+
+      bool res = Ed25519.Verify(signature, BodyPart, PublicKey);
+      return res;
+    }
 
     /// <summary>
     /// Creates a new successful single response template for a specific request.
@@ -446,19 +518,22 @@ namespace HomeNetProtocol
     /// <summary>
     /// Creates a new StartConversationRequest message.
     /// </summary>
+    /// <param name="Challenge">Client's generated challenge data for server's authentication.</param>
     /// <returns>StartConversationRequest message that is ready to be sent.</returns>
-    public Message CreateStartConversationRequest()
+    public Message CreateStartConversationRequest(byte[] Challenge)
     {
       StartConversationRequest startConversationRequest = new StartConversationRequest();
       startConversationRequest.SupportedVersions.Add(supportedVersions);
 
       startConversationRequest.PublicKey = ProtocolHelper.ByteArrayToByteString(keys.PublicKey);
+      startConversationRequest.ClientChallenge = ProtocolHelper.ByteArrayToByteString(Challenge);
 
       Message res = CreateConversationRequest();
       res.Request.ConversationRequest.Start = startConversationRequest;
 
       return res;
     }
+
 
     /// <summary>
     /// Creates a response message to a StartConversationRequest message.
@@ -467,16 +542,20 @@ namespace HomeNetProtocol
     /// <param name="Version">Selected version that both server and client support.</param>
     /// <param name="PublicKey">Server's public key.</param>
     /// <param name="Challenge">Server's generated challenge data for client's authentication.</param>
+    /// <param name="Challenge">ClientChallenge from StartConversationRequest that the server received from the client.</param>
     /// <returns>StartConversationResponse message that is ready to be sent.</returns>
-    public Message CreateStartConversationResponse(Message Request, byte[] Version, byte[] PublicKey, byte[] Challenge)
+    public Message CreateStartConversationResponse(Message Request, byte[] Version, byte[] PublicKey, byte[] Challenge, byte[] ClientChallenge)
     {
       StartConversationResponse startConversationResponse = new StartConversationResponse();
       startConversationResponse.Version = ProtocolHelper.VersionToByteString(Version);
       startConversationResponse.PublicKey = ProtocolHelper.ByteArrayToByteString(PublicKey);
       startConversationResponse.Challenge = ProtocolHelper.ByteArrayToByteString(Challenge);
+      startConversationResponse.ClientChallenge = ProtocolHelper.ByteArrayToByteString(ClientChallenge);
 
       Message res = CreateConversationResponse(Request);
       res.Response.ConversationResponse.Start = startConversationResponse;
+
+      SignConversationResponseBodyPart(res, ClientChallenge);
 
       return res;
     }

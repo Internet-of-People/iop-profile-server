@@ -106,65 +106,66 @@ namespace Iop.Homenode {
             "aWRlbnRpdHlUeXBlGAMgASgJEgsKA2ZlZRgEIAEoBBIcChRiaWxsaW5nUGVy",
             "aW9kU2Vjb25kcxgFIAEoDRI5Cg5wbGFuUGFyYW1ldGVycxgJIAMoCzIhLmlv",
             "cC5ob21lbm9kZS5OYW1lU3RyaW5nVmFsdWVQYWlyIjIKE05hbWVTdHJpbmdW",
-            "YWx1ZVBhaXISDAoEbmFtZRgBIAEoCRINCgV2YWx1ZRgCIAEoCSJIChhTdGFy",
+            "YWx1ZVBhaXISDAoEbmFtZRgBIAEoCRINCgV2YWx1ZRgCIAEoCSJhChhTdGFy",
             "dENvbnZlcnNhdGlvblJlcXVlc3QSGQoRc3VwcG9ydGVkVmVyc2lvbnMYASAD",
-            "KAwSEQoJcHVibGljS2V5GAIgASgMIlIKGVN0YXJ0Q29udmVyc2F0aW9uUmVz",
-            "cG9uc2USDwoHdmVyc2lvbhgBIAEoDBIRCglwdWJsaWNLZXkYAiABKAwSEQoJ",
-            "Y2hhbGxlbmdlGAMgASgMIk4KFkhvbWVOb2RlUmVxdWVzdFJlcXVlc3QSNAoI",
-            "Y29udHJhY3QYASABKAsyIi5pb3AuaG9tZW5vZGUuSG9tZU5vZGVQbGFuQ29u",
-            "dHJhY3QiTwoXSG9tZU5vZGVSZXF1ZXN0UmVzcG9uc2USNAoIY29udHJhY3QY",
-            "ASABKAsyIi5pb3AuaG9tZW5vZGUuSG9tZU5vZGVQbGFuQ29udHJhY3QiagoU",
-            "SG9tZU5vZGVQbGFuQ29udHJhY3QSDgoGcGxhbklkGAEgASgMEhkKEWlkZW50",
-            "aXR5UHVibGljS2V5GAIgASgMEhEKCXN0YXJ0VGltZRgDIAEoEhIUCgxpZGVu",
-            "dGl0eVR5cGUYBCABKAkiIwoOQ2hlY2tJblJlcXVlc3QSEQoJY2hhbGxlbmdl",
-            "GAEgASgMIhEKD0NoZWNrSW5SZXNwb25zZSIqChVWZXJpZnlJZGVudGl0eVJl",
-            "cXVlc3QSEQoJY2hhbGxlbmdlGAEgASgMIhgKFlZlcmlmeUlkZW50aXR5UmVz",
-            "cG9uc2UiywEKFFVwZGF0ZVByb2ZpbGVSZXF1ZXN0EhIKCnNldFZlcnNpb24Y",
-            "ASABKAgSDwoHc2V0TmFtZRgCIAEoCBIQCghzZXRJbWFnZRgDIAEoCBITCgtz",
-            "ZXRMb2NhdGlvbhgEIAEoCBIUCgxzZXRFeHRyYURhdGEYBSABKAgSDwoHdmVy",
-            "c2lvbhgIIAEoDBIMCgRuYW1lGAkgASgJEg0KBWltYWdlGAogASgMEhAKCGxv",
-            "Y2F0aW9uGAsgASgHEhEKCWV4dHJhRGF0YRgMIAEoCSIXChVVcGRhdGVQcm9m",
-            "aWxlUmVzcG9uc2UiXQoeQ2FuY2VsSG9tZU5vZGVBZ3JlZW1lbnRSZXF1ZXN0",
-            "Eh0KFXJlZGlyZWN0VG9OZXdIb21lTm9kZRgBIAEoCBIcChRuZXdIb21lTm9k",
-            "ZU5ldHdvcmtJZBgCIAEoDCIhCh9DYW5jZWxIb21lTm9kZUFncmVlbWVudFJl",
-            "c3BvbnNlIjQKHEFwcGxpY2F0aW9uU2VydmljZUFkZFJlcXVlc3QSFAoMc2Vy",
-            "dmljZU5hbWVzGAEgAygJIh8KHUFwcGxpY2F0aW9uU2VydmljZUFkZFJlc3Bv",
-            "bnNlIjYKH0FwcGxpY2F0aW9uU2VydmljZVJlbW92ZVJlcXVlc3QSEwoLc2Vy",
-            "dmljZU5hbWUYASABKAkiIgogQXBwbGljYXRpb25TZXJ2aWNlUmVtb3ZlUmVz",
-            "cG9uc2UimgEKHUdldElkZW50aXR5SW5mb3JtYXRpb25SZXF1ZXN0EhkKEWlk",
-            "ZW50aXR5TmV0d29ya0lkGAEgASgMEhsKE2luY2x1ZGVQcm9maWxlSW1hZ2UY",
-            "AiABKAgSHQoVaW5jbHVkZVRodW1ibmFpbEltYWdlGAMgASgIEiIKGmluY2x1",
-            "ZGVBcHBsaWNhdGlvblNlcnZpY2VzGAQgASgIIpkCCh5HZXRJZGVudGl0eUlu",
-            "Zm9ybWF0aW9uUmVzcG9uc2USEAoIaXNIb3N0ZWQYASABKAgSHQoVaXNUYXJn",
-            "ZXRIb21lTm9kZUtub3duGAIgASgIEh8KF3RhcmdldEhvbWVOb2RlTmV0d29y",
-            "a0lkGAMgASgMEhAKCGlzT25saW5lGAQgASgIEhkKEWlkZW50aXR5UHVibGlj",
-            "S2V5GAUgASgMEgwKBHR5cGUYBiABKAkSDAoEbmFtZRgHIAEoCRIRCglleHRy",
-            "YURhdGEYCCABKAkSFAoMcHJvZmlsZUltYWdlGAkgASgMEhYKDnRodW1ibmFp",
-            "bEltYWdlGAogASgMEhsKE2FwcGxpY2F0aW9uU2VydmljZXMYCyADKAkiVwol",
-            "Q2FsbElkZW50aXR5QXBwbGljYXRpb25TZXJ2aWNlUmVxdWVzdBIZChFpZGVu",
-            "dGl0eU5ldHdvcmtJZBgBIAEoDBITCgtzZXJ2aWNlTmFtZRgCIAEoCSI9CiZD",
-            "YWxsSWRlbnRpdHlBcHBsaWNhdGlvblNlcnZpY2VSZXNwb25zZRITCgtjYWxs",
-            "ZXJUb2tlbhgBIAEoDCJkCh9JbmNvbWluZ0NhbGxOb3RpZmljYXRpb25SZXF1",
-            "ZXN0EhcKD2NhbGxlclB1YmxpY0tleRgBIAEoDBITCgtzZXJ2aWNlTmFtZRgC",
-            "IAEoCRITCgtjYWxsZWVUb2tlbhgDIAEoDCIiCiBJbmNvbWluZ0NhbGxOb3Rp",
-            "ZmljYXRpb25SZXNwb25zZSJGCiRBcHBsaWNhdGlvblNlcnZpY2VTZW5kTWVz",
-            "c2FnZVJlcXVlc3QSDQoFdG9rZW4YASABKAwSDwoHbWVzc2FnZRgCIAEoDCIn",
-            "CiVBcHBsaWNhdGlvblNlcnZpY2VTZW5kTWVzc2FnZVJlc3BvbnNlIkYKM0Fw",
-            "cGxpY2F0aW9uU2VydmljZVJlY2VpdmVNZXNzYWdlTm90aWZpY2F0aW9uUmVx",
-            "dWVzdBIPCgdtZXNzYWdlGAEgASgMIjYKNEFwcGxpY2F0aW9uU2VydmljZVJl",
-            "Y2VpdmVNZXNzYWdlTm90aWZpY2F0aW9uUmVzcG9uc2UqlgMKBlN0YXR1cxIN",
-            "CglTVEFUVVNfT0sQABIcChhFUlJPUl9QUk9UT0NPTF9WSU9MQVRJT04QARIV",
-            "ChFFUlJPUl9VTlNVUFBPUlRFRBACEhAKDEVSUk9SX0JBTk5FRBADEg4KCkVS",
-            "Uk9SX0JVU1kQBBIWChJFUlJPUl9VTkFVVEhPUklaRUQQBRISCg5FUlJPUl9C",
-            "QURfUk9MRRAGEiEKHUVSUk9SX0JBRF9DT05WRVJTQVRJT05fU1RBVFVTEAcS",
-            "EgoORVJST1JfSU5URVJOQUwQCBIYChRFUlJPUl9RVU9UQV9FWENFRURFRBAz",
-            "EhsKF0VSUk9SX0lOVkFMSURfU0lHTkFUVVJFEDQSEwoPRVJST1JfTk9UX0ZP",
-            "VU5EEDUSFwoTRVJST1JfSU5WQUxJRF9WQUxVRRA2EhgKFEVSUk9SX0FMUkVB",
-            "RFlfRVhJU1RTEDcSFwoTRVJST1JfTk9UX0FWQUlMQUJMRRA4EhIKDkVSUk9S",
-            "X1JFSkVDVEVEEDkSFwoTRVJST1JfVU5JTklUSUFMSVpFRBA6KnoKDlNlcnZl",
-            "clJvbGVUeXBlEgsKB1BSSU1BUlkQABIPCgtORF9ORUlHSEJPUhABEhAKDE5E",
-            "X0NPTExFQUdVRRACEhMKD0NMX05PTl9DVVNUT01FUhADEg8KC0NMX0NVU1RP",
-            "TUVSEAQSEgoOQ0xfQVBQX1NFUlZJQ0UQBWIGcHJvdG8z"));
+            "KAwSEQoJcHVibGljS2V5GAIgASgMEhcKD2NsaWVudENoYWxsZW5nZRgDIAEo",
+            "DCJrChlTdGFydENvbnZlcnNhdGlvblJlc3BvbnNlEg8KB3ZlcnNpb24YASAB",
+            "KAwSEQoJcHVibGljS2V5GAIgASgMEhEKCWNoYWxsZW5nZRgDIAEoDBIXCg9j",
+            "bGllbnRDaGFsbGVuZ2UYBCABKAwiTgoWSG9tZU5vZGVSZXF1ZXN0UmVxdWVz",
+            "dBI0Cghjb250cmFjdBgBIAEoCzIiLmlvcC5ob21lbm9kZS5Ib21lTm9kZVBs",
+            "YW5Db250cmFjdCJPChdIb21lTm9kZVJlcXVlc3RSZXNwb25zZRI0Cghjb250",
+            "cmFjdBgBIAEoCzIiLmlvcC5ob21lbm9kZS5Ib21lTm9kZVBsYW5Db250cmFj",
+            "dCJqChRIb21lTm9kZVBsYW5Db250cmFjdBIOCgZwbGFuSWQYASABKAwSGQoR",
+            "aWRlbnRpdHlQdWJsaWNLZXkYAiABKAwSEQoJc3RhcnRUaW1lGAMgASgSEhQK",
+            "DGlkZW50aXR5VHlwZRgEIAEoCSIjCg5DaGVja0luUmVxdWVzdBIRCgljaGFs",
+            "bGVuZ2UYASABKAwiEQoPQ2hlY2tJblJlc3BvbnNlIioKFVZlcmlmeUlkZW50",
+            "aXR5UmVxdWVzdBIRCgljaGFsbGVuZ2UYASABKAwiGAoWVmVyaWZ5SWRlbnRp",
+            "dHlSZXNwb25zZSLLAQoUVXBkYXRlUHJvZmlsZVJlcXVlc3QSEgoKc2V0VmVy",
+            "c2lvbhgBIAEoCBIPCgdzZXROYW1lGAIgASgIEhAKCHNldEltYWdlGAMgASgI",
+            "EhMKC3NldExvY2F0aW9uGAQgASgIEhQKDHNldEV4dHJhRGF0YRgFIAEoCBIP",
+            "Cgd2ZXJzaW9uGAggASgMEgwKBG5hbWUYCSABKAkSDQoFaW1hZ2UYCiABKAwS",
+            "EAoIbG9jYXRpb24YCyABKAcSEQoJZXh0cmFEYXRhGAwgASgJIhcKFVVwZGF0",
+            "ZVByb2ZpbGVSZXNwb25zZSJdCh5DYW5jZWxIb21lTm9kZUFncmVlbWVudFJl",
+            "cXVlc3QSHQoVcmVkaXJlY3RUb05ld0hvbWVOb2RlGAEgASgIEhwKFG5ld0hv",
+            "bWVOb2RlTmV0d29ya0lkGAIgASgMIiEKH0NhbmNlbEhvbWVOb2RlQWdyZWVt",
+            "ZW50UmVzcG9uc2UiNAocQXBwbGljYXRpb25TZXJ2aWNlQWRkUmVxdWVzdBIU",
+            "CgxzZXJ2aWNlTmFtZXMYASADKAkiHwodQXBwbGljYXRpb25TZXJ2aWNlQWRk",
+            "UmVzcG9uc2UiNgofQXBwbGljYXRpb25TZXJ2aWNlUmVtb3ZlUmVxdWVzdBIT",
+            "CgtzZXJ2aWNlTmFtZRgBIAEoCSIiCiBBcHBsaWNhdGlvblNlcnZpY2VSZW1v",
+            "dmVSZXNwb25zZSKaAQodR2V0SWRlbnRpdHlJbmZvcm1hdGlvblJlcXVlc3QS",
+            "GQoRaWRlbnRpdHlOZXR3b3JrSWQYASABKAwSGwoTaW5jbHVkZVByb2ZpbGVJ",
+            "bWFnZRgCIAEoCBIdChVpbmNsdWRlVGh1bWJuYWlsSW1hZ2UYAyABKAgSIgoa",
+            "aW5jbHVkZUFwcGxpY2F0aW9uU2VydmljZXMYBCABKAgimQIKHkdldElkZW50",
+            "aXR5SW5mb3JtYXRpb25SZXNwb25zZRIQCghpc0hvc3RlZBgBIAEoCBIdChVp",
+            "c1RhcmdldEhvbWVOb2RlS25vd24YAiABKAgSHwoXdGFyZ2V0SG9tZU5vZGVO",
+            "ZXR3b3JrSWQYAyABKAwSEAoIaXNPbmxpbmUYBCABKAgSGQoRaWRlbnRpdHlQ",
+            "dWJsaWNLZXkYBSABKAwSDAoEdHlwZRgGIAEoCRIMCgRuYW1lGAcgASgJEhEK",
+            "CWV4dHJhRGF0YRgIIAEoCRIUCgxwcm9maWxlSW1hZ2UYCSABKAwSFgoOdGh1",
+            "bWJuYWlsSW1hZ2UYCiABKAwSGwoTYXBwbGljYXRpb25TZXJ2aWNlcxgLIAMo",
+            "CSJXCiVDYWxsSWRlbnRpdHlBcHBsaWNhdGlvblNlcnZpY2VSZXF1ZXN0EhkK",
+            "EWlkZW50aXR5TmV0d29ya0lkGAEgASgMEhMKC3NlcnZpY2VOYW1lGAIgASgJ",
+            "Ij0KJkNhbGxJZGVudGl0eUFwcGxpY2F0aW9uU2VydmljZVJlc3BvbnNlEhMK",
+            "C2NhbGxlclRva2VuGAEgASgMImQKH0luY29taW5nQ2FsbE5vdGlmaWNhdGlv",
+            "blJlcXVlc3QSFwoPY2FsbGVyUHVibGljS2V5GAEgASgMEhMKC3NlcnZpY2VO",
+            "YW1lGAIgASgJEhMKC2NhbGxlZVRva2VuGAMgASgMIiIKIEluY29taW5nQ2Fs",
+            "bE5vdGlmaWNhdGlvblJlc3BvbnNlIkYKJEFwcGxpY2F0aW9uU2VydmljZVNl",
+            "bmRNZXNzYWdlUmVxdWVzdBINCgV0b2tlbhgBIAEoDBIPCgdtZXNzYWdlGAIg",
+            "ASgMIicKJUFwcGxpY2F0aW9uU2VydmljZVNlbmRNZXNzYWdlUmVzcG9uc2Ui",
+            "RgozQXBwbGljYXRpb25TZXJ2aWNlUmVjZWl2ZU1lc3NhZ2VOb3RpZmljYXRp",
+            "b25SZXF1ZXN0Eg8KB21lc3NhZ2UYASABKAwiNgo0QXBwbGljYXRpb25TZXJ2",
+            "aWNlUmVjZWl2ZU1lc3NhZ2VOb3RpZmljYXRpb25SZXNwb25zZSqWAwoGU3Rh",
+            "dHVzEg0KCVNUQVRVU19PSxAAEhwKGEVSUk9SX1BST1RPQ09MX1ZJT0xBVElP",
+            "ThABEhUKEUVSUk9SX1VOU1VQUE9SVEVEEAISEAoMRVJST1JfQkFOTkVEEAMS",
+            "DgoKRVJST1JfQlVTWRAEEhYKEkVSUk9SX1VOQVVUSE9SSVpFRBAFEhIKDkVS",
+            "Uk9SX0JBRF9ST0xFEAYSIQodRVJST1JfQkFEX0NPTlZFUlNBVElPTl9TVEFU",
+            "VVMQBxISCg5FUlJPUl9JTlRFUk5BTBAIEhgKFEVSUk9SX1FVT1RBX0VYQ0VF",
+            "REVEEDMSGwoXRVJST1JfSU5WQUxJRF9TSUdOQVRVUkUQNBITCg9FUlJPUl9O",
+            "T1RfRk9VTkQQNRIXChNFUlJPUl9JTlZBTElEX1ZBTFVFEDYSGAoURVJST1Jf",
+            "QUxSRUFEWV9FWElTVFMQNxIXChNFUlJPUl9OT1RfQVZBSUxBQkxFEDgSEgoO",
+            "RVJST1JfUkVKRUNURUQQORIXChNFUlJPUl9VTklOSVRJQUxJWkVEEDoqegoO",
+            "U2VydmVyUm9sZVR5cGUSCwoHUFJJTUFSWRAAEg8KC05EX05FSUdIQk9SEAES",
+            "EAoMTkRfQ09MTEVBR1VFEAISEwoPQ0xfTk9OX0NVU1RPTUVSEAMSDwoLQ0xf",
+            "Q1VTVE9NRVIQBBISCg5DTF9BUFBfU0VSVklDRRAFYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Iop.Homenode.Status), typeof(global::Iop.Homenode.ServerRoleType), }, new pbr::GeneratedClrTypeInfo[] {
@@ -185,8 +186,8 @@ namespace Iop.Homenode {
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ListHomeNodePlansResponse), global::Iop.Homenode.ListHomeNodePlansResponse.Parser, new[]{ "Plans" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.HomeNodePlan), global::Iop.Homenode.HomeNodePlan.Parser, new[]{ "PlanId", "NodeNetworkId", "IdentityType", "Fee", "BillingPeriodSeconds", "PlanParameters" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.NameStringValuePair), global::Iop.Homenode.NameStringValuePair.Parser, new[]{ "Name", "Value" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.StartConversationRequest), global::Iop.Homenode.StartConversationRequest.Parser, new[]{ "SupportedVersions", "PublicKey" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.StartConversationResponse), global::Iop.Homenode.StartConversationResponse.Parser, new[]{ "Version", "PublicKey", "Challenge" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.StartConversationRequest), global::Iop.Homenode.StartConversationRequest.Parser, new[]{ "SupportedVersions", "PublicKey", "ClientChallenge" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.StartConversationResponse), global::Iop.Homenode.StartConversationResponse.Parser, new[]{ "Version", "PublicKey", "Challenge", "ClientChallenge" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.HomeNodeRequestRequest), global::Iop.Homenode.HomeNodeRequestRequest.Parser, new[]{ "Contract" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.HomeNodeRequestResponse), global::Iop.Homenode.HomeNodeRequestResponse.Parser, new[]{ "Contract" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.HomeNodePlanContract), global::Iop.Homenode.HomeNodePlanContract.Parser, new[]{ "PlanId", "IdentityPublicKey", "StartTime", "IdentityType" }, null, null, null),
@@ -2007,7 +2008,7 @@ namespace Iop.Homenode {
     public const int SignatureFieldNumber = 1;
     private pb::ByteString signature_ = pb::ByteString.Empty;
     /// <summary>
-    ///  Optional (request specific) signature that signs the Protobuf binary form of the included request body.
+    ///  Optional (request specific) signature that signs the Protobuf binary form of the included request body or its part.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public pb::ByteString Signature {
@@ -2518,7 +2519,7 @@ namespace Iop.Homenode {
     public const int SignatureFieldNumber = 1;
     private pb::ByteString signature_ = pb::ByteString.Empty;
     /// <summary>
-    ///  Optional (response specific) signature that signs the Protobuf binary form of the included response body.
+    ///  Optional (response specific) signature that signs the Protobuf binary form of the included response body or its part.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public pb::ByteString Signature {
@@ -4375,6 +4376,7 @@ namespace Iop.Homenode {
     public StartConversationRequest(StartConversationRequest other) : this() {
       supportedVersions_ = other.supportedVersions_.Clone();
       publicKey_ = other.publicKey_;
+      clientChallenge_ = other.clientChallenge_;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -4409,6 +4411,20 @@ namespace Iop.Homenode {
       }
     }
 
+    /// <summary>Field number for the "clientChallenge" field.</summary>
+    public const int ClientChallengeFieldNumber = 3;
+    private pb::ByteString clientChallenge_ = pb::ByteString.Empty;
+    /// <summary>
+    ///  32 byte challenge data (random bytes generated by the requestor) that is used for authentication purposes.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString ClientChallenge {
+      get { return clientChallenge_; }
+      set {
+        clientChallenge_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as StartConversationRequest);
@@ -4424,6 +4440,7 @@ namespace Iop.Homenode {
       }
       if(!supportedVersions_.Equals(other.supportedVersions_)) return false;
       if (PublicKey != other.PublicKey) return false;
+      if (ClientChallenge != other.ClientChallenge) return false;
       return true;
     }
 
@@ -4432,6 +4449,7 @@ namespace Iop.Homenode {
       int hash = 1;
       hash ^= supportedVersions_.GetHashCode();
       if (PublicKey.Length != 0) hash ^= PublicKey.GetHashCode();
+      if (ClientChallenge.Length != 0) hash ^= ClientChallenge.GetHashCode();
       return hash;
     }
 
@@ -4447,6 +4465,10 @@ namespace Iop.Homenode {
         output.WriteRawTag(18);
         output.WriteBytes(PublicKey);
       }
+      if (ClientChallenge.Length != 0) {
+        output.WriteRawTag(26);
+        output.WriteBytes(ClientChallenge);
+      }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -4455,6 +4477,9 @@ namespace Iop.Homenode {
       size += supportedVersions_.CalculateSize(_repeated_supportedVersions_codec);
       if (PublicKey.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeBytesSize(PublicKey);
+      }
+      if (ClientChallenge.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(ClientChallenge);
       }
       return size;
     }
@@ -4467,6 +4492,9 @@ namespace Iop.Homenode {
       supportedVersions_.Add(other.supportedVersions_);
       if (other.PublicKey.Length != 0) {
         PublicKey = other.PublicKey;
+      }
+      if (other.ClientChallenge.Length != 0) {
+        ClientChallenge = other.ClientChallenge;
       }
     }
 
@@ -4486,6 +4514,10 @@ namespace Iop.Homenode {
             PublicKey = input.ReadBytes();
             break;
           }
+          case 26: {
+            ClientChallenge = input.ReadBytes();
+            break;
+          }
         }
       }
     }
@@ -4497,11 +4529,15 @@ namespace Iop.Homenode {
   ///  A response to StartConversationRequest in case the requestee found at least one protocol version that 
   ///  both peers are willing to use. 
   ///  
+  ///  The 'clientChallenge' field is signed with a signature in 'ConversationResponse.signature'.
+  ///  
   ///
   ///  After StartConversationResponse is sent, the conversation context includes version and keys of both peers.
   ///
   ///  Specific Error Responses:
   ///    * ERROR_UNSUPPORTED - If the requestee does not support any of the requestor's versions, it replies with this error code.
+  ///    * ERROR_INVALID_VALUE
+  ///      * Response.details == "clientChallenge" - 'StartConversationRequest.clientChallenge' is not 32 byte long. 
   /// </summary>
   public sealed partial class StartConversationResponse : pb::IMessage<StartConversationResponse> {
     private static readonly pb::MessageParser<StartConversationResponse> _parser = new pb::MessageParser<StartConversationResponse>(() => new StartConversationResponse());
@@ -4530,6 +4566,7 @@ namespace Iop.Homenode {
       version_ = other.version_;
       publicKey_ = other.publicKey_;
       challenge_ = other.challenge_;
+      clientChallenge_ = other.clientChallenge_;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -4579,6 +4616,20 @@ namespace Iop.Homenode {
       }
     }
 
+    /// <summary>Field number for the "clientChallenge" field.</summary>
+    public const int ClientChallengeFieldNumber = 4;
+    private pb::ByteString clientChallenge_ = pb::ByteString.Empty;
+    /// <summary>
+    ///  Copy of 'StartConversationRequest.clientChallenge' that is signed by the requestee. 
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString ClientChallenge {
+      get { return clientChallenge_; }
+      set {
+        clientChallenge_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as StartConversationResponse);
@@ -4595,6 +4646,7 @@ namespace Iop.Homenode {
       if (Version != other.Version) return false;
       if (PublicKey != other.PublicKey) return false;
       if (Challenge != other.Challenge) return false;
+      if (ClientChallenge != other.ClientChallenge) return false;
       return true;
     }
 
@@ -4604,6 +4656,7 @@ namespace Iop.Homenode {
       if (Version.Length != 0) hash ^= Version.GetHashCode();
       if (PublicKey.Length != 0) hash ^= PublicKey.GetHashCode();
       if (Challenge.Length != 0) hash ^= Challenge.GetHashCode();
+      if (ClientChallenge.Length != 0) hash ^= ClientChallenge.GetHashCode();
       return hash;
     }
 
@@ -4626,6 +4679,10 @@ namespace Iop.Homenode {
         output.WriteRawTag(26);
         output.WriteBytes(Challenge);
       }
+      if (ClientChallenge.Length != 0) {
+        output.WriteRawTag(34);
+        output.WriteBytes(ClientChallenge);
+      }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -4639,6 +4696,9 @@ namespace Iop.Homenode {
       }
       if (Challenge.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeBytesSize(Challenge);
+      }
+      if (ClientChallenge.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(ClientChallenge);
       }
       return size;
     }
@@ -4656,6 +4716,9 @@ namespace Iop.Homenode {
       }
       if (other.Challenge.Length != 0) {
         Challenge = other.Challenge;
+      }
+      if (other.ClientChallenge.Length != 0) {
+        ClientChallenge = other.ClientChallenge;
       }
     }
 
@@ -4677,6 +4740,10 @@ namespace Iop.Homenode {
           }
           case 26: {
             Challenge = input.ReadBytes();
+            break;
+          }
+          case 34: {
+            ClientChallenge = input.ReadBytes();
             break;
           }
         }
@@ -4823,7 +4890,7 @@ namespace Iop.Homenode {
   /// <summary>
   ///
   ///  A response to HomeNodeRequestRequest in case the node wants to accept the request.
-  ///  The contract is signed with a signature in ConversationResponse.signature.
+  ///  The response body is signed with a signature in 'ConversationResponse.signature'.
   ///
   ///  Specific Error Responses:
   ///    * ERROR_QUOTA_EXCEEDED - A node uses this error code in case it wants to express that it will not accept any new clients because it has no free slots.
@@ -8101,7 +8168,7 @@ namespace Iop.Homenode {
   /// <summary>
   ///  
   ///  This request is sent by a client to the node in order to deliver a message to the other client over the opened 
-  ///  application service call session.
+  ///  application service call channel.
   ///
   ///  After the client connects to clAppService port, it sends an initialization message using this request 
   ///  to inform the node about its identity. This initialization message is not delivered to the other party
@@ -8110,15 +8177,17 @@ namespace Iop.Homenode {
   ///  within 30 seconds, the node closes the existing connection to the connected client.
   ///
   ///  Until the client receives a reply from the node to its initialization message, it is not allowed to send 
-  ///  other ApplicationServiceSendMessageRequest as it would be a protocol violation error.
+  ///  other ApplicationServiceSendMessageRequest. This would be an error and the node would destroy the channel.
   ///
   ///  If neither of clients connects to clAppService port or sends an inititial message within 30 seconds 
   ///  after the call was initiated, the node destroys the channel.
   ///  
-  ///  Note that until the clients receive their initialization messages on clAppService port, they has to keep their 
-  ///  connections to clNonCustomer/clCustomer open, otherwise the call will not be established. Only after the client 
-  ///  receives a reply to initialization message, it can close its clNonCustomer/clCustomer connection without terminating 
-  ///  the application service bridge.
+  ///  Note that the clients are allowed to disconnect from clNonCustomer/clCustomer port once the caller receives 
+  ///  CallIdentityApplicationServiceResponse and the callee sends IncomingCallNotificationResponse.
+  ///
+  ///  Each client is only allowed to have 20 ApplicationServiceSendMessageRequest messages pending, 
+  ///  which means that there was no ApplicationServiceSendMessageResponse sent to the client. If a client attempts 
+  ///  to send another message while having 20 pending messages, the node destroys the call channel.
   ///
   ///  Roles: clAppService
   /// </summary>
