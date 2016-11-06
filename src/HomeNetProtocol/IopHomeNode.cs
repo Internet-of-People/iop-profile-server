@@ -84,8 +84,8 @@ namespace Iop.Homenode {
             "bWluZ0NhbGxOb3RpZmljYXRpb24YCyABKAsyLS5pb3AuaG9tZW5vZGUuSW5j",
             "b21pbmdDYWxsTm90aWZpY2F0aW9uUmVxdWVzdEgAEjsKDXByb2ZpbGVTZWFy",
             "Y2gYDCABKAsyIi5pb3AuaG9tZW5vZGUuUHJvZmlsZVNlYXJjaFJlcXVlc3RI",
-            "ABJDChFwcm9maWxlU2VhcmNoUGFnZRgNIAEoCzImLmlvcC5ob21lbm9kZS5Q",
-            "cm9maWxlU2VhcmNoUGFnZVJlcXVlc3RIABJFChJhZGRSZWxhdGVkSWRlbnRp",
+            "ABJDChFwcm9maWxlU2VhcmNoUGFydBgNIAEoCzImLmlvcC5ob21lbm9kZS5Q",
+            "cm9maWxlU2VhcmNoUGFydFJlcXVlc3RIABJFChJhZGRSZWxhdGVkSWRlbnRp",
             "dHkYDiABKAsyJy5pb3AuaG9tZW5vZGUuQWRkUmVsYXRlZElkZW50aXR5UmVx",
             "dWVzdEgAEksKFXJlbW92ZVJlbGF0ZWRJZGVudGl0eRgPIAEoCzIqLmlvcC5o",
             "b21lbm9kZS5SZW1vdmVSZWxhdGVkSWRlbnRpdHlSZXF1ZXN0SABCDQoLUmVx",
@@ -108,7 +108,7 @@ namespace Iop.Homenode {
             "GAsgASgLMi4uaW9wLmhvbWVub2RlLkluY29taW5nQ2FsbE5vdGlmaWNhdGlv",
             "blJlc3BvbnNlSAASPAoNcHJvZmlsZVNlYXJjaBgMIAEoCzIjLmlvcC5ob21l",
             "bm9kZS5Qcm9maWxlU2VhcmNoUmVzcG9uc2VIABJEChFwcm9maWxlU2VhcmNo",
-            "UGFnZRgNIAEoCzInLmlvcC5ob21lbm9kZS5Qcm9maWxlU2VhcmNoUGFnZVJl",
+            "UGFydBgNIAEoCzInLmlvcC5ob21lbm9kZS5Qcm9maWxlU2VhcmNoUGFydFJl",
             "c3BvbnNlSAASRgoSYWRkUmVsYXRlZElkZW50aXR5GA4gASgLMiguaW9wLmhv",
             "bWVub2RlLkFkZFJlbGF0ZWRJZGVudGl0eVJlc3BvbnNlSAASTAoVcmVtb3Zl",
             "UmVsYXRlZElkZW50aXR5GA8gASgLMisuaW9wLmhvbWVub2RlLlJlbW92ZVJl",
@@ -140,96 +140,99 @@ namespace Iop.Homenode {
             "eXBlGAQgASgJIiMKDkNoZWNrSW5SZXF1ZXN0EhEKCWNoYWxsZW5nZRgBIAEo",
             "DCIRCg9DaGVja0luUmVzcG9uc2UiKgoVVmVyaWZ5SWRlbnRpdHlSZXF1ZXN0",
             "EhEKCWNoYWxsZW5nZRgBIAEoDCIYChZWZXJpZnlJZGVudGl0eVJlc3BvbnNl",
-            "IssBChRVcGRhdGVQcm9maWxlUmVxdWVzdBISCgpzZXRWZXJzaW9uGAEgASgI",
+            "It4BChRVcGRhdGVQcm9maWxlUmVxdWVzdBISCgpzZXRWZXJzaW9uGAEgASgI",
             "Eg8KB3NldE5hbWUYAiABKAgSEAoIc2V0SW1hZ2UYAyABKAgSEwoLc2V0TG9j",
             "YXRpb24YBCABKAgSFAoMc2V0RXh0cmFEYXRhGAUgASgIEg8KB3ZlcnNpb24Y",
-            "CCABKAwSDAoEbmFtZRgJIAEoCRINCgVpbWFnZRgKIAEoDBIQCghsb2NhdGlv",
-            "bhgLIAEoBxIRCglleHRyYURhdGEYDCABKAkiFwoVVXBkYXRlUHJvZmlsZVJl",
-            "c3BvbnNlIl0KHkNhbmNlbEhvbWVOb2RlQWdyZWVtZW50UmVxdWVzdBIdChVy",
-            "ZWRpcmVjdFRvTmV3SG9tZU5vZGUYASABKAgSHAoUbmV3SG9tZU5vZGVOZXR3",
-            "b3JrSWQYAiABKAwiIQofQ2FuY2VsSG9tZU5vZGVBZ3JlZW1lbnRSZXNwb25z",
-            "ZSI0ChxBcHBsaWNhdGlvblNlcnZpY2VBZGRSZXF1ZXN0EhQKDHNlcnZpY2VO",
-            "YW1lcxgBIAMoCSIfCh1BcHBsaWNhdGlvblNlcnZpY2VBZGRSZXNwb25zZSI2",
-            "Ch9BcHBsaWNhdGlvblNlcnZpY2VSZW1vdmVSZXF1ZXN0EhMKC3NlcnZpY2VO",
-            "YW1lGAEgASgJIiIKIEFwcGxpY2F0aW9uU2VydmljZVJlbW92ZVJlc3BvbnNl",
-            "IpoBCh1HZXRJZGVudGl0eUluZm9ybWF0aW9uUmVxdWVzdBIZChFpZGVudGl0",
-            "eU5ldHdvcmtJZBgBIAEoDBIbChNpbmNsdWRlUHJvZmlsZUltYWdlGAIgASgI",
-            "Eh0KFWluY2x1ZGVUaHVtYm5haWxJbWFnZRgDIAEoCBIiChppbmNsdWRlQXBw",
-            "bGljYXRpb25TZXJ2aWNlcxgEIAEoCCKrAgoeR2V0SWRlbnRpdHlJbmZvcm1h",
-            "dGlvblJlc3BvbnNlEhAKCGlzSG9zdGVkGAEgASgIEh0KFWlzVGFyZ2V0SG9t",
-            "ZU5vZGVLbm93bhgCIAEoCBIfChd0YXJnZXRIb21lTm9kZU5ldHdvcmtJZBgD",
-            "IAEoDBIQCghpc09ubGluZRgEIAEoCBIZChFpZGVudGl0eVB1YmxpY0tleRgF",
-            "IAEoDBIMCgR0eXBlGAYgASgJEgwKBG5hbWUYByABKAkSEAoIbG9jYXRpb24Y",
-            "CCABKAcSEQoJZXh0cmFEYXRhGAkgASgJEhQKDHByb2ZpbGVJbWFnZRgKIAEo",
-            "DBIWCg50aHVtYm5haWxJbWFnZRgLIAEoDBIbChNhcHBsaWNhdGlvblNlcnZp",
-            "Y2VzGAwgAygJIlcKJUNhbGxJZGVudGl0eUFwcGxpY2F0aW9uU2VydmljZVJl",
-            "cXVlc3QSGQoRaWRlbnRpdHlOZXR3b3JrSWQYASABKAwSEwoLc2VydmljZU5h",
-            "bWUYAiABKAkiPQomQ2FsbElkZW50aXR5QXBwbGljYXRpb25TZXJ2aWNlUmVz",
-            "cG9uc2USEwoLY2FsbGVyVG9rZW4YASABKAwiZAofSW5jb21pbmdDYWxsTm90",
-            "aWZpY2F0aW9uUmVxdWVzdBIXCg9jYWxsZXJQdWJsaWNLZXkYASABKAwSEwoL",
-            "c2VydmljZU5hbWUYAiABKAkSEwoLY2FsbGVlVG9rZW4YAyABKAwiIgogSW5j",
-            "b21pbmdDYWxsTm90aWZpY2F0aW9uUmVzcG9uc2UiRgokQXBwbGljYXRpb25T",
-            "ZXJ2aWNlU2VuZE1lc3NhZ2VSZXF1ZXN0Eg0KBXRva2VuGAEgASgMEg8KB21l",
-            "c3NhZ2UYAiABKAwiJwolQXBwbGljYXRpb25TZXJ2aWNlU2VuZE1lc3NhZ2VS",
-            "ZXNwb25zZSJGCjNBcHBsaWNhdGlvblNlcnZpY2VSZWNlaXZlTWVzc2FnZU5v",
-            "dGlmaWNhdGlvblJlcXVlc3QSDwoHbWVzc2FnZRgBIAEoDCI2CjRBcHBsaWNh",
-            "dGlvblNlcnZpY2VSZWNlaXZlTWVzc2FnZU5vdGlmaWNhdGlvblJlc3BvbnNl",
-            "IhUKE1Byb2ZpbGVTdGF0c1JlcXVlc3QiRQoUUHJvZmlsZVN0YXRzUmVzcG9u",
-            "c2USLQoFc3RhdHMYASADKAsyHi5pb3AuaG9tZW5vZGUuUHJvZmlsZVN0YXRz",
-            "SXRlbSI3ChBQcm9maWxlU3RhdHNJdGVtEhQKDGlkZW50aXR5VHlwZRgBIAEo",
-            "CRINCgVjb3VudBgCIAEoDSK6AQoUUHJvZmlsZVNlYXJjaFJlcXVlc3QSGQoR",
-            "aW5jbHVkZUhvc3RlZE9ubHkYASABKAgSHgoWaW5jbHVkZVRodW1ibmFpbElt",
-            "YWdlcxgCIAEoCBIWCg5tYXhSZWNvcmRDb3VudBgDIAEoDRIMCgR0eXBlGAQg",
-            "ASgJEgwKBG5hbWUYBSABKAkSEAoIbG9jYXRpb24YBiABKAcSDgoGcmFkaXVz",
-            "GAcgASgNEhEKCWV4dHJhRGF0YRgIIAEoCSKMAQoVUHJvZmlsZVNlYXJjaFJl",
-            "c3BvbnNlEhgKEHRvdGFsUmVjb3JkQ291bnQYASABKA0SFgoObWF4UmVjb3Jk",
-            "Q291bnQYAiABKA0SQQoIcHJvZmlsZXMYAyADKAsyLy5pb3AuaG9tZW5vZGUu",
-            "SWRlbnRpdHlOZXR3b3JrUHJvZmlsZUluZm9ybWF0aW9uItoBCiFJZGVudGl0",
-            "eU5ldHdvcmtQcm9maWxlSW5mb3JtYXRpb24SEAoIaXNIb3N0ZWQYASABKAgS",
-            "HQoVbmVpZ2hib3JOb2RlTmV0d29ya0lkGAIgASgMEhAKCGlzT25saW5lGAMg",
-            "ASgIEhkKEWlkZW50aXR5UHVibGljS2V5GAQgASgMEgwKBHR5cGUYBSABKAkS",
-            "DAoEbmFtZRgGIAEoCRIQCghsb2NhdGlvbhgHIAEoBxIRCglleHRyYURhdGEY",
-            "CCABKAkSFgoOdGh1bWJuYWlsSW1hZ2UYCSABKAwiRAoYUHJvZmlsZVNlYXJj",
-            "aFBhZ2VSZXF1ZXN0EhMKC3JlY29yZEluZGV4GAEgASgNEhMKC3JlY29yZENv",
-            "dW50GAIgASgNIogBChlQcm9maWxlU2VhcmNoUGFnZVJlc3BvbnNlEhMKC3Jl",
-            "Y29yZEluZGV4GAEgASgNEhMKC3JlY29yZENvdW50GAIgASgNEkEKCHByb2Zp",
-            "bGVzGAMgAygLMi8uaW9wLmhvbWVub2RlLklkZW50aXR5TmV0d29ya1Byb2Zp",
-            "bGVJbmZvcm1hdGlvbiKYAQoZQWRkUmVsYXRlZElkZW50aXR5UmVxdWVzdBJB",
-            "Cg9jYXJkQXBwbGljYXRpb24YASABKAsyKC5pb3AuaG9tZW5vZGUuQ2FyZEFw",
-            "cGxpY2F0aW9uSW5mb3JtYXRpb24SOAoKc2lnbmVkQ2FyZBgCIAEoCzIkLmlv",
-            "cC5ob21lbm9kZS5TaWduZWRSZWxhdGlvbnNoaXBDYXJkIhwKGkFkZFJlbGF0",
-            "ZWRJZGVudGl0eVJlc3BvbnNlIj0KHFJlbW92ZVJlbGF0ZWRJZGVudGl0eVJl",
-            "cXVlc3QSHQoVYXBwbGljYXRpb25JZGVudGlmaWVyGAEgASgMIh8KHVJlbW92",
-            "ZVJlbGF0ZWRJZGVudGl0eVJlc3BvbnNlIksKGkNhcmRBcHBsaWNhdGlvbklu",
-            "Zm9ybWF0aW9uEg4KBmNhcmRJZBgBIAEoDBIdChVhcHBsaWNhdGlvbklkZW50",
-            "aWZpZXIYAiABKAwiXwoWU2lnbmVkUmVsYXRpb25zaGlwQ2FyZBIsCgRjYXJk",
-            "GAEgASgLMh4uaW9wLmhvbWVub2RlLlJlbGF0aW9uc2hpcENhcmQSFwoPaXNz",
-            "dWVyU2lnbmF0dXJlGAIgASgMIokBChBSZWxhdGlvbnNoaXBDYXJkEg4KBmNh",
-            "cmRJZBgBIAEoDBIMCgR0eXBlGAIgASgJEhEKCXZhbGlkRnJvbRgDIAEoEhIP",
-            "Cgd2YWxpZFRvGAQgASgSEhcKD2lzc3VlclB1YmxpY0tleRgFIAEoDBIaChJy",
-            "ZWNpcGllbnRQdWJsaWNLZXkYBiABKAwingEKKkdldElkZW50aXR5UmVsYXRp",
-            "b25zaGlwc0luZm9ybWF0aW9uUmVxdWVzdBIZChFpZGVudGl0eU5ldHdvcmtJ",
-            "ZBgBIAEoDBIWCg5pbmNsdWRlSW52YWxpZBgCIAEoCBIMCgR0eXBlGAMgASgJ",
-            "EhYKDnNwZWNpZmljSXNzdWVyGAQgASgIEhcKD2lzc3VlclB1YmxpY0tleRgF",
-            "IAEoDCJpCitHZXRJZGVudGl0eVJlbGF0aW9uc2hpcHNJbmZvcm1hdGlvblJl",
-            "c3BvbnNlEjoKDXJlbGF0aW9uc2hpcHMYASADKAsyIy5pb3AuaG9tZW5vZGUu",
-            "SWRlbnRpdHlSZWxhdGlvbnNoaXBzIrABChVJZGVudGl0eVJlbGF0aW9uc2hp",
-            "cHMSQQoPY2FyZEFwcGxpY2F0aW9uGAEgASgLMiguaW9wLmhvbWVub2RlLkNh",
-            "cmRBcHBsaWNhdGlvbkluZm9ybWF0aW9uEiAKGGNhcmRBcHBsaWNhdGlvblNp",
-            "Z25hdHVyZRgCIAEoDBIyCgRjYXJkGAMgASgLMiQuaW9wLmhvbWVub2RlLlNp",
-            "Z25lZFJlbGF0aW9uc2hpcENhcmQqlgMKBlN0YXR1cxINCglTVEFUVVNfT0sQ",
-            "ABIcChhFUlJPUl9QUk9UT0NPTF9WSU9MQVRJT04QARIVChFFUlJPUl9VTlNV",
-            "UFBPUlRFRBACEhAKDEVSUk9SX0JBTk5FRBADEg4KCkVSUk9SX0JVU1kQBBIW",
-            "ChJFUlJPUl9VTkFVVEhPUklaRUQQBRISCg5FUlJPUl9CQURfUk9MRRAGEiEK",
-            "HUVSUk9SX0JBRF9DT05WRVJTQVRJT05fU1RBVFVTEAcSEgoORVJST1JfSU5U",
-            "RVJOQUwQCBIYChRFUlJPUl9RVU9UQV9FWENFRURFRBAzEhsKF0VSUk9SX0lO",
-            "VkFMSURfU0lHTkFUVVJFEDQSEwoPRVJST1JfTk9UX0ZPVU5EEDUSFwoTRVJS",
-            "T1JfSU5WQUxJRF9WQUxVRRA2EhgKFEVSUk9SX0FMUkVBRFlfRVhJU1RTEDcS",
-            "FwoTRVJST1JfTk9UX0FWQUlMQUJMRRA4EhIKDkVSUk9SX1JFSkVDVEVEEDkS",
-            "FwoTRVJST1JfVU5JTklUSUFMSVpFRBA6KnoKDlNlcnZlclJvbGVUeXBlEgsK",
-            "B1BSSU1BUlkQABIPCgtORF9ORUlHSEJPUhABEhAKDE5EX0NPTExFQUdVRRAC",
-            "EhMKD0NMX05PTl9DVVNUT01FUhADEg8KC0NMX0NVU1RPTUVSEAQSEgoOQ0xf",
-            "QVBQX1NFUlZJQ0UQBWIGcHJvdG8z"));
+            "CCABKAwSDAoEbmFtZRgJIAEoCRINCgVpbWFnZRgKIAEoDBIQCghsYXRpdHVk",
+            "ZRgLIAEoDxIRCglsb25naXR1ZGUYDCABKA8SEQoJZXh0cmFEYXRhGA0gASgJ",
+            "IhcKFVVwZGF0ZVByb2ZpbGVSZXNwb25zZSJdCh5DYW5jZWxIb21lTm9kZUFn",
+            "cmVlbWVudFJlcXVlc3QSHQoVcmVkaXJlY3RUb05ld0hvbWVOb2RlGAEgASgI",
+            "EhwKFG5ld0hvbWVOb2RlTmV0d29ya0lkGAIgASgMIiEKH0NhbmNlbEhvbWVO",
+            "b2RlQWdyZWVtZW50UmVzcG9uc2UiNAocQXBwbGljYXRpb25TZXJ2aWNlQWRk",
+            "UmVxdWVzdBIUCgxzZXJ2aWNlTmFtZXMYASADKAkiHwodQXBwbGljYXRpb25T",
+            "ZXJ2aWNlQWRkUmVzcG9uc2UiNgofQXBwbGljYXRpb25TZXJ2aWNlUmVtb3Zl",
+            "UmVxdWVzdBITCgtzZXJ2aWNlTmFtZRgBIAEoCSIiCiBBcHBsaWNhdGlvblNl",
+            "cnZpY2VSZW1vdmVSZXNwb25zZSKaAQodR2V0SWRlbnRpdHlJbmZvcm1hdGlv",
+            "blJlcXVlc3QSGQoRaWRlbnRpdHlOZXR3b3JrSWQYASABKAwSGwoTaW5jbHVk",
+            "ZVByb2ZpbGVJbWFnZRgCIAEoCBIdChVpbmNsdWRlVGh1bWJuYWlsSW1hZ2UY",
+            "AyABKAgSIgoaaW5jbHVkZUFwcGxpY2F0aW9uU2VydmljZXMYBCABKAgivgIK",
+            "HkdldElkZW50aXR5SW5mb3JtYXRpb25SZXNwb25zZRIQCghpc0hvc3RlZBgB",
+            "IAEoCBIdChVpc1RhcmdldEhvbWVOb2RlS25vd24YAiABKAgSHwoXdGFyZ2V0",
+            "SG9tZU5vZGVOZXR3b3JrSWQYAyABKAwSEAoIaXNPbmxpbmUYBCABKAgSGQoR",
+            "aWRlbnRpdHlQdWJsaWNLZXkYBSABKAwSDAoEdHlwZRgGIAEoCRIMCgRuYW1l",
+            "GAcgASgJEhAKCGxhdGl0dWRlGAggASgPEhEKCWxvbmdpdHVkZRgJIAEoDxIR",
+            "CglleHRyYURhdGEYCiABKAkSFAoMcHJvZmlsZUltYWdlGAsgASgMEhYKDnRo",
+            "dW1ibmFpbEltYWdlGAwgASgMEhsKE2FwcGxpY2F0aW9uU2VydmljZXMYDSAD",
+            "KAkiVwolQ2FsbElkZW50aXR5QXBwbGljYXRpb25TZXJ2aWNlUmVxdWVzdBIZ",
+            "ChFpZGVudGl0eU5ldHdvcmtJZBgBIAEoDBITCgtzZXJ2aWNlTmFtZRgCIAEo",
+            "CSI9CiZDYWxsSWRlbnRpdHlBcHBsaWNhdGlvblNlcnZpY2VSZXNwb25zZRIT",
+            "CgtjYWxsZXJUb2tlbhgBIAEoDCJkCh9JbmNvbWluZ0NhbGxOb3RpZmljYXRp",
+            "b25SZXF1ZXN0EhcKD2NhbGxlclB1YmxpY0tleRgBIAEoDBITCgtzZXJ2aWNl",
+            "TmFtZRgCIAEoCRITCgtjYWxsZWVUb2tlbhgDIAEoDCIiCiBJbmNvbWluZ0Nh",
+            "bGxOb3RpZmljYXRpb25SZXNwb25zZSJGCiRBcHBsaWNhdGlvblNlcnZpY2VT",
+            "ZW5kTWVzc2FnZVJlcXVlc3QSDQoFdG9rZW4YASABKAwSDwoHbWVzc2FnZRgC",
+            "IAEoDCInCiVBcHBsaWNhdGlvblNlcnZpY2VTZW5kTWVzc2FnZVJlc3BvbnNl",
+            "IkYKM0FwcGxpY2F0aW9uU2VydmljZVJlY2VpdmVNZXNzYWdlTm90aWZpY2F0",
+            "aW9uUmVxdWVzdBIPCgdtZXNzYWdlGAEgASgMIjYKNEFwcGxpY2F0aW9uU2Vy",
+            "dmljZVJlY2VpdmVNZXNzYWdlTm90aWZpY2F0aW9uUmVzcG9uc2UiFQoTUHJv",
+            "ZmlsZVN0YXRzUmVxdWVzdCJFChRQcm9maWxlU3RhdHNSZXNwb25zZRItCgVz",
+            "dGF0cxgBIAMoCzIeLmlvcC5ob21lbm9kZS5Qcm9maWxlU3RhdHNJdGVtIjcK",
+            "EFByb2ZpbGVTdGF0c0l0ZW0SFAoMaWRlbnRpdHlUeXBlGAEgASgJEg0KBWNv",
+            "dW50GAIgASgNIvIBChRQcm9maWxlU2VhcmNoUmVxdWVzdBIZChFpbmNsdWRl",
+            "SG9zdGVkT25seRgBIAEoCBIeChZpbmNsdWRlVGh1bWJuYWlsSW1hZ2VzGAIg",
+            "ASgIEh4KFm1heFJlc3BvbnNlUmVjb3JkQ291bnQYAyABKA0SGwoTbWF4VG90",
+            "YWxSZWNvcmRDb3VudBgEIAEoDRIMCgR0eXBlGAUgASgJEgwKBG5hbWUYBiAB",
+            "KAkSEAoIbGF0aXR1ZGUYByABKA8SEQoJbG9uZ2l0dWRlGAggASgPEg4KBnJh",
+            "ZGl1cxgJIAEoDRIRCglleHRyYURhdGEYCiABKAkilAEKFVByb2ZpbGVTZWFy",
+            "Y2hSZXNwb25zZRIYChB0b3RhbFJlY29yZENvdW50GAEgASgNEh4KFm1heFJl",
+            "c3BvbnNlUmVjb3JkQ291bnQYAiABKA0SQQoIcHJvZmlsZXMYAyADKAsyLy5p",
+            "b3AuaG9tZW5vZGUuSWRlbnRpdHlOZXR3b3JrUHJvZmlsZUluZm9ybWF0aW9u",
+            "Iu0BCiFJZGVudGl0eU5ldHdvcmtQcm9maWxlSW5mb3JtYXRpb24SEAoIaXNI",
+            "b3N0ZWQYASABKAgSHQoVbmVpZ2hib3JOb2RlTmV0d29ya0lkGAIgASgMEhAK",
+            "CGlzT25saW5lGAMgASgIEhkKEWlkZW50aXR5UHVibGljS2V5GAQgASgMEgwK",
+            "BHR5cGUYBSABKAkSDAoEbmFtZRgGIAEoCRIQCghsYXRpdHVkZRgHIAEoDxIR",
+            "Cglsb25naXR1ZGUYCCABKA8SEQoJZXh0cmFEYXRhGAkgASgJEhYKDnRodW1i",
+            "bmFpbEltYWdlGAogASgMIkQKGFByb2ZpbGVTZWFyY2hQYXJ0UmVxdWVzdBIT",
+            "CgtyZWNvcmRJbmRleBgBIAEoDRITCgtyZWNvcmRDb3VudBgCIAEoDSKIAQoZ",
+            "UHJvZmlsZVNlYXJjaFBhcnRSZXNwb25zZRITCgtyZWNvcmRJbmRleBgBIAEo",
+            "DRITCgtyZWNvcmRDb3VudBgCIAEoDRJBCghwcm9maWxlcxgDIAMoCzIvLmlv",
+            "cC5ob21lbm9kZS5JZGVudGl0eU5ldHdvcmtQcm9maWxlSW5mb3JtYXRpb24i",
+            "mAEKGUFkZFJlbGF0ZWRJZGVudGl0eVJlcXVlc3QSQQoPY2FyZEFwcGxpY2F0",
+            "aW9uGAEgASgLMiguaW9wLmhvbWVub2RlLkNhcmRBcHBsaWNhdGlvbkluZm9y",
+            "bWF0aW9uEjgKCnNpZ25lZENhcmQYAiABKAsyJC5pb3AuaG9tZW5vZGUuU2ln",
+            "bmVkUmVsYXRpb25zaGlwQ2FyZCIcChpBZGRSZWxhdGVkSWRlbnRpdHlSZXNw",
+            "b25zZSI9ChxSZW1vdmVSZWxhdGVkSWRlbnRpdHlSZXF1ZXN0Eh0KFWFwcGxp",
+            "Y2F0aW9uSWRlbnRpZmllchgBIAEoDCIfCh1SZW1vdmVSZWxhdGVkSWRlbnRp",
+            "dHlSZXNwb25zZSJLChpDYXJkQXBwbGljYXRpb25JbmZvcm1hdGlvbhIOCgZj",
+            "YXJkSWQYASABKAwSHQoVYXBwbGljYXRpb25JZGVudGlmaWVyGAIgASgMIl8K",
+            "FlNpZ25lZFJlbGF0aW9uc2hpcENhcmQSLAoEY2FyZBgBIAEoCzIeLmlvcC5o",
+            "b21lbm9kZS5SZWxhdGlvbnNoaXBDYXJkEhcKD2lzc3VlclNpZ25hdHVyZRgC",
+            "IAEoDCKJAQoQUmVsYXRpb25zaGlwQ2FyZBIOCgZjYXJkSWQYASABKAwSDAoE",
+            "dHlwZRgCIAEoCRIRCgl2YWxpZEZyb20YAyABKBISDwoHdmFsaWRUbxgEIAEo",
+            "EhIXCg9pc3N1ZXJQdWJsaWNLZXkYBSABKAwSGgoScmVjaXBpZW50UHVibGlj",
+            "S2V5GAYgASgMIp4BCipHZXRJZGVudGl0eVJlbGF0aW9uc2hpcHNJbmZvcm1h",
+            "dGlvblJlcXVlc3QSGQoRaWRlbnRpdHlOZXR3b3JrSWQYASABKAwSFgoOaW5j",
+            "bHVkZUludmFsaWQYAiABKAgSDAoEdHlwZRgDIAEoCRIWCg5zcGVjaWZpY0lz",
+            "c3VlchgEIAEoCBIXCg9pc3N1ZXJQdWJsaWNLZXkYBSABKAwiaAorR2V0SWRl",
+            "bnRpdHlSZWxhdGlvbnNoaXBzSW5mb3JtYXRpb25SZXNwb25zZRI5Cg1yZWxh",
+            "dGlvbnNoaXBzGAEgAygLMiIuaW9wLmhvbWVub2RlLklkZW50aXR5UmVsYXRp",
+            "b25zaGlwIq8BChRJZGVudGl0eVJlbGF0aW9uc2hpcBJBCg9jYXJkQXBwbGlj",
+            "YXRpb24YASABKAsyKC5pb3AuaG9tZW5vZGUuQ2FyZEFwcGxpY2F0aW9uSW5m",
+            "b3JtYXRpb24SIAoYY2FyZEFwcGxpY2F0aW9uU2lnbmF0dXJlGAIgASgMEjIK",
+            "BGNhcmQYAyABKAsyJC5pb3AuaG9tZW5vZGUuU2lnbmVkUmVsYXRpb25zaGlw",
+            "Q2FyZCqWAwoGU3RhdHVzEg0KCVNUQVRVU19PSxAAEhwKGEVSUk9SX1BST1RP",
+            "Q09MX1ZJT0xBVElPThABEhUKEUVSUk9SX1VOU1VQUE9SVEVEEAISEAoMRVJS",
+            "T1JfQkFOTkVEEAMSDgoKRVJST1JfQlVTWRAEEhYKEkVSUk9SX1VOQVVUSE9S",
+            "SVpFRBAFEhIKDkVSUk9SX0JBRF9ST0xFEAYSIQodRVJST1JfQkFEX0NPTlZF",
+            "UlNBVElPTl9TVEFUVVMQBxISCg5FUlJPUl9JTlRFUk5BTBAIEhgKFEVSUk9S",
+            "X1FVT1RBX0VYQ0VFREVEEDMSGwoXRVJST1JfSU5WQUxJRF9TSUdOQVRVUkUQ",
+            "NBITCg9FUlJPUl9OT1RfRk9VTkQQNRIXChNFUlJPUl9JTlZBTElEX1ZBTFVF",
+            "EDYSGAoURVJST1JfQUxSRUFEWV9FWElTVFMQNxIXChNFUlJPUl9OT1RfQVZB",
+            "SUxBQkxFEDgSEgoORVJST1JfUkVKRUNURUQQORIXChNFUlJPUl9VTklOSVRJ",
+            "QUxJWkVEEDoqegoOU2VydmVyUm9sZVR5cGUSCwoHUFJJTUFSWRAAEg8KC05E",
+            "X05FSUdIQk9SEAESEAoMTkRfQ09MTEVBR1VFEAISEwoPQ0xfTk9OX0NVU1RP",
+            "TUVSEAMSDwoLQ0xfQ1VTVE9NRVIQBBISCg5DTF9BUFBfU0VSVklDRRAFYgZw",
+            "cm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Iop.Homenode.Status), typeof(global::Iop.Homenode.ServerRoleType), }, new pbr::GeneratedClrTypeInfo[] {
@@ -239,8 +242,8 @@ namespace Iop.Homenode {
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.Response), global::Iop.Homenode.Response.Parser, new[]{ "Status", "Timestamp", "Details", "SingleResponse", "ConversationResponse" }, new[]{ "ConversationType" }, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.SingleRequest), global::Iop.Homenode.SingleRequest.Parser, new[]{ "Version", "Ping", "ListRoles", "ListHomeNodePlans", "GetIdentityInformation", "ApplicationServiceSendMessage", "ApplicationServiceReceiveMessageNotification", "ProfileStats", "GetIdentityRelationshipsInformation" }, new[]{ "RequestType" }, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.SingleResponse), global::Iop.Homenode.SingleResponse.Parser, new[]{ "Version", "Ping", "ListRoles", "ListHomeNodePlans", "GetIdentityInformation", "ApplicationServiceSendMessage", "ApplicationServiceReceiveMessageNotification", "ProfileStats", "GetIdentityRelationshipsInformation" }, new[]{ "ResponseType" }, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ConversationRequest), global::Iop.Homenode.ConversationRequest.Parser, new[]{ "Signature", "Start", "HomeNodeRequest", "CheckIn", "VerifyIdentity", "UpdateProfile", "CancelHomeNodeAgreement", "ApplicationServiceAdd", "ApplicationServiceRemove", "CallIdentityApplicationService", "IncomingCallNotification", "ProfileSearch", "ProfileSearchPage", "AddRelatedIdentity", "RemoveRelatedIdentity" }, new[]{ "RequestType" }, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ConversationResponse), global::Iop.Homenode.ConversationResponse.Parser, new[]{ "Signature", "Start", "HomeNodeRequest", "CheckIn", "VerifyIdentity", "UpdateProfile", "CancelHomeNodeAgreement", "ApplicationServiceAdd", "ApplicationServiceRemove", "CallIdentityApplicationService", "IncomingCallNotification", "ProfileSearch", "ProfileSearchPage", "AddRelatedIdentity", "RemoveRelatedIdentity" }, new[]{ "ResponseType" }, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ConversationRequest), global::Iop.Homenode.ConversationRequest.Parser, new[]{ "Signature", "Start", "HomeNodeRequest", "CheckIn", "VerifyIdentity", "UpdateProfile", "CancelHomeNodeAgreement", "ApplicationServiceAdd", "ApplicationServiceRemove", "CallIdentityApplicationService", "IncomingCallNotification", "ProfileSearch", "ProfileSearchPart", "AddRelatedIdentity", "RemoveRelatedIdentity" }, new[]{ "RequestType" }, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ConversationResponse), global::Iop.Homenode.ConversationResponse.Parser, new[]{ "Signature", "Start", "HomeNodeRequest", "CheckIn", "VerifyIdentity", "UpdateProfile", "CancelHomeNodeAgreement", "ApplicationServiceAdd", "ApplicationServiceRemove", "CallIdentityApplicationService", "IncomingCallNotification", "ProfileSearch", "ProfileSearchPart", "AddRelatedIdentity", "RemoveRelatedIdentity" }, new[]{ "ResponseType" }, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.PingRequest), global::Iop.Homenode.PingRequest.Parser, new[]{ "Payload" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.PingResponse), global::Iop.Homenode.PingResponse.Parser, new[]{ "Payload", "Clock" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ListRolesRequest), global::Iop.Homenode.ListRolesRequest.Parser, null, null, null, null),
@@ -259,7 +262,7 @@ namespace Iop.Homenode {
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.CheckInResponse), global::Iop.Homenode.CheckInResponse.Parser, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.VerifyIdentityRequest), global::Iop.Homenode.VerifyIdentityRequest.Parser, new[]{ "Challenge" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.VerifyIdentityResponse), global::Iop.Homenode.VerifyIdentityResponse.Parser, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.UpdateProfileRequest), global::Iop.Homenode.UpdateProfileRequest.Parser, new[]{ "SetVersion", "SetName", "SetImage", "SetLocation", "SetExtraData", "Version", "Name", "Image", "Location", "ExtraData" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.UpdateProfileRequest), global::Iop.Homenode.UpdateProfileRequest.Parser, new[]{ "SetVersion", "SetName", "SetImage", "SetLocation", "SetExtraData", "Version", "Name", "Image", "Latitude", "Longitude", "ExtraData" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.UpdateProfileResponse), global::Iop.Homenode.UpdateProfileResponse.Parser, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.CancelHomeNodeAgreementRequest), global::Iop.Homenode.CancelHomeNodeAgreementRequest.Parser, new[]{ "RedirectToNewHomeNode", "NewHomeNodeNetworkId" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.CancelHomeNodeAgreementResponse), global::Iop.Homenode.CancelHomeNodeAgreementResponse.Parser, null, null, null, null),
@@ -268,7 +271,7 @@ namespace Iop.Homenode {
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ApplicationServiceRemoveRequest), global::Iop.Homenode.ApplicationServiceRemoveRequest.Parser, new[]{ "ServiceName" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ApplicationServiceRemoveResponse), global::Iop.Homenode.ApplicationServiceRemoveResponse.Parser, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.GetIdentityInformationRequest), global::Iop.Homenode.GetIdentityInformationRequest.Parser, new[]{ "IdentityNetworkId", "IncludeProfileImage", "IncludeThumbnailImage", "IncludeApplicationServices" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.GetIdentityInformationResponse), global::Iop.Homenode.GetIdentityInformationResponse.Parser, new[]{ "IsHosted", "IsTargetHomeNodeKnown", "TargetHomeNodeNetworkId", "IsOnline", "IdentityPublicKey", "Type", "Name", "Location", "ExtraData", "ProfileImage", "ThumbnailImage", "ApplicationServices" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.GetIdentityInformationResponse), global::Iop.Homenode.GetIdentityInformationResponse.Parser, new[]{ "IsHosted", "IsTargetHomeNodeKnown", "TargetHomeNodeNetworkId", "IsOnline", "IdentityPublicKey", "Type", "Name", "Latitude", "Longitude", "ExtraData", "ProfileImage", "ThumbnailImage", "ApplicationServices" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.CallIdentityApplicationServiceRequest), global::Iop.Homenode.CallIdentityApplicationServiceRequest.Parser, new[]{ "IdentityNetworkId", "ServiceName" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.CallIdentityApplicationServiceResponse), global::Iop.Homenode.CallIdentityApplicationServiceResponse.Parser, new[]{ "CallerToken" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.IncomingCallNotificationRequest), global::Iop.Homenode.IncomingCallNotificationRequest.Parser, new[]{ "CallerPublicKey", "ServiceName", "CalleeToken" }, null, null, null),
@@ -280,11 +283,11 @@ namespace Iop.Homenode {
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ProfileStatsRequest), global::Iop.Homenode.ProfileStatsRequest.Parser, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ProfileStatsResponse), global::Iop.Homenode.ProfileStatsResponse.Parser, new[]{ "Stats" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ProfileStatsItem), global::Iop.Homenode.ProfileStatsItem.Parser, new[]{ "IdentityType", "Count" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ProfileSearchRequest), global::Iop.Homenode.ProfileSearchRequest.Parser, new[]{ "IncludeHostedOnly", "IncludeThumbnailImages", "MaxRecordCount", "Type", "Name", "Location", "Radius", "ExtraData" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ProfileSearchResponse), global::Iop.Homenode.ProfileSearchResponse.Parser, new[]{ "TotalRecordCount", "MaxRecordCount", "Profiles" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.IdentityNetworkProfileInformation), global::Iop.Homenode.IdentityNetworkProfileInformation.Parser, new[]{ "IsHosted", "NeighborNodeNetworkId", "IsOnline", "IdentityPublicKey", "Type", "Name", "Location", "ExtraData", "ThumbnailImage" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ProfileSearchPageRequest), global::Iop.Homenode.ProfileSearchPageRequest.Parser, new[]{ "RecordIndex", "RecordCount" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ProfileSearchPageResponse), global::Iop.Homenode.ProfileSearchPageResponse.Parser, new[]{ "RecordIndex", "RecordCount", "Profiles" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ProfileSearchRequest), global::Iop.Homenode.ProfileSearchRequest.Parser, new[]{ "IncludeHostedOnly", "IncludeThumbnailImages", "MaxResponseRecordCount", "MaxTotalRecordCount", "Type", "Name", "Latitude", "Longitude", "Radius", "ExtraData" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ProfileSearchResponse), global::Iop.Homenode.ProfileSearchResponse.Parser, new[]{ "TotalRecordCount", "MaxResponseRecordCount", "Profiles" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.IdentityNetworkProfileInformation), global::Iop.Homenode.IdentityNetworkProfileInformation.Parser, new[]{ "IsHosted", "NeighborNodeNetworkId", "IsOnline", "IdentityPublicKey", "Type", "Name", "Latitude", "Longitude", "ExtraData", "ThumbnailImage" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ProfileSearchPartRequest), global::Iop.Homenode.ProfileSearchPartRequest.Parser, new[]{ "RecordIndex", "RecordCount" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ProfileSearchPartResponse), global::Iop.Homenode.ProfileSearchPartResponse.Parser, new[]{ "RecordIndex", "RecordCount", "Profiles" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.AddRelatedIdentityRequest), global::Iop.Homenode.AddRelatedIdentityRequest.Parser, new[]{ "CardApplication", "SignedCard" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.AddRelatedIdentityResponse), global::Iop.Homenode.AddRelatedIdentityResponse.Parser, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.RemoveRelatedIdentityRequest), global::Iop.Homenode.RemoveRelatedIdentityRequest.Parser, new[]{ "ApplicationIdentifier" }, null, null, null),
@@ -294,7 +297,7 @@ namespace Iop.Homenode {
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.RelationshipCard), global::Iop.Homenode.RelationshipCard.Parser, new[]{ "CardId", "Type", "ValidFrom", "ValidTo", "IssuerPublicKey", "RecipientPublicKey" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.GetIdentityRelationshipsInformationRequest), global::Iop.Homenode.GetIdentityRelationshipsInformationRequest.Parser, new[]{ "IdentityNetworkId", "IncludeInvalid", "Type", "SpecificIssuer", "IssuerPublicKey" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.GetIdentityRelationshipsInformationResponse), global::Iop.Homenode.GetIdentityRelationshipsInformationResponse.Parser, new[]{ "Relationships" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.IdentityRelationships), global::Iop.Homenode.IdentityRelationships.Parser, new[]{ "CardApplication", "CardApplicationSignature", "Card" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.IdentityRelationship), global::Iop.Homenode.IdentityRelationship.Parser, new[]{ "CardApplication", "CardApplicationSignature", "Card" }, null, null, null)
           }));
     }
     #endregion
@@ -2224,8 +2227,8 @@ namespace Iop.Homenode {
         case RequestTypeOneofCase.ProfileSearch:
           ProfileSearch = other.ProfileSearch.Clone();
           break;
-        case RequestTypeOneofCase.ProfileSearchPage:
-          ProfileSearchPage = other.ProfileSearchPage.Clone();
+        case RequestTypeOneofCase.ProfileSearchPart:
+          ProfileSearchPart = other.ProfileSearchPart.Clone();
           break;
         case RequestTypeOneofCase.AddRelatedIdentity:
           AddRelatedIdentity = other.AddRelatedIdentity.Clone();
@@ -2380,14 +2383,14 @@ namespace Iop.Homenode {
       }
     }
 
-    /// <summary>Field number for the "profileSearchPage" field.</summary>
-    public const int ProfileSearchPageFieldNumber = 13;
+    /// <summary>Field number for the "profileSearchPart" field.</summary>
+    public const int ProfileSearchPartFieldNumber = 13;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Iop.Homenode.ProfileSearchPageRequest ProfileSearchPage {
-      get { return requestTypeCase_ == RequestTypeOneofCase.ProfileSearchPage ? (global::Iop.Homenode.ProfileSearchPageRequest) requestType_ : null; }
+    public global::Iop.Homenode.ProfileSearchPartRequest ProfileSearchPart {
+      get { return requestTypeCase_ == RequestTypeOneofCase.ProfileSearchPart ? (global::Iop.Homenode.ProfileSearchPartRequest) requestType_ : null; }
       set {
         requestType_ = value;
-        requestTypeCase_ = value == null ? RequestTypeOneofCase.None : RequestTypeOneofCase.ProfileSearchPage;
+        requestTypeCase_ = value == null ? RequestTypeOneofCase.None : RequestTypeOneofCase.ProfileSearchPart;
       }
     }
 
@@ -2428,7 +2431,7 @@ namespace Iop.Homenode {
       CallIdentityApplicationService = 10,
       IncomingCallNotification = 11,
       ProfileSearch = 12,
-      ProfileSearchPage = 13,
+      ProfileSearchPart = 13,
       AddRelatedIdentity = 14,
       RemoveRelatedIdentity = 15,
     }
@@ -2469,7 +2472,7 @@ namespace Iop.Homenode {
       if (!object.Equals(CallIdentityApplicationService, other.CallIdentityApplicationService)) return false;
       if (!object.Equals(IncomingCallNotification, other.IncomingCallNotification)) return false;
       if (!object.Equals(ProfileSearch, other.ProfileSearch)) return false;
-      if (!object.Equals(ProfileSearchPage, other.ProfileSearchPage)) return false;
+      if (!object.Equals(ProfileSearchPart, other.ProfileSearchPart)) return false;
       if (!object.Equals(AddRelatedIdentity, other.AddRelatedIdentity)) return false;
       if (!object.Equals(RemoveRelatedIdentity, other.RemoveRelatedIdentity)) return false;
       if (RequestTypeCase != other.RequestTypeCase) return false;
@@ -2491,7 +2494,7 @@ namespace Iop.Homenode {
       if (requestTypeCase_ == RequestTypeOneofCase.CallIdentityApplicationService) hash ^= CallIdentityApplicationService.GetHashCode();
       if (requestTypeCase_ == RequestTypeOneofCase.IncomingCallNotification) hash ^= IncomingCallNotification.GetHashCode();
       if (requestTypeCase_ == RequestTypeOneofCase.ProfileSearch) hash ^= ProfileSearch.GetHashCode();
-      if (requestTypeCase_ == RequestTypeOneofCase.ProfileSearchPage) hash ^= ProfileSearchPage.GetHashCode();
+      if (requestTypeCase_ == RequestTypeOneofCase.ProfileSearchPart) hash ^= ProfileSearchPart.GetHashCode();
       if (requestTypeCase_ == RequestTypeOneofCase.AddRelatedIdentity) hash ^= AddRelatedIdentity.GetHashCode();
       if (requestTypeCase_ == RequestTypeOneofCase.RemoveRelatedIdentity) hash ^= RemoveRelatedIdentity.GetHashCode();
       hash ^= (int) requestTypeCase_;
@@ -2553,9 +2556,9 @@ namespace Iop.Homenode {
         output.WriteRawTag(98);
         output.WriteMessage(ProfileSearch);
       }
-      if (requestTypeCase_ == RequestTypeOneofCase.ProfileSearchPage) {
+      if (requestTypeCase_ == RequestTypeOneofCase.ProfileSearchPart) {
         output.WriteRawTag(106);
-        output.WriteMessage(ProfileSearchPage);
+        output.WriteMessage(ProfileSearchPart);
       }
       if (requestTypeCase_ == RequestTypeOneofCase.AddRelatedIdentity) {
         output.WriteRawTag(114);
@@ -2606,8 +2609,8 @@ namespace Iop.Homenode {
       if (requestTypeCase_ == RequestTypeOneofCase.ProfileSearch) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(ProfileSearch);
       }
-      if (requestTypeCase_ == RequestTypeOneofCase.ProfileSearchPage) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(ProfileSearchPage);
+      if (requestTypeCase_ == RequestTypeOneofCase.ProfileSearchPart) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(ProfileSearchPart);
       }
       if (requestTypeCase_ == RequestTypeOneofCase.AddRelatedIdentity) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(AddRelatedIdentity);
@@ -2660,8 +2663,8 @@ namespace Iop.Homenode {
         case RequestTypeOneofCase.ProfileSearch:
           ProfileSearch = other.ProfileSearch;
           break;
-        case RequestTypeOneofCase.ProfileSearchPage:
-          ProfileSearchPage = other.ProfileSearchPage;
+        case RequestTypeOneofCase.ProfileSearchPart:
+          ProfileSearchPart = other.ProfileSearchPart;
           break;
         case RequestTypeOneofCase.AddRelatedIdentity:
           AddRelatedIdentity = other.AddRelatedIdentity;
@@ -2785,12 +2788,12 @@ namespace Iop.Homenode {
             break;
           }
           case 106: {
-            global::Iop.Homenode.ProfileSearchPageRequest subBuilder = new global::Iop.Homenode.ProfileSearchPageRequest();
-            if (requestTypeCase_ == RequestTypeOneofCase.ProfileSearchPage) {
-              subBuilder.MergeFrom(ProfileSearchPage);
+            global::Iop.Homenode.ProfileSearchPartRequest subBuilder = new global::Iop.Homenode.ProfileSearchPartRequest();
+            if (requestTypeCase_ == RequestTypeOneofCase.ProfileSearchPart) {
+              subBuilder.MergeFrom(ProfileSearchPart);
             }
             input.ReadMessage(subBuilder);
-            ProfileSearchPage = subBuilder;
+            ProfileSearchPart = subBuilder;
             break;
           }
           case 114: {
@@ -2879,8 +2882,8 @@ namespace Iop.Homenode {
         case ResponseTypeOneofCase.ProfileSearch:
           ProfileSearch = other.ProfileSearch.Clone();
           break;
-        case ResponseTypeOneofCase.ProfileSearchPage:
-          ProfileSearchPage = other.ProfileSearchPage.Clone();
+        case ResponseTypeOneofCase.ProfileSearchPart:
+          ProfileSearchPart = other.ProfileSearchPart.Clone();
           break;
         case ResponseTypeOneofCase.AddRelatedIdentity:
           AddRelatedIdentity = other.AddRelatedIdentity.Clone();
@@ -3035,14 +3038,14 @@ namespace Iop.Homenode {
       }
     }
 
-    /// <summary>Field number for the "profileSearchPage" field.</summary>
-    public const int ProfileSearchPageFieldNumber = 13;
+    /// <summary>Field number for the "profileSearchPart" field.</summary>
+    public const int ProfileSearchPartFieldNumber = 13;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Iop.Homenode.ProfileSearchPageResponse ProfileSearchPage {
-      get { return responseTypeCase_ == ResponseTypeOneofCase.ProfileSearchPage ? (global::Iop.Homenode.ProfileSearchPageResponse) responseType_ : null; }
+    public global::Iop.Homenode.ProfileSearchPartResponse ProfileSearchPart {
+      get { return responseTypeCase_ == ResponseTypeOneofCase.ProfileSearchPart ? (global::Iop.Homenode.ProfileSearchPartResponse) responseType_ : null; }
       set {
         responseType_ = value;
-        responseTypeCase_ = value == null ? ResponseTypeOneofCase.None : ResponseTypeOneofCase.ProfileSearchPage;
+        responseTypeCase_ = value == null ? ResponseTypeOneofCase.None : ResponseTypeOneofCase.ProfileSearchPart;
       }
     }
 
@@ -3083,7 +3086,7 @@ namespace Iop.Homenode {
       CallIdentityApplicationService = 10,
       IncomingCallNotification = 11,
       ProfileSearch = 12,
-      ProfileSearchPage = 13,
+      ProfileSearchPart = 13,
       AddRelatedIdentity = 14,
       RemoveRelatedIdentity = 15,
     }
@@ -3124,7 +3127,7 @@ namespace Iop.Homenode {
       if (!object.Equals(CallIdentityApplicationService, other.CallIdentityApplicationService)) return false;
       if (!object.Equals(IncomingCallNotification, other.IncomingCallNotification)) return false;
       if (!object.Equals(ProfileSearch, other.ProfileSearch)) return false;
-      if (!object.Equals(ProfileSearchPage, other.ProfileSearchPage)) return false;
+      if (!object.Equals(ProfileSearchPart, other.ProfileSearchPart)) return false;
       if (!object.Equals(AddRelatedIdentity, other.AddRelatedIdentity)) return false;
       if (!object.Equals(RemoveRelatedIdentity, other.RemoveRelatedIdentity)) return false;
       if (ResponseTypeCase != other.ResponseTypeCase) return false;
@@ -3146,7 +3149,7 @@ namespace Iop.Homenode {
       if (responseTypeCase_ == ResponseTypeOneofCase.CallIdentityApplicationService) hash ^= CallIdentityApplicationService.GetHashCode();
       if (responseTypeCase_ == ResponseTypeOneofCase.IncomingCallNotification) hash ^= IncomingCallNotification.GetHashCode();
       if (responseTypeCase_ == ResponseTypeOneofCase.ProfileSearch) hash ^= ProfileSearch.GetHashCode();
-      if (responseTypeCase_ == ResponseTypeOneofCase.ProfileSearchPage) hash ^= ProfileSearchPage.GetHashCode();
+      if (responseTypeCase_ == ResponseTypeOneofCase.ProfileSearchPart) hash ^= ProfileSearchPart.GetHashCode();
       if (responseTypeCase_ == ResponseTypeOneofCase.AddRelatedIdentity) hash ^= AddRelatedIdentity.GetHashCode();
       if (responseTypeCase_ == ResponseTypeOneofCase.RemoveRelatedIdentity) hash ^= RemoveRelatedIdentity.GetHashCode();
       hash ^= (int) responseTypeCase_;
@@ -3208,9 +3211,9 @@ namespace Iop.Homenode {
         output.WriteRawTag(98);
         output.WriteMessage(ProfileSearch);
       }
-      if (responseTypeCase_ == ResponseTypeOneofCase.ProfileSearchPage) {
+      if (responseTypeCase_ == ResponseTypeOneofCase.ProfileSearchPart) {
         output.WriteRawTag(106);
-        output.WriteMessage(ProfileSearchPage);
+        output.WriteMessage(ProfileSearchPart);
       }
       if (responseTypeCase_ == ResponseTypeOneofCase.AddRelatedIdentity) {
         output.WriteRawTag(114);
@@ -3261,8 +3264,8 @@ namespace Iop.Homenode {
       if (responseTypeCase_ == ResponseTypeOneofCase.ProfileSearch) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(ProfileSearch);
       }
-      if (responseTypeCase_ == ResponseTypeOneofCase.ProfileSearchPage) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(ProfileSearchPage);
+      if (responseTypeCase_ == ResponseTypeOneofCase.ProfileSearchPart) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(ProfileSearchPart);
       }
       if (responseTypeCase_ == ResponseTypeOneofCase.AddRelatedIdentity) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(AddRelatedIdentity);
@@ -3315,8 +3318,8 @@ namespace Iop.Homenode {
         case ResponseTypeOneofCase.ProfileSearch:
           ProfileSearch = other.ProfileSearch;
           break;
-        case ResponseTypeOneofCase.ProfileSearchPage:
-          ProfileSearchPage = other.ProfileSearchPage;
+        case ResponseTypeOneofCase.ProfileSearchPart:
+          ProfileSearchPart = other.ProfileSearchPart;
           break;
         case ResponseTypeOneofCase.AddRelatedIdentity:
           AddRelatedIdentity = other.AddRelatedIdentity;
@@ -3440,12 +3443,12 @@ namespace Iop.Homenode {
             break;
           }
           case 106: {
-            global::Iop.Homenode.ProfileSearchPageResponse subBuilder = new global::Iop.Homenode.ProfileSearchPageResponse();
-            if (responseTypeCase_ == ResponseTypeOneofCase.ProfileSearchPage) {
-              subBuilder.MergeFrom(ProfileSearchPage);
+            global::Iop.Homenode.ProfileSearchPartResponse subBuilder = new global::Iop.Homenode.ProfileSearchPartResponse();
+            if (responseTypeCase_ == ResponseTypeOneofCase.ProfileSearchPart) {
+              subBuilder.MergeFrom(ProfileSearchPart);
             }
             input.ReadMessage(subBuilder);
-            ProfileSearchPage = subBuilder;
+            ProfileSearchPart = subBuilder;
             break;
           }
           case 114: {
@@ -6267,7 +6270,8 @@ namespace Iop.Homenode {
       version_ = other.version_;
       name_ = other.name_;
       image_ = other.image_;
-      location_ = other.location_;
+      latitude_ = other.latitude_;
+      longitude_ = other.longitude_;
       extraData_ = other.extraData_;
     }
 
@@ -6322,7 +6326,7 @@ namespace Iop.Homenode {
     public const int SetLocationFieldNumber = 4;
     private bool setLocation_;
     /// <summary>
-    ///  Profile location should be updated. 'location' must contain valid data.
+    ///  Profile location should be updated. 'latitude' and 'longitude' must contain valid data.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool SetLocation {
@@ -6388,22 +6392,36 @@ namespace Iop.Homenode {
       }
     }
 
-    /// <summary>Field number for the "location" field.</summary>
-    public const int LocationFieldNumber = 11;
-    private uint location_;
+    /// <summary>Field number for the "latitude" field.</summary>
+    public const int LatitudeFieldNumber = 11;
+    private int latitude_;
     /// <summary>
-    ///  Encoded GPS location information.
+    ///  LocationType. GPS location latitude information.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public uint Location {
-      get { return location_; }
+    public int Latitude {
+      get { return latitude_; }
       set {
-        location_ = value;
+        latitude_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "longitude" field.</summary>
+    public const int LongitudeFieldNumber = 12;
+    private int longitude_;
+    /// <summary>
+    ///  LocationType. GPS location longitude information.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int Longitude {
+      get { return longitude_; }
+      set {
+        longitude_ = value;
       }
     }
 
     /// <summary>Field number for the "extraData" field.</summary>
-    public const int ExtraDataFieldNumber = 12;
+    public const int ExtraDataFieldNumber = 13;
     private string extraData_ = "";
     /// <summary>
     ///  Semicolon separated 'key=value' list, max 200 bytes long.
@@ -6437,7 +6455,8 @@ namespace Iop.Homenode {
       if (Version != other.Version) return false;
       if (Name != other.Name) return false;
       if (Image != other.Image) return false;
-      if (Location != other.Location) return false;
+      if (Latitude != other.Latitude) return false;
+      if (Longitude != other.Longitude) return false;
       if (ExtraData != other.ExtraData) return false;
       return true;
     }
@@ -6453,7 +6472,8 @@ namespace Iop.Homenode {
       if (Version.Length != 0) hash ^= Version.GetHashCode();
       if (Name.Length != 0) hash ^= Name.GetHashCode();
       if (Image.Length != 0) hash ^= Image.GetHashCode();
-      if (Location != 0) hash ^= Location.GetHashCode();
+      if (Latitude != 0) hash ^= Latitude.GetHashCode();
+      if (Longitude != 0) hash ^= Longitude.GetHashCode();
       if (ExtraData.Length != 0) hash ^= ExtraData.GetHashCode();
       return hash;
     }
@@ -6497,12 +6517,16 @@ namespace Iop.Homenode {
         output.WriteRawTag(82);
         output.WriteBytes(Image);
       }
-      if (Location != 0) {
+      if (Latitude != 0) {
         output.WriteRawTag(93);
-        output.WriteFixed32(Location);
+        output.WriteSFixed32(Latitude);
+      }
+      if (Longitude != 0) {
+        output.WriteRawTag(101);
+        output.WriteSFixed32(Longitude);
       }
       if (ExtraData.Length != 0) {
-        output.WriteRawTag(98);
+        output.WriteRawTag(106);
         output.WriteString(ExtraData);
       }
     }
@@ -6534,7 +6558,10 @@ namespace Iop.Homenode {
       if (Image.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeBytesSize(Image);
       }
-      if (Location != 0) {
+      if (Latitude != 0) {
+        size += 1 + 4;
+      }
+      if (Longitude != 0) {
         size += 1 + 4;
       }
       if (ExtraData.Length != 0) {
@@ -6572,8 +6599,11 @@ namespace Iop.Homenode {
       if (other.Image.Length != 0) {
         Image = other.Image;
       }
-      if (other.Location != 0) {
-        Location = other.Location;
+      if (other.Latitude != 0) {
+        Latitude = other.Latitude;
+      }
+      if (other.Longitude != 0) {
+        Longitude = other.Longitude;
       }
       if (other.ExtraData.Length != 0) {
         ExtraData = other.ExtraData;
@@ -6621,10 +6651,14 @@ namespace Iop.Homenode {
             break;
           }
           case 93: {
-            Location = input.ReadFixed32();
+            Latitude = input.ReadSFixed32();
             break;
           }
-          case 98: {
+          case 101: {
+            Longitude = input.ReadSFixed32();
+            break;
+          }
+          case 106: {
             ExtraData = input.ReadString();
             break;
           }
@@ -6648,7 +6682,8 @@ namespace Iop.Homenode {
   ///      * Response.details == "version" - 'UpdateProfileRequest.version' does not contain a valid version information.
   ///      * Response.details == "name" - 'UpdateProfileRequest.name' does not contain a valid name.
   ///      * Response.details == "image" - 'UpdateProfileRequest.image' does not contain a valid PNG or JPEG image.
-  ///      * Response.details == "location" - 'UpdateProfileRequest.image' does not contain a valid location information.
+  ///      * Response.details == "latitude" - 'UpdateProfileRequest.latitude' does not contain a valid latitude information.
+  ///      * Response.details == "longitude" - 'UpdateProfileRequest.longitude' does not contain a valid longitude information.
   ///      * Response.details == "extraData" - 'UpdateProfileRequest.extraData' does not contain a valid extra data information.
   /// </summary>
   public sealed partial class UpdateProfileResponse : pb::IMessage<UpdateProfileResponse> {
@@ -7702,7 +7737,8 @@ namespace Iop.Homenode {
       identityPublicKey_ = other.identityPublicKey_;
       type_ = other.type_;
       name_ = other.name_;
-      location_ = other.location_;
+      latitude_ = other.latitude_;
+      longitude_ = other.longitude_;
       extraData_ = other.extraData_;
       profileImage_ = other.profileImage_;
       thumbnailImage_ = other.thumbnailImage_;
@@ -7812,22 +7848,36 @@ namespace Iop.Homenode {
       }
     }
 
-    /// <summary>Field number for the "location" field.</summary>
-    public const int LocationFieldNumber = 8;
-    private uint location_;
+    /// <summary>Field number for the "latitude" field.</summary>
+    public const int LatitudeFieldNumber = 8;
+    private int latitude_;
     /// <summary>
-    ///  The requested identity's encoded GPS location information.
+    ///  LocationType. The requested identity's GPS location latitude information.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public uint Location {
-      get { return location_; }
+    public int Latitude {
+      get { return latitude_; }
       set {
-        location_ = value;
+        latitude_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "longitude" field.</summary>
+    public const int LongitudeFieldNumber = 9;
+    private int longitude_;
+    /// <summary>
+    ///  LocationType. The requested identity's GPS location longitude information.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int Longitude {
+      get { return longitude_; }
+      set {
+        longitude_ = value;
       }
     }
 
     /// <summary>Field number for the "extraData" field.</summary>
-    public const int ExtraDataFieldNumber = 9;
+    public const int ExtraDataFieldNumber = 10;
     private string extraData_ = "";
     /// <summary>
     ///  The requested identity's extra data.
@@ -7841,7 +7891,7 @@ namespace Iop.Homenode {
     }
 
     /// <summary>Field number for the "profileImage" field.</summary>
-    public const int ProfileImageFieldNumber = 10;
+    public const int ProfileImageFieldNumber = 11;
     private pb::ByteString profileImage_ = pb::ByteString.Empty;
     /// <summary>
     ///  If 'GetIdentityInformationRequest.includeProfileImage' was set, this contains the requested identity's profile image.
@@ -7855,7 +7905,7 @@ namespace Iop.Homenode {
     }
 
     /// <summary>Field number for the "thumbnailImage" field.</summary>
-    public const int ThumbnailImageFieldNumber = 11;
+    public const int ThumbnailImageFieldNumber = 12;
     private pb::ByteString thumbnailImage_ = pb::ByteString.Empty;
     /// <summary>
     ///  If 'GetIdentityInformationRequest.includeThumbnailImage' was set, this contains the requested identity's thumbnail image.
@@ -7869,9 +7919,9 @@ namespace Iop.Homenode {
     }
 
     /// <summary>Field number for the "applicationServices" field.</summary>
-    public const int ApplicationServicesFieldNumber = 12;
+    public const int ApplicationServicesFieldNumber = 13;
     private static readonly pb::FieldCodec<string> _repeated_applicationServices_codec
-        = pb::FieldCodec.ForString(98);
+        = pb::FieldCodec.ForString(106);
     private readonly pbc::RepeatedField<string> applicationServices_ = new pbc::RepeatedField<string>();
     /// <summary>
     ///  If 'GetIdentityInformationRequest.includeApplicationServices' was set and if 'isOnline' is true, this contains 
@@ -7901,7 +7951,8 @@ namespace Iop.Homenode {
       if (IdentityPublicKey != other.IdentityPublicKey) return false;
       if (Type != other.Type) return false;
       if (Name != other.Name) return false;
-      if (Location != other.Location) return false;
+      if (Latitude != other.Latitude) return false;
+      if (Longitude != other.Longitude) return false;
       if (ExtraData != other.ExtraData) return false;
       if (ProfileImage != other.ProfileImage) return false;
       if (ThumbnailImage != other.ThumbnailImage) return false;
@@ -7919,7 +7970,8 @@ namespace Iop.Homenode {
       if (IdentityPublicKey.Length != 0) hash ^= IdentityPublicKey.GetHashCode();
       if (Type.Length != 0) hash ^= Type.GetHashCode();
       if (Name.Length != 0) hash ^= Name.GetHashCode();
-      if (Location != 0) hash ^= Location.GetHashCode();
+      if (Latitude != 0) hash ^= Latitude.GetHashCode();
+      if (Longitude != 0) hash ^= Longitude.GetHashCode();
       if (ExtraData.Length != 0) hash ^= ExtraData.GetHashCode();
       if (ProfileImage.Length != 0) hash ^= ProfileImage.GetHashCode();
       if (ThumbnailImage.Length != 0) hash ^= ThumbnailImage.GetHashCode();
@@ -7962,20 +8014,24 @@ namespace Iop.Homenode {
         output.WriteRawTag(58);
         output.WriteString(Name);
       }
-      if (Location != 0) {
+      if (Latitude != 0) {
         output.WriteRawTag(69);
-        output.WriteFixed32(Location);
+        output.WriteSFixed32(Latitude);
+      }
+      if (Longitude != 0) {
+        output.WriteRawTag(77);
+        output.WriteSFixed32(Longitude);
       }
       if (ExtraData.Length != 0) {
-        output.WriteRawTag(74);
+        output.WriteRawTag(82);
         output.WriteString(ExtraData);
       }
       if (ProfileImage.Length != 0) {
-        output.WriteRawTag(82);
+        output.WriteRawTag(90);
         output.WriteBytes(ProfileImage);
       }
       if (ThumbnailImage.Length != 0) {
-        output.WriteRawTag(90);
+        output.WriteRawTag(98);
         output.WriteBytes(ThumbnailImage);
       }
       applicationServices_.WriteTo(output, _repeated_applicationServices_codec);
@@ -8005,7 +8061,10 @@ namespace Iop.Homenode {
       if (Name.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Name);
       }
-      if (Location != 0) {
+      if (Latitude != 0) {
+        size += 1 + 4;
+      }
+      if (Longitude != 0) {
         size += 1 + 4;
       }
       if (ExtraData.Length != 0) {
@@ -8047,8 +8106,11 @@ namespace Iop.Homenode {
       if (other.Name.Length != 0) {
         Name = other.Name;
       }
-      if (other.Location != 0) {
-        Location = other.Location;
+      if (other.Latitude != 0) {
+        Latitude = other.Latitude;
+      }
+      if (other.Longitude != 0) {
+        Longitude = other.Longitude;
       }
       if (other.ExtraData.Length != 0) {
         ExtraData = other.ExtraData;
@@ -8099,22 +8161,26 @@ namespace Iop.Homenode {
             break;
           }
           case 69: {
-            Location = input.ReadFixed32();
+            Latitude = input.ReadSFixed32();
             break;
           }
-          case 74: {
-            ExtraData = input.ReadString();
+          case 77: {
+            Longitude = input.ReadSFixed32();
             break;
           }
           case 82: {
-            ProfileImage = input.ReadBytes();
+            ExtraData = input.ReadString();
             break;
           }
           case 90: {
-            ThumbnailImage = input.ReadBytes();
+            ProfileImage = input.ReadBytes();
             break;
           }
           case 98: {
+            ThumbnailImage = input.ReadBytes();
+            break;
+          }
+          case 106: {
             applicationServices_.AddEntriesFrom(input, _repeated_applicationServices_codec);
             break;
           }
@@ -9584,12 +9650,12 @@ namespace Iop.Homenode {
   ///  holds some information about those identities.
   ///
   ///  Each search request only produces a limited number of results. The maximal size of the first set of results 
-  ///  is provided by 'maxRecordCount' field. The response to this message contains up to 'maxRecordCount' results. 
-  ///  If there are more results available, they are saved to the conversation context, which enables the client 
-  ///  to obtain more results with subsequent ProfileSearchPageRequest messages.
+  ///  is provided by 'maxResponseRecordCount' field. The response to this message contains up to 'maxResponseRecordCount' 
+  ///  results. If there are more results available, they are saved to the conversation context, which enables the client 
+  ///  to obtain more results with subsequent ProfileSearchPartRequest messages.
   ///
-  ///  The node will not save more than 10 result pages from a search request. The node will delete the cached search 
-  ///  results after 5 minutes from receiving ProfileSearchRequest. 
+  ///  The node will not save more than 'maxTotalRecordCount' search requests. 
+  ///  The node will delete the cached search results after 5 minutes from receiving ProfileSearchRequest. 
   ///
   ///  Once the client sends another ProfileSearchRequest, or if it disconnects, the old search results are discarded.
   ///
@@ -9623,10 +9689,12 @@ namespace Iop.Homenode {
     public ProfileSearchRequest(ProfileSearchRequest other) : this() {
       includeHostedOnly_ = other.includeHostedOnly_;
       includeThumbnailImages_ = other.includeThumbnailImages_;
-      maxRecordCount_ = other.maxRecordCount_;
+      maxResponseRecordCount_ = other.maxResponseRecordCount_;
+      maxTotalRecordCount_ = other.maxTotalRecordCount_;
       type_ = other.type_;
       name_ = other.name_;
-      location_ = other.location_;
+      latitude_ = other.latitude_;
+      longitude_ = other.longitude_;
       radius_ = other.radius_;
       extraData_ = other.extraData_;
     }
@@ -9640,7 +9708,7 @@ namespace Iop.Homenode {
     public const int IncludeHostedOnlyFieldNumber = 1;
     private bool includeHostedOnly_;
     /// <summary>
-    ///  If set to true, the node only returns profiles of its own clients. 
+    ///  If set to true, the node only returns profiles of its own customers.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool IncludeHostedOnly {
@@ -9664,22 +9732,37 @@ namespace Iop.Homenode {
       }
     }
 
-    /// <summary>Field number for the "maxRecordCount" field.</summary>
-    public const int MaxRecordCountFieldNumber = 3;
-    private uint maxRecordCount_;
+    /// <summary>Field number for the "maxResponseRecordCount" field.</summary>
+    public const int MaxResponseRecordCountFieldNumber = 3;
+    private uint maxResponseRecordCount_;
     /// <summary>
     ///  Maximal number of results to be delivered in the response. If 'includeThumbnailImages'
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public uint MaxRecordCount {
-      get { return maxRecordCount_; }
+    public uint MaxResponseRecordCount {
+      get { return maxResponseRecordCount_; }
       set {
-        maxRecordCount_ = value;
+        maxResponseRecordCount_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "maxTotalRecordCount" field.</summary>
+    public const int MaxTotalRecordCountFieldNumber = 4;
+    private uint maxTotalRecordCount_;
+    /// <summary>
+    ///  is true, this has to be an integer between 1 and 100. If 'includeThumbnailImages' is false,
+    ///  this has to be an integer between 1 and 1000.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public uint MaxTotalRecordCount {
+      get { return maxTotalRecordCount_; }
+      set {
+        maxTotalRecordCount_ = value;
       }
     }
 
     /// <summary>Field number for the "type" field.</summary>
-    public const int TypeFieldNumber = 4;
+    public const int TypeFieldNumber = 5;
     private string type_ = "";
     /// <summary>
     ///  Search filters.
@@ -9693,7 +9776,7 @@ namespace Iop.Homenode {
     }
 
     /// <summary>Field number for the "name" field.</summary>
-    public const int NameFieldNumber = 5;
+    public const int NameFieldNumber = 6;
     private string name_ = "";
     /// <summary>
     ///  of identity types that match the wildcard string. If empty, all identity types are allowed.
@@ -9707,28 +9790,43 @@ namespace Iop.Homenode {
       }
     }
 
-    /// <summary>Field number for the "location" field.</summary>
-    public const int LocationFieldNumber = 6;
-    private uint location_;
+    /// <summary>Field number for the "latitude" field.</summary>
+    public const int LatitudeFieldNumber = 7;
+    private int latitude_;
     /// <summary>
     ///  with names that match the wildcard string. If empty, all profile names are allowed.
     ///  Max 64 bytes long.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public uint Location {
-      get { return location_; }
+    public int Latitude {
+      get { return latitude_; }
       set {
-        location_ = value;
+        latitude_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "longitude" field.</summary>
+    public const int LongitudeFieldNumber = 8;
+    private int longitude_;
+    /// <summary>
+    ///  it is, in combination with 'longitude' and 'radius' a specification of target area, 
+    ///  where the identity has to be located (according to its profile information) in order to be 
+    ///  included in the search results. If NO_LOCATION, 'longitude' and 'radius' are ignored 
+    ///  and all locations are allowed.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int Longitude {
+      get { return longitude_; }
+      set {
+        longitude_ = value;
       }
     }
 
     /// <summary>Field number for the "radius" field.</summary>
-    public const int RadiusFieldNumber = 7;
+    public const int RadiusFieldNumber = 9;
     private uint radius_;
     /// <summary>
-    ///  a specification of target location, where the identity has to be located (according to 
-    ///  its profile information) in order to be included in the search results. If 0, 'radius' 
-    ///  is ignored and all locations are allowed.
+    ///  If 'latitude' is not NO_LOCATION, this is target location radius in metres.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public uint Radius {
@@ -9739,7 +9837,7 @@ namespace Iop.Homenode {
     }
 
     /// <summary>Field number for the "extraData" field.</summary>
-    public const int ExtraDataFieldNumber = 8;
+    public const int ExtraDataFieldNumber = 10;
     private string extraData_ = "";
     /// <summary>
     ///  RegexType or empty string. If not empty, specifies the regular expression that identity
@@ -9767,10 +9865,12 @@ namespace Iop.Homenode {
       }
       if (IncludeHostedOnly != other.IncludeHostedOnly) return false;
       if (IncludeThumbnailImages != other.IncludeThumbnailImages) return false;
-      if (MaxRecordCount != other.MaxRecordCount) return false;
+      if (MaxResponseRecordCount != other.MaxResponseRecordCount) return false;
+      if (MaxTotalRecordCount != other.MaxTotalRecordCount) return false;
       if (Type != other.Type) return false;
       if (Name != other.Name) return false;
-      if (Location != other.Location) return false;
+      if (Latitude != other.Latitude) return false;
+      if (Longitude != other.Longitude) return false;
       if (Radius != other.Radius) return false;
       if (ExtraData != other.ExtraData) return false;
       return true;
@@ -9781,10 +9881,12 @@ namespace Iop.Homenode {
       int hash = 1;
       if (IncludeHostedOnly != false) hash ^= IncludeHostedOnly.GetHashCode();
       if (IncludeThumbnailImages != false) hash ^= IncludeThumbnailImages.GetHashCode();
-      if (MaxRecordCount != 0) hash ^= MaxRecordCount.GetHashCode();
+      if (MaxResponseRecordCount != 0) hash ^= MaxResponseRecordCount.GetHashCode();
+      if (MaxTotalRecordCount != 0) hash ^= MaxTotalRecordCount.GetHashCode();
       if (Type.Length != 0) hash ^= Type.GetHashCode();
       if (Name.Length != 0) hash ^= Name.GetHashCode();
-      if (Location != 0) hash ^= Location.GetHashCode();
+      if (Latitude != 0) hash ^= Latitude.GetHashCode();
+      if (Longitude != 0) hash ^= Longitude.GetHashCode();
       if (Radius != 0) hash ^= Radius.GetHashCode();
       if (ExtraData.Length != 0) hash ^= ExtraData.GetHashCode();
       return hash;
@@ -9805,28 +9907,36 @@ namespace Iop.Homenode {
         output.WriteRawTag(16);
         output.WriteBool(IncludeThumbnailImages);
       }
-      if (MaxRecordCount != 0) {
+      if (MaxResponseRecordCount != 0) {
         output.WriteRawTag(24);
-        output.WriteUInt32(MaxRecordCount);
+        output.WriteUInt32(MaxResponseRecordCount);
+      }
+      if (MaxTotalRecordCount != 0) {
+        output.WriteRawTag(32);
+        output.WriteUInt32(MaxTotalRecordCount);
       }
       if (Type.Length != 0) {
-        output.WriteRawTag(34);
+        output.WriteRawTag(42);
         output.WriteString(Type);
       }
       if (Name.Length != 0) {
-        output.WriteRawTag(42);
+        output.WriteRawTag(50);
         output.WriteString(Name);
       }
-      if (Location != 0) {
-        output.WriteRawTag(53);
-        output.WriteFixed32(Location);
+      if (Latitude != 0) {
+        output.WriteRawTag(61);
+        output.WriteSFixed32(Latitude);
+      }
+      if (Longitude != 0) {
+        output.WriteRawTag(69);
+        output.WriteSFixed32(Longitude);
       }
       if (Radius != 0) {
-        output.WriteRawTag(56);
+        output.WriteRawTag(72);
         output.WriteUInt32(Radius);
       }
       if (ExtraData.Length != 0) {
-        output.WriteRawTag(66);
+        output.WriteRawTag(82);
         output.WriteString(ExtraData);
       }
     }
@@ -9840,8 +9950,11 @@ namespace Iop.Homenode {
       if (IncludeThumbnailImages != false) {
         size += 1 + 1;
       }
-      if (MaxRecordCount != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeUInt32Size(MaxRecordCount);
+      if (MaxResponseRecordCount != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeUInt32Size(MaxResponseRecordCount);
+      }
+      if (MaxTotalRecordCount != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeUInt32Size(MaxTotalRecordCount);
       }
       if (Type.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Type);
@@ -9849,7 +9962,10 @@ namespace Iop.Homenode {
       if (Name.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Name);
       }
-      if (Location != 0) {
+      if (Latitude != 0) {
+        size += 1 + 4;
+      }
+      if (Longitude != 0) {
         size += 1 + 4;
       }
       if (Radius != 0) {
@@ -9872,8 +9988,11 @@ namespace Iop.Homenode {
       if (other.IncludeThumbnailImages != false) {
         IncludeThumbnailImages = other.IncludeThumbnailImages;
       }
-      if (other.MaxRecordCount != 0) {
-        MaxRecordCount = other.MaxRecordCount;
+      if (other.MaxResponseRecordCount != 0) {
+        MaxResponseRecordCount = other.MaxResponseRecordCount;
+      }
+      if (other.MaxTotalRecordCount != 0) {
+        MaxTotalRecordCount = other.MaxTotalRecordCount;
       }
       if (other.Type.Length != 0) {
         Type = other.Type;
@@ -9881,8 +10000,11 @@ namespace Iop.Homenode {
       if (other.Name.Length != 0) {
         Name = other.Name;
       }
-      if (other.Location != 0) {
-        Location = other.Location;
+      if (other.Latitude != 0) {
+        Latitude = other.Latitude;
+      }
+      if (other.Longitude != 0) {
+        Longitude = other.Longitude;
       }
       if (other.Radius != 0) {
         Radius = other.Radius;
@@ -9909,26 +10031,34 @@ namespace Iop.Homenode {
             break;
           }
           case 24: {
-            MaxRecordCount = input.ReadUInt32();
+            MaxResponseRecordCount = input.ReadUInt32();
             break;
           }
-          case 34: {
-            Type = input.ReadString();
+          case 32: {
+            MaxTotalRecordCount = input.ReadUInt32();
             break;
           }
           case 42: {
+            Type = input.ReadString();
+            break;
+          }
+          case 50: {
             Name = input.ReadString();
             break;
           }
-          case 53: {
-            Location = input.ReadFixed32();
+          case 61: {
+            Latitude = input.ReadSFixed32();
             break;
           }
-          case 56: {
+          case 69: {
+            Longitude = input.ReadSFixed32();
+            break;
+          }
+          case 72: {
             Radius = input.ReadUInt32();
             break;
           }
-          case 66: {
+          case 82: {
             ExtraData = input.ReadString();
             break;
           }
@@ -9942,13 +10072,17 @@ namespace Iop.Homenode {
   ///
   ///  A response to ProfileSearchRequest.
   ///
-  ///  If 'maxRecordCount' is lower than 'totalRecordCount', the client is allowed to send ProfileSearchPageRequest messages to obtain more results.
+  ///  If 'maxResponseRecordCount' is lower than 'totalRecordCount', the client is allowed to send ProfileSearchPartRequest messages to obtain more results.
   ///
   ///  Specific Error Responses:
   ///    * ERROR_INVALID_VALUE
-  ///      * Response.details == "maxRecordCount" - 'ProfileSearchRequest.maxRecordCount' is not within the required range.
+  ///      * Response.details == "maxResponseRecordCount" - 'ProfileSearchRequest.maxResponseRecordCount' is not within the required range.
+  ///      * Response.details == "maxTotalRecordCount" - 'ProfileSearchRequest.maxTotalRecordCount' is not within the required range.
   ///      * Response.details == "type" - 'ProfileSearchRequest.type' is too long.
   ///      * Response.details == "name" - 'ProfileSearchRequest.name' is too long.
+  ///      * Response.details == "latitude" - 'ProfileSearchRequest.latitude' is not a valid location latitude.
+  ///      * Response.details == "longitude" - 'ProfileSearchRequest.longitude' is not a valid location longitude.
+  ///      * Response.details == "radius" - 'ProfileSearchRequest.radius' is not a valid radius value.
   ///      * Response.details == "extraData" - 'ProfileSearchRequest.extraData' is too long or it is not a valid value of RegexType.
   /// </summary>
   public sealed partial class ProfileSearchResponse : pb::IMessage<ProfileSearchResponse> {
@@ -9976,7 +10110,7 @@ namespace Iop.Homenode {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public ProfileSearchResponse(ProfileSearchResponse other) : this() {
       totalRecordCount_ = other.totalRecordCount_;
-      maxRecordCount_ = other.maxRecordCount_;
+      maxResponseRecordCount_ = other.maxResponseRecordCount_;
       profiles_ = other.profiles_.Clone();
     }
 
@@ -9989,7 +10123,7 @@ namespace Iop.Homenode {
     public const int TotalRecordCountFieldNumber = 1;
     private uint totalRecordCount_;
     /// <summary>
-    ///  The total number of profiles that matched the search criteria. Up to 'maxRecordCount' of them are in 'profiles' list.
+    ///  Total number of profiles that matched the search criteria. Up to 'maxResponseRecordCount' of them are in 'profiles' list.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public uint TotalRecordCount {
@@ -9999,17 +10133,17 @@ namespace Iop.Homenode {
       }
     }
 
-    /// <summary>Field number for the "maxRecordCount" field.</summary>
-    public const int MaxRecordCountFieldNumber = 2;
-    private uint maxRecordCount_;
+    /// <summary>Field number for the "maxResponseRecordCount" field.</summary>
+    public const int MaxResponseRecordCountFieldNumber = 2;
+    private uint maxResponseRecordCount_;
     /// <summary>
-    ///  Limit of the number of results provided. This is equal to 'ProfileSearchRequest.maxRecordCount'.
+    ///  Limit of the number of results provided. This is equal to 'ProfileSearchRequest.maxResponseRecordCount'.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public uint MaxRecordCount {
-      get { return maxRecordCount_; }
+    public uint MaxResponseRecordCount {
+      get { return maxResponseRecordCount_; }
       set {
-        maxRecordCount_ = value;
+        maxResponseRecordCount_ = value;
       }
     }
 
@@ -10040,7 +10174,7 @@ namespace Iop.Homenode {
         return true;
       }
       if (TotalRecordCount != other.TotalRecordCount) return false;
-      if (MaxRecordCount != other.MaxRecordCount) return false;
+      if (MaxResponseRecordCount != other.MaxResponseRecordCount) return false;
       if(!profiles_.Equals(other.profiles_)) return false;
       return true;
     }
@@ -10049,7 +10183,7 @@ namespace Iop.Homenode {
     public override int GetHashCode() {
       int hash = 1;
       if (TotalRecordCount != 0) hash ^= TotalRecordCount.GetHashCode();
-      if (MaxRecordCount != 0) hash ^= MaxRecordCount.GetHashCode();
+      if (MaxResponseRecordCount != 0) hash ^= MaxResponseRecordCount.GetHashCode();
       hash ^= profiles_.GetHashCode();
       return hash;
     }
@@ -10065,9 +10199,9 @@ namespace Iop.Homenode {
         output.WriteRawTag(8);
         output.WriteUInt32(TotalRecordCount);
       }
-      if (MaxRecordCount != 0) {
+      if (MaxResponseRecordCount != 0) {
         output.WriteRawTag(16);
-        output.WriteUInt32(MaxRecordCount);
+        output.WriteUInt32(MaxResponseRecordCount);
       }
       profiles_.WriteTo(output, _repeated_profiles_codec);
     }
@@ -10078,8 +10212,8 @@ namespace Iop.Homenode {
       if (TotalRecordCount != 0) {
         size += 1 + pb::CodedOutputStream.ComputeUInt32Size(TotalRecordCount);
       }
-      if (MaxRecordCount != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeUInt32Size(MaxRecordCount);
+      if (MaxResponseRecordCount != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeUInt32Size(MaxResponseRecordCount);
       }
       size += profiles_.CalculateSize(_repeated_profiles_codec);
       return size;
@@ -10093,8 +10227,8 @@ namespace Iop.Homenode {
       if (other.TotalRecordCount != 0) {
         TotalRecordCount = other.TotalRecordCount;
       }
-      if (other.MaxRecordCount != 0) {
-        MaxRecordCount = other.MaxRecordCount;
+      if (other.MaxResponseRecordCount != 0) {
+        MaxResponseRecordCount = other.MaxResponseRecordCount;
       }
       profiles_.Add(other.profiles_);
     }
@@ -10112,7 +10246,7 @@ namespace Iop.Homenode {
             break;
           }
           case 16: {
-            MaxRecordCount = input.ReadUInt32();
+            MaxResponseRecordCount = input.ReadUInt32();
             break;
           }
           case 26: {
@@ -10159,7 +10293,8 @@ namespace Iop.Homenode {
       identityPublicKey_ = other.identityPublicKey_;
       type_ = other.type_;
       name_ = other.name_;
-      location_ = other.location_;
+      latitude_ = other.latitude_;
+      longitude_ = other.longitude_;
       extraData_ = other.extraData_;
       thumbnailImage_ = other.thumbnailImage_;
     }
@@ -10253,22 +10388,36 @@ namespace Iop.Homenode {
       }
     }
 
-    /// <summary>Field number for the "location" field.</summary>
-    public const int LocationFieldNumber = 7;
-    private uint location_;
+    /// <summary>Field number for the "latitude" field.</summary>
+    public const int LatitudeFieldNumber = 7;
+    private int latitude_;
     /// <summary>
-    ///  The identity's encoded GPS location information.
+    ///  LocationType. The identity's GPS location latitude information.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public uint Location {
-      get { return location_; }
+    public int Latitude {
+      get { return latitude_; }
       set {
-        location_ = value;
+        latitude_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "longitude" field.</summary>
+    public const int LongitudeFieldNumber = 8;
+    private int longitude_;
+    /// <summary>
+    ///  LocationType. The identity's GPS location longitude information.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int Longitude {
+      get { return longitude_; }
+      set {
+        longitude_ = value;
       }
     }
 
     /// <summary>Field number for the "extraData" field.</summary>
-    public const int ExtraDataFieldNumber = 8;
+    public const int ExtraDataFieldNumber = 9;
     private string extraData_ = "";
     /// <summary>
     ///  The identity's extra data.
@@ -10282,7 +10431,7 @@ namespace Iop.Homenode {
     }
 
     /// <summary>Field number for the "thumbnailImage" field.</summary>
-    public const int ThumbnailImageFieldNumber = 9;
+    public const int ThumbnailImageFieldNumber = 10;
     private pb::ByteString thumbnailImage_ = pb::ByteString.Empty;
     /// <summary>
     ///  If 'ProfileSearchRequest.includeThumbnailImages' was set, this contains the identity's thumbnail image.
@@ -10314,7 +10463,8 @@ namespace Iop.Homenode {
       if (IdentityPublicKey != other.IdentityPublicKey) return false;
       if (Type != other.Type) return false;
       if (Name != other.Name) return false;
-      if (Location != other.Location) return false;
+      if (Latitude != other.Latitude) return false;
+      if (Longitude != other.Longitude) return false;
       if (ExtraData != other.ExtraData) return false;
       if (ThumbnailImage != other.ThumbnailImage) return false;
       return true;
@@ -10329,7 +10479,8 @@ namespace Iop.Homenode {
       if (IdentityPublicKey.Length != 0) hash ^= IdentityPublicKey.GetHashCode();
       if (Type.Length != 0) hash ^= Type.GetHashCode();
       if (Name.Length != 0) hash ^= Name.GetHashCode();
-      if (Location != 0) hash ^= Location.GetHashCode();
+      if (Latitude != 0) hash ^= Latitude.GetHashCode();
+      if (Longitude != 0) hash ^= Longitude.GetHashCode();
       if (ExtraData.Length != 0) hash ^= ExtraData.GetHashCode();
       if (ThumbnailImage.Length != 0) hash ^= ThumbnailImage.GetHashCode();
       return hash;
@@ -10366,16 +10517,20 @@ namespace Iop.Homenode {
         output.WriteRawTag(50);
         output.WriteString(Name);
       }
-      if (Location != 0) {
+      if (Latitude != 0) {
         output.WriteRawTag(61);
-        output.WriteFixed32(Location);
+        output.WriteSFixed32(Latitude);
+      }
+      if (Longitude != 0) {
+        output.WriteRawTag(69);
+        output.WriteSFixed32(Longitude);
       }
       if (ExtraData.Length != 0) {
-        output.WriteRawTag(66);
+        output.WriteRawTag(74);
         output.WriteString(ExtraData);
       }
       if (ThumbnailImage.Length != 0) {
-        output.WriteRawTag(74);
+        output.WriteRawTag(82);
         output.WriteBytes(ThumbnailImage);
       }
     }
@@ -10401,7 +10556,10 @@ namespace Iop.Homenode {
       if (Name.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Name);
       }
-      if (Location != 0) {
+      if (Latitude != 0) {
+        size += 1 + 4;
+      }
+      if (Longitude != 0) {
         size += 1 + 4;
       }
       if (ExtraData.Length != 0) {
@@ -10436,8 +10594,11 @@ namespace Iop.Homenode {
       if (other.Name.Length != 0) {
         Name = other.Name;
       }
-      if (other.Location != 0) {
-        Location = other.Location;
+      if (other.Latitude != 0) {
+        Latitude = other.Latitude;
+      }
+      if (other.Longitude != 0) {
+        Longitude = other.Longitude;
       }
       if (other.ExtraData.Length != 0) {
         ExtraData = other.ExtraData;
@@ -10480,14 +10641,18 @@ namespace Iop.Homenode {
             break;
           }
           case 61: {
-            Location = input.ReadFixed32();
+            Latitude = input.ReadSFixed32();
             break;
           }
-          case 66: {
-            ExtraData = input.ReadString();
+          case 69: {
+            Longitude = input.ReadSFixed32();
             break;
           }
           case 74: {
+            ExtraData = input.ReadString();
+            break;
+          }
+          case 82: {
             ThumbnailImage = input.ReadBytes();
             break;
           }
@@ -10499,7 +10664,7 @@ namespace Iop.Homenode {
 
   /// <summary>
   ///
-  ///  Request to get another page from the search query.
+  ///  Request to get another part from the search query.
   ///
   ///  This request only makes sense only if the client previously sent ProfileSearchRequest to the node and the search result contained
   ///  more records than the node provided in the ProfileSearchResponse, and the search results have not expired yet.
@@ -10508,10 +10673,10 @@ namespace Iop.Homenode {
   ///
   ///  Conversation status: ConversationStarted, Verified, Authenticated
   /// </summary>
-  public sealed partial class ProfileSearchPageRequest : pb::IMessage<ProfileSearchPageRequest> {
-    private static readonly pb::MessageParser<ProfileSearchPageRequest> _parser = new pb::MessageParser<ProfileSearchPageRequest>(() => new ProfileSearchPageRequest());
+  public sealed partial class ProfileSearchPartRequest : pb::IMessage<ProfileSearchPartRequest> {
+    private static readonly pb::MessageParser<ProfileSearchPartRequest> _parser = new pb::MessageParser<ProfileSearchPartRequest>(() => new ProfileSearchPartRequest());
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pb::MessageParser<ProfileSearchPageRequest> Parser { get { return _parser; } }
+    public static pb::MessageParser<ProfileSearchPartRequest> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
@@ -10524,21 +10689,21 @@ namespace Iop.Homenode {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public ProfileSearchPageRequest() {
+    public ProfileSearchPartRequest() {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public ProfileSearchPageRequest(ProfileSearchPageRequest other) : this() {
+    public ProfileSearchPartRequest(ProfileSearchPartRequest other) : this() {
       recordIndex_ = other.recordIndex_;
       recordCount_ = other.recordCount_;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public ProfileSearchPageRequest Clone() {
-      return new ProfileSearchPageRequest(this);
+    public ProfileSearchPartRequest Clone() {
+      return new ProfileSearchPartRequest(this);
     }
 
     /// <summary>Field number for the "recordIndex" field.</summary>
@@ -10571,11 +10736,11 @@ namespace Iop.Homenode {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
-      return Equals(other as ProfileSearchPageRequest);
+      return Equals(other as ProfileSearchPartRequest);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(ProfileSearchPageRequest other) {
+    public bool Equals(ProfileSearchPartRequest other) {
       if (ReferenceEquals(other, null)) {
         return false;
       }
@@ -10625,7 +10790,7 @@ namespace Iop.Homenode {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(ProfileSearchPageRequest other) {
+    public void MergeFrom(ProfileSearchPartRequest other) {
       if (other == null) {
         return;
       }
@@ -10661,7 +10826,7 @@ namespace Iop.Homenode {
 
   /// <summary>
   ///
-  ///  A response to ProfileSearchPageRequest.
+  ///  A response to ProfileSearchPartRequest.
   ///
   ///  Specific Error Responses:
   ///    * ERROR_NOT_AVAILABLE - No cached search results are available. Either the client did not send ProfileSearchRequest previously
@@ -10670,10 +10835,10 @@ namespace Iop.Homenode {
   ///      * Response.details == "recordIndex" - 'ProfileSearchRequest.recordIndex' is not a valid index of the result.
   ///      * Response.details == "recordCount" - 'ProfileSearchRequest.recordCount' is not a valid number of results to obtain in combination with 'ProfileSearchRequest.recordIndex'.
   /// </summary>
-  public sealed partial class ProfileSearchPageResponse : pb::IMessage<ProfileSearchPageResponse> {
-    private static readonly pb::MessageParser<ProfileSearchPageResponse> _parser = new pb::MessageParser<ProfileSearchPageResponse>(() => new ProfileSearchPageResponse());
+  public sealed partial class ProfileSearchPartResponse : pb::IMessage<ProfileSearchPartResponse> {
+    private static readonly pb::MessageParser<ProfileSearchPartResponse> _parser = new pb::MessageParser<ProfileSearchPartResponse>(() => new ProfileSearchPartResponse());
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pb::MessageParser<ProfileSearchPageResponse> Parser { get { return _parser; } }
+    public static pb::MessageParser<ProfileSearchPartResponse> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
@@ -10686,29 +10851,29 @@ namespace Iop.Homenode {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public ProfileSearchPageResponse() {
+    public ProfileSearchPartResponse() {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public ProfileSearchPageResponse(ProfileSearchPageResponse other) : this() {
+    public ProfileSearchPartResponse(ProfileSearchPartResponse other) : this() {
       recordIndex_ = other.recordIndex_;
       recordCount_ = other.recordCount_;
       profiles_ = other.profiles_.Clone();
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public ProfileSearchPageResponse Clone() {
-      return new ProfileSearchPageResponse(this);
+    public ProfileSearchPartResponse Clone() {
+      return new ProfileSearchPartResponse(this);
     }
 
     /// <summary>Field number for the "recordIndex" field.</summary>
     public const int RecordIndexFieldNumber = 1;
     private uint recordIndex_;
     /// <summary>
-    ///  Index of the first result. Copy of 'ProfileSearchPageRequest.recordIndex' value.
+    ///  Index of the first result. Copy of 'ProfileSearchPartRequest.recordIndex' value.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public uint RecordIndex {
@@ -10722,7 +10887,7 @@ namespace Iop.Homenode {
     public const int RecordCountFieldNumber = 2;
     private uint recordCount_;
     /// <summary>
-    ///  Number of results. Copy of 'ProfileSearchPageRequest.recordCount' value.
+    ///  Number of results. Copy of 'ProfileSearchPartRequest.recordCount' value.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public uint RecordCount {
@@ -10747,11 +10912,11 @@ namespace Iop.Homenode {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
-      return Equals(other as ProfileSearchPageResponse);
+      return Equals(other as ProfileSearchPartResponse);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(ProfileSearchPageResponse other) {
+    public bool Equals(ProfileSearchPartResponse other) {
       if (ReferenceEquals(other, null)) {
         return false;
       }
@@ -10805,7 +10970,7 @@ namespace Iop.Homenode {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(ProfileSearchPageResponse other) {
+    public void MergeFrom(ProfileSearchPartResponse other) {
       if (other == null) {
         return;
       }
@@ -12010,7 +12175,7 @@ namespace Iop.Homenode {
     public const int IncludeInvalidFieldNumber = 2;
     private bool includeInvalid_;
     /// <summary>
-    ///  If set to true, the response will include relationships which cards are no longer valid or not yet valid.
+    ///  If set to true, the response may include relationships which cards are no longer valid or not yet valid.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool IncludeInvalid {
@@ -12244,14 +12409,14 @@ namespace Iop.Homenode {
 
     /// <summary>Field number for the "relationships" field.</summary>
     public const int RelationshipsFieldNumber = 1;
-    private static readonly pb::FieldCodec<global::Iop.Homenode.IdentityRelationships> _repeated_relationships_codec
-        = pb::FieldCodec.ForMessage(10, global::Iop.Homenode.IdentityRelationships.Parser);
-    private readonly pbc::RepeatedField<global::Iop.Homenode.IdentityRelationships> relationships_ = new pbc::RepeatedField<global::Iop.Homenode.IdentityRelationships>();
+    private static readonly pb::FieldCodec<global::Iop.Homenode.IdentityRelationship> _repeated_relationships_codec
+        = pb::FieldCodec.ForMessage(10, global::Iop.Homenode.IdentityRelationship.Parser);
+    private readonly pbc::RepeatedField<global::Iop.Homenode.IdentityRelationship> relationships_ = new pbc::RepeatedField<global::Iop.Homenode.IdentityRelationship>();
     /// <summary>
     ///  List of all matching identity relationships together with their relationship cards.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<global::Iop.Homenode.IdentityRelationships> Relationships {
+    public pbc::RepeatedField<global::Iop.Homenode.IdentityRelationship> Relationships {
       get { return relationships_; }
     }
 
@@ -12326,10 +12491,10 @@ namespace Iop.Homenode {
   ///
   ///  Description of a relationship between two identities together with signature proofs.
   /// </summary>
-  public sealed partial class IdentityRelationships : pb::IMessage<IdentityRelationships> {
-    private static readonly pb::MessageParser<IdentityRelationships> _parser = new pb::MessageParser<IdentityRelationships>(() => new IdentityRelationships());
+  public sealed partial class IdentityRelationship : pb::IMessage<IdentityRelationship> {
+    private static readonly pb::MessageParser<IdentityRelationship> _parser = new pb::MessageParser<IdentityRelationship>(() => new IdentityRelationship());
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pb::MessageParser<IdentityRelationships> Parser { get { return _parser; } }
+    public static pb::MessageParser<IdentityRelationship> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
@@ -12342,22 +12507,22 @@ namespace Iop.Homenode {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public IdentityRelationships() {
+    public IdentityRelationship() {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public IdentityRelationships(IdentityRelationships other) : this() {
+    public IdentityRelationship(IdentityRelationship other) : this() {
       CardApplication = other.cardApplication_ != null ? other.CardApplication.Clone() : null;
       cardApplicationSignature_ = other.cardApplicationSignature_;
       Card = other.card_ != null ? other.Card.Clone() : null;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public IdentityRelationships Clone() {
-      return new IdentityRelationships(this);
+    public IdentityRelationship Clone() {
+      return new IdentityRelationship(this);
     }
 
     /// <summary>Field number for the "cardApplication" field.</summary>
@@ -12404,11 +12569,11 @@ namespace Iop.Homenode {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
-      return Equals(other as IdentityRelationships);
+      return Equals(other as IdentityRelationship);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(IdentityRelationships other) {
+    public bool Equals(IdentityRelationship other) {
       if (ReferenceEquals(other, null)) {
         return false;
       }
@@ -12467,7 +12632,7 @@ namespace Iop.Homenode {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(IdentityRelationships other) {
+    public void MergeFrom(IdentityRelationship other) {
       if (other == null) {
         return;
       }

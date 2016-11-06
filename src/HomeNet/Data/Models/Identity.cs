@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HomeNetProtocol;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -69,8 +70,19 @@ namespace HomeNet.Data.Models
     public string Type { get; set; }
 
 
-    /// <summary>Encoded representation of the user's initial GPS location.</summary>
-    public uint InitialLocationEncoded { get; set; }
+    /// <summary>User's initial GPS location latitude.</summary>
+    /// <remarks>For precision definition see HomeNet.Data.Context.OnModelCreating.</remarks>
+    /// <remarks>This is index - see HomeNet.Data.Context.OnModelCreating.</remarks>
+    [Required]
+    [Range(-90, 90)]
+    public decimal InitialLocationLatitude { get; set; }
+
+    /// <summary>User's initial GPS location longitude.</summary>
+    /// <remarks>For precision definition see HomeNet.Data.Context.OnModelCreating.</remarks>
+    /// <remarks>This is index - see HomeNet.Data.Context.OnModelCreating.</remarks>
+    [Required]
+    [Range(-180, 180)]
+    public decimal InitialLocationLongitude { get; set; }
 
     /// <summary>User defined extra data that serve for satisfying search queries in HomeNet.</summary>
     /// <remarks>This is index - see HomeNet.Data.Context.OnModelCreating.</remarks>
@@ -247,6 +259,26 @@ namespace HomeNet.Data.Models
     public bool IsProfileInitialized()
     {
       return StructuralComparisons.StructuralComparer.Compare(this.Version, new byte[] { 0, 0, 0 }) != 0;
+    }
+
+
+    /// <summary>
+    /// Creates GPS location from identity's latitude and longitude.
+    /// </summary>
+    /// <returns>GPS location information.</returns>
+    public GpsLocation GetInitialLocation()
+    {
+      return new GpsLocation(InitialLocationLatitude, InitialLocationLongitude);
+    }
+
+    /// <summary>
+    /// Sets identity's GPS location information.
+    /// </summary>
+    /// <param name="Location">Location information.</param>
+    public void SetInitialLocation(GpsLocation Location)
+    {
+      InitialLocationLatitude = Location.Latitude;
+      InitialLocationLongitude = Location.Longitude;
     }
   }
 }

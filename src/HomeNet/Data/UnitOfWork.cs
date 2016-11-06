@@ -64,7 +64,7 @@ namespace HomeNet.Data
 
 
     private SettingsRepository settingsRepository;
-    private GenericRepository<Identity> homeIdentityRepository;
+    private HomeIdentityRepository homeIdentityRepository;
 
 
     /// <summary>Settings repository.</summary>
@@ -81,12 +81,12 @@ namespace HomeNet.Data
 
 
     /// <summary>Identity repository for the node clients.</summary>
-    public GenericRepository<Identity> HomeIdentityRepository
+    public HomeIdentityRepository HomeIdentityRepository
     {
       get
       {
         if (homeIdentityRepository == null)
-          homeIdentityRepository = new GenericRepository<Identity>(Context);
+          homeIdentityRepository = new HomeIdentityRepository(Context);
 
         return homeIdentityRepository;
       }

@@ -35,18 +35,22 @@ namespace HomeNet.Data
     /// <summary>
     /// Obtains a list of entities based on the specified criteria.
     /// </summary>
-    /// <param name="filter">Specifies which entities should be returned from the database. If null, all entities are returned.</param>
-    /// <param name="orderBy">Specifies the order in which the matching entities are returned. If null, the default ordering is used.</param>
+    /// <param name="Filter">Specifies which entities should be returned from the database. If null, all entities are returned.</param>
+    /// <param name="OrderBy">Specifies the order in which the matching entities are returned. If null, the default ordering is used.</param>
+    /// <param name="NoTracking">If true, the returned entities are not tracked.</param>
     /// <returns></returns>
-    public virtual IEnumerable<TEntity> Get(Expression<Func<TEntity, bool>> filter = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null)
+    public virtual IEnumerable<TEntity> Get(Expression<Func<TEntity, bool>> Filter = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> OrderBy = null, bool NoTracking = false)
     {
       log.Trace("()");
       IQueryable<TEntity> query = dbSet;
 
-      if (filter != null)
-        query = query.Where(filter);
+      if (NoTracking)
+        query = query.AsNoTracking();
 
-      List<TEntity> result = orderBy != null ? orderBy(query).ToList() : query.ToList();
+      if (Filter != null)
+        query = query.Where(Filter);
+
+      List<TEntity> result = OrderBy != null ? OrderBy(query).ToList() : query.ToList();
       log.Trace("(-):{0}", result != null ? "*Count=" + result.Count.ToString() : "null");
       return result;
     }
@@ -54,18 +58,22 @@ namespace HomeNet.Data
     /// <summary>
     /// Asynchronously obtains a list of entities based on the specified criteria.
     /// </summary>
-    /// <param name="filter">Specifies which entities should be returned from the database. If null, all entities are returned.</param>
-    /// <param name="orderBy">Specifies the order in which the matching entities are returned. If null, the default ordering is used.</param>
+    /// <param name="Filter">Specifies which entities should be returned from the database. If null, all entities are returned.</param>
+    /// <param name="OrderBy">Specifies the order in which the matching entities are returned. If null, the default ordering is used.</param>
+    /// <param name="NoTracking">If true, the returned entities are not tracked.</param>
     /// <returns></returns>
-    public virtual async Task<IEnumerable<TEntity>> GetAsync(Expression<Func<TEntity, bool>> filter = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null)
+    public virtual async Task<IEnumerable<TEntity>> GetAsync(Expression<Func<TEntity, bool>> Filter = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> OrderBy = null, bool NoTracking = false)
     {
       log.Trace("()");
       IQueryable<TEntity> query = dbSet;
 
-      if (filter != null)
-        query = query.Where(filter);
+      if (NoTracking)
+        query = query.AsNoTracking();
 
-      List<TEntity> result = await (orderBy != null ? orderBy(query).ToListAsync() : query.ToListAsync());
+      if (Filter != null)
+        query = query.Where(Filter);
+
+      List<TEntity> result = await (OrderBy != null ? OrderBy(query).ToListAsync() : query.ToListAsync());
       log.Trace("(-):{0}", result != null ? "*Count=" + result.Count.ToString() : "null");
       return result;
     }
@@ -186,12 +194,10 @@ namespace HomeNet.Data
     public virtual TEntity GetById(object id)
     {
       log.Trace("(id:{0})", id);
-#warning TODO: Not implemented, need .NET Core 1.1.0.
-      throw new NotImplementedException("Wait for .NET Core 1.1.0");
-      /*TEntity result = dbSet.Find(id);
+      TEntity result = dbSet.Find(id);
 
       log.Trace("(-):{0}", result);
-      return result;*/
+      return result;
     }
 
     /// <summary>
@@ -199,16 +205,14 @@ namespace HomeNet.Data
     /// </summary>
     /// <param name="id">Primary identifier of the entity.</param>
     /// <returns>Entity with the given primary identifier or null if no such entity exists.</returns>
-    public virtual /*async*/ Task<TEntity> GetByIdAsync(object id)
+    public virtual async Task<TEntity> GetByIdAsync(object id)
     {
       log.Trace("(id:{0})", id);
 
-#warning TODO: Not implemented, need .NET Core 1.1.0.
-      throw new NotImplementedException("Wait for .NET Core 1.1.0");
-      /*TEntity result = dbSet.Find(id);
+      TEntity result = await dbSet.FindAsync(id);
 
       log.Trace("(-):{0}", result);
-      return result;*/
+      return result;
     }
 
     /// <summary>

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using HomeNetCrypto;
+using System.Collections;
 
 namespace HomeNetProtocol
 {
@@ -673,10 +674,10 @@ namespace HomeNetProtocol
     /// <param name="Version">Profile version information or null if profile version is not to be changed.</param>
     /// <param name="Name">Identity name or null if identity name is not to be changed.</param>
     /// <param name="Image">Profile image data or null if profile image is not to be changed.</param>
-    /// <param name="Location">Encoded profile location information or null if location is not to be changed.</param>
+    /// <param name="Location">Profile location information or null if location is not to be changed.</param>
     /// <param name="ExtraData">Profile's extra data information or null if profile's extra data is not to be changed.</param>
     /// <returns>CreateUpdateProfileRequest message that is ready to be sent.</returns>
-    public Message CreateUpdateProfileRequest(byte[] Version, string Name, byte[] Image, uint? Location, string ExtraData)
+    public Message CreateUpdateProfileRequest(byte[] Version, string Name, byte[] Image, GpsLocation Location, string ExtraData)
     {
       UpdateProfileRequest updateProfileRequest = new UpdateProfileRequest();
       updateProfileRequest.SetVersion = Version != null;
@@ -695,7 +696,10 @@ namespace HomeNetProtocol
         updateProfileRequest.Image = ProtocolHelper.ByteArrayToByteString(Image);
 
       if (updateProfileRequest.SetLocation)
-        updateProfileRequest.Location = Location.Value;
+      {
+        updateProfileRequest.Latitude = Location.GetLocationTypeLatitude();
+        updateProfileRequest.Longitude = Location.GetLocationTypeLongitude();
+      }
 
       if (updateProfileRequest.SetExtraData)
         updateProfileRequest.ExtraData = ExtraData;
@@ -858,13 +862,13 @@ namespace HomeNetProtocol
     /// <param name="PublicKey">If <paramref name="IsHosted"/> is true, this is the public key of the requested identity.</param>
     /// <param name="Name">If <paramref name="IsHosted"/> is true, this is the name of the requested identity.</param>
     /// <param name="Type">If <paramref name="IsHosted"/> is true, this is the type of the requested identity.</param>
-    /// <param name="Location">If <paramref name="IsHosted"/> is true, this is the encoded GPS location information of the requested identity.</param>
+    /// <param name="Location">If <paramref name="IsHosted"/> is true, this is GPS location information of the requested identity.</param>
     /// <param name="ExtraData">If <paramref name="IsHosted"/> is true, this is the extra data information of the requested identity.</param>
     /// <param name="ProfileImage">If <paramref name="IsHosted"/> is true, this is the identity's profile image, or null if it was not requested.</param>
     /// <param name="ThumbnailImage">If <paramref name="IsHosted"/> is true, this is the identity's thumbnail image, or null if it was not requested.</param>
     /// <param name="ApplicationServices">If <paramref name="IsHosted"/> is true, this is the identity's list of supported application services, or null if it was not requested.</param>
     /// <returns>GetIdentityInformationResponse message that is ready to be sent.</returns>
-    public Message CreateGetIdentityInformationResponse(Message Request, bool IsHosted, byte[] TargetHomeNodeId, bool IsOnline = false, byte[] PublicKey = null, string Name = null, string Type = null, uint? Location = null, string ExtraData = null, byte[] ProfileImage = null, byte[] ThumbnailImage = null, HashSet<string> ApplicationServices = null)
+    public Message CreateGetIdentityInformationResponse(Message Request, bool IsHosted, byte[] TargetHomeNodeId, bool IsOnline = false, byte[] PublicKey = null, string Name = null, string Type = null, GpsLocation Location = null, string ExtraData = null, byte[] ProfileImage = null, byte[] ThumbnailImage = null, HashSet<string> ApplicationServices = null)
     {
       GetIdentityInformationResponse getIdentityInformationResponse = new GetIdentityInformationResponse();
       getIdentityInformationResponse.IsHosted = IsHosted;
@@ -875,7 +879,11 @@ namespace HomeNetProtocol
         getIdentityInformationResponse.IdentityPublicKey = ProtocolHelper.ByteArrayToByteString(PublicKey);
         if (Name != null) getIdentityInformationResponse.Name = Name;
         if (Type != null) getIdentityInformationResponse.Type = Type;
-        if (Location != null) getIdentityInformationResponse.Location = Location.Value;
+        if (Location != null)
+        {
+          getIdentityInformationResponse.Latitude = Location.GetLocationTypeLatitude();
+          getIdentityInformationResponse.Longitude = Location.GetLocationTypeLongitude();
+        }
         if (ExtraData != null) getIdentityInformationResponse.ExtraData = ExtraData;
         if (ProfileImage != null) getIdentityInformationResponse.ProfileImage = ProtocolHelper.ByteArrayToByteString(ProfileImage);
         if (ThumbnailImage != null) getIdentityInformationResponse.ThumbnailImage = ProtocolHelper.ByteArrayToByteString(ThumbnailImage);
@@ -1037,6 +1045,254 @@ namespace HomeNetProtocol
 
       return res;
     }
+
+
+    /// <summary>
+    /// Creates a new ProfileStatsRequest message.
+    /// </summary>
+    /// <returns>ProfileStatsRequest message that is ready to be sent.</returns>
+    public Message CreateProfileStatsRequest()
+    {
+      ProfileStatsRequest profileStatsRequest = new ProfileStatsRequest();
+
+      Message res = CreateSingleRequest();
+      res.Request.SingleRequest.ProfileStats = profileStatsRequest;
+
+      return res;
+    }
+
+
+    /// <summary>
+    /// Creates a response message to a ProfileStatsRequest message.
+    /// </summary>
+    /// <param name="Request">ProfileStatsRequest message for which the response is created.</param>
+    /// <param name="Stats">List of profile statistics.</param>
+    /// <returns>ProfileStatsResponse message that is ready to be sent.</returns>
+    public Message CreateProfileStatsResponse(Message Request, IEnumerable<ProfileStatsItem> Stats)
+    {
+      ProfileStatsResponse profileStatsResponse = new ProfileStatsResponse();
+      profileStatsResponse.Stats.AddRange(Stats);
+
+      Message res = CreateSingleResponse(Request);
+      res.Response.SingleResponse.ProfileStats = profileStatsResponse;
+
+      return res;
+    }
+
+
+
+
+    /// <summary>
+    /// Creates a new ProfileSearchRequest message.
+    /// </summary>
+    /// <param name="IdentityType">Wildcard string filter for identity type. If filtering by identity type is not required this is set to null.</param>
+    /// <param name="Name">Wildcard string filter for profile name. If filtering by profile name is not required this is set to null.</param>
+    /// <param name="ExtraData">Regular expression string filter for profile's extra data information. If filtering by extra data information is not required this is set to null.</param>
+    /// <param name="Location">GPS location, near which the target identities has to be located. If no location filtering is required this is set to null.</param>
+    /// <param name="Radius">If <paramref name="Location"/> is not 0, this is radius in metres that together with <paramref name="Location"/> defines the target area.</param>
+    /// <param name="MaxResponseRecordCount">Maximal number of results to be included in the response. This is an integer between 1 and 100 if <paramref name="IncludeThumnailImages"/> is false, otherwise this is integer between 1 and 1000.</param>
+    /// <param name="MaxTotalRecordCount">Maximal number of total results that the node will look for and save. This is an integer between 1 and 1000 if <paramref name="IncludeThumnailImages"/> is false, otherwise this is integer between 1 and 10000.</param>
+    /// <param name="IncludeHostedOnly">If set to true, the node only returns profiles of its own hosted identities. Otherwise, identities from the node's neighborhood can be included.</param>
+    /// <param name="IncludeThumbnailImages">If set to true, the response will include a thumbnail image of each profile.</param>
+    /// <returns>ProfileSearchRequest message that is ready to be sent.</returns>
+    public Message CreateProfileSearchRequest(string IdentityType, string Name, string ExtraData, GpsLocation Location = null, uint Radius = 0, uint MaxResponseRecordCount = 100, uint MaxTotalRecordCount = 1000, bool IncludeHostedOnly = false, bool IncludeThumbnailImages = true)
+    {
+      ProfileSearchRequest profileSearchRequest = new ProfileSearchRequest();
+      profileSearchRequest.IncludeHostedOnly = IncludeHostedOnly;
+      profileSearchRequest.IncludeThumbnailImages = IncludeThumbnailImages;
+      profileSearchRequest.MaxResponseRecordCount = MaxResponseRecordCount;
+      profileSearchRequest.MaxTotalRecordCount = MaxTotalRecordCount;
+      profileSearchRequest.Type = IdentityType != null ? IdentityType : "";
+      profileSearchRequest.Name = Name != null ? Name : "";
+      profileSearchRequest.Latitude = Location != null ? Location.GetLocationTypeLatitude() : GpsLocation.NoLocation;
+      profileSearchRequest.Longitude = Location != null ? Location.GetLocationTypeLongitude() : GpsLocation.NoLocation;
+      profileSearchRequest.Radius = Location != null ? Radius : 0;
+      profileSearchRequest.ExtraData = ExtraData != null ? ExtraData : "";
+
+      Message res = CreateConversationRequest();
+      res.Request.ConversationRequest.ProfileSearch = profileSearchRequest;
+
+      return res;
+    }
+
+
+    /// <summary>
+    /// Creates a response message to a ProfileSearchRequest message.
+    /// </summary>
+    /// <param name="Request">ProfileSearchRequest message for which the response is created.</param>
+    /// <param name="TotalRecordCount">Total number of profiles that matched the search criteria.</param>
+    /// <param name="MaxResponseRecordCount">Limit of the number of results provided.</param>
+    /// <param name="Results">List of results that contains up to <paramref name="MaxRecordCount"/> items.</param>
+    /// <returns>ProfileSearchResponse message that is ready to be sent.</returns>
+    public Message CreateProfileSearchResponse(Message Request, uint TotalRecordCount, uint MaxResponseRecordCount, IEnumerable<IdentityNetworkProfileInformation> Results)
+    {
+      ProfileSearchResponse profileSearchResponse = new ProfileSearchResponse();
+      profileSearchResponse.TotalRecordCount = TotalRecordCount;
+      profileSearchResponse.MaxResponseRecordCount = MaxResponseRecordCount;
+      profileSearchResponse.Profiles.AddRange(Results);
+      
+      Message res = CreateConversationResponse(Request);
+      res.Response.ConversationResponse.ProfileSearch = profileSearchResponse;
+
+      return res;
+    }
+
+
+
+    /// <summary>
+    /// Creates a new ProfileSearchPartRequest message.
+    /// </summary>
+    /// <param name="RecordIndex">Index of the first result to retrieve.</param>
+    /// <param name="RecordCount">Number of results to retrieve. If 'ProfileSearchResponse.IncludeThumbnailImages' was set, this has to be an integer between 1 and 100, otherwise it has to be an integer between 1 and 1000.</param>
+    /// <returns>ProfileSearchRequest message that is ready to be sent.</returns>
+    public Message ProfileSearchPartRequest(uint RecordIndex, uint RecordCount)
+    {
+      ProfileSearchPartRequest profileSearchPartRequest = new ProfileSearchPartRequest();
+      profileSearchPartRequest.RecordIndex = RecordIndex;
+      profileSearchPartRequest.RecordCount= RecordCount;
+
+      Message res = CreateConversationRequest();
+      res.Request.ConversationRequest.ProfileSearchPart = profileSearchPartRequest;
+
+      return res;
+    }
+
+
+    /// <summary>
+    /// Creates a response message to a ProfileSearchPartRequest message.
+    /// </summary>
+    /// <param name="Request">ProfileSearchPartRequest message for which the response is created.</param>
+    /// <param name="RecordIndex">Index of the first result.</param>
+    /// <param name="RecordCount">Number of results.</param>
+    /// <param name="Results">List of results that contains <paramref name="RecordCount"/> items.</param>
+    /// <returns>ProfileSearchPartResponse message that is ready to be sent.</returns>
+    public Message CreateProfileSearchPartResponse(Message Request, uint RecordIndex, uint RecordCount, IEnumerable<IdentityNetworkProfileInformation> Results)
+    {
+      ProfileSearchPartResponse profileSearchPartResponse = new ProfileSearchPartResponse();
+      profileSearchPartResponse.RecordIndex = RecordIndex;
+      profileSearchPartResponse.RecordCount = RecordCount;
+      profileSearchPartResponse.Profiles.AddRange(Results);
+
+      Message res = CreateConversationResponse(Request);
+      res.Response.ConversationResponse.ProfileSearchPart = profileSearchPartResponse;
+
+      return res;
+    }
+
+
+    /// <summary>
+    /// Creates a new AddRelatedIdentityRequest message.
+    /// </summary>
+    /// <param name="CardApplication">Description of the relationship proven by the signed relationship card.</param>
+    /// <param name="SignedCard">Signed relationship card.</param>
+    /// <returns>AddRelatedIdentityRequest message that is ready to be sent.</returns>
+    public Message CreateAddRelatedIdentityRequest(CardApplicationInformation CardApplication, SignedRelationshipCard SignedCard)
+    {
+      AddRelatedIdentityRequest addRelatedIdentityRequest = new AddRelatedIdentityRequest();
+      addRelatedIdentityRequest.CardApplication = CardApplication;
+      addRelatedIdentityRequest.SignedCard = SignedCard;
+
+      Message res = CreateConversationRequest();
+      res.Request.ConversationRequest.AddRelatedIdentity = addRelatedIdentityRequest;
+
+      return res;
+    }
+
+
+
+    /// <summary>
+    /// Creates a response message to a AddRelatedIdentityRequest message.
+    /// </summary>
+    /// <param name="Request">AddRelatedIdentityRequest message for which the response is created.</param>
+    /// <returns>AddRelatedIdentityResponse message that is ready to be sent.</returns>
+    public Message CreateAddRelatedIdentityResponse(Message Request)
+    {
+      AddRelatedIdentityResponse addRelatedIdentityResponse = new AddRelatedIdentityResponse();
+
+      Message res = CreateConversationResponse(Request);
+      res.Response.ConversationResponse.AddRelatedIdentity = addRelatedIdentityResponse;
+
+      return res;
+    }
+
+
+    /// <summary>
+    /// Creates a new RemoveRelatedIdentityRequest message.
+    /// </summary>
+    /// <param name="CardApplicationIdentifier">Identifier of the card application to remove.</param>
+    /// <returns>AddRelatedIdentityRequest message that is ready to be sent.</returns>
+    public Message CreateRemoveRelatedIdentityRequest(byte[] CardApplicationIdentifier)
+    {
+      RemoveRelatedIdentityRequest removeRelatedIdentityRequest = new RemoveRelatedIdentityRequest();
+      removeRelatedIdentityRequest.ApplicationIdentifier = ProtocolHelper.ByteArrayToByteString(CardApplicationIdentifier);
+
+      Message res = CreateConversationRequest();
+      res.Request.ConversationRequest.RemoveRelatedIdentity = removeRelatedIdentityRequest;
+
+      return res;
+    }
+
+
+
+    /// <summary>
+    /// Creates a response message to a RemoveRelatedIdentityRequest message.
+    /// </summary>
+    /// <param name="Request">RemoveRelatedIdentityRequest message for which the response is created.</param>
+    /// <returns>RemoveRelatedIdentityResponse message that is ready to be sent.</returns>
+    public Message CreateRemoveRelatedIdentityResponse(Message Request)
+    {
+      RemoveRelatedIdentityResponse removeRelatedIdentityResponse = new RemoveRelatedIdentityResponse();
+
+      Message res = CreateConversationResponse(Request);
+      res.Response.ConversationResponse.RemoveRelatedIdentity = removeRelatedIdentityResponse;
+
+      return res;
+    }
+
+
+
+    /// <summary>
+    /// Creates a new GetIdentityRelationshipsInformationRequest message.
+    /// </summary>
+    /// <param name="IdentityNetworkId">Identity's network identifier.</param>
+    /// <param name="IncludeInvalid">If set to true, the response may include relationships which cards are no longer valid or not yet valid.</param>
+    /// <param name="CardType">Wildcard string filter for card type. If filtering by card type name is not required this is set to null.</param>
+    /// <param name="IssuerPublicKey">Public key of the card issuer whose relationships with the target identity are being queried.</param>
+    /// <returns>GetIdentityRelationshipsInformationRequest message that is ready to be sent.</returns>
+    public Message CreateGetIdentityRelationshipsInformationRequest(byte[] IdentityNetworkId, bool IncludeInvalid, string CardType, byte[] IssuerPublicKey)
+    {
+      GetIdentityRelationshipsInformationRequest getIdentityRelationshipsInformationRequest = new GetIdentityRelationshipsInformationRequest();
+      getIdentityRelationshipsInformationRequest.IdentityNetworkId = ProtocolHelper.ByteArrayToByteString(IdentityNetworkId);
+      getIdentityRelationshipsInformationRequest.IncludeInvalid = IncludeInvalid;
+      getIdentityRelationshipsInformationRequest.Type = CardType != null ? CardType : "";
+      getIdentityRelationshipsInformationRequest.SpecificIssuer = IssuerPublicKey != null;
+      if (IssuerPublicKey != null)
+        getIdentityRelationshipsInformationRequest.IssuerPublicKey = ProtocolHelper.ByteArrayToByteString(IssuerPublicKey);
+
+      Message res = CreateSingleRequest();
+      res.Request.SingleRequest.GetIdentityRelationshipsInformation = getIdentityRelationshipsInformationRequest;
+
+      return res;
+    }
+
+
+    /// <summary>
+    /// Creates a response message to a GetIdentityRelationshipsInformationRequest message.
+    /// </summary>
+    /// <param name="Request">GetIdentityRelationshipsInformationRequest message for which the response is created.</param>
+    /// <param name="Stats">List of profile statistics.</param>
+    /// <returns>GetIdentityRelationshipsInformationResponse message that is ready to be sent.</returns>
+    public Message CreateGetIdentityRelationshipsInformationResponse(Message Request, IEnumerable<IdentityRelationship> Relationships)
+    {
+      GetIdentityRelationshipsInformationResponse getIdentityRelationshipsInformationResponse = new GetIdentityRelationshipsInformationResponse();
+      getIdentityRelationshipsInformationResponse.Relationships.AddRange(Relationships);
+
+      Message res = CreateSingleResponse(Request);
+      res.Response.SingleResponse.GetIdentityRelationshipsInformation = getIdentityRelationshipsInformationResponse;
+
+      return res;
+    }
+
 
   }
 }
