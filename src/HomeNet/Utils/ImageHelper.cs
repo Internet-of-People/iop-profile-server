@@ -135,7 +135,7 @@ namespace HomeNet.Utils
 #warning TODO: This function currently does nothing, waiting for some libraries to be released.
       // TODO: 
       // * check image is valid PNG or JPEG format
-      // * waiting for https://github.com/JimBobSquarePants/ImageProcessor/ to release
+      // * waiting for https://github.com/JimBobSquarePants/ImageSharp to release
       //   or https://magick.codeplex.com/documentation to support all OS with NET Core releases
       log.Fatal("TODO UNIMPLEMENTED");
 
@@ -161,7 +161,8 @@ namespace HomeNet.Utils
       // * if it is too big, check if it is PNG or JPEG
       // * if it is PNG, convert to JPEG
       // * resize and increase compression until small enough
-      // * waiting for https://github.com/JimBobSquarePants/ImageProcessor/ to release
+      // * waiting for https://github.com/JimBobSquarePants/ImageSharp to release
+      //   or https://magick.codeplex.com/documentation to support all OS with NET Core releases
 
       log.Fatal("TODO UNIMPLEMENTED");
 

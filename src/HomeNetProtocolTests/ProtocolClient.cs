@@ -363,10 +363,10 @@ namespace HomeNetProtocolTests
     /// </summary>
     /// <param name="Name">Name of the profile.</param>
     /// <param name="Image">Optionally, a profile image data.</param>
-    /// <param name="Location">Encoded GPS location of the identity.</param>
+    /// <param name="Location">GPS location of the identity.</param>
     /// <param name="ExtraData">Optionally, identity's extra data.</param>
     /// <returns>true if the function succeeds, false otherwise.</returns>
-    public async Task<bool> InitializeProfileAsync(string Name, byte[] Image, uint Location, string ExtraData)
+    public async Task<bool> InitializeProfileAsync(string Name, byte[] Image, GpsLocation Location, string ExtraData)
     {
       log.Trace("()");
 

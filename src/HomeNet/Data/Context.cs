@@ -30,8 +30,12 @@ namespace HomeNet.Data
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-      modelBuilder.Entity<Identity>()
-          .HasIndex(i => new { i.IdentityId, i.HomeNodeId, i.Name, i.Type, i.ExtraData, i.ExpirationDate });
+      base.OnModelCreating(modelBuilder);
+
+      modelBuilder.Entity<Identity>().HasIndex(i => new { i.IdentityId, i.HomeNodeId, i.Name, i.Type, i.InitialLocationLatitude, i.InitialLocationLongitude, i.ExtraData, i.ExpirationDate });
+
+      modelBuilder.Entity<Identity>().Property(i => i.InitialLocationLatitude).HasColumnType("decimal(9,6)").IsRequired(true);
+      modelBuilder.Entity<Identity>().Property(i => i.InitialLocationLongitude).HasColumnType("decimal(9,6)").IsRequired(true);
     }
   }
 }

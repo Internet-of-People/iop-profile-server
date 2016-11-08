@@ -112,6 +112,10 @@ namespace HomeNet.Network
                         responseMessage = await ProcessMessageApplicationServiceSendMessageRequestAsync(Client, IncomingMessage);
                         break;
 
+                      case SingleRequest.RequestTypeOneofCase.ProfileStats:
+                        responseMessage = await ProcessMessageProfileStatsRequestAsync(Client, IncomingMessage);
+                        break;
+
                       default:
                         log.Warn("Invalid request type '{0}'.", singleRequest.RequestTypeCase);
                         break;
@@ -577,7 +581,7 @@ namespace HomeNet.Network
                 byte[] publicKey = identity.PublicKey;
                 string type = identity.Type;
                 string name = identity.Name;
-                uint location = identity.InitialLocationEncoded;
+                GpsLocation location = identity.GetInitialLocation();
                 string extraData = identity.ExtraData;
 
                 byte[] profileImage = null;
@@ -759,7 +763,8 @@ namespace HomeNet.Network
                 // Existing cancelled identity profile does not have images, no need to delete anything at this point.
                 identity.ProfileImage = null;
                 identity.ThumbnailImage = null;
-                identity.InitialLocationEncoded = 0;
+                identity.InitialLocationLatitude = GpsLocation.NoLocation;
+                identity.InitialLocationLongitude = GpsLocation.NoLocation;
                 identity.ExtraData = null;
                 identity.ExpirationDate = null;
 
@@ -982,7 +987,7 @@ namespace HomeNet.Network
       {
         try
         {
-          Identity identityForValidation = (await unitOfWork.HomeIdentityRepository.GetAsync(i => (i.IdentityId == Client.IdentityId) && (i.ExpirationDate == null))).FirstOrDefault();
+          Identity identityForValidation = (await unitOfWork.HomeIdentityRepository.GetAsync(i => (i.IdentityId == Client.IdentityId) && (i.ExpirationDate == null), null, true)).FirstOrDefault();
           if (identityForValidation != null)
           {
             Message errorResponse;
@@ -992,8 +997,6 @@ namespace HomeNet.Network
               // If we are replacing those images, we have to create new files and delete the old files.
               // First, we create the new files and then in DB transaction, we get information about 
               // whether to delete existing files and which ones.
-#warning TODO: Change this when EF Core 1.1 is out with Reload() method
-              unitOfWork.Context.Entry(identityForValidation).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
               Guid? profileImageToDelete = null;
               Guid? thumbnailImageToDelete = null;
 
@@ -1038,7 +1041,10 @@ namespace HomeNet.Network
                   }
 
                   if (updateProfileRequest.SetLocation)
-                    identity.InitialLocationEncoded = updateProfileRequest.Location;
+                  {
+                    GpsLocation gpsLocation = new GpsLocation(updateProfileRequest.Latitude, updateProfileRequest.Longitude);
+                    identity.SetInitialLocation(gpsLocation);
+                  }
 
                   if (updateProfileRequest.SetExtraData)
                     identity.ExtraData = updateProfileRequest.ExtraData;
@@ -1187,7 +1193,18 @@ namespace HomeNet.Network
 
         if ((details == null) && UpdateProfileRequest.SetLocation)
         {
-          // No validation currently needed.
+          GpsLocation locLat = new GpsLocation(UpdateProfileRequest.Latitude, 0);
+          GpsLocation locLong = new GpsLocation(0, UpdateProfileRequest.Longitude);
+          if (!locLat.IsValid())
+          {
+            log.Debug("Latitude '{0}' is not a valid GPS latitude value.", UpdateProfileRequest.Latitude);
+            details = "latitude";
+          }
+          else if (!locLong.IsValid())
+          {
+            log.Debug("Longitude '{0}' is not a valid GPS longitude value.", UpdateProfileRequest.Longitude);
+            details = "longitude";
+          }
         }
 
         if ((details == null) && UpdateProfileRequest.SetExtraData)
@@ -1602,7 +1619,6 @@ namespace HomeNet.Network
     }
 
 
-
     /// <summary>
     /// Processes ApplicationServiceReceiveMessageNotificationResponse message from client.
     /// <para>This is a recipient's reply to the notification about an incoming message over an open relay.</para>
@@ -1621,6 +1637,46 @@ namespace HomeNet.Network
       res = await context.Relay.RecipientConfirmedMessage(Client, ResponseMessage, context.SenderRequest);
 
       log.Trace("(-):{0}", res);
+      return res;
+    }
+
+
+    /// <summary>
+    /// Processes ProfileStatsRequest message from client.
+    /// <para>Obtains identity profiles statistics from the node.</para>
+    /// </summary>
+    /// <param name="Client">Client that sent the request.</param>
+    /// <param name="RequestMessage">Full request message.</param>
+    /// <returns>Response message to be sent to the client.</returns>
+    public async Task<Message> ProcessMessageProfileStatsRequestAsync(Client Client, Message RequestMessage)
+    {
+      log.Trace("()");
+
+      Message res = null;
+      if (!CheckSessionConditions(Client, RequestMessage, ServerRole.ClientNonCustomer | ServerRole.ClientCustomer, null, out res))
+      {
+        log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+        return res;
+      }
+
+      MessageBuilder messageBuilder = Client.MessageBuilder;
+      ProfileStatsRequest profileStatsRequest = RequestMessage.Request.SingleRequest.ProfileStats;
+
+      res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
+      using (UnitOfWork unitOfWork = new UnitOfWork())
+      {
+        try
+        {
+          List<ProfileStatsItem> stats = await unitOfWork.HomeIdentityRepository.GetProfileStats();
+          res = messageBuilder.CreateProfileStatsResponse(RequestMessage, stats);
+        }
+        catch (Exception e)
+        {
+          log.Error("Exception occurred: {0}", e);
+        }
+      }
+
+      log.Trace("(-):*.Response.Status={0}", res.Response.Status);
       return res;
     }
   }

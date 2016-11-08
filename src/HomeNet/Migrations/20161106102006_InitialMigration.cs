@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace HomeNet.Migrations
 {
-    public partial class first : Migration
+    public partial class InitialMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -12,15 +12,17 @@ namespace HomeNet.Migrations
                 name: "Identities",
                 columns: table => new
                 {
-                    IdentityId = table.Column<byte[]>(maxLength: 20, nullable: false),
+                    IdentityId = table.Column<byte[]>(maxLength: 32, nullable: false),
+                    ExpirationDate = table.Column<DateTime>(nullable: true),
                     ExtraData = table.Column<string>(maxLength: 200, nullable: true),
-                    HomeNodeId = table.Column<byte[]>(maxLength: 20, nullable: true),
-                    InitialLocationEncoded = table.Column<uint>(nullable: false),
+                    HomeNodeId = table.Column<byte[]>(maxLength: 32, nullable: true),
+                    InitialLocationLatitude = table.Column<decimal>(type: "decimal(9,6)", nullable: false),
+                    InitialLocationLongitude = table.Column<decimal>(type: "decimal(9,6)", nullable: false),
                     Name = table.Column<string>(maxLength: 64, nullable: false),
                     ProfileImage = table.Column<Guid>(nullable: true),
                     PublicKey = table.Column<byte[]>(maxLength: 256, nullable: false),
                     ThumbnailImage = table.Column<Guid>(nullable: true),
-                    Type = table.Column<string>(maxLength: 32, nullable: false),
+                    Type = table.Column<string>(maxLength: 64, nullable: false),
                     Version = table.Column<byte[]>(maxLength: 3, nullable: false)
                 },
                 constraints: table =>
@@ -41,9 +43,9 @@ namespace HomeNet.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Identities_IdentityId_HomeNodeId_Name_Type_ExtraData",
+                name: "IX_Identities_IdentityId_HomeNodeId_Name_Type_InitialLocationLatitude_InitialLocationLongitude_ExtraData_ExpirationDate",
                 table: "Identities",
-                columns: new[] { "IdentityId", "HomeNodeId", "Name", "Type", "ExtraData" });
+                columns: new[] { "IdentityId", "HomeNodeId", "Name", "Type", "InitialLocationLatitude", "InitialLocationLongitude", "ExtraData", "ExpirationDate" });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

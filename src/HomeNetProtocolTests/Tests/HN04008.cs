@@ -66,7 +66,7 @@ namespace HomeNetProtocolTests.Tests
         await client.ConnectAsync(NodeIp, ClNonCustomerPort, true);
         bool verifyIdentityOk = await client.VerifyIdentityAsync();
 
-        Message requestMessage = mb.CreateUpdateProfileRequest(new byte[] { 1, 0, 0 }, "Test Identity", null, 0x12345678, null);
+        Message requestMessage = mb.CreateUpdateProfileRequest(new byte[] { 1, 0, 0 }, "Test Identity", null, new GpsLocation(0, 0), null);
         await client.SendMessageAsync(requestMessage);
         Message responseMessage = await client.ReceiveMessageAsync();
 

@@ -70,7 +70,7 @@ namespace HomeNetProtocolTests.Tests
         await client.ConnectAsync(NodeIp, ClCustomerPort, true);
         bool checkInOk = await client.CheckInAsync();
 
-        Message requestMessage = mb.CreateUpdateProfileRequest(new byte[] { 1, 0, 0 }, "Test Identity", null, 0x12345678, null);
+        Message requestMessage = mb.CreateUpdateProfileRequest(new byte[] { 1, 0, 0 }, "Test Identity", null, new GpsLocation(1, 2), null);
         await client.SendMessageAsync(requestMessage);
         Message responseMessage = await client.ReceiveMessageAsync();
 
@@ -94,13 +94,14 @@ namespace HomeNetProtocolTests.Tests
 
         bool nameOk = responseMessage.Response.SingleResponse.GetIdentityInformation.Name == "Test Identity";
         bool extraDataOk = responseMessage.Response.SingleResponse.GetIdentityInformation.ExtraData == "";
-        bool locationOk = responseMessage.Response.SingleResponse.GetIdentityInformation.Location == 0x12345678;
+        bool locationOk = responseMessage.Response.SingleResponse.GetIdentityInformation.Latitude == 1
+          && responseMessage.Response.SingleResponse.GetIdentityInformation.Longitude == 2;
 
         bool getIdentityInfoOk = idOk && statusOk && isHostedOk && isOnlineOk && pubKeyOk && nameOk && extraDataOk && locationOk;
 
 
         byte[] imageData = File.ReadAllBytes(string.Format("images{0}HN04006.jpg", Path.DirectorySeparatorChar));
-        requestMessage = mb.CreateUpdateProfileRequest(null, "Test Identity Renamed", imageData, 0x12345678, "a=b");
+        requestMessage = mb.CreateUpdateProfileRequest(null, "Test Identity Renamed", imageData, new GpsLocation(-1, -2), "a=b");
         await client.SendMessageAsync(requestMessage);
         responseMessage = await client.ReceiveMessageAsync();
 
@@ -122,7 +123,8 @@ namespace HomeNetProtocolTests.Tests
         pubKeyOk = StructuralComparisons.StructuralComparer.Compare(testPubKey, receivedPubKey) == 0;
         nameOk = responseMessage.Response.SingleResponse.GetIdentityInformation.Name == "Test Identity Renamed";
         extraDataOk = responseMessage.Response.SingleResponse.GetIdentityInformation.ExtraData == "a=b";
-        locationOk = responseMessage.Response.SingleResponse.GetIdentityInformation.Location == 0x12345678;
+        locationOk = responseMessage.Response.SingleResponse.GetIdentityInformation.Latitude == -1
+          && responseMessage.Response.SingleResponse.GetIdentityInformation.Longitude == -2;
 
 
         byte[] receivedProfileImage = responseMessage.Response.SingleResponse.GetIdentityInformation.ProfileImage.ToByteArray();
@@ -130,7 +132,7 @@ namespace HomeNetProtocolTests.Tests
         byte[] receivedThumbnailImage = responseMessage.Response.SingleResponse.GetIdentityInformation.ThumbnailImage.ToByteArray();
         bool thumbnailImageOk = receivedThumbnailImage.Length > 0;
 
-        bool getIdentityInfoOk2 = idOk && statusOk && isHostedOk && isOnlineOk && pubKeyOk && nameOk && extraDataOk && profileImageOk && thumbnailImageOk;
+        bool getIdentityInfoOk2 = idOk && statusOk && isHostedOk && isOnlineOk && pubKeyOk && nameOk && extraDataOk && locationOk && profileImageOk && thumbnailImageOk;
 
         // Step 2 Acceptance
         bool step2Ok = checkInOk && updateProfileOk && getIdentityInfoOk && updateProfileOk2 && getIdentityInfoOk2;
