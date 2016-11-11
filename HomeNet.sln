@@ -17,6 +17,9 @@ EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "HomeNetCrypto", "src\HomeNetCrypto\HomeNetCrypto.xproj", "{64631B76-D6CC-4F87-95D4-8703C0E0577E}"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "UnitTests", "src\UnitTests\UnitTests.xproj", "{1DED740D-F28F-4865-B01E-370E4BFDDBF0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{64E58B68-704F-4260-878C-F8D46E10C4EA} = {64E58B68-704F-4260-878C-F8D46E10C4EA}
+	EndProjectSection
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "HomeNetProtocolTests", "src\HomeNetProtocolTests\HomeNetProtocolTests.xproj", "{BEEEB71B-D983-4907-ADA0-93A0FF33F7BC}"
 EndProject

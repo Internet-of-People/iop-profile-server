@@ -1,6 +1,7 @@
 ﻿using Google.Protobuf;
 using HomeNet.Data;
 using HomeNet.Data.Models;
+using HomeNet.Data.Repositories;
 using HomeNet.Kernel;
 using HomeNet.Utils;
 using HomeNetCrypto;
@@ -10,8 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace HomeNet.Network
@@ -73,7 +76,7 @@ namespace HomeNet.Network
         log.Trace("Client ID 0x{0:X16} NextKeepAliveTime updated to {1}.", Client.Id, Client.NextKeepAliveTime.ToString("yyyy-MM-dd HH:mm:ss"));
 
         string msgStr = IncomingMessage.ToString();
-        log.Trace("Received message type is {0}, message ID is {1}:\n{2}", IncomingMessage.MessageTypeCase, IncomingMessage.Id, msgStr.Substring(0, Math.Min(msgStr.Length, 512)));
+        log.Trace("Received message type is {0}, message ID is {1}:\n{2}", IncomingMessage.MessageTypeCase, IncomingMessage.Id, msgStr.SubstrMax(512));
         switch (IncomingMessage.MessageTypeCase)
         {
           case Message.MessageTypeOneofCase.Request:
@@ -167,6 +170,11 @@ namespace HomeNet.Network
 
                       case ConversationRequest.RequestTypeOneofCase.CallIdentityApplicationService:
                         responseMessage = await ProcessMessageCallIdentityApplicationServiceRequestAsync(Client, IncomingMessage);
+                        break;
+
+
+                      case ConversationRequest.RequestTypeOneofCase.ProfileSearch:
+                        responseMessage = await ProcessMessageProfileSearchRequestAsync(Client, IncomingMessage);
                         break;
 
                       default:
@@ -331,7 +339,6 @@ namespace HomeNet.Network
     }
 
 
-
     /// <summary>
     /// Verifies that client's request was not sent against the protocol rules - i.e. that the role server
     /// that received the message is serving the role the message was designed for and that the conversation 
@@ -345,7 +352,7 @@ namespace HomeNet.Network
     /// <returns>true if the function succeeds (i.e. required conditions are met and the message can be processed), false otherwise.</returns>
     public bool CheckSessionConditions(Client Client, Message RequestMessage, ServerRole? RequiredRole, ClientConversationStatus? RequiredConversationStatus, out Message ResponseMessage)
     {
-      log.Trace("(RequiredRole:{0},RequiredConversationStatus:{1})", RequiredRole != null ? RequiredRole.ToString() : "null", RequiredConversationStatus != null ? RequiredConversationStatus.ToString() : "null");
+      log.Trace("(RequiredRole:{0},RequiredConversationStatus:{1})", RequiredRole != null ? RequiredRole.ToString() : "null", RequiredConversationStatus != null ? RequiredConversationStatus.Value.ToString() : "null");
 
       bool res = false;
       ResponseMessage = null;
@@ -381,6 +388,19 @@ namespace HomeNet.Network
               {
                 log.Warn("Client sent {0} but the conversation status is {1}.", requestName, Client.ConversationStatus);
                 ResponseMessage = Client.MessageBuilder.CreateErrorUnauthorizedResponse(RequestMessage);
+              }
+              break;
+
+
+            case ClientConversationStatus.ConversationAny:
+              res = (Client.ConversationStatus == ClientConversationStatus.ConversationStarted)
+                || (Client.ConversationStatus == ClientConversationStatus.Verified)
+                || (Client.ConversationStatus == ClientConversationStatus.Authenticated);
+
+              if (!res)
+              {
+                log.Warn("Client sent {0} but the conversation status is {1}.", requestName, Client.ConversationStatus);
+                ResponseMessage = Client.MessageBuilder.CreateErrorBadConversationStatusResponse(RequestMessage);
               }
               break;
 
@@ -564,11 +584,11 @@ namespace HomeNet.Network
       GetIdentityInformationRequest getIdentityInformationRequest = RequestMessage.Request.SingleRequest.GetIdentityInformation;
 
       byte[] identityId = getIdentityInformationRequest.IdentityNetworkId.ToByteArray();
-      if (identityId.Length == Identity.IdentifierLength)
+      if (identityId.Length == BaseIdentity.IdentifierLength)
       {
         using (UnitOfWork unitOfWork = new UnitOfWork())
         {
-          Identity identity = (await unitOfWork.HomeIdentityRepository.GetAsync(i => i.IdentityId == identityId)).FirstOrDefault();
+          HomeIdentity identity = (await unitOfWork.HomeIdentityRepository.GetAsync(i => i.IdentityId == identityId)).FirstOrDefault();
           if (identity != null)
           {
             if (identity.IsProfileInitialized())
@@ -662,12 +682,12 @@ namespace HomeNet.Network
 
           if (clientList.AddNetworkPeerWithIdentity(Client))
           {
-            Client.ConversationStatus = ClientConversationStatus.ConversationStarted;
             Client.MessageBuilder.SetProtocolVersion(version);
 
             byte[] challenge = new byte[ProtocolHelper.ChallengeDataSize];
             Crypto.Rng.GetBytes(challenge);
             Client.AuthenticationChallenge = challenge;
+            Client.ConversationStatus = ClientConversationStatus.ConversationStarted;
 
             log.Debug("Client {0} conversation status updated to {1}, selected version is '{2}', client public key set to '{3}', client identity ID set to '{4}', challenge set to '{5}'.",
               Client.RemoteEndPoint, Client.ConversationStatus, ProtocolHelper.VersionBytesToString(version), Crypto.ToHex(Client.PublicKey), Crypto.ToHex(Client.IdentityId), Crypto.ToHex(Client.AuthenticationChallenge));
@@ -741,7 +761,7 @@ namespace HomeNet.Network
             log.Trace("Currently hosting {0} clients.", hostedIdentities);
             if (hostedIdentities < Base.Configuration.MaxHostedIdentities)
             {
-              Identity existingIdentity = (await unitOfWork.HomeIdentityRepository.GetAsync(i => i.IdentityId == Client.IdentityId)).FirstOrDefault();
+              HomeIdentity existingIdentity = (await unitOfWork.HomeIdentityRepository.GetAsync(i => i.IdentityId == Client.IdentityId)).FirstOrDefault();
               // Identity does not exist at all, or it has been cancelled so that ExpirationDate was set.
               if ((existingIdentity == null) || (existingIdentity.ExpirationDate != null))
               {
@@ -750,7 +770,7 @@ namespace HomeNet.Network
                 if (existingIdentity != null)
                   log.Debug("Identity ID '{0}' is already a client of this node, but its contract has been cancelled.", Crypto.ToHex(Client.IdentityId));
 
-                Identity identity = existingIdentity == null ? new Identity() : existingIdentity;
+                HomeIdentity identity = existingIdentity == null ? new HomeIdentity() : existingIdentity;
 
                 // We can't change primary identifier in existing entity.
                 if (existingIdentity == null) identity.IdentityId = Client.IdentityId;
@@ -763,8 +783,8 @@ namespace HomeNet.Network
                 // Existing cancelled identity profile does not have images, no need to delete anything at this point.
                 identity.ProfileImage = null;
                 identity.ThumbnailImage = null;
-                identity.InitialLocationLatitude = GpsLocation.NoLocation;
-                identity.InitialLocationLongitude = GpsLocation.NoLocation;
+                identity.InitialLocationLatitude = GpsLocation.NoLocationDecimal;
+                identity.InitialLocationLongitude = GpsLocation.NoLocationDecimal;
                 identity.ExtraData = null;
                 identity.ExpirationDate = null;
 
@@ -843,7 +863,7 @@ namespace HomeNet.Network
       CheckInRequest checkInRequest = RequestMessage.Request.ConversationRequest.CheckIn;
 
       byte[] challenge = checkInRequest.Challenge.ToByteArray();
-      if (StructuralComparisons.StructuralComparer.Compare(challenge, Client.AuthenticationChallenge) == 0)
+      if (StructuralEqualityComparer<byte[]>.Default.Equals(challenge, Client.AuthenticationChallenge))
       {
         if (messageBuilder.VerifySignedConversationRequestBody(RequestMessage, checkInRequest, Client.PublicKey))
         {
@@ -855,7 +875,7 @@ namespace HomeNet.Network
           {
             try
             {
-              Identity identity = (await unitOfWork.HomeIdentityRepository.GetAsync(i => (i.IdentityId == Client.IdentityId) && (i.ExpirationDate == null))).FirstOrDefault();
+              HomeIdentity identity = (await unitOfWork.HomeIdentityRepository.GetAsync(i => (i.IdentityId == Client.IdentityId) && (i.ExpirationDate == null))).FirstOrDefault();
               if (identity != null)
               {
                 if (await clientList.AddCheckedInClient(Client))
@@ -926,7 +946,7 @@ namespace HomeNet.Network
       VerifyIdentityRequest verifyIdentityRequest = RequestMessage.Request.ConversationRequest.VerifyIdentity;
 
       byte[] challenge = verifyIdentityRequest.Challenge.ToByteArray();
-      if (StructuralComparisons.StructuralComparer.Compare(challenge, Client.AuthenticationChallenge) == 0)
+      if (StructuralEqualityComparer<byte[]>.Default.Equals(challenge, Client.AuthenticationChallenge))
       {
         if (messageBuilder.VerifySignedConversationRequestBody(RequestMessage, verifyIdentityRequest, Client.PublicKey))
         {
@@ -987,7 +1007,7 @@ namespace HomeNet.Network
       {
         try
         {
-          Identity identityForValidation = (await unitOfWork.HomeIdentityRepository.GetAsync(i => (i.IdentityId == Client.IdentityId) && (i.ExpirationDate == null), null, true)).FirstOrDefault();
+          HomeIdentity identityForValidation = (await unitOfWork.HomeIdentityRepository.GetAsync(i => (i.IdentityId == Client.IdentityId) && (i.ExpirationDate == null), null, true)).FirstOrDefault();
           if (identityForValidation != null)
           {
             Message errorResponse;
@@ -1019,7 +1039,7 @@ namespace HomeNet.Network
               await unitOfWork.AcquireLockAsync(lockObject);
               try
               {
-                Identity identity = (await unitOfWork.HomeIdentityRepository.GetAsync(i => (i.IdentityId == Client.IdentityId) && (i.ExpirationDate == null))).FirstOrDefault();
+                HomeIdentity identity = (await unitOfWork.HomeIdentityRepository.GetAsync(i => (i.IdentityId == Client.IdentityId) && (i.ExpirationDate == null))).FirstOrDefault();
 
                 if (identity != null)
                 {
@@ -1104,13 +1124,13 @@ namespace HomeNet.Network
     /// <summary>
     /// Checks whether the update profile request is valid.
     /// </summary>
-    /// <param name="Identity"></param>
-    /// <param name="UpdateProfileRequest"></param>
-    /// <param name="MessageBuilder"></param>
-    /// <param name="RequestMessage"></param>
-    /// <param name="ErrorResponse"></param>
+    /// <param name="Identity">Identity on which the update operation is about to be performed.</param>
+    /// <param name="UpdateProfileRequest">Update profile request part of the client's request message.</param>
+    /// <param name="MessageBuilder">Client's network message builder.</param>
+    /// <param name="RequestMessage">Full request message from client.</param>
+    /// <param name="ErrorResponse">If the function fails, this is filled with error response message that is ready to be sent to the client.</param>
     /// <returns>true if the profile update request can be applied, false otherwise.</returns>
-    private bool ValidateUpdateProfileRequest(Identity Identity, UpdateProfileRequest UpdateProfileRequest, MessageBuilder MessageBuilder, Message RequestMessage, out Message ErrorResponse)
+    private bool ValidateUpdateProfileRequest(HomeIdentity Identity, UpdateProfileRequest UpdateProfileRequest, MessageBuilder MessageBuilder, Message RequestMessage, out Message ErrorResponse)
     {
       log.Trace("(Identity.IdentityId:'{0}')", Crypto.ToHex(Identity.IdentityId));
 
@@ -1159,7 +1179,7 @@ namespace HomeNet.Network
           byte[] version = UpdateProfileRequest.Version.ToByteArray();
 
           // Currently only supported version is 1,0,0.
-          if (StructuralComparisons.StructuralComparer.Compare(version, new byte[] { 1, 0, 0 }) != 0)
+          if (!StructuralEqualityComparer<byte[]>.Default.Equals(version, new byte[] { 1, 0, 0 }))
           {
             log.Debug("Unsupported version '{0}'.", ProtocolHelper.VersionBytesToString(version));
             details = "version";
@@ -1171,7 +1191,7 @@ namespace HomeNet.Network
           string name = UpdateProfileRequest.Name;
 
           // Name is non-empty string, max Identity.MaxProfileNameLengthBytes bytes long.
-          if (string.IsNullOrEmpty(name) || (Encoding.UTF8.GetByteCount(name) > Identity.MaxProfileNameLengthBytes))
+          if (string.IsNullOrEmpty(name) || (Encoding.UTF8.GetByteCount(name) > BaseIdentity.MaxProfileNameLengthBytes))
           {
             log.Debug("Invalid name '{0}'.", name);
             details = "name";
@@ -1183,7 +1203,7 @@ namespace HomeNet.Network
           byte[] image = UpdateProfileRequest.Image.ToByteArray();
 
           // Profile image must be PNG or JPEG image, no bigger than Identity.MaxProfileImageLengthBytes.
-          if ((image.Length == 0) || (image.Length > Identity.MaxProfileImageLengthBytes) || !ImageHelper.ValidateImageFormat(image))
+          if ((image.Length == 0) || (image.Length > BaseIdentity.MaxProfileImageLengthBytes) || !ImageHelper.ValidateImageFormat(image))
           {
             log.Debug("Invalid image.");
             details = "image";
@@ -1213,9 +1233,9 @@ namespace HomeNet.Network
           if (extraData == null) extraData = "";
 
           // Extra data is semicolon separated 'key=value' list, max Identity.MaxProfileExtraDataLengthBytes bytes long.
-          if (Encoding.UTF8.GetByteCount(extraData) > Identity.MaxProfileNameLengthBytes)
+          if (Encoding.UTF8.GetByteCount(extraData) > BaseIdentity.MaxProfileExtraDataLengthBytes)
           {
-            log.Debug("Extra data too large ({0} bytes, limit is {1}).", Encoding.UTF8.GetByteCount(extraData), Identity.MaxProfileNameLengthBytes);
+            log.Debug("Extra data too large ({0} bytes, limit is {1}).", Encoding.UTF8.GetByteCount(extraData), BaseIdentity.MaxProfileExtraDataLengthBytes);
             details = "extraData";
           }
         }
@@ -1257,7 +1277,7 @@ namespace HomeNet.Network
       MessageBuilder messageBuilder = Client.MessageBuilder;
       CancelHomeNodeAgreementRequest cancelHomeNodeAgreementRequest = RequestMessage.Request.ConversationRequest.CancelHomeNodeAgreement;
 
-      if (!cancelHomeNodeAgreementRequest.RedirectToNewHomeNode || (cancelHomeNodeAgreementRequest.NewHomeNodeNetworkId.Length == Identity.IdentifierLength))
+      if (!cancelHomeNodeAgreementRequest.RedirectToNewHomeNode || (cancelHomeNodeAgreementRequest.NewHomeNodeNetworkId.Length == BaseIdentity.IdentifierLength))
       {
         Guid? profileImageToDelete = null;
         Guid? thumbnailImageToDelete = null;
@@ -1270,7 +1290,7 @@ namespace HomeNet.Network
           await unitOfWork.AcquireLockAsync(lockObject);
           try
           {
-            Identity identity = (await unitOfWork.HomeIdentityRepository.GetAsync(i => (i.IdentityId == Client.IdentityId) && (i.ExpirationDate == null))).FirstOrDefault();
+            HomeIdentity identity = (await unitOfWork.HomeIdentityRepository.GetAsync(i => (i.IdentityId == Client.IdentityId) && (i.ExpirationDate == null))).FirstOrDefault();
             if (identity != null)
             {
               // We artificially initialize the profile when we cancel it in order to allow queries towards this profile.
@@ -1465,7 +1485,7 @@ namespace HomeNet.Network
       {
         try
         {
-          Identity identity = (await unitOfWork.HomeIdentityRepository.GetAsync(i => (i.IdentityId == calleeIdentityId))).FirstOrDefault();
+          HomeIdentity identity = (await unitOfWork.HomeIdentityRepository.GetAsync(i => (i.IdentityId == calleeIdentityId))).FirstOrDefault();
           if (identity != null)
           {
             if (!identity.IsProfileInitialized())
@@ -1677,6 +1697,349 @@ namespace HomeNet.Network
       }
 
       log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+      return res;
+    }
+
+
+    /// <summary>
+    /// Processes ProfileSearchRequest message from client.
+    /// <para>Performs a search operation to find all matching identities that this node hosts, possibly including identities hosted in the node's neighborhood.</para>
+    /// </summary>
+    /// <param name="Client">Client that sent the request.</param>
+    /// <param name="RequestMessage">Full request message.</param>
+    /// <returns>Response message to be sent to the client.</returns>
+    public async Task<Message> ProcessMessageProfileSearchRequestAsync(Client Client, Message RequestMessage)
+    {
+      log.Trace("()");
+
+      Message res = null;
+      if (!CheckSessionConditions(Client, RequestMessage, ServerRole.ClientCustomer | ServerRole.ClientNonCustomer, ClientConversationStatus.ConversationAny, out res))
+      {
+        log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+        return res;
+      }
+
+      MessageBuilder messageBuilder = Client.MessageBuilder;
+      ProfileSearchRequest profileSearchRequest = RequestMessage.Request.ConversationRequest.ProfileSearch;
+
+      Message errorResponse;
+      if (ValidateProfileSearchRequest(profileSearchRequest, messageBuilder, RequestMessage, out errorResponse))
+      {
+        res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
+        using (UnitOfWork unitOfWork = new UnitOfWork())
+        {
+          try
+          {
+            uint maxResults = profileSearchRequest.MaxTotalRecordCount;
+            uint maxResponseResults = profileSearchRequest.MaxResponseRecordCount;
+            string typeFilter = profileSearchRequest.Type;
+            string nameFilter = profileSearchRequest.Name;
+            GpsLocation locationFilter = null;
+            if (profileSearchRequest.Latitude != GpsLocation.NoLocationLocationType)
+              locationFilter = new GpsLocation(profileSearchRequest.Latitude, profileSearchRequest.Longitude);
+            uint radius = profileSearchRequest.Radius;
+            string extraDataFilter = profileSearchRequest.ExtraData;
+            bool includeImages = profileSearchRequest.IncludeThumbnailImages;
+
+            Stopwatch watch = new Stopwatch();
+
+            // First, we try to find enough results among identities hosted on this node.
+            List<IdentityNetworkProfileInformation> searchResultsNeighborhood = new List<IdentityNetworkProfileInformation>();
+            List<IdentityNetworkProfileInformation> searchResultsLocal = await ProfileSearch(unitOfWork.HomeIdentityRepository, maxResults, typeFilter, nameFilter, locationFilter, radius, extraDataFilter, includeImages, watch);
+            if (searchResultsLocal != null)
+            {
+              bool error = false;
+              // If possible and needed we try to find more results among identities hosted in this node's neighborhood.
+              if (!profileSearchRequest.IncludeHostedOnly && (searchResultsLocal.Count < maxResults))
+              {
+                maxResults -= (uint)searchResultsLocal.Count;
+                searchResultsNeighborhood = await ProfileSearch(unitOfWork.NeighborhoodIdentityRepository, maxResults, typeFilter, nameFilter, locationFilter, radius, extraDataFilter, includeImages, watch);
+                if (searchResultsNeighborhood == null)
+                {
+                  log.Error("Profile search among neighborhood identities failed.");
+                  error = true;
+                }
+              }
+
+              if (!error)
+              {
+                // Now we have all required results in searchResultsLocal and searchResultsNeighborhood.
+                // If the number of results is small enough to fit into a single response, we send them all.
+                // Otherwise, we save them to the session context and only send first part of them.
+                List<IdentityNetworkProfileInformation> allResults = searchResultsLocal;
+                allResults.AddRange(searchResultsNeighborhood);
+                List<IdentityNetworkProfileInformation> responseResults = allResults;
+                log.Debug("Total number of matching profiles is {0}, from which {1} are local, {2} are from neighbors.", allResults.Count, searchResultsLocal.Count, searchResultsNeighborhood.Count);
+                if (maxResponseResults < allResults.Count)
+                {
+                  log.Trace("All results can not fit into a single response (max {0} results).", maxResponseResults);
+                  // We can not send all results, save them to session.
+                  Client.SaveProfileSearchResults(allResults);
+
+                  // And send the maximum we can in the response.
+                  responseResults = new List<IdentityNetworkProfileInformation>();
+                  responseResults.AddRange(allResults.GetRange(0, (int)maxResponseResults));
+                }
+
+                res = messageBuilder.CreateProfileSearchResponse(RequestMessage, (uint)allResults.Count, maxResponseResults, responseResults);
+              }
+            }
+            else log.Error("Profile search among hosted identities failed.");
+          }
+          catch (Exception e)
+          {
+            log.Error("Exception occurred: {0}", e.ToString());
+          }
+        }
+      } else res = errorResponse;
+
+      if (res != null) log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+      else log.Trace("(-):null");
+      return res;
+    }
+
+
+    /// <summary>
+    /// Checks whether the search profile request is valid.
+    /// </summary>
+    /// <param name="ProfileSearchRequest">Profile search request part of the client's request message.</param>
+    /// <param name="MessageBuilder">Client's network message builder.</param>
+    /// <param name="RequestMessage">Full request message from client.</param>
+    /// <param name="ErrorResponse">If the function fails, this is filled with error response message that is ready to be sent to the client.</param>
+    /// <returns>true if the profile update request can be applied, false otherwise.</returns>
+    private bool ValidateProfileSearchRequest(ProfileSearchRequest ProfileSearchRequest, MessageBuilder MessageBuilder, Message RequestMessage, out Message ErrorResponse)
+    {
+      log.Trace("()");
+
+      bool res = false;
+      ErrorResponse = null;
+      string details = null;
+
+      bool includeImages = ProfileSearchRequest.IncludeThumbnailImages;
+      int responseResultLimit = includeImages ? 100 : 1000;
+      int totalResultLimit = includeImages ? 1000 : 10000;
+
+      bool maxResponseRecordCountValid = (1 <= ProfileSearchRequest.MaxResponseRecordCount) && (ProfileSearchRequest.MaxResponseRecordCount <= responseResultLimit);
+      if (!maxResponseRecordCountValid)
+      {
+        log.Debug("Invalid maxResponseRecordCount value '{0}'.", ProfileSearchRequest.MaxResponseRecordCount);
+        details = "maxResponseRecordCount";
+      }
+
+      if (details == null)
+      {
+        bool maxTotalRecordCountValid = (1 <= ProfileSearchRequest.MaxTotalRecordCount) && (ProfileSearchRequest.MaxTotalRecordCount <= totalResultLimit);
+        if (!maxTotalRecordCountValid)
+        {
+          log.Debug("Invalid maxTotalRecordCount value '{0}'.", ProfileSearchRequest.MaxTotalRecordCount);
+          details = "maxTotalRecordCount";
+        }
+      }
+
+      if ((details == null) && (ProfileSearchRequest.Type != null))
+      {
+        bool typeValid = Encoding.UTF8.GetByteCount(ProfileSearchRequest.Type) <= ProtocolHelper.MaxProfileSearchTypeLengthBytes;
+        if (!typeValid)
+        {
+          log.Debug("Invalid type value length '{0}'.", ProfileSearchRequest.Type.Length);
+          details = "type";
+        }
+      }
+
+      if ((details == null) && (ProfileSearchRequest.Name != null))
+      {
+        bool nameValid = Encoding.UTF8.GetByteCount(ProfileSearchRequest.Name) <= ProtocolHelper.MaxProfileSearchNameLengthBytes;
+        if (!nameValid)
+        {
+          log.Debug("Invalid name value length '{0}'.", ProfileSearchRequest.Name.Length);
+          details = "name";
+        }
+      }
+
+      if ((details == null) && (ProfileSearchRequest.Latitude != GpsLocation.NoLocationLocationType))
+      {
+        GpsLocation locLat = new GpsLocation(ProfileSearchRequest.Latitude, 0);
+        GpsLocation locLong = new GpsLocation(0, ProfileSearchRequest.Longitude);
+        if (!locLat.IsValid())
+        {
+          log.Debug("Latitude '{0}' is not a valid GPS latitude value.", ProfileSearchRequest.Latitude);
+          details = "latitude";
+        }
+        else if (!locLong.IsValid())
+        {
+          log.Debug("Longitude '{0}' is not a valid GPS longitude value.", ProfileSearchRequest.Longitude);
+          details = "longitude";
+        }
+      }
+
+      if ((details == null) && (ProfileSearchRequest.Latitude != GpsLocation.NoLocationLocationType))
+      {
+        bool radiusValid = ProfileSearchRequest.Radius > 0;
+        if (!radiusValid)
+        {
+          log.Debug("Invalid radius value '{0}'.", ProfileSearchRequest.Radius);
+          details = "radius";
+        }
+      }
+
+      if ((details == null) && (ProfileSearchRequest.ExtraData != null))
+      {
+        bool extraDataValid = RegexTypeValidator.ValidateProfileSearchRegex(ProfileSearchRequest.ExtraData);
+        if (!extraDataValid)
+        {
+          log.Debug("Invalid extraData regular expression filter.");
+          details = "extraData";
+        }
+      }
+
+      if (details == null)
+      {
+        res = true;
+      }
+      else ErrorResponse = MessageBuilder.CreateErrorInvalidValueResponse(RequestMessage, details);
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+
+
+    /// <summary>Minimal number of results we ask for from database.</summary>
+    public const int ProfileSearchBatchSizeMin = 1000;
+
+    /// <summary>Multiplication factor to count maximal size of the batch from the number of required results.</summary>
+    public const int ProfileSearchBatchSizeMaxFactor = 10;
+
+    /// <summary>Maximum amount of time in milliseconds that a single search query can take.</summary>
+    public const int ProfileSearchMaxTimeMs = 15000;
+
+    /// <summary>Maximum amount of time in milliseconds that we want to spend on regular expression matching of extraData.</summary>
+    public const int ProfileSearchMaxExtraDataMatchingTimeTotalMs = 1500;
+
+    /// <summary>Maximum amount of time in milliseconds that we want to spend on regular expression matching of extraData of a single profile.</summary>
+    public const int ProfileSearchMaxExtraDataMatchingTimeSingleMs = 150;
+
+    /// <summary>
+    /// Performs a search request on a repository to retrieve the list of profiles that match match specific criteria.
+    /// </summary>
+    /// <param name="Repository">Home or neighborhood identity repository, which is queried.</param>
+    /// <param name="MaxResults">Maximum number of results to retrieve.</param>
+    /// <param name="TypeFilter">Wildcard filter for identity type, or empty string if identity type filtering is not required.</param>
+    /// <param name="NameFilter">Wildcard filter for profile name, or empty string if profile name filtering is not required.</param>
+    /// <param name="LocationFilter">If not null, this value together with <paramref name="Radius"/> provide specification of target area, in which the identities has to have their location set. If null, GPS location filtering is not required.</param>
+    /// <param name="Radius">If <paramref name="LocationFilter"/> is not null, this is the target area radius with the centre in <paramref name="LocationFilter"/>.</param>
+    /// <param name="ExtraDataFilter">Regular expression filter for identity's extraData information, or empty string if extraData filtering is not required.</param>
+    /// <param name="IncludeImages">If true, the results will include profiles' thumbnail images.</param>
+    /// <param name="TimeoutWatch">Stopwatch instance that is used to terminate the search query in case the execution takes too long. The stopwatch has to be started by the caller before calling this method.</param>
+    /// <returns>List of network profile informations of identities that match the specific criteria.</returns>
+    /// <remarks>In order to prevent DoS attacks, we require the search to complete within small period of time. 
+    /// One the allowed time is up, the search is terminated even if we do not have enough results yet and there 
+    /// is still a possibility to get more.</remarks>
+    private async Task<List<IdentityNetworkProfileInformation>> ProfileSearch<T>(IdentityRepository<T> Repository, uint MaxResults, string TypeFilter, string NameFilter, GpsLocation LocationFilter, uint Radius, string ExtraDataFilter, bool IncludeImages, Stopwatch TimeoutWatch) where T:BaseIdentity
+    {
+      log.Trace("(Repository:{0},MaxResults:{1},TypeFilter:'{2}',NameFilter:'{3}',LocationFilter:'{4}',Radius:{5},ExtraDataFilter:'{6}',IncludeImages:{7})", Repository, MaxResults, TypeFilter, NameFilter, LocationFilter, Radius, ExtraDataFilter, IncludeImages);
+
+      List<IdentityNetworkProfileInformation> res = new List<IdentityNetworkProfileInformation>();
+
+      uint batchSize = Math.Max(ProfileSearchBatchSizeMin, MaxResults * ProfileSearchBatchSizeMaxFactor);
+      uint offset = 0;
+
+      RegexEval extraDataEval = !string.IsNullOrEmpty(ExtraDataFilter) ? new RegexEval(ExtraDataFilter, ProfileSearchMaxExtraDataMatchingTimeSingleMs, ProfileSearchMaxExtraDataMatchingTimeTotalMs) : null;
+
+      long totalTimeMs = ProfileSearchMaxTimeMs;
+
+      bool done = false;
+      while (!done)
+      {
+        // Load result candidates from the database.
+        bool noMoreResults = false;
+        List<T> identities = null;
+        try
+        {
+          identities = await Repository.ProfileSearch(offset, batchSize, TypeFilter, NameFilter, LocationFilter, Radius);
+          noMoreResults = (identities == null) || (identities.Count < batchSize);
+          if (noMoreResults)
+            log.Debug("Received {0}/{1} results from repository, no more results available.", identities != null ? identities.Count : 0, batchSize);
+        }
+        catch (Exception e)
+        {
+          log.Error("Exception occurred: {0}", e.ToString());
+          done = true;
+        }
+
+        if (!done)
+        {
+          if (identities != null)
+          {
+            foreach (T identity in identities)
+            {
+              // Terminate search if the time is up.
+              if (totalTimeMs - TimeoutWatch.ElapsedMilliseconds < 0)
+              {
+                log.Debug("Time for search query ({0} ms) is up, terminating query.", totalTimeMs);
+                done = true;
+                break;
+              }
+
+              // Filter out profiles that do not match exact location filter and extraData filter
+              GpsLocation identityLocation = new GpsLocation(identity.InitialLocationLatitude, identity.InitialLocationLongitude);
+              if (LocationFilter != null)
+              {
+                double distance = GpsLocation.DistanceBetween(LocationFilter, identityLocation);
+                bool withinArea = distance <= (double)Radius;
+                if (!withinArea) continue;
+              }
+
+              if (!string.IsNullOrEmpty(ExtraDataFilter))
+              {
+                bool match = extraDataEval.Matches(identity.ExtraData);
+                if (!match) continue;
+              }
+
+
+              // Convert identity to search result format.
+              IdentityNetworkProfileInformation inpi = new IdentityNetworkProfileInformation();
+              if (Repository is HomeIdentityRepository)
+              {
+                inpi.IsHosted = true;
+                inpi.IsOnline = clientList.IsIdentityOnline(identity.IdentityId);
+              }
+              else
+              {
+                inpi.IsHosted = false;
+                inpi.NeighborNodeNetworkId = ProtocolHelper.ByteArrayToByteString(identity.HomeNodeId);
+              }
+
+              inpi.IdentityPublicKey = ProtocolHelper.ByteArrayToByteString(identity.PublicKey);
+              inpi.Type = identity.Type != null ? identity.Type : "";
+              inpi.Name = identity.Name != null ? identity.Name : "";
+              inpi.Latitude = identityLocation.GetLocationTypeLatitude();
+              inpi.Longitude = identityLocation.GetLocationTypeLongitude();
+              inpi.ExtraData = identity.ExtraData != null ? identity.ExtraData : "";
+              if (IncludeImages)
+              {
+                byte[] image = await identity.GetThumbnailImageDataAsync();
+                if (image != null)
+                  inpi.ThumbnailImage = ProtocolHelper.ByteArrayToByteString(image);
+              }
+
+              res.Add(inpi);
+              if (res.Count >= MaxResults)
+              {
+                log.Debug("Target number of results {0} has been reached.", MaxResults);
+                break;
+              }
+            }
+          }
+
+          bool timedOut = totalTimeMs - TimeoutWatch.ElapsedMilliseconds < 0;
+          if (timedOut) log.Debug("Time for search query ({0} ms) is up, terminating query.", totalTimeMs);
+          done = noMoreResults || (res.Count >= MaxResults) || timedOut;
+          offset += batchSize;
+        }
+      }
+
+      log.Trace("(-):*.Count={0}", res.Count);
       return res;
     }
   }

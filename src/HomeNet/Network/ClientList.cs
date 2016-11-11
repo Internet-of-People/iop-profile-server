@@ -301,6 +301,21 @@ namespace HomeNet.Network
 
 
     /// <summary>
+    /// Checks whether a certain identity is online.
+    /// </summary>
+    /// <param name="IdentityId">Identifier of the identity to check for.</param>
+    /// <returns>true if the identity is online, false otherwise.</returns>
+    public bool IsIdentityOnline(byte[] IdentityId)
+    {
+      log.Trace("(IdentityId:'{0}')", Crypto.ToHex(IdentityId));
+
+      bool res = GetCheckedInClient(IdentityId) != null;
+
+      return res;
+    }
+
+
+    /// <summary>
     /// Creates a new network relay between a caller identity and one of the node's customer identities that is online.
     /// </summary>
     /// <param name="Caller">Initiator of the call.</param>

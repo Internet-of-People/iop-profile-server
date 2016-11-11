@@ -37,6 +37,9 @@ namespace HomeNetCrypto
   /// </summary>
   public class Ed25519
   {
+    /// <summary>Size of signatures in bytes.</summary>
+    public const int SignatureLengthBytes = 64;
+
     /// <summary>
     /// Generates new keys using random seed.
     /// </summary>
@@ -117,7 +120,12 @@ namespace HomeNetCrypto
     /// <returns>true if the signature represents a valid cryptographic signature of the message using the private key for which the public key was provided.</returns>
     public static bool Verify(byte[] Signature, byte[] Message, byte[] PublicKey)
     {
-      return Chaos.NaCl.Ed25519.Verify(Signature, Message, PublicKey);
+      bool res = false;
+
+      if ((Signature != null) && (Signature.Length == SignatureLengthBytes))
+        res = Chaos.NaCl.Ed25519.Verify(Signature, Message, PublicKey);
+
+      return res;
     }
   }
 

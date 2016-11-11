@@ -5,7 +5,8 @@
     "xunit": "2.2.0-beta2-build3300",
     "HomeNetProtocol": "1.0.0-*",
     "dotnet-test-xunit": "2.2.0-preview2-build1029",
-    "HomeNetCrypto": "1.0.0-*"
+    "HomeNetCrypto": "1.0.0-*",
+    "HomeNet": "1.0.0-*"
   },
   "frameworks": {
     "netcoreapp1.1": {

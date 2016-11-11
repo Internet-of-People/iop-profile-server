@@ -256,6 +256,9 @@ namespace HomeNetProtocolTests.Tests
 
         // Step 8 
         log.Trace("Step 8");
+
+        await Task.Delay(5000);
+
         // Receive ACK message #1.
         responseMessageAppServiceCaller = await clientCallerAppService.ReceiveMessageAsync();
         idOk = responseMessageAppServiceCaller.Id == callerMessage1Id;

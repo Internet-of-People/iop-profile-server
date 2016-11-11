@@ -246,17 +246,26 @@ namespace HomeNetProtocolTests
     }
 
 
+
     /// <summary>
-    /// Establishes a home node for the client's identity using the already opened connection to the node.
+    /// Establishes a home node for the client's identity with specific identity type using the already opened connection to the node.
     /// </summary>
+    /// <param name="IdentityType">Identity type of the new identity.</param>
     /// <returns>true if the function succeeds, false otherwise.</returns>
-    public async Task<bool> EstablishHomeNodeAsync()
+    public async Task<bool> EstablishHomeNodeAsync(string IdentityType = null)
     {
       log.Trace("()");
 
       bool startConversationOk = await StartConversationAsync();
 
-      Message requestMessage = MessageBuilder.CreateHomeNodeRequestRequest(null);
+      HomeNodePlanContract contract = null;
+      if (IdentityType != null)
+      {
+        contract = new HomeNodePlanContract();
+        contract.IdentityType = IdentityType;
+      }
+
+      Message requestMessage = MessageBuilder.CreateHomeNodeRequestRequest(contract);
       await SendMessageAsync(requestMessage);
       Message responseMessage = await ReceiveMessageAsync();
 

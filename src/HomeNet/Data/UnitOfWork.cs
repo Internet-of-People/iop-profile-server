@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
+
 namespace HomeNet.Data
 {
   /// <summary>
@@ -59,12 +60,16 @@ namespace HomeNet.Data
     }
 
 
-    /// <summary>Lock for the identity repository.</summary>
+    /// <summary>Lock for the home identity repository.</summary>
     public static DatabaseLock HomeIdentityLock = new DatabaseLock("HOME_IDENTITY");
+
+    /// <summary>Lock for the neighborhood identity repository.</summary>
+    public static DatabaseLock NeighborhoodIdentityLock = new DatabaseLock("NEIGHBORHOOD_IDENTITY");
 
 
     private SettingsRepository settingsRepository;
     private HomeIdentityRepository homeIdentityRepository;
+    private NeighborhoodIdentityRepository neighborhoodIdentityRepository;
 
 
     /// <summary>Settings repository.</summary>
@@ -80,7 +85,7 @@ namespace HomeNet.Data
     }
 
 
-    /// <summary>Identity repository for the node clients.</summary>
+    /// <summary>Identity repository for the node customers.</summary>
     public HomeIdentityRepository HomeIdentityRepository
     {
       get
@@ -89,6 +94,18 @@ namespace HomeNet.Data
           homeIdentityRepository = new HomeIdentityRepository(Context);
 
         return homeIdentityRepository;
+      }
+    }
+
+    /// <summary>Identity repository for identities hosted in the node's neighborhood.</summary>
+    public NeighborhoodIdentityRepository NeighborhoodIdentityRepository
+    {
+      get
+      {
+        if (neighborhoodIdentityRepository == null)
+          neighborhoodIdentityRepository = new NeighborhoodIdentityRepository(Context);
+
+        return neighborhoodIdentityRepository;
       }
     }
 

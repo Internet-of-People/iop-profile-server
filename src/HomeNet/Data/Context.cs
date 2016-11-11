@@ -1,6 +1,6 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using HomeNet.Data.Models;
@@ -20,22 +20,31 @@ namespace HomeNet.Data
     public DbSet<Setting> Settings { get; set; }
 
     /// <summary>Access to IoP identities, for which the node acts as a home node, in the database.</summary>
-    public DbSet<Identity> Identities { get; set; }
+    public DbSet<HomeIdentity> Identities { get; set; }
+
+    /// <summary>Access to IoP identities, which are not hosted on this node, but are hosted in this node's neighborhood.</summary>
+    public DbSet<NeighborIdentity> NeighborhoodIdentities { get; set; }
+
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-      var currentDirectory = System.IO.Directory.GetCurrentDirectory();
-      optionsBuilder.UseSqlite(string.Format("Filename={0}", System.IO.Path.Combine(currentDirectory, DatabaseFileName)));
+      string currentDirectory = Directory.GetCurrentDirectory();
+      optionsBuilder.UseSqlite(string.Format("Filename={0}", Path.Combine(currentDirectory, DatabaseFileName)));
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
       base.OnModelCreating(modelBuilder);
 
-      modelBuilder.Entity<Identity>().HasIndex(i => new { i.IdentityId, i.HomeNodeId, i.Name, i.Type, i.InitialLocationLatitude, i.InitialLocationLongitude, i.ExtraData, i.ExpirationDate });
+      modelBuilder.Entity<HomeIdentity>().HasKey(i => i.IdentityId);
+      modelBuilder.Entity<HomeIdentity>().HasIndex(i => new { i.IdentityId, i.HomeNodeId, i.Name, i.Type, i.InitialLocationLatitude, i.InitialLocationLongitude, i.ExtraData, i.ExpirationDate });
+      modelBuilder.Entity<HomeIdentity>().Property(i => i.InitialLocationLatitude).HasColumnType("decimal(9,6)").IsRequired(true);
+      modelBuilder.Entity<HomeIdentity>().Property(i => i.InitialLocationLongitude).HasColumnType("decimal(9,6)").IsRequired(true);
 
-      modelBuilder.Entity<Identity>().Property(i => i.InitialLocationLatitude).HasColumnType("decimal(9,6)").IsRequired(true);
-      modelBuilder.Entity<Identity>().Property(i => i.InitialLocationLongitude).HasColumnType("decimal(9,6)").IsRequired(true);
+      modelBuilder.Entity<NeighborIdentity>().HasKey(i => i.IdentityId);
+      modelBuilder.Entity<NeighborIdentity>().HasIndex(i => new { i.IdentityId, i.HomeNodeId, i.Name, i.Type, i.InitialLocationLatitude, i.InitialLocationLongitude, i.ExtraData, i.ExpirationDate });
+      modelBuilder.Entity<NeighborIdentity>().Property(i => i.InitialLocationLatitude).HasColumnType("decimal(9,6)").IsRequired(true);
+      modelBuilder.Entity<NeighborIdentity>().Property(i => i.InitialLocationLongitude).HasColumnType("decimal(9,6)").IsRequired(true);
     }
   }
 }

@@ -11,9 +11,9 @@ using Microsoft.EntityFrameworkCore;
 namespace HomeNet.Data.Repositories
 {
   /// <summary>
-  /// Repository for hosted identities.
+  /// Repository for locally hosted identities.
   /// </summary>
-  public class HomeIdentityRepository : GenericRepository<Identity>
+  public class HomeIdentityRepository : IdentityRepository<HomeIdentity>
   {
     /// <summary>
     /// Creates instance of the repository.
@@ -30,7 +30,8 @@ namespace HomeNet.Data.Repositories
     /// <returns>List of statistics of hosted profile types.</returns>
     public async Task<List<ProfileStatsItem>> GetProfileStats()
     {
-      return await context.Identities.GroupBy(i => i.Type).Select(g => new ProfileStatsItem { IdentityType = g.Key, Count = (uint)g.Count() }).ToListAsync();
+      return await context.Identities.Where(i => i.ExpirationDate == null).GroupBy(i => i.Type)
+        .Select(g => new ProfileStatsItem { IdentityType = g.Key, Count = (uint)g.Count() }).ToListAsync();
     }
   }
 }

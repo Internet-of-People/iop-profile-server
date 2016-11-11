@@ -1071,7 +1071,8 @@ namespace HomeNetProtocol
     public Message CreateProfileStatsResponse(Message Request, IEnumerable<ProfileStatsItem> Stats)
     {
       ProfileStatsResponse profileStatsResponse = new ProfileStatsResponse();
-      profileStatsResponse.Stats.AddRange(Stats);
+      if ((Stats != null) && (Stats.Count() > 0))
+        profileStatsResponse.Stats.AddRange(Stats);
 
       Message res = CreateSingleResponse(Request);
       res.Response.SingleResponse.ProfileStats = profileStatsResponse;
@@ -1104,8 +1105,8 @@ namespace HomeNetProtocol
       profileSearchRequest.MaxTotalRecordCount = MaxTotalRecordCount;
       profileSearchRequest.Type = IdentityType != null ? IdentityType : "";
       profileSearchRequest.Name = Name != null ? Name : "";
-      profileSearchRequest.Latitude = Location != null ? Location.GetLocationTypeLatitude() : GpsLocation.NoLocation;
-      profileSearchRequest.Longitude = Location != null ? Location.GetLocationTypeLongitude() : GpsLocation.NoLocation;
+      profileSearchRequest.Latitude = Location != null ? Location.GetLocationTypeLatitude() : GpsLocation.NoLocationLocationType;
+      profileSearchRequest.Longitude = Location != null ? Location.GetLocationTypeLongitude() : GpsLocation.NoLocationLocationType;
       profileSearchRequest.Radius = Location != null ? Radius : 0;
       profileSearchRequest.ExtraData = ExtraData != null ? ExtraData : "";
 
@@ -1129,7 +1130,8 @@ namespace HomeNetProtocol
       ProfileSearchResponse profileSearchResponse = new ProfileSearchResponse();
       profileSearchResponse.TotalRecordCount = TotalRecordCount;
       profileSearchResponse.MaxResponseRecordCount = MaxResponseRecordCount;
-      profileSearchResponse.Profiles.AddRange(Results);
+      if ((Results != null) && (Results.Count() > 0))
+        profileSearchResponse.Profiles.AddRange(Results);
       
       Message res = CreateConversationResponse(Request);
       res.Response.ConversationResponse.ProfileSearch = profileSearchResponse;
@@ -1292,7 +1294,5 @@ namespace HomeNetProtocol
 
       return res;
     }
-
-
   }
 }

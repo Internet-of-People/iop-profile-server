@@ -1,4 +1,5 @@
-﻿using HomeNetProtocol;
+﻿using HomeNet.Utils;
+using HomeNetProtocol;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,11 +11,12 @@ using System.Threading.Tasks;
 namespace HomeNet.Data.Models
 {
   /// <summary>
-  /// Database representation of IoP Identity profile.
+  /// Database representation of IoP Identity profile. This is base class for HomeIdentity and NeighborIdentity classes
+  /// and must not be used on its own.
   /// </summary>
-  public class Identity
+  public class BaseIdentity
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("HomeNet.Data.Models.Identity");
+    private static NLog.Logger log = NLog.LogManager.GetLogger("HomeNet.Data.Models.BaseIdentity");
 
     /// <summary>Maximum number of bytes that identity name can occupy.</summary>
     public const int MaxProfileNameLengthBytes = 64;
@@ -95,11 +97,12 @@ namespace HomeNet.Data.Models
     /// and the node holds the redirection information. The redirect is maintained 
     /// only until the expiration date.
     /// 
-    /// In the IdentityRepository, if ExpirationDate is null, the identity's contract 
+    /// In the HomeIdentityRepository, if ExpirationDate is null, the identity's contract 
     /// is valid. If it is not null, it has been cancelled.
     /// </summary>
     /// <remarks>This is index - see HomeNet.Data.Context.OnModelCreating.</remarks>
     public DateTime? ExpirationDate { get; set; }
+#warning TODO: clean up expired identities
 
 
 
@@ -258,7 +261,7 @@ namespace HomeNet.Data.Models
     /// <returns>true if the identity's profile was initialized properly, false otherwise.</returns>
     public bool IsProfileInitialized()
     {
-      return StructuralComparisons.StructuralComparer.Compare(this.Version, new byte[] { 0, 0, 0 }) != 0;
+      return !StructuralEqualityComparer<byte[]>.Default.Equals(Version, new byte[] { 0, 0, 0 });
     }
 
 
