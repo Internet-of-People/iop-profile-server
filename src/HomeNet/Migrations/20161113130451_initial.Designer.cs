@@ -8,8 +8,8 @@ using HomeNet.Data;
 namespace HomeNet.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20161111094942_mig")]
-    partial class mig
+    [Migration("20161113130451_initial")]
+    partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -58,7 +58,20 @@ namespace HomeNet.Migrations
 
                     b.HasKey("IdentityId");
 
-                    b.HasIndex("IdentityId", "HomeNodeId", "Name", "Type", "InitialLocationLatitude", "InitialLocationLongitude", "ExtraData", "ExpirationDate");
+                    b.HasIndex("ExpirationDate");
+
+                    b.HasIndex("ExtraData");
+
+                    b.HasIndex("IdentityId")
+                        .IsUnique();
+
+                    b.HasIndex("Name");
+
+                    b.HasIndex("Type");
+
+                    b.HasIndex("InitialLocationLatitude", "InitialLocationLongitude");
+
+                    b.HasIndex("ExpirationDate", "InitialLocationLatitude", "InitialLocationLongitude", "Type", "Name");
 
                     b.ToTable("Identities");
                 });
@@ -105,7 +118,22 @@ namespace HomeNet.Migrations
 
                     b.HasKey("IdentityId");
 
-                    b.HasIndex("IdentityId", "HomeNodeId", "Name", "Type", "InitialLocationLatitude", "InitialLocationLongitude", "ExtraData", "ExpirationDate");
+                    b.HasIndex("ExpirationDate");
+
+                    b.HasIndex("ExtraData");
+
+                    b.HasIndex("HomeNodeId");
+
+                    b.HasIndex("IdentityId")
+                        .IsUnique();
+
+                    b.HasIndex("Name");
+
+                    b.HasIndex("Type");
+
+                    b.HasIndex("InitialLocationLatitude", "InitialLocationLongitude");
+
+                    b.HasIndex("InitialLocationLatitude", "InitialLocationLongitude", "Type", "Name");
 
                     b.ToTable("NeighborhoodIdentities");
                 });

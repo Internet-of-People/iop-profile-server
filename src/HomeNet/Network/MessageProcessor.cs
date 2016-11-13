@@ -172,9 +172,12 @@ namespace HomeNet.Network
                         responseMessage = await ProcessMessageCallIdentityApplicationServiceRequestAsync(Client, IncomingMessage);
                         break;
 
-
                       case ConversationRequest.RequestTypeOneofCase.ProfileSearch:
                         responseMessage = await ProcessMessageProfileSearchRequestAsync(Client, IncomingMessage);
+                        break;
+
+                      case ConversationRequest.RequestTypeOneofCase.ProfileSearchPart:
+                        responseMessage = ProcessMessageProfileSearchPartRequest(Client, IncomingMessage);
                         break;
 
                       default:
@@ -1701,6 +1704,40 @@ namespace HomeNet.Network
     }
 
 
+
+
+    /// <summary>
+    /// Minimal number of results we ask for from database. This limit prevents doing small database queries 
+    /// when there are many identities to be explored but very few of them actually match the client's criteria. 
+    /// Since not all filtering is done in the SQL query, we need to prevent ourselves from putting to much 
+    /// pressure on the database in those edge cases.
+    /// </summary>
+    public const int ProfileSearchBatchSizeMin = 1000;
+
+    /// <summary>
+    /// Multiplication factor to count maximal size of the batch from the number of required results.
+    /// Not all filtering is done in the SQL query. This means that in order to get a certain amount of results 
+    /// that the client asks for, it is likely that we need to load more records from the database.
+    /// This value provides information about how many times more do we load.
+    /// </summary>
+    public const decimal ProfileSearchBatchSizeMaxFactor = 10.0m;
+
+    /// <summary>Maximum amount of time in milliseconds that a single search query can take.</summary>
+    public const int ProfileSearchMaxTimeMs = 15000;
+
+    /// <summary>Maximum amount of time in milliseconds that we want to spend on regular expression matching of extraData.</summary>
+    public const int ProfileSearchMaxExtraDataMatchingTimeTotalMs = 1500;
+
+    /// <summary>Maximum amount of time in milliseconds that we want to spend on regular expression matching of extraData of a single profile.</summary>
+    public const int ProfileSearchMaxExtraDataMatchingTimeSingleMs = 150;
+
+    /// <summary>Maximum number of results the node can send in the response if images are included.</summary>
+    public const int ProfileSearchMaxResponseRecordsWithImage = 100;
+
+    /// <summary>Maximum number of results the node can send in the response if images are not included.</summary>
+    public const int ProfileSearchMaxResponseRecordsWithoutImage = 1000;
+
+
     /// <summary>
     /// Processes ProfileSearchRequest message from client.
     /// <para>Performs a search operation to find all matching identities that this node hosts, possibly including identities hosted in the node's neighborhood.</para>
@@ -1728,6 +1765,7 @@ namespace HomeNet.Network
         res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
         using (UnitOfWork unitOfWork = new UnitOfWork())
         {
+          Stopwatch watch = new Stopwatch();
           try
           {
             uint maxResults = profileSearchRequest.MaxTotalRecordCount;
@@ -1741,7 +1779,7 @@ namespace HomeNet.Network
             string extraDataFilter = profileSearchRequest.ExtraData;
             bool includeImages = profileSearchRequest.IncludeThumbnailImages;
 
-            Stopwatch watch = new Stopwatch();
+            watch.Start();
 
             // First, we try to find enough results among identities hosted on this node.
             List<IdentityNetworkProfileInformation> searchResultsNeighborhood = new List<IdentityNetworkProfileInformation>();
@@ -1774,7 +1812,7 @@ namespace HomeNet.Network
                 {
                   log.Trace("All results can not fit into a single response (max {0} results).", maxResponseResults);
                   // We can not send all results, save them to session.
-                  Client.SaveProfileSearchResults(allResults);
+                  Client.SaveProfileSearchResults(allResults, includeImages);
 
                   // And send the maximum we can in the response.
                   responseResults = new List<IdentityNetworkProfileInformation>();
@@ -1790,6 +1828,8 @@ namespace HomeNet.Network
           {
             log.Error("Exception occurred: {0}", e.ToString());
           }
+
+          watch.Stop();
         }
       } else res = errorResponse;
 
@@ -1819,7 +1859,9 @@ namespace HomeNet.Network
       int responseResultLimit = includeImages ? 100 : 1000;
       int totalResultLimit = includeImages ? 1000 : 10000;
 
-      bool maxResponseRecordCountValid = (1 <= ProfileSearchRequest.MaxResponseRecordCount) && (ProfileSearchRequest.MaxResponseRecordCount <= responseResultLimit);
+      bool maxResponseRecordCountValid = (1 <= ProfileSearchRequest.MaxResponseRecordCount) 
+        && (ProfileSearchRequest.MaxResponseRecordCount <= responseResultLimit) 
+        && (ProfileSearchRequest.MaxResponseRecordCount <= ProfileSearchRequest.MaxTotalRecordCount);
       if (!maxResponseRecordCountValid)
       {
         log.Debug("Invalid maxResponseRecordCount value '{0}'.", ProfileSearchRequest.MaxResponseRecordCount);
@@ -1904,21 +1946,6 @@ namespace HomeNet.Network
 
 
 
-    /// <summary>Minimal number of results we ask for from database.</summary>
-    public const int ProfileSearchBatchSizeMin = 1000;
-
-    /// <summary>Multiplication factor to count maximal size of the batch from the number of required results.</summary>
-    public const int ProfileSearchBatchSizeMaxFactor = 10;
-
-    /// <summary>Maximum amount of time in milliseconds that a single search query can take.</summary>
-    public const int ProfileSearchMaxTimeMs = 15000;
-
-    /// <summary>Maximum amount of time in milliseconds that we want to spend on regular expression matching of extraData.</summary>
-    public const int ProfileSearchMaxExtraDataMatchingTimeTotalMs = 1500;
-
-    /// <summary>Maximum amount of time in milliseconds that we want to spend on regular expression matching of extraData of a single profile.</summary>
-    public const int ProfileSearchMaxExtraDataMatchingTimeSingleMs = 150;
-
     /// <summary>
     /// Performs a search request on a repository to retrieve the list of profiles that match match specific criteria.
     /// </summary>
@@ -1937,11 +1964,12 @@ namespace HomeNet.Network
     /// is still a possibility to get more.</remarks>
     private async Task<List<IdentityNetworkProfileInformation>> ProfileSearch<T>(IdentityRepository<T> Repository, uint MaxResults, string TypeFilter, string NameFilter, GpsLocation LocationFilter, uint Radius, string ExtraDataFilter, bool IncludeImages, Stopwatch TimeoutWatch) where T:BaseIdentity
     {
-      log.Trace("(Repository:{0},MaxResults:{1},TypeFilter:'{2}',NameFilter:'{3}',LocationFilter:'{4}',Radius:{5},ExtraDataFilter:'{6}',IncludeImages:{7})", Repository, MaxResults, TypeFilter, NameFilter, LocationFilter, Radius, ExtraDataFilter, IncludeImages);
+      log.Trace("(Repository:{0},MaxResults:{1},TypeFilter:'{2}',NameFilter:'{3}',LocationFilter:'{4}',Radius:{5},ExtraDataFilter:'{6}',IncludeImages:{7})", 
+        Repository, MaxResults, TypeFilter, NameFilter, LocationFilter, Radius, ExtraDataFilter, IncludeImages);
 
       List<IdentityNetworkProfileInformation> res = new List<IdentityNetworkProfileInformation>();
 
-      uint batchSize = Math.Max(ProfileSearchBatchSizeMin, MaxResults * ProfileSearchBatchSizeMaxFactor);
+      uint batchSize = Math.Max(ProfileSearchBatchSizeMin, (uint)(MaxResults * ProfileSearchBatchSizeMaxFactor));
       uint offset = 0;
 
       RegexEval extraDataEval = !string.IsNullOrEmpty(ExtraDataFilter) ? new RegexEval(ExtraDataFilter, ProfileSearchMaxExtraDataMatchingTimeSingleMs, ProfileSearchMaxExtraDataMatchingTimeTotalMs) : null;
@@ -1971,6 +1999,9 @@ namespace HomeNet.Network
         {
           if (identities != null)
           {
+            int accepted = 0;
+            int filteredOutLocation = 0;
+            int filteredOutExtraData = 0;
             foreach (T identity in identities)
             {
               // Terminate search if the time is up.
@@ -1987,15 +2018,24 @@ namespace HomeNet.Network
               {
                 double distance = GpsLocation.DistanceBetween(LocationFilter, identityLocation);
                 bool withinArea = distance <= (double)Radius;
-                if (!withinArea) continue;
+                if (!withinArea)
+                {
+                  filteredOutLocation++;
+                  continue;
+                }
               }
 
               if (!string.IsNullOrEmpty(ExtraDataFilter))
               {
                 bool match = extraDataEval.Matches(identity.ExtraData);
-                if (!match) continue;
+                if (!match)
+                {
+                  filteredOutExtraData++;
+                  continue;
+                }
               }
 
+              accepted++;
 
               // Convert identity to search result format.
               IdentityNetworkProfileInformation inpi = new IdentityNetworkProfileInformation();
@@ -2030,6 +2070,9 @@ namespace HomeNet.Network
                 break;
               }
             }
+
+            log.Info("Total number of examined records is {0}, {1} of them have been accepted, {2} filtered out by location, {3} filtered out by extra data filter.", 
+              accepted + filteredOutLocation + filteredOutExtraData, accepted, filteredOutLocation, filteredOutExtraData);
           }
 
           bool timedOut = totalTimeMs - TimeoutWatch.ElapsedMilliseconds < 0;
@@ -2040,6 +2083,66 @@ namespace HomeNet.Network
       }
 
       log.Trace("(-):*.Count={0}", res.Count);
+      return res;
+    }
+
+
+    /// <summary>
+    /// Processes ProfileSearchPartRequest message from client.
+    /// <para>Loads cached search results and sends them to the client.</para>
+    /// </summary>
+    /// <param name="Client">Client that sent the request.</param>
+    /// <param name="RequestMessage">Full request message.</param>
+    /// <returns>Response message to be sent to the client.</returns>
+    public Message ProcessMessageProfileSearchPartRequest(Client Client, Message RequestMessage)
+    {
+      log.Trace("()");
+
+      Message res = null;
+      if (!CheckSessionConditions(Client, RequestMessage, ServerRole.ClientCustomer | ServerRole.ClientNonCustomer, ClientConversationStatus.ConversationAny, out res))
+      {
+        log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+        return res;
+      }
+
+      MessageBuilder messageBuilder = Client.MessageBuilder;
+      ProfileSearchPartRequest profileSearchPartRequest = RequestMessage.Request.ConversationRequest.ProfileSearchPart;
+
+      int cacheResultsCount;
+      bool cacheIncludeImages;
+      if (Client.GetProfileSearchResultsInfo(out cacheResultsCount, out cacheIncludeImages))
+      {
+        int maxRecordCount = cacheIncludeImages ? ProfileSearchMaxResponseRecordsWithImage : ProfileSearchMaxResponseRecordsWithoutImage;
+        bool recordIndexValid = (0 <= profileSearchPartRequest.RecordIndex) && (profileSearchPartRequest.RecordIndex < cacheResultsCount);
+        bool recordCountValid = (0 <= profileSearchPartRequest.RecordCount) && (profileSearchPartRequest.RecordCount <= maxRecordCount)
+          && (profileSearchPartRequest.RecordIndex + profileSearchPartRequest.RecordCount <= cacheResultsCount);
+
+        if (recordIndexValid && recordCountValid)
+        {
+          List<IdentityNetworkProfileInformation> cachedResults = Client.GetProfileSearchResults((int)profileSearchPartRequest.RecordIndex, (int)profileSearchPartRequest.RecordCount);
+          if (cachedResults != null)
+          {
+            res = messageBuilder.CreateProfileSearchPartResponse(RequestMessage, profileSearchPartRequest.RecordIndex, profileSearchPartRequest.RecordCount, cachedResults);
+          }
+          else
+          {
+            log.Trace("Cached results are no longer available for client ID 0x{0:X16}.", Client.Id);
+            res = messageBuilder.CreateErrorNotAvailableResponse(RequestMessage);
+          }
+        }
+        else
+        {
+          log.Trace("Required record index is {0}, required record count is {1}.", recordIndexValid ? "valid" : "invalid", recordCountValid ? "valid" : "invalid");
+          res = messageBuilder.CreateErrorInvalidValueResponse(RequestMessage, !recordIndexValid ? "recordIndex" : "recordCount");
+        }
+      }
+      else
+      {
+        log.Trace("No cached results are available for client ID 0x{0:X16}.", Client.Id);
+        res = messageBuilder.CreateErrorNotAvailableResponse(RequestMessage);
+      }
+
+      log.Trace("(-):*.Response.Status={0}", res.Response.Status);      
       return res;
     }
   }

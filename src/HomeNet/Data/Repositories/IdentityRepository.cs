@@ -58,7 +58,7 @@ namespace HomeNet.Data.Repositories
         query = query.Where(i => i.ExpirationDate == null);
 
       // Apply type filter if any.
-      if (!string.IsNullOrEmpty(TypeFilter))
+      if (!string.IsNullOrEmpty(TypeFilter) && (TypeFilter != "*") && (TypeFilter != "**"))
       {
         Expression<Func<T, bool>> typeFilterExpression = GetTypeFilterExpression(TypeFilter);
         query = query.Where(typeFilterExpression);
@@ -66,7 +66,7 @@ namespace HomeNet.Data.Repositories
 
 
       // Apply name filter if any.
-      if (!string.IsNullOrEmpty(NameFilter))
+      if (!string.IsNullOrEmpty(NameFilter) && (NameFilter != "*") && (NameFilter != "**"))
       {
         Expression<Func<T, bool>> nameFilterExpression = GetNameFilterExpression(NameFilter);
         query = query.Where(nameFilterExpression);
@@ -103,27 +103,30 @@ namespace HomeNet.Data.Repositories
     /// <returns>Filter expression for the database query.</returns>
     private Expression<Func<T, bool>> GetNameFilterExpression(string NameFilter)
     {
-      string nameFilter = NameFilter;
-      Expression<Func<T, bool>> res = i => i.Name == nameFilter;
+      string nameFilter = NameFilter.ToLower();
+      Expression<Func<T, bool>> res = i => i.Name.ToLower() == nameFilter;
 
-      bool startsWith = NameFilter.StartsWith("*");
-      bool endsWith = (NameFilter.Length > 1) && NameFilter.EndsWith("*");
+      // Example: NameFilter = "*abc"
+      // This means that when filter STARTS with '*', we want identity name to END with "abc".
+      // Note that NameFilter == "*" case is handled elsewhere.
+      bool startsWith = nameFilter.EndsWith("*");
+      bool endsWith = nameFilter.StartsWith("*");
       bool contains = startsWith && endsWith;
 
       if (contains)
       {
-        nameFilter = NameFilter.Substring(1, NameFilter.Length - 2);
-        res = i => i.Name.Contains(nameFilter);
+        nameFilter = nameFilter.Substring(1, nameFilter.Length - 2);
+        res = i => i.Name.ToLower().Contains(nameFilter);
       }
       else if (startsWith)
       {
-        nameFilter = NameFilter.Substring(1);
-        res = i => i.Name.StartsWith(nameFilter);
+        nameFilter = nameFilter.Substring(0, nameFilter.Length - 1);
+        res = i => i.Name.ToLower().StartsWith(nameFilter);
       }
       else if (endsWith)
       {
-        nameFilter = NameFilter.Substring(0, NameFilter.Length - 1);
-        res = i => i.Name.EndsWith(nameFilter);
+        nameFilter = nameFilter.Substring(1);
+        res = i => i.Name.ToLower().ToLower().EndsWith(nameFilter);
       }
 
       return res;
@@ -136,27 +139,30 @@ namespace HomeNet.Data.Repositories
     /// <returns>Filter expression for the database query.</returns>
     private Expression<Func<T, bool>> GetTypeFilterExpression(string TypeFilter)
     {
-      string typeFilter = TypeFilter;
-      Expression<Func<T, bool>> res = i => i.Type == typeFilter;
+      string typeFilter = TypeFilter.ToLower();
+      Expression<Func<T, bool>> res = i => i.Type.ToLower() == typeFilter;
 
-      bool startsWith = TypeFilter.StartsWith("*");
-      bool endsWith = (TypeFilter.Length > 1) && TypeFilter.EndsWith("*");
+      // Example: TypeFilter = "*abc"
+      // This means that when filter STARTS with '*', we want identity type to END with "abc".
+      // Note that TypeFilter == "*" case is handled elsewhere.
+      bool startsWith = typeFilter.EndsWith("*");
+      bool endsWith = typeFilter.StartsWith("*");
       bool contains = startsWith && endsWith;
 
       if (contains)
       {
-        typeFilter = TypeFilter.Substring(1, TypeFilter.Length - 2);
-        res = i => i.Type.Contains(typeFilter);
+        typeFilter = typeFilter.Substring(1, typeFilter.Length - 2);
+        res = i => i.Type.ToLower().Contains(typeFilter);
       }
       else if (startsWith)
       {
-        typeFilter = TypeFilter.Substring(1);
-        res = i => i.Type.StartsWith(typeFilter);
+        typeFilter = typeFilter.Substring(0, typeFilter.Length - 1);
+        res = i => i.Type.ToLower().StartsWith(typeFilter);
       }
       else if (endsWith)
       {
-        typeFilter = TypeFilter.Substring(0, TypeFilter.Length - 1);
-        res = i => i.Type.EndsWith(typeFilter);
+        typeFilter = typeFilter.Substring(1);
+        res = i => i.Type.ToLower().EndsWith(typeFilter);
       }
 
       return res;
@@ -173,6 +179,7 @@ namespace HomeNet.Data.Repositories
     /// <returns>Filter expression for the database query.</returns>
     private Expression<Func<T, bool>> GetLocationFilterExpression(GpsLocation LocationFilter, uint Radius)
     {
+      log.Trace("(LocationFilter:'{0:US}',Radius:{1})", LocationFilter, Radius);
       Expression<Func<T, bool>> res = null;
 
       // There are several separated cases:
@@ -185,13 +192,16 @@ namespace HomeNet.Data.Repositories
 
       // 1) Radius is very large, no filtering.
       if (Radius > 5000000)
+      {
+        log.Trace("(-)[LARGE_RADIUS]");
         return res;
+      }
 
-      GpsLocation northPole = new GpsLocation(0.0m, 0.0m);
-      GpsLocation southPole = new GpsLocation(0.0m, 0.0m);
+      GpsLocation northPole = new GpsLocation(90.0m, 0.0m);
+      GpsLocation southPole = new GpsLocation(-90.0m, 0.0m);
 
       double northPoleDistance = LocationFilter.DistanceTo(northPole);
-      double southPoleDistance = LocationFilter.DistanceTo(northPole);
+      double southPoleDistance = LocationFilter.DistanceTo(southPole);
 
       double radius = (double)Radius;
       if (radius >= northPoleDistance)
@@ -202,6 +212,7 @@ namespace HomeNet.Data.Repositories
         // In this case we go to the South from the centre to find the minimal latitude
         // and there will be no limit on longitude.
         GpsLocation minLatitudeLocation = LocationFilter.GoVector(GpsLocation.BearingSouth, radius);
+        log.Trace("Radius >= North Pole Distance, min latitude is {0}.", minLatitudeLocation.Latitude);
         res = i => i.InitialLocationLatitude >= minLatitudeLocation.Latitude;
       }
       else if (radius >= southPoleDistance)
@@ -212,6 +223,7 @@ namespace HomeNet.Data.Repositories
         // In this case we go to the North from the centre to find the maximal latitude.
         // and there will be no limit on longitude.
         GpsLocation maxLatitudeLocation = LocationFilter.GoVector(GpsLocation.BearingNorth, radius);
+        log.Trace("Radius >= South Pole Distance, max latitude is {0}.", maxLatitudeLocation.Latitude);
         res = i => i.InitialLocationLatitude <= maxLatitudeLocation.Latitude;
       }
       else
@@ -226,8 +238,9 @@ namespace HomeNet.Data.Repositories
 
         // Get latitude range - this is simple, left-top and right-top corners define the max latitude,
         // and left-bottom and right-bottom corners define the min latitude.
-        decimal maxLatitude = square.LeftTop.Latitude;
-        decimal minLatitude = square.RightBottom.Latitude;
+        decimal maxLatitude = square.MidTop.Latitude;
+        decimal minLatitude = square.MidBottom.Latitude;
+        log.Trace("GPS square is {0:US}, min latitude is {1}, max latitude is {2}.", square, minLatitude, maxLatitude);
 
         // Get longitude range - we have to examine all four corners here as it depends on which hemisphere they are
         // and there are several different cases due to possibility of crossing longitude 180.
@@ -241,6 +254,8 @@ namespace HomeNet.Data.Repositories
           // and our target profiles has to be between those two.
           decimal leftLongitude = Math.Min(square.LeftTop.Longitude, square.LeftBottom.Longitude);
           decimal rightLongitude = Math.Max(square.RightTop.Longitude, square.RightBottom.Longitude);
+
+          log.Trace("Square does not cross lon 180. left longitude is {0}, right longitude is {1}.", leftLongitude, rightLongitude);
           res = i => (minLatitude <= i.InitialLocationLatitude) && (i.InitialLocationLatitude <= maxLatitude)
             && (leftLongitude <= i.InitialLocationLongitude) && (i.InitialLocationLongitude <= rightLongitude);
         }
@@ -280,11 +295,13 @@ namespace HomeNet.Data.Repositories
           // Note the OR operator instead of AND operator for longitude comparison.
           // This is because a longitude value can not be higher than e.g. 170 and lower than e.g. -150 at the same time.
           // The point is within the square if its longitude is 170 or more (up to 180) OR -150 or less (down to -180).
+          log.Trace("Square crosses lon 180. left longitude is {0}, right longitude is {1}.", leftLongitude, rightLongitude);
           res = i => (minLatitude <= i.InitialLocationLatitude) && (i.InitialLocationLatitude <= maxLatitude)
             && ((leftLongitude <= i.InitialLocationLongitude) || (i.InitialLocationLongitude <= rightLongitude));
         }
       }
 
+      log.Trace("(-)");
       return res;
     }
   }

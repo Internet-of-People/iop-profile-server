@@ -1147,7 +1147,7 @@ namespace HomeNetProtocol
     /// <param name="RecordIndex">Index of the first result to retrieve.</param>
     /// <param name="RecordCount">Number of results to retrieve. If 'ProfileSearchResponse.IncludeThumbnailImages' was set, this has to be an integer between 1 and 100, otherwise it has to be an integer between 1 and 1000.</param>
     /// <returns>ProfileSearchRequest message that is ready to be sent.</returns>
-    public Message ProfileSearchPartRequest(uint RecordIndex, uint RecordCount)
+    public Message CreateProfileSearchPartRequest(uint RecordIndex, uint RecordCount)
     {
       ProfileSearchPartRequest profileSearchPartRequest = new ProfileSearchPartRequest();
       profileSearchPartRequest.RecordIndex = RecordIndex;

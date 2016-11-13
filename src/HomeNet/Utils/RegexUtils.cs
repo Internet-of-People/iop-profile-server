@@ -192,8 +192,8 @@ namespace HomeNet.Utils
     /// <summary>Stopwatch to measure execution time.</summary>
     private Stopwatch watch;
 
-    /// <summary>Number of milliseconds there remains for matching operations.</summary>
-    private int totalTimeRemainingMs;
+    /// <summary>Number of ticks there remains for matching operations.</summary>
+    private long totalTimeRemainingTicks;
 
     /// <summary>
     /// Initializes the regular expression and stop watch.
@@ -207,7 +207,7 @@ namespace HomeNet.Utils
 
       regex = new Regex(RegexStr, RegexOptions.Singleline, TimeSpan.FromMilliseconds(SingleTimeoutMs));
       watch = new Stopwatch();
-      totalTimeRemainingMs = TotalTimeoutMs;
+      totalTimeRemainingTicks = TimeSpan.FromMilliseconds(TotalTimeoutMs).Ticks;
 
       log.Trace("(-)");
     }
@@ -220,11 +220,12 @@ namespace HomeNet.Utils
     /// and if the total time for all matching operations with this instance was not reached, false otherwise.</returns>
     public bool Matches(string Data)
     {
-      log.Trace("Data:'{0}',RegexStr:'{1}'", Data.SubstrMax());
+      if (Data == null) Data = "";
+      log.Trace("Data:'{0}'", Data.SubstrMax());
 
       bool res = false;
       string reason = "";
-      if (totalTimeRemainingMs > 0)
+      if (totalTimeRemainingTicks > 0)
       {
         try
         {
@@ -233,8 +234,8 @@ namespace HomeNet.Utils
           res = regex.IsMatch(Data);
 
           watch.Stop();
-          totalTimeRemainingMs -= (int)watch.ElapsedMilliseconds;
-          log.Trace("Total time remaining is {0} ms.", totalTimeRemainingMs);
+          totalTimeRemainingTicks -= watch.ElapsedTicks;
+          log.Trace("Total time remaining is {0} ticks.", totalTimeRemainingTicks);
         }
         catch
         {

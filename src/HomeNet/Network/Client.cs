@@ -141,6 +141,9 @@ namespace HomeNet.Network
     /// <summary>Cache for profile search result queries.</summary>
     private List<IdentityNetworkProfileInformation> profileSearchResultCache;
 
+    /// <summary>Original value of ProfileSearchResponse.includeThumbnailImages from the search query request.</summary>
+    private bool profileSearchResultCacheIncludeImages;
+
     /// <summary>
     /// Timer for profile search result cache expiration. When the timer's routine is called, 
     /// the cache is deleted and cached results are no longer available.
@@ -561,9 +564,14 @@ namespace HomeNet.Network
     }
 
 
-    public void SaveProfileSearchResults(List<IdentityNetworkProfileInformation> SearchResults)
+    /// <summary>
+    /// Saves search results to the client session cache.
+    /// </summary>
+    /// <param name="SearchResults">Search results to save.</param>
+    /// <param name="IncludeImages">Original value of ProfileSearchResponse.includeThumbnailImages from the search query request.</param>
+    public void SaveProfileSearchResults(List<IdentityNetworkProfileInformation> SearchResults, bool IncludeImages)
     {
-      log.Trace("(SearchResults.GetHashCode():{0})", SearchResults.GetHashCode());
+      log.Trace("(SearchResults.GetHashCode():{0},IncludeImages:{1})", SearchResults.GetHashCode(), IncludeImages);
 
       lock (profileSearchResultCacheLock)
       {
@@ -571,6 +579,7 @@ namespace HomeNet.Network
           profileSearchResultCacheExpirationTimer.Dispose();
 
         profileSearchResultCache = SearchResults;
+        profileSearchResultCacheIncludeImages = IncludeImages;
 
         profileSearchResultCacheExpirationTimer = new Timer(ProfileSearchResultCacheTimerCallback, profileSearchResultCache, ProfileSearchResultCacheExpirationTimeSeconds * 1000, Timeout.Infinite);
       }
@@ -578,6 +587,56 @@ namespace HomeNet.Network
       log.Trace("(-)");
     }
 
+
+    /// <summary>
+    /// Gets information about the search result cache.
+    /// </summary>
+    /// <param name="Count">If the result cache is not empty, this is filled with the number of items in the cache.</param>
+    /// <param name="IncludeImages">If the result cache is not empty, this is filled with the original value of ProfileSearchResponse.includeThumbnailImages from the search query request.</param>
+    /// <returns>true if the result cache is not empty, false otherwise.</returns>
+    public bool GetProfileSearchResultsInfo(out int Count, out bool IncludeImages)
+    {
+      log.Trace("()");
+
+      bool res = false;
+      Count = 0;
+      IncludeImages = false;
+
+      lock (profileSearchResultCacheLock)
+      {
+        if (profileSearchResultCache != null)
+        {
+          Count = profileSearchResultCache.Count;
+          IncludeImages = profileSearchResultCacheIncludeImages;
+          res = true;
+        }
+      }
+
+      if (res) log.Trace("(-):{0},Count={1},IncludeImages={2}", res, Count, IncludeImages);
+      else log.Trace("(-):{0}", res);
+      return res;
+    }
+
+    /// <summary>
+    /// Loads search results from the client session cache.
+    /// </summary>
+    /// <param name="Index">Index of the first item to retrieve.</param>
+    /// <param name="Count">Number of items to retrieve.</param>
+    /// <returns>A copy of search results loaded from the cache or null if the required item range is not available.</returns>
+    public List<IdentityNetworkProfileInformation> GetProfileSearchResults(int Index, int Count)
+    {
+      log.Trace("()");
+
+      List<IdentityNetworkProfileInformation> res = null;
+      lock (profileSearchResultCacheLock)
+      {
+        if ((profileSearchResultCache != null) && (Index + Count <= profileSearchResultCache.Count))
+          res = new List<IdentityNetworkProfileInformation>(profileSearchResultCache.GetRange(Index, Count));
+      }
+
+      log.Trace("(-):*.Count={0}", res != null ? res.Count.ToString() : "N/A");
+      return res;
+    }
 
     /// <summary>
     /// Callback routine that is called once the profileSearchResultCacheExpirationTimer expires to delete cached search results.

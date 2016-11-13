@@ -57,7 +57,20 @@ namespace HomeNet.Migrations
 
                     b.HasKey("IdentityId");
 
-                    b.HasIndex("IdentityId", "HomeNodeId", "Name", "Type", "InitialLocationLatitude", "InitialLocationLongitude", "ExtraData", "ExpirationDate");
+                    b.HasIndex("ExpirationDate");
+
+                    b.HasIndex("ExtraData");
+
+                    b.HasIndex("IdentityId")
+                        .IsUnique();
+
+                    b.HasIndex("Name");
+
+                    b.HasIndex("Type");
+
+                    b.HasIndex("InitialLocationLatitude", "InitialLocationLongitude");
+
+                    b.HasIndex("ExpirationDate", "InitialLocationLatitude", "InitialLocationLongitude", "Type", "Name");
 
                     b.ToTable("Identities");
                 });
@@ -104,7 +117,22 @@ namespace HomeNet.Migrations
 
                     b.HasKey("IdentityId");
 
-                    b.HasIndex("IdentityId", "HomeNodeId", "Name", "Type", "InitialLocationLatitude", "InitialLocationLongitude", "ExtraData", "ExpirationDate");
+                    b.HasIndex("ExpirationDate");
+
+                    b.HasIndex("ExtraData");
+
+                    b.HasIndex("HomeNodeId");
+
+                    b.HasIndex("IdentityId")
+                        .IsUnique();
+
+                    b.HasIndex("Name");
+
+                    b.HasIndex("Type");
+
+                    b.HasIndex("InitialLocationLatitude", "InitialLocationLongitude");
+
+                    b.HasIndex("InitialLocationLatitude", "InitialLocationLongitude", "Type", "Name");
 
                     b.ToTable("NeighborhoodIdentities");
                 });

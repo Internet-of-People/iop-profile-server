@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace HomeNet.Migrations
 {
-    public partial class mig : Migration
+    public partial class initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -65,14 +65,81 @@ namespace HomeNet.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Identities_IdentityId_HomeNodeId_Name_Type_InitialLocationLatitude_InitialLocationLongitude_ExtraData_ExpirationDate",
+                name: "IX_Identities_ExpirationDate",
                 table: "Identities",
-                columns: new[] { "IdentityId", "HomeNodeId", "Name", "Type", "InitialLocationLatitude", "InitialLocationLongitude", "ExtraData", "ExpirationDate" });
+                column: "ExpirationDate");
 
             migrationBuilder.CreateIndex(
-                name: "IX_NeighborhoodIdentities_IdentityId_HomeNodeId_Name_Type_InitialLocationLatitude_InitialLocationLongitude_ExtraData_ExpirationDate",
+                name: "IX_Identities_ExtraData",
+                table: "Identities",
+                column: "ExtraData");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Identities_IdentityId",
+                table: "Identities",
+                column: "IdentityId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Identities_Name",
+                table: "Identities",
+                column: "Name");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Identities_Type",
+                table: "Identities",
+                column: "Type");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Identities_InitialLocationLatitude_InitialLocationLongitude",
+                table: "Identities",
+                columns: new[] { "InitialLocationLatitude", "InitialLocationLongitude" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Identities_ExpirationDate_InitialLocationLatitude_InitialLocationLongitude_Type_Name",
+                table: "Identities",
+                columns: new[] { "ExpirationDate", "InitialLocationLatitude", "InitialLocationLongitude", "Type", "Name" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_NeighborhoodIdentities_ExpirationDate",
                 table: "NeighborhoodIdentities",
-                columns: new[] { "IdentityId", "HomeNodeId", "Name", "Type", "InitialLocationLatitude", "InitialLocationLongitude", "ExtraData", "ExpirationDate" });
+                column: "ExpirationDate");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_NeighborhoodIdentities_ExtraData",
+                table: "NeighborhoodIdentities",
+                column: "ExtraData");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_NeighborhoodIdentities_HomeNodeId",
+                table: "NeighborhoodIdentities",
+                column: "HomeNodeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_NeighborhoodIdentities_IdentityId",
+                table: "NeighborhoodIdentities",
+                column: "IdentityId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_NeighborhoodIdentities_Name",
+                table: "NeighborhoodIdentities",
+                column: "Name");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_NeighborhoodIdentities_Type",
+                table: "NeighborhoodIdentities",
+                column: "Type");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_NeighborhoodIdentities_InitialLocationLatitude_InitialLocationLongitude",
+                table: "NeighborhoodIdentities",
+                columns: new[] { "InitialLocationLatitude", "InitialLocationLongitude" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_NeighborhoodIdentities_InitialLocationLatitude_InitialLocationLongitude_Type_Name",
+                table: "NeighborhoodIdentities",
+                columns: new[] { "InitialLocationLatitude", "InitialLocationLongitude", "Type", "Name" });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

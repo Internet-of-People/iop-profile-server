@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -8,7 +9,7 @@ namespace HomeNetProtocol
   /// <summary>
   /// GPS location information and implementation of conversions between different representations.
   /// </summary>
-  public class GpsLocation
+  public class GpsLocation : IFormattable
   {
     /// <summary>Conversion factor between floating point representation and LocationType.</summary>
     public const decimal LocationTypeFactor = 1000000;
@@ -87,7 +88,55 @@ namespace HomeNetProtocol
 
     public override string ToString()
     {
-      return IsValid() ? string.Format("{0:0.######} {1:0.######}", Latitude, Longitude) : "N/A";
+      return ToString("G");
+    }
+
+
+    /// <summary>
+    /// Formats the value of the current instance using the specified format.
+    /// </summary>
+    /// <param name="Format">Type of format to use. Currently only "G" and "US" is supported.</param>
+    /// <returns>Formatted string.</returns>
+    public string ToString(string Format)
+    {
+      return ToString(Format, null);
+    }
+
+    /// <summary>
+    /// Formats the value of the current instance using the specified format.
+    /// </summary>
+    /// <param name="Format">Type of format to use. Currently only "G" and "US" is supported.</param>
+    /// <param name="Provider">The provider to use to format the value.</param>
+    /// <returns>Formatted string.</returns>
+    public string ToString(string Format, IFormatProvider Provider)
+    {
+      if (string.IsNullOrEmpty(Format)) Format = "G";
+      Format = Format.Trim().ToUpperInvariant();
+      if (Provider == null) Provider = CultureInfo.CurrentCulture;
+
+      string res = "N/A";
+      if (IsValid())
+      {
+        switch (Format)
+        {
+          case "G":
+            res = string.Format("{0} {1}", Latitude.ToString("0.######", Provider), Longitude.ToString("0.######", Provider));
+            break;
+
+          case "US":
+            {
+              CultureInfo enUs = new CultureInfo("en-US");
+              res = string.Format("{0}, {1}", Latitude.ToString("0.######", enUs), Longitude.ToString("0.######", enUs));
+              break;
+            }
+
+          default:
+            res = "Invalid format";
+            break;
+        }
+      }
+
+      return res;
     }
 
     public override bool Equals(object obj)
@@ -125,7 +174,7 @@ namespace HomeNetProtocol
     /// <returns>true if the object instance represents valid GPS location, false otherwise.</returns>
     public bool IsValid()
     {
-      return (LatitudeMin <= Latitude) && (Latitude <= LatitudeMax) 
+      return (LatitudeMin <= Latitude) && (Latitude <= LatitudeMax)
         && (LongitudeMin < Longitude) && (Longitude <= LongitudeMax);
     }
 
@@ -288,10 +337,10 @@ namespace HomeNetProtocol
   }
 
   /// <summary>
-  /// GPS square is defined by four GPS locations of its corners.
+  /// GPS square is defined by four GPS locations of its corners and holds information about mid points of top and bottom sides as well.
   /// This square is useful for a rough quick filtering of locations outside a certain radius from a starting location.
   /// </summary>
-  public class GpsSquare
+  public class GpsSquare : IFormattable
   {
     /// <summary>Location of the left-top corner of the square.</summary>
     public GpsLocation LeftTop;
@@ -305,19 +354,80 @@ namespace HomeNetProtocol
     /// <summary>Location of the right-bottom corner of the square.</summary>
     public GpsLocation RightBottom;
 
+    /// <summary>Location of the point in the middle of the top side of the square.</summary>
+    public GpsLocation MidTop;
+
+    /// <summary>Location of the point in the middle of the bottom side of the square.</summary>
+    public GpsLocation MidBottom;
+
     /// <summary>
     /// Basic square constructor.
     /// </summary>
-    /// <param name="LatTop">Location of the left-top corner of the square.</param>
-    /// <param name="LonLeft">Location of the right-top corner of the square.</param>
-    /// <param name="LatBottom">Location of the left-bottom corner of the square.</param>
-    /// <param name="LonRight">Location of the right-bottom corner of the square.</param>
+    /// <param name="LeftTop">Location of the left-top corner of the square.</param>
+    /// <param name="RightTop">Location of the right-top corner of the square.</param>
+    /// <param name="LeftBottom">Location of the left-bottom corner of the square.</param>
+    /// <param name="RightBottom">Location of the right-bottom corner of the square.</param>
     public GpsSquare(GpsLocation LeftTop, GpsLocation RightTop, GpsLocation LeftBottom, GpsLocation RightBottom)
     {
       this.LeftTop = LeftTop;
       this.RightTop = RightTop;
       this.LeftBottom = LeftBottom;
       this.RightBottom = RightBottom;
+
+      double bearing = LeftTop.InitialBearingTo(RightTop);
+      double distance = LeftTop.DistanceTo(RightTop) / 2;
+      MidTop = LeftTop.GoVector(bearing, distance);
+
+      bearing = LeftBottom.InitialBearingTo(RightBottom);
+      distance = LeftBottom.DistanceTo(RightBottom) / 2;
+      MidBottom = LeftBottom.GoVector(bearing, distance);
+    }
+
+
+    /// <summary>
+    /// Calculates GPS square from the given centre location using a radius.
+    /// </summary>
+    /// <param name="Radius">Half of a distance between oposite sides.</param>
+    public GpsSquare(GpsLocation Centre, double Radius)
+    {
+      // We calculate positions of square mid points of top and bottom sides - i.e. points in the center of square sides.
+      MidTop = Centre.GoVector(GpsLocation.BearingNorth, Radius);
+      MidBottom = Centre.GoVector(GpsLocation.BearingSouth, Radius);
+
+      // From these mid points, we navigate use West and East bearing to go to the square corners.
+      LeftTop = MidTop.GoVector(GpsLocation.BearingWest, Radius);
+      RightTop = MidTop.GoVector(GpsLocation.BearingEast, Radius);
+      LeftBottom = MidBottom.GoVector(GpsLocation.BearingWest, Radius);
+      RightBottom = MidBottom.GoVector(GpsLocation.BearingEast, Radius);
+    }
+
+
+    public override string ToString()
+    {
+      return ToString("G");
+    }
+
+    /// <summary>
+    /// Formats the value of the current instance using the specified format.
+    /// </summary>
+    /// <param name="Format">Type of format to use. Currently only "G" and "US" is supported.</param>
+    /// <returns>Formatted string.</returns>
+    public string ToString(string Format)
+    {
+      return ToString(Format, null);
+    }
+
+
+    /// <summary>
+    /// Formats the value of the current instance using the specified format.
+    /// </summary>
+    /// <param name="Format">Type of format to use. Currently only "G" and "US" is supported.</param>
+    /// <param name="Provider">The provider to use to format the value.</param>
+    /// <returns>Formatted string.</returns>
+    public string ToString(string Format, IFormatProvider Provider)
+    {
+      return string.Format("[LT:{0}; MT:{1}, RT:{2}; LB:{3}; MB:{4}, RB:{5}]", LeftTop.ToString(Format, Provider), MidTop.ToString(Format, Provider), RightTop.ToString(Format, Provider), 
+        LeftBottom.ToString(Format, Provider), MidBottom.ToString(Format, Provider), RightBottom.ToString(Format, Provider));
     }
   }
 }

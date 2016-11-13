@@ -78,7 +78,7 @@ namespace HomeNetProtocolTests.Tests
         bool profilesCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.Profiles.Count == 0;
 
         // Step 1 Acceptance
-        bool step1Ok = startConversationOk && idOk && statusOk && totalRecordCountOk && maxResponseRecordCountOk && profilesCountOk;
+        bool step1Ok = listPortsOk && startConversationOk && idOk && statusOk && totalRecordCountOk && maxResponseRecordCountOk && profilesCountOk;
 
         log.Trace("Step 1: {0}", step1Ok ? "PASSED" : "FAILED");
 

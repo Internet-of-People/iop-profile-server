@@ -36,7 +36,7 @@ namespace HomeNetProtocolTests.Tests
 
 
     /// <summary>Test identities profile types.</summary>
-    private static List<string> profileTypes = new List<string>()
+    public static List<string> ProfileTypes = new List<string>()
     {
       "Profile Type A",
       "Profile Type A",
@@ -49,7 +49,7 @@ namespace HomeNetProtocolTests.Tests
 
 
     /// <summary>Test identities profile names.</summary>
-    private static List<string> profileNames = new List<string>()
+    public static List<string> ProfileNames = new List<string>()
     {
       "Shanghai 1",
       "Mumbai 1",
@@ -62,7 +62,7 @@ namespace HomeNetProtocolTests.Tests
 
 
     /// <summary>Test identities profile locations.</summary>
-    private static List<GpsLocation> profileLocations = new List<GpsLocation>()
+    public static List<GpsLocation> ProfileLocations = new List<GpsLocation>()
     {
       new GpsLocation(31.23m, 121.47m),
       new GpsLocation(18.96m, 72.82m),
@@ -75,7 +75,7 @@ namespace HomeNetProtocolTests.Tests
 
 
     /// <summary>Test identities extra data information.</summary>
-    private static List<string> profileExtraData = new List<string>()
+    public static List<string> ProfileExtraData = new List<string>()
     {
       null,
       "t=running,Cycling,ice hockey,water polo",
@@ -88,7 +88,7 @@ namespace HomeNetProtocolTests.Tests
 
 
     /// <summary>Test identities profile image file names.</summary>
-    private static List<string> profileImages = new List<string>()
+    public static List<string> ProfileImages = new List<string>()
     {
       "images/HN06001.jpg",
       "images/HN06001.jpg",
@@ -99,7 +99,8 @@ namespace HomeNetProtocolTests.Tests
       null      
     };
 
-
+    /// <summary>Test identities public keys.</summary>
+    public static List<byte[]> ProfilePublicKeys;
 
     /// <summary>
     /// Implementation of the test itself.
@@ -127,24 +128,24 @@ namespace HomeNetProtocolTests.Tests
         bool listPortsOk = await client.ListNodePorts(rolePorts);
         client.CloseConnection();
 
-        List<byte[]> profilePublicKeys = new List<byte[]>();
+        ProfilePublicKeys = new List<byte[]>();
 
         bool profileInitializationOk = true;
-        for (int i = 0; i < profileNames.Count; i++)
+        for (int i = 0; i < ProfileNames.Count; i++)
         {
           ProtocolClient profileClient = new ProtocolClient();
-          profilePublicKeys.Add(profileClient.GetIdentityKeys().PublicKey);
+          ProfilePublicKeys.Add(profileClient.GetIdentityKeys().PublicKey);
 
           await profileClient.ConnectAsync(NodeIp, (int)rolePorts[ServerRoleType.ClNonCustomer], true);
-          bool establishHomeNodeOk = await profileClient.EstablishHomeNodeAsync(profileTypes[i]);
+          bool establishHomeNodeOk = await profileClient.EstablishHomeNodeAsync(ProfileTypes[i]);
           profileClient.CloseConnection();
 
 
           await profileClient.ConnectAsync(NodeIp, (int)rolePorts[ServerRoleType.ClCustomer], true);
           bool checkInOk = await profileClient.CheckInAsync();
 
-          byte[] imageData = profileImages[i] != null ? File.ReadAllBytes(profileImages[i]) : null;
-          bool initializeProfileOk = await profileClient.InitializeProfileAsync(profileNames[i], imageData, profileLocations[i], profileExtraData[i]);
+          byte[] imageData = ProfileImages[i] != null ? File.ReadAllBytes(ProfileImages[i]) : null;
+          bool initializeProfileOk = await profileClient.InitializeProfileAsync(ProfileNames[i], imageData, ProfileLocations[i], ProfileExtraData[i]);
 
           profileInitializationOk = establishHomeNodeOk && checkInOk && initializeProfileOk;
           profileClient.Dispose();
@@ -170,37 +171,607 @@ namespace HomeNetProtocolTests.Tests
         bool statusOk = responseMessage.Response.Status == Status.Ok;
 
 
-        bool totalRecordCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.TotalRecordCount == profileNames.Count;
+        HashSet<int> numberList = new HashSet<int>() { 1, 2, 3, 4, 5, 6, 7 };
+        bool totalRecordCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.TotalRecordCount == numberList.Count;
         bool maxResponseRecordCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.MaxResponseRecordCount == 100;
-        bool profilesCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.Profiles.Count == profileNames.Count;
+        bool profilesCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.Profiles.Count == numberList.Count;
 
-        bool error = false;
-        bool[] profilesOk = new bool[profileNames.Count];
-        foreach (IdentityNetworkProfileInformation profileInfo in responseMessage.Response.ConversationResponse.ProfileSearch.Profiles)
+        bool profileListOk = CheckProfileList(numberList, responseMessage.Response.ConversationResponse.ProfileSearch.Profiles);
+
+        // Step 2 Acceptance
+        bool step2Ok = startConversationOk && idOk && statusOk && totalRecordCountOk && maxResponseRecordCountOk && profilesCountOk && profileListOk;
+
+        log.Trace("Step 2: {0}", step2Ok ? "PASSED" : "FAILED");
+
+        
+        // Step 3
+        log.Trace("Step 3");
+        requestMessage = mb.CreateProfileSearchRequest("*Type B", null, null, null, 0, 100, 100);
+        await client.SendMessageAsync(requestMessage);
+
+        responseMessage = await client.ReceiveMessageAsync();
+        idOk = responseMessage.Id == requestMessage.Id;
+        statusOk = responseMessage.Response.Status == Status.Ok;
+
+
+        numberList = new HashSet<int>() { 4, 5 };
+        totalRecordCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.TotalRecordCount == numberList.Count;
+        maxResponseRecordCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.MaxResponseRecordCount == 100;
+        profilesCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.Profiles.Count == numberList.Count;
+
+        profileListOk = CheckProfileList(numberList, responseMessage.Response.ConversationResponse.ProfileSearch.Profiles);
+
+        // Step 3 Acceptance
+        bool step3Ok = idOk && statusOk && totalRecordCountOk && maxResponseRecordCountOk && profilesCountOk && profileListOk;
+
+        log.Trace("Step 3: {0}", step3Ok ? "PASSED" : "FAILED");
+
+
+        // Step 4
+        log.Trace("Step 4");
+        requestMessage = mb.CreateProfileSearchRequest("Profile Type C", null, null, null, 0, 100, 100);
+        await client.SendMessageAsync(requestMessage);
+
+        responseMessage = await client.ReceiveMessageAsync();
+        idOk = responseMessage.Id == requestMessage.Id;
+        statusOk = responseMessage.Response.Status == Status.Ok;
+
+
+        numberList = new HashSet<int>() { 6, 7 };
+        totalRecordCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.TotalRecordCount == numberList.Count;
+        maxResponseRecordCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.MaxResponseRecordCount == 100;
+        profilesCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.Profiles.Count == numberList.Count;
+
+        profileListOk = CheckProfileList(numberList, responseMessage.Response.ConversationResponse.ProfileSearch.Profiles);
+
+        // Step 4 Acceptance
+        bool step4Ok = idOk && statusOk && totalRecordCountOk && maxResponseRecordCountOk && profilesCountOk && profileListOk;
+
+        log.Trace("Step 4: {0}", step4Ok ? "PASSED" : "FAILED");
+
+
+        // Step 5
+        log.Trace("Step 5");
+        requestMessage = mb.CreateProfileSearchRequest(null, "Mumbai *", null, null, 0, 100, 100);
+        await client.SendMessageAsync(requestMessage);
+
+        responseMessage = await client.ReceiveMessageAsync();
+        idOk = responseMessage.Id == requestMessage.Id;
+        statusOk = responseMessage.Response.Status == Status.Ok;
+
+
+        numberList = new HashSet<int>() { 2, 6, 7 };
+        totalRecordCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.TotalRecordCount == numberList.Count;
+        maxResponseRecordCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.MaxResponseRecordCount == 100;
+        profilesCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.Profiles.Count == numberList.Count;
+
+        profileListOk = CheckProfileList(numberList, responseMessage.Response.ConversationResponse.ProfileSearch.Profiles);
+
+        // Step 5 Acceptance
+        bool step5Ok = idOk && statusOk && totalRecordCountOk && maxResponseRecordCountOk && profilesCountOk && profileListOk;
+
+        log.Trace("Step 5: {0}", step5Ok ? "PASSED" : "FAILED");
+
+
+        // Step 6
+        log.Trace("Step 6");
+        requestMessage = mb.CreateProfileSearchRequest(null, "*ai*", null, null, 0, 100, 100);
+        await client.SendMessageAsync(requestMessage);
+
+        responseMessage = await client.ReceiveMessageAsync();
+        idOk = responseMessage.Id == requestMessage.Id;
+        statusOk = responseMessage.Response.Status == Status.Ok;
+
+
+        numberList = new HashSet<int>() { 1, 2, 4, 5, 6, 7 };
+        totalRecordCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.TotalRecordCount == numberList.Count;
+        maxResponseRecordCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.MaxResponseRecordCount == 100;
+        profilesCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.Profiles.Count == numberList.Count;
+
+        profileListOk = CheckProfileList(numberList, responseMessage.Response.ConversationResponse.ProfileSearch.Profiles);
+
+        // Step 6 Acceptance
+        bool step6Ok = idOk && statusOk && totalRecordCountOk && maxResponseRecordCountOk && profilesCountOk && profileListOk;
+
+        log.Trace("Step 6: {0}", step6Ok ? "PASSED" : "FAILED");
+
+
+        // Step 7
+        log.Trace("Step 7");
+        requestMessage = mb.CreateProfileSearchRequest(null, null, null, new GpsLocation(18.961m, 72.82m), 10, 100, 100);
+        await client.SendMessageAsync(requestMessage);
+
+        responseMessage = await client.ReceiveMessageAsync();
+        idOk = responseMessage.Id == requestMessage.Id;
+        statusOk = responseMessage.Response.Status == Status.Ok;
+
+
+        numberList = new HashSet<int>() { 6, 7 };
+        totalRecordCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.TotalRecordCount == numberList.Count;
+        maxResponseRecordCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.MaxResponseRecordCount == 100;
+        profilesCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.Profiles.Count == numberList.Count;
+
+        profileListOk = CheckProfileList(numberList, responseMessage.Response.ConversationResponse.ProfileSearch.Profiles);
+
+        // Step 7 Acceptance
+        bool step7Ok = idOk && statusOk && totalRecordCountOk && maxResponseRecordCountOk && profilesCountOk && profileListOk;
+
+        log.Trace("Step 7: {0}", step7Ok ? "PASSED" : "FAILED");
+
+
+        // Step 8
+        log.Trace("Step 8");
+        requestMessage = mb.CreateProfileSearchRequest(null, null, null, new GpsLocation(18.961m, 72.82m), 5000, 100, 100);
+        await client.SendMessageAsync(requestMessage);
+
+        responseMessage = await client.ReceiveMessageAsync();
+        idOk = responseMessage.Id == requestMessage.Id;
+        statusOk = responseMessage.Response.Status == Status.Ok;
+
+
+        numberList = new HashSet<int>() { 2, 6, 7 };
+        totalRecordCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.TotalRecordCount == numberList.Count;
+        maxResponseRecordCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.MaxResponseRecordCount == 100;
+        profilesCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.Profiles.Count == numberList.Count;
+
+        profileListOk = CheckProfileList(numberList, responseMessage.Response.ConversationResponse.ProfileSearch.Profiles);
+
+        // Step 8 Acceptance
+        bool step8Ok = idOk && statusOk && totalRecordCountOk && maxResponseRecordCountOk && profilesCountOk && profileListOk;
+
+        log.Trace("Step 8: {0}", step8Ok ? "PASSED" : "FAILED");
+
+
+        // Step 9
+        log.Trace("Step 9");
+        requestMessage = mb.CreateProfileSearchRequest(null, null, null, new GpsLocation(-12.345678m, 12.345678m), 5000, 100, 100);
+        await client.SendMessageAsync(requestMessage);
+
+        responseMessage = await client.ReceiveMessageAsync();
+        idOk = responseMessage.Id == requestMessage.Id;
+        statusOk = responseMessage.Response.Status == Status.Ok;
+
+
+        totalRecordCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.TotalRecordCount == 0;
+        maxResponseRecordCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.MaxResponseRecordCount == 100;
+        profilesCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.Profiles.Count == 0;
+
+        // Step 9 Acceptance
+        bool step9Ok = idOk && statusOk && totalRecordCountOk && maxResponseRecordCountOk && profilesCountOk;
+
+
+        // Step 10
+        log.Trace("Step 10");
+        requestMessage = mb.CreateProfileSearchRequest(null, null, "no profiles", null, 0, 100, 100);
+        await client.SendMessageAsync(requestMessage);
+
+        responseMessage = await client.ReceiveMessageAsync();
+        idOk = responseMessage.Id == requestMessage.Id;
+        statusOk = responseMessage.Response.Status == Status.Ok;
+
+
+        totalRecordCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.TotalRecordCount == 0;
+        maxResponseRecordCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.MaxResponseRecordCount == 100;
+        profilesCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.Profiles.Count == 0;
+
+        // Step 10 Acceptance
+        bool step10Ok = idOk && statusOk && totalRecordCountOk && maxResponseRecordCountOk && profilesCountOk;
+
+        log.Trace("Step 10: {0}", step10Ok ? "PASSED" : "FAILED");
+
+
+        // Step 11
+        log.Trace("Step 11");
+        requestMessage = mb.CreateProfileSearchRequest(null, null, @"(^|;)t=(|[^=]+,)running([;,]|$)", null, 0, 100, 100);
+        await client.SendMessageAsync(requestMessage);
+
+        responseMessage = await client.ReceiveMessageAsync();
+        idOk = responseMessage.Id == requestMessage.Id;
+        statusOk = responseMessage.Response.Status == Status.Ok;
+
+
+        numberList = new HashSet<int>() { 2, 3, 7 };
+        totalRecordCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.TotalRecordCount == numberList.Count;
+        maxResponseRecordCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.MaxResponseRecordCount == 100;
+        profilesCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.Profiles.Count == numberList.Count;
+
+        profileListOk = CheckProfileList(numberList, responseMessage.Response.ConversationResponse.ProfileSearch.Profiles);
+
+        // Step 11 Acceptance
+        bool step11Ok = idOk && statusOk && totalRecordCountOk && maxResponseRecordCountOk && profilesCountOk && profileListOk;
+
+        log.Trace("Step 11: {0}", step11Ok ? "PASSED" : "FAILED");
+
+        
+        // Step 12
+        log.Trace("Step 12");
+        requestMessage = mb.CreateProfileSearchRequest(null, null, @".+", null, 0, 2, 100);
+        await client.SendMessageAsync(requestMessage);
+
+        responseMessage = await client.ReceiveMessageAsync();
+        idOk = responseMessage.Id == requestMessage.Id;
+        statusOk = responseMessage.Response.Status == Status.Ok;
+
+
+        totalRecordCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.TotalRecordCount == 5;
+        maxResponseRecordCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.MaxResponseRecordCount == 2;
+        profilesCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.Profiles.Count == 2;
+
+        List<IdentityNetworkProfileInformation> setA = new List<IdentityNetworkProfileInformation>(responseMessage.Response.ConversationResponse.ProfileSearch.Profiles);
+
+        bool firstPartOk = idOk && statusOk && totalRecordCountOk && maxResponseRecordCountOk && profilesCountOk;
+
+
+        requestMessage = mb.CreateProfileSearchPartRequest(2, 2);
+        await client.SendMessageAsync(requestMessage);
+
+        responseMessage = await client.ReceiveMessageAsync();
+        idOk = responseMessage.Id == requestMessage.Id;
+        statusOk = responseMessage.Response.Status == Status.Ok;
+
+
+        bool recordIndexOk = responseMessage.Response.ConversationResponse.ProfileSearchPart.RecordIndex == 2;
+        bool recordCountOk = responseMessage.Response.ConversationResponse.ProfileSearchPart.RecordCount == 2;
+        profilesCountOk = responseMessage.Response.ConversationResponse.ProfileSearchPart.Profiles.Count == 2;
+
+        List<IdentityNetworkProfileInformation> setB = new List<IdentityNetworkProfileInformation>(responseMessage.Response.ConversationResponse.ProfileSearchPart.Profiles);
+
+        bool secondPartOk = idOk && statusOk && recordIndexOk && recordCountOk && profilesCountOk;
+
+
+        requestMessage = mb.CreateProfileSearchPartRequest(4, 1);
+        await client.SendMessageAsync(requestMessage);
+
+        responseMessage = await client.ReceiveMessageAsync();
+        idOk = responseMessage.Id == requestMessage.Id;
+        statusOk = responseMessage.Response.Status == Status.Ok;
+
+
+        recordIndexOk = responseMessage.Response.ConversationResponse.ProfileSearchPart.RecordIndex == 4;
+        recordCountOk = responseMessage.Response.ConversationResponse.ProfileSearchPart.RecordCount == 1;
+        profilesCountOk = responseMessage.Response.ConversationResponse.ProfileSearchPart.Profiles.Count == 1;
+
+        List<IdentityNetworkProfileInformation> setC = new List<IdentityNetworkProfileInformation>(responseMessage.Response.ConversationResponse.ProfileSearchPart.Profiles);
+
+        bool thirdPartOk = idOk && statusOk && recordIndexOk && recordCountOk && profilesCountOk;
+
+
+        requestMessage = mb.CreateProfileSearchPartRequest(0, 5);
+        await client.SendMessageAsync(requestMessage);
+
+        responseMessage = await client.ReceiveMessageAsync();
+        idOk = responseMessage.Id == requestMessage.Id;
+        statusOk = responseMessage.Response.Status == Status.Ok;
+
+
+        numberList = new HashSet<int>() { 2, 3, 5, 6, 7 };
+        recordIndexOk = responseMessage.Response.ConversationResponse.ProfileSearchPart.RecordIndex == 0;
+        recordCountOk = responseMessage.Response.ConversationResponse.ProfileSearchPart.RecordCount == numberList.Count;
+        profilesCountOk = responseMessage.Response.ConversationResponse.ProfileSearchPart.Profiles.Count == numberList.Count;
+
+        bool fourthPartOk = idOk && statusOk && recordIndexOk && recordCountOk && profilesCountOk;
+
+
+        List<IdentityNetworkProfileInformation> setAll = new List<IdentityNetworkProfileInformation>(responseMessage.Response.ConversationResponse.ProfileSearchPart.Profiles);
+        bool profileListOk1 = CheckProfileList(numberList, setAll);
+
+        List<IdentityNetworkProfileInformation> setParts = new List<IdentityNetworkProfileInformation>(setA);
+        setParts.AddRange(setB);
+        setParts.AddRange(setC);
+        bool profileListOk2 = CheckProfileList(numberList, setParts);
+
+
+        // Step 12 Acceptance
+        bool step12Ok = firstPartOk && secondPartOk && thirdPartOk && fourthPartOk && profileListOk1 && profileListOk2;
+
+        log.Trace("Step 12: {0}", step12Ok ? "PASSED" : "FAILED");
+
+
+
+        // Step 13
+        log.Trace("Step 13");
+        requestMessage = mb.CreateProfileSearchRequest(null, null, @"(^|;)t=(|[^=]+,)running([;,]|$)", null, 0, 2, 2, false, false);
+        await client.SendMessageAsync(requestMessage);
+
+        responseMessage = await client.ReceiveMessageAsync();
+        idOk = responseMessage.Id == requestMessage.Id;
+        statusOk = responseMessage.Response.Status == Status.Ok;
+
+
+        totalRecordCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.TotalRecordCount == 2;
+        maxResponseRecordCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.MaxResponseRecordCount == 2;
+        profilesCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.Profiles.Count == 2;
+
+        numberList = new HashSet<int>() { 2 };
+        profileListOk1 = CheckProfileList(numberList, responseMessage.Response.ConversationResponse.ProfileSearch.Profiles, false, true);
+
+        numberList = new HashSet<int>() { 3 };
+        profileListOk2 = CheckProfileList(numberList, responseMessage.Response.ConversationResponse.ProfileSearch.Profiles, false, true);
+
+        numberList = new HashSet<int>() { 7 };
+        bool profileListOk3 = CheckProfileList(numberList, responseMessage.Response.ConversationResponse.ProfileSearch.Profiles, false, true);
+
+        profileListOk = (profileListOk1 && profileListOk2 && !profileListOk3)
+          || (profileListOk1 && !profileListOk2 && profileListOk3)
+          || (!profileListOk1 && profileListOk2 && profileListOk3);
+
+        // Step 13 Acceptance
+        bool step13Ok = idOk && statusOk && totalRecordCountOk && maxResponseRecordCountOk && profilesCountOk && profileListOk;
+
+        log.Trace("Step 13: {0}", step13Ok ? "PASSED" : "FAILED");
+
+
+        // Step 14
+        log.Trace("Step 14");
+        requestMessage = mb.CreateProfileSearchRequest("profile*", null, null, null, 0, 100, 100);
+        await client.SendMessageAsync(requestMessage);
+
+        responseMessage = await client.ReceiveMessageAsync();
+        idOk = responseMessage.Id == requestMessage.Id;
+        statusOk = responseMessage.Response.Status == Status.Ok;
+
+
+        numberList = new HashSet<int>() { 1, 2, 3, 4, 5, 6, 7 };
+        totalRecordCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.TotalRecordCount == numberList.Count;
+        maxResponseRecordCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.MaxResponseRecordCount == 100;
+        profilesCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.Profiles.Count == numberList.Count;
+
+        profileListOk = CheckProfileList(numberList, responseMessage.Response.ConversationResponse.ProfileSearch.Profiles);
+
+        // Step 14 Acceptance
+        bool step14Ok = idOk && statusOk && totalRecordCountOk && maxResponseRecordCountOk && profilesCountOk && profileListOk;
+
+        log.Trace("Step 14: {0}", step14Ok ? "PASSED" : "FAILED");
+
+
+        // Step 15
+        log.Trace("Step 15");
+        requestMessage = mb.CreateProfileSearchRequest("*file*", null, null, null, 0, 100, 100);
+        await client.SendMessageAsync(requestMessage);
+
+        responseMessage = await client.ReceiveMessageAsync();
+        idOk = responseMessage.Id == requestMessage.Id;
+        statusOk = responseMessage.Response.Status == Status.Ok;
+
+
+        numberList = new HashSet<int>() { 1, 2, 3, 4, 5, 6, 7 };
+        totalRecordCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.TotalRecordCount == numberList.Count;
+        maxResponseRecordCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.MaxResponseRecordCount == 100;
+        profilesCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.Profiles.Count == numberList.Count;
+
+        profileListOk = CheckProfileList(numberList, responseMessage.Response.ConversationResponse.ProfileSearch.Profiles);
+
+        // Step 15 Acceptance
+        bool step15Ok = idOk && statusOk && totalRecordCountOk && maxResponseRecordCountOk && profilesCountOk && profileListOk;
+
+        log.Trace("Step 15: {0}", step15Ok ? "PASSED" : "FAILED");
+
+
+
+        // Step 16
+        log.Trace("Step 16");
+        requestMessage = mb.CreateProfileSearchRequest("**", null, null, null, 0, 100, 100);
+        await client.SendMessageAsync(requestMessage);
+
+        responseMessage = await client.ReceiveMessageAsync();
+        idOk = responseMessage.Id == requestMessage.Id;
+        statusOk = responseMessage.Response.Status == Status.Ok;
+
+
+        numberList = new HashSet<int>() { 1, 2, 3, 4, 5, 6, 7 };
+        totalRecordCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.TotalRecordCount == numberList.Count;
+        maxResponseRecordCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.MaxResponseRecordCount == 100;
+        profilesCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.Profiles.Count == numberList.Count;
+
+        profileListOk = CheckProfileList(numberList, responseMessage.Response.ConversationResponse.ProfileSearch.Profiles);
+
+        // Step 16 Acceptance
+        bool step16Ok = idOk && statusOk && totalRecordCountOk && maxResponseRecordCountOk && profilesCountOk && profileListOk;
+
+        log.Trace("Step 16: {0}", step16Ok ? "PASSED" : "FAILED");
+
+
+
+        // Step 17
+        log.Trace("Step 17");
+        requestMessage = mb.CreateProfileSearchRequest("*", null, null, null, 0, 100, 100);
+        await client.SendMessageAsync(requestMessage);
+
+        responseMessage = await client.ReceiveMessageAsync();
+        idOk = responseMessage.Id == requestMessage.Id;
+        statusOk = responseMessage.Response.Status == Status.Ok;
+
+
+        numberList = new HashSet<int>() { 1, 2, 3, 4, 5, 6, 7 };
+        totalRecordCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.TotalRecordCount == numberList.Count;
+        maxResponseRecordCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.MaxResponseRecordCount == 100;
+        profilesCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.Profiles.Count == numberList.Count;
+
+        profileListOk = CheckProfileList(numberList, responseMessage.Response.ConversationResponse.ProfileSearch.Profiles);
+
+        // Step 17 Acceptance
+        bool step17Ok = idOk && statusOk && totalRecordCountOk && maxResponseRecordCountOk && profilesCountOk && profileListOk;
+
+        log.Trace("Step 17: {0}", step17Ok ? "PASSED" : "FAILED");
+
+
+        // Step 18
+        log.Trace("Step 18");
+        requestMessage = mb.CreateProfileSearchRequest(null, "*1", null, null, 0, 100, 100);
+        await client.SendMessageAsync(requestMessage);
+
+        responseMessage = await client.ReceiveMessageAsync();
+        idOk = responseMessage.Id == requestMessage.Id;
+        statusOk = responseMessage.Response.Status == Status.Ok;
+
+
+        numberList = new HashSet<int>() { 1, 2 };
+        totalRecordCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.TotalRecordCount == numberList.Count;
+        maxResponseRecordCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.MaxResponseRecordCount == 100;
+        profilesCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.Profiles.Count == numberList.Count;
+
+        profileListOk = CheckProfileList(numberList, responseMessage.Response.ConversationResponse.ProfileSearch.Profiles);
+
+        // Step 18 Acceptance
+        bool step18Ok = idOk && statusOk && totalRecordCountOk && maxResponseRecordCountOk && profilesCountOk && profileListOk;
+
+        log.Trace("Step 18: {0}", step18Ok ? "PASSED" : "FAILED");
+
+
+        // Step 19
+        log.Trace("Step 19");
+        requestMessage = mb.CreateProfileSearchRequest(null, "Shanghai 1", null, null, 0, 100, 100);
+        await client.SendMessageAsync(requestMessage);
+
+        responseMessage = await client.ReceiveMessageAsync();
+        idOk = responseMessage.Id == requestMessage.Id;
+        statusOk = responseMessage.Response.Status == Status.Ok;
+
+
+        numberList = new HashSet<int>() { 1 };
+        totalRecordCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.TotalRecordCount == numberList.Count;
+        maxResponseRecordCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.MaxResponseRecordCount == 100;
+        profilesCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.Profiles.Count == numberList.Count;
+
+        profileListOk = CheckProfileList(numberList, responseMessage.Response.ConversationResponse.ProfileSearch.Profiles);
+
+        // Step 19 Acceptance
+        bool step19Ok = idOk && statusOk && totalRecordCountOk && maxResponseRecordCountOk && profilesCountOk && profileListOk;
+
+        log.Trace("Step 19: {0}", step19Ok ? "PASSED" : "FAILED");
+
+
+
+        // Step 20
+        log.Trace("Step 20");
+        requestMessage = mb.CreateProfileSearchRequest(null, "**", null, null, 0, 100, 100);
+        await client.SendMessageAsync(requestMessage);
+
+        responseMessage = await client.ReceiveMessageAsync();
+        idOk = responseMessage.Id == requestMessage.Id;
+        statusOk = responseMessage.Response.Status == Status.Ok;
+
+
+        numberList = new HashSet<int>() { 1, 2, 3, 4, 5, 6, 7 };
+        totalRecordCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.TotalRecordCount == numberList.Count;
+        maxResponseRecordCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.MaxResponseRecordCount == 100;
+        profilesCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.Profiles.Count == numberList.Count;
+
+        profileListOk = CheckProfileList(numberList, responseMessage.Response.ConversationResponse.ProfileSearch.Profiles);
+
+        // Step 20 Acceptance
+        bool step20Ok = idOk && statusOk && totalRecordCountOk && maxResponseRecordCountOk && profilesCountOk && profileListOk;
+
+        log.Trace("Step 20: {0}", step20Ok ? "PASSED" : "FAILED");
+
+
+
+        // Step 21
+        log.Trace("Step 21");
+        requestMessage = mb.CreateProfileSearchRequest(null, "*", null, null, 0, 100, 100);
+        await client.SendMessageAsync(requestMessage);
+
+        responseMessage = await client.ReceiveMessageAsync();
+        idOk = responseMessage.Id == requestMessage.Id;
+        statusOk = responseMessage.Response.Status == Status.Ok;
+
+
+        numberList = new HashSet<int>() { 1, 2, 3, 4, 5, 6, 7 };
+        totalRecordCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.TotalRecordCount == numberList.Count;
+        maxResponseRecordCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.MaxResponseRecordCount == 100;
+        profilesCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.Profiles.Count == numberList.Count;
+
+        profileListOk = CheckProfileList(numberList, responseMessage.Response.ConversationResponse.ProfileSearch.Profiles);
+
+        // Step 21 Acceptance
+        bool step21Ok = idOk && statusOk && totalRecordCountOk && maxResponseRecordCountOk && profilesCountOk && profileListOk;
+
+        log.Trace("Step 21: {0}", step21Ok ? "PASSED" : "FAILED");
+
+
+        // Step 21
+        log.Trace("Step 22");
+        requestMessage = mb.CreateProfileSearchRequest("*Type A", "*ai*", "water", null, 0, 100, 100);
+        await client.SendMessageAsync(requestMessage);
+
+        responseMessage = await client.ReceiveMessageAsync();
+        idOk = responseMessage.Id == requestMessage.Id;
+        statusOk = responseMessage.Response.Status == Status.Ok;
+
+
+        numberList = new HashSet<int>() { 2 };
+        totalRecordCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.TotalRecordCount == numberList.Count;
+        maxResponseRecordCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.MaxResponseRecordCount == 100;
+        profilesCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.Profiles.Count == numberList.Count;
+
+        profileListOk = CheckProfileList(numberList, responseMessage.Response.ConversationResponse.ProfileSearch.Profiles);
+
+        // Step 22 Acceptance
+        bool step22Ok = idOk && statusOk && totalRecordCountOk && maxResponseRecordCountOk && profilesCountOk && profileListOk;
+
+        log.Trace("Step 22: {0}", step22Ok ? "PASSED" : "FAILED");
+
+
+
+
+        Passed = step1Ok && step2Ok && step3Ok && step4Ok && step5Ok && step6Ok && step7Ok && step8Ok && step9Ok && step10Ok 
+          && step11Ok && step12Ok && step13Ok && step14Ok && step15Ok && step16Ok && step17Ok && step18Ok && step19Ok && step20Ok
+          && step21Ok && step22Ok;
+
+        res = true;
+      }
+      catch (Exception e)
+      {
+        log.Error("Exception occurred: {0}", e.ToString());
+      }
+      client.Dispose();
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+
+    /// <summary>
+    /// Verifies contents of list of profiles returned by the node as a result of a search query.
+    /// </summary>
+    /// <param name="ProfileNumbers">Profile numbers of profiles that are expected to be in the profile list.</param>
+    /// <param name="ProfileList">Profile list returned by the node.</param>
+    /// <param name="ExactMatch">If set to true, the profile list is expected to contain only profiles specified in <paramref name="ProfileNumbers"/>.</param>
+    /// <param name="NoImages">If set to true, the profile list must not contain images.</param>
+    /// <returns>true if the <paramref name="ProfileList"/> contains profiles specified by profile numbers in <paramref name="ProfileNumbers"/>.</returns>
+    public bool CheckProfileList(HashSet<int> ProfileNumbers, IEnumerable<IdentityNetworkProfileInformation> ProfileList, bool ExactMatch = true, bool NoImages = false)
+    {
+      bool error = false;
+      bool[] profilesOk = new bool[ProfileNames.Count];
+      foreach (IdentityNetworkProfileInformation profileInfo in ProfileList)
+      {
+        byte[] pubKey = profileInfo.IdentityPublicKey.ToByteArray();
+
+        int profileIndex = -1;
+        for (int i = 0; i < ProfilePublicKeys.Count; i++)
         {
-          byte[] pubKey = profileInfo.IdentityPublicKey.ToByteArray();
-
-          int profileIndex = -1;
-          for (int i = 0; i < profilePublicKeys.Count; i++)
+          if (StructuralComparisons.StructuralComparer.Compare(ProfilePublicKeys[i], pubKey) == 0)
           {
-            if (StructuralComparisons.StructuralComparer.Compare(profilePublicKeys[i], pubKey) == 0)
-            {
-              profileIndex = i;
-              break;
-            }
+            profileIndex = i;
+            break;
           }
+        }
 
-
-          if (profileIndex != -1)
+        if (profileIndex != -1)
+        {
+          if (ProfileNumbers.Contains(profileIndex + 1))
           {
             bool piIsHostedOk = profileInfo.IsHosted == true;
             bool piIsOnlineOk = profileInfo.IsOnline == false;
-            bool piTypeOk = profileInfo.Type == profileTypes[profileIndex];
-            bool piNameOk = profileInfo.Name == profileNames[profileIndex];
-            bool piLatitudeOk = profileInfo.Latitude == profileLocations[profileIndex].GetLocationTypeLatitude();
-            bool piLongitudeOk = profileInfo.Longitude == profileLocations[profileIndex].GetLocationTypeLongitude();
-            bool piExtraDataOk = (string.IsNullOrEmpty(profileInfo.ExtraData) && string.IsNullOrEmpty(profileExtraData[profileIndex])) || (profileInfo.ExtraData == profileExtraData[profileIndex]);
-            bool piImageOk = profileImages[profileIndex] != null ? profileInfo.ThumbnailImage.Length > 0 : profileInfo.ThumbnailImage.Length == 0;
+            bool piTypeOk = profileInfo.Type == ProfileTypes[profileIndex];
+            bool piNameOk = profileInfo.Name == ProfileNames[profileIndex];
+            bool piLatitudeOk = profileInfo.Latitude == ProfileLocations[profileIndex].GetLocationTypeLatitude();
+            bool piLongitudeOk = profileInfo.Longitude == ProfileLocations[profileIndex].GetLocationTypeLongitude();
+            bool piExtraDataOk = (string.IsNullOrEmpty(profileInfo.ExtraData) && string.IsNullOrEmpty(ProfileExtraData[profileIndex])) || (profileInfo.ExtraData == ProfileExtraData[profileIndex]);
+
+            bool piImageOk = true;
+            if (NoImages) piImageOk = profileInfo.ThumbnailImage.Length == 0;
+            else piImageOk = ProfileImages[profileIndex] != null ? profileInfo.ThumbnailImage.Length > 0 : profileInfo.ThumbnailImage.Length == 0;
 
             bool profileOk = piIsHostedOk && piIsOnlineOk && piTypeOk && piNameOk && piLatitudeOk && piLongitudeOk && piExtraDataOk && piImageOk;
             if (!profileOk)
@@ -212,41 +783,32 @@ namespace HomeNetProtocolTests.Tests
 
             profilesOk[profileIndex] = true;
           }
-          else
+          else if (ExactMatch)
           {
-            log.Trace("Profile pub key {0} not recognized.", Crypto.ToHex(pubKey));
+            log.Trace("Profile index {0} should not be on the list.", profileIndex);
             error = true;
             break;
           }
         }
-
-        for (int i = 0; i < profilesOk.Length; i++)
+        else
         {
-          if (!profilesOk[i])
-          {
-            log.Trace("Profile index {0} not retrieved.", i);
-            error = true;
-            break;
-          }
+          log.Trace("Profile pub key {0} not recognized.", Crypto.ToHex(pubKey));
+          error = true;
+          break;
         }
-
-        // Step 2 Acceptance
-        bool step2Ok = startConversationOk && idOk && statusOk && totalRecordCountOk && maxResponseRecordCountOk && profilesCountOk && !error;
-
-        log.Trace("Step 2: {0}", step2Ok ? "PASSED" : "FAILED");
-
-
-        Passed = step1Ok && step2Ok;
-
-        res = true;
       }
-      catch (Exception e)
+
+      foreach (int index in ProfileNumbers)
       {
-        log.Error("Exception occurred: {0}", e.ToString());
+        if (!profilesOk[index - 1])
+        {
+          log.Trace("Profile index {0} not retrieved.", index);
+          error = true;
+          break;
+        }
       }
-      client.Dispose();
-
-      log.Trace("(-):{0}", res);
+      
+      bool res = !error;
       return res;
     }
   }

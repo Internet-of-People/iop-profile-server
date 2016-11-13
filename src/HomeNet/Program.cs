@@ -38,6 +38,10 @@ namespace HomeNet
       else Console.WriteLine("Initialization failed.");
 
       log.Info("(-)");
+
+      // Make sure async logs are flushed before program ends.
+      NLog.LogManager.Flush();
+      NLog.LogManager.Shutdown();
     }
   }
 }
