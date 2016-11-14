@@ -45,7 +45,6 @@ namespace UnitTests
     {
       List<string> inputs = new List<string>()
       {
-        @"(^|;)key=([^=]+;)?va(?'alpha')lue($|,|;)",
         @"\a",
         @"\b",
         @"\B",

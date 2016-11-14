@@ -103,7 +103,7 @@ namespace HomeNet.Data.Repositories
     /// <returns>Filter expression for the database query.</returns>
     private Expression<Func<T, bool>> GetNameFilterExpression(string NameFilter)
     {
-      string nameFilter = NameFilter.ToLower();
+      string nameFilter = NameFilter.ToLowerInvariant();
       Expression<Func<T, bool>> res = i => i.Name.ToLower() == nameFilter;
 
       // Example: NameFilter = "*abc"
@@ -126,7 +126,7 @@ namespace HomeNet.Data.Repositories
       else if (endsWith)
       {
         nameFilter = nameFilter.Substring(1);
-        res = i => i.Name.ToLower().ToLower().EndsWith(nameFilter);
+        res = i => i.Name.ToLower().EndsWith(nameFilter);
       }
 
       return res;
@@ -139,7 +139,7 @@ namespace HomeNet.Data.Repositories
     /// <returns>Filter expression for the database query.</returns>
     private Expression<Func<T, bool>> GetTypeFilterExpression(string TypeFilter)
     {
-      string typeFilter = TypeFilter.ToLower();
+      string typeFilter = TypeFilter.ToLowerInvariant();
       Expression<Func<T, bool>> res = i => i.Type.ToLower() == typeFilter;
 
       // Example: TypeFilter = "*abc"

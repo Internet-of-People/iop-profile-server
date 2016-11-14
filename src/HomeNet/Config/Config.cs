@@ -164,10 +164,10 @@ namespace HomeNet.Config
         string imageDataFolder = null;
         int maxHostedIdentities = 0;
 
-        Dictionary<string, object> nameVal = new Dictionary<string, object>();
+        Dictionary<string, object> nameVal = new Dictionary<string, object>(StringComparer.Ordinal);
 
         // Definition of all supported values in configuration file together with their types.
-        Dictionary<string, ConfigValueType> namesDefinition = new Dictionary<string, ConfigValueType>()
+        Dictionary<string, ConfigValueType> namesDefinition = new Dictionary<string, ConfigValueType>(StringComparer.Ordinal)
         {
           { "server_interface",                     ConfigValueType.IpAddress      },
           { "primary_interface_port",               ConfigValueType.Port           },
@@ -391,7 +391,7 @@ namespace HomeNet.Config
           case ConfigValueType.IpAddress:
             {
               IPAddress val = IPAddress.Any;
-              if ((value.ToLower() == "any") || IPAddress.TryParse(value, out val))
+              if ((value.ToLowerInvariant() == "any") || IPAddress.TryParse(value, out val))
               {
                 NameVal.Add(name, val);
                 error = false;

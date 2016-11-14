@@ -69,8 +69,11 @@ namespace HomeNet.Network
     public const int MaxUnfinishedRequests = 20;
 
 
-    /// <summary>Length of the profile search cache expiration period in seconds.</summary>
-    public const int ProfileSearchResultCacheExpirationTimeSeconds = 300;
+    /// <summary>
+    /// Length of the profile search cache expiration period in seconds.
+    /// Minimal value defined by the protocol is 60 seconds.
+    /// </summary>
+    public const int ProfileSearchResultCacheExpirationTimeSeconds = 180;
 
 
     /// <summary>Role server assigned client identifier.</summary>

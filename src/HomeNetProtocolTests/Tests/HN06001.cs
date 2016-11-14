@@ -689,7 +689,7 @@ namespace HomeNetProtocolTests.Tests
         log.Trace("Step 21: {0}", step21Ok ? "PASSED" : "FAILED");
 
 
-        // Step 21
+        // Step 22
         log.Trace("Step 22");
         requestMessage = mb.CreateProfileSearchRequest("*Type A", "*ai*", "water", null, 0, 100, 100);
         await client.SendMessageAsync(requestMessage);
@@ -714,9 +714,88 @@ namespace HomeNetProtocolTests.Tests
 
 
 
+        // Step 23
+        log.Trace("Step 23");
+        requestMessage = mb.CreateProfileSearchRequest(null, null, @".+", null, 0, 2, 100);
+        await client.SendMessageAsync(requestMessage);
+
+        responseMessage = await client.ReceiveMessageAsync();
+        idOk = responseMessage.Id == requestMessage.Id;
+        statusOk = responseMessage.Response.Status == Status.Ok;
+
+
+        totalRecordCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.TotalRecordCount == 5;
+        maxResponseRecordCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.MaxResponseRecordCount == 2;
+        profilesCountOk = responseMessage.Response.ConversationResponse.ProfileSearch.Profiles.Count == 2;
+
+        firstPartOk = idOk && statusOk && totalRecordCountOk && maxResponseRecordCountOk && profilesCountOk;
+
+        await Task.Delay(15000);
+        requestMessage = mb.CreateProfileSearchPartRequest(8, 2);
+        await client.SendMessageAsync(requestMessage);
+
+        responseMessage = await client.ReceiveMessageAsync();
+        idOk = responseMessage.Id == requestMessage.Id;
+        statusOk = responseMessage.Response.Status == Status.ErrorInvalidValue;
+        bool detailsOk = responseMessage.Response.Details == "recordIndex";
+
+        secondPartOk = idOk && statusOk && detailsOk;
+
+
+        await Task.Delay(15000);
+        requestMessage = mb.CreateProfileSearchPartRequest(4, 5);
+        await client.SendMessageAsync(requestMessage);
+
+        responseMessage = await client.ReceiveMessageAsync();
+        idOk = responseMessage.Id == requestMessage.Id;
+        statusOk = responseMessage.Response.Status == Status.ErrorInvalidValue;
+        detailsOk = responseMessage.Response.Details == "recordCount";
+
+        thirdPartOk = idOk && statusOk && detailsOk;
+
+
+
+        await Task.Delay(22000);
+        requestMessage = mb.CreateProfileSearchPartRequest(0, 500);
+        await client.SendMessageAsync(requestMessage);
+
+        responseMessage = await client.ReceiveMessageAsync();
+        idOk = responseMessage.Id == requestMessage.Id;
+        statusOk = responseMessage.Response.Status == Status.ErrorInvalidValue;
+        detailsOk = responseMessage.Response.Details == "recordCount";
+
+        fourthPartOk = idOk && statusOk && detailsOk;
+
+
+
+        requestMessage = mb.CreateProfileSearchPartRequest(0, 5);
+        await client.SendMessageAsync(requestMessage);
+
+        responseMessage = await client.ReceiveMessageAsync();
+        idOk = responseMessage.Id == requestMessage.Id;
+        statusOk = responseMessage.Response.Status == Status.Ok;
+
+
+        numberList = new HashSet<int>() { 2, 3, 5, 6, 7 };
+        recordIndexOk = responseMessage.Response.ConversationResponse.ProfileSearchPart.RecordIndex == 0;
+        recordCountOk = responseMessage.Response.ConversationResponse.ProfileSearchPart.RecordCount == numberList.Count;
+        profilesCountOk = responseMessage.Response.ConversationResponse.ProfileSearchPart.Profiles.Count == numberList.Count;
+
+        bool fifthPartOk = idOk && statusOk && recordIndexOk && recordCountOk && profilesCountOk;
+
+        profileListOk = CheckProfileList(numberList, responseMessage.Response.ConversationResponse.ProfileSearchPart.Profiles);
+
+
+        // Step 23 Acceptance
+        bool step23Ok = firstPartOk && secondPartOk && thirdPartOk && fourthPartOk && fifthPartOk && profileListOk;
+
+        log.Trace("Step 23: {0}", step23Ok ? "PASSED" : "FAILED");
+
+
+
         Passed = step1Ok && step2Ok && step3Ok && step4Ok && step5Ok && step6Ok && step7Ok && step8Ok && step9Ok && step10Ok 
           && step11Ok && step12Ok && step13Ok && step14Ok && step15Ok && step16Ok && step17Ok && step18Ok && step19Ok && step20Ok
-          && step21Ok && step22Ok;
+          && step21Ok && step22Ok && step23Ok;
 
         res = true;
       }
