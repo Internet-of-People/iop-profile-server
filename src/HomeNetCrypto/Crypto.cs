@@ -13,7 +13,7 @@ namespace HomeNetCrypto
   /// </summary>
   public class KeysEd25519
   {
-    /// <summary>64 byte public key.</summary>
+    /// <summary>32 byte public key.</summary>
     public byte[] PublicKey;
 
     /// <summary>32 byte private key, also known as private key seed.</summary>
@@ -39,6 +39,9 @@ namespace HomeNetCrypto
   {
     /// <summary>Size of signatures in bytes.</summary>
     public const int SignatureLengthBytes = 64;
+
+    /// <summary>Size of public key in bytes.</summary>
+    public const int PublicKeyLengthBytes = 32;
 
     /// <summary>
     /// Generates new keys using random seed.
@@ -122,7 +125,7 @@ namespace HomeNetCrypto
     {
       bool res = false;
 
-      if ((Signature != null) && (Signature.Length == SignatureLengthBytes))
+      if ((Signature != null) && (Signature.Length == SignatureLengthBytes) && (PublicKey != null) && (PublicKey.Length == PublicKeyLengthBytes))
         res = Chaos.NaCl.Ed25519.Verify(Signature, Message, PublicKey);
 
       return res;

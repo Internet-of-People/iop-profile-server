@@ -179,7 +179,7 @@ namespace HomeNet.Network
       string logName = "HomeNet.Network.ClientList";
       log = new PrefixLogger(logName, logPrefix);
 
-      log.Trace("(Caller.Id:0x{0:X16},Callee.Id:0x{1:X16},ServiceName:'{2}')", Caller.Id, Callee.Id, ServiceName);
+      log.Trace("(Caller.Id:{0},Callee.Id:{1},ServiceName:'{2}')", Caller.Id.ToHex(), Callee.Id.ToHex(), ServiceName);
       serviceName = ServiceName;
       caller = Caller;
       callee = Callee;
@@ -278,7 +278,7 @@ namespace HomeNet.Network
       if (messageToSend != null)
       {
         if (!await clientToSendMessage.SendMessageAsync(messageToSend))
-          log.Warn("Unable to send message to the client ID '0x{0:X16}' in relay '{1}', maybe it is not connected anymore.", clientToSendMessage.Id, id);
+          log.Warn("Unable to send message to the client ID {0} in relay '{1}', maybe it is not connected anymore.", clientToSendMessage.Id.ToHex(), id);
       }
 
       if (destroyRelay)
@@ -411,13 +411,13 @@ namespace HomeNet.Network
           // These are options 3) and 2) from ProcessMessageCallIdentityApplicationServiceRequestAsync.
           if (ResponseMessage.Response.Status == Status.ErrorRejected)
           {
-            log.Debug("Callee ID '0x{0:X16}' rejected the call from caller identity ID '0x{1:X16}', relay '{2}'.", callee.Id, caller.Id, id);
+            log.Debug("Callee ID '{0}' rejected the call from caller identity ID '{1}', relay '{2}'.", callee.Id.ToHex(), caller.Id.ToHex(), id);
             messageToSend = caller.MessageBuilder.CreateErrorRejectedResponse(pendingMessage);
           }
           else
           {
-            log.Warn("Callee ID '0x{0:X16}' sent error response '{1}' for call request from caller identity ID '0x{2:X16}', relay '{3}'.", 
-              callee.Id, ResponseMessage.Response.Status, caller.Id, id);
+            log.Warn("Callee ID '0} sent error response '{1}' for call request from caller identity ID {2}, relay '{3}'.", 
+              callee.Id.ToHex(), ResponseMessage.Response.Status, caller.Id.ToHex(), id);
 
             messageToSend = caller.MessageBuilder.CreateErrorNotAvailableResponse(pendingMessage);
           }
@@ -440,8 +440,8 @@ namespace HomeNet.Network
 
       if (messageToSend != null)
       {
-        if (await clientToSendMessage.SendMessageAsync(messageToSend)) log.Debug("Response to call initiation request sent to the caller ID '0x{0:X16}'.", clientToSendMessage.Id);
-        else log.Debug("Unable to reponse to call initiation request to the caller ID '0x{0:X16}'.", clientToSendMessage.Id);
+        if (await clientToSendMessage.SendMessageAsync(messageToSend)) log.Debug("Response to call initiation request sent to the caller ID {0}.", clientToSendMessage.Id.ToHex());
+        else log.Debug("Unable to reponse to call initiation request to the caller ID {0}.", clientToSendMessage.Id.ToHex());
       }
 
       if (destroyRelay)
@@ -479,14 +479,14 @@ namespace HomeNet.Network
       bool isCaller = callerToken.Equals(Token);
 
       Client otherClient = isCaller ? callee : caller;
-      log.Trace("Received message over relay '{0}' in status {1} with client ID '0x{2:X16}' being {3} and the other client ID '0x{4:X16}' is {5}.",
-        id, status, Client.Id, isCaller ? "caller" : "callee", otherClient != null ? otherClient.Id : 0xFFFFFFFFFFFFFFFF, isCaller ? "callee" : "caller");
+      log.Trace("Received message over relay '{0}' in status {1} with client ID {2} being {3} and the other client ID {4} is {5}.",
+        id, status, Client.Id.ToHex(), isCaller ? "caller" : "callee", otherClient != null ? otherClient.Id.ToHex() : "N/A", isCaller ? "callee" : "caller");
 
       switch (status)
       {
         case RelayConnectionStatus.WaitingForFirstInitMessage:
           {
-            log.Debug("Received an initialization message from the first client ID '0x{0:X16}' on relay '{1}', waiting for the second client.", Client.Id, id);
+            log.Debug("Received an initialization message from the first client ID '{0}' on relay '{1}', waiting for the second client.", Client.Id.ToHex(), id);
             CancelTimeoutTimerLocked();
 
             if (Client.Relay == null)
@@ -510,7 +510,7 @@ namespace HomeNet.Network
               // Client already sent us the initialization message, this is protocol violation error, destroy the relay.
               // Since the relay should be upgraded to WaitingForSecondInitMessage status, this can happen 
               // only if a client does not use a separate connection for each clAppService session, which is forbidden.
-              log.Debug("Client ID '0x{0:X16}' on relay '{1}' probably uses a single connection for two relays. Both relays will be destroyed.", Client.Id, id);
+              log.Debug("Client ID {0} on relay '{1}' probably uses a single connection for two relays. Both relays will be destroyed.", Client.Id.ToHex(), id);
               res = Client.MessageBuilder.CreateErrorNotFoundResponse(RequestMessage);
               destroyRelay = true;
             }
@@ -542,7 +542,7 @@ namespace HomeNet.Network
               }
               else
               {
-                log.Warn("Unable to send message to other client ID '0x{0:X16}', closing connection to client and destroying the relay.", otherClient.Id);
+                log.Warn("Unable to send message to other client ID {0}, closing connection to client and destroying the relay.", otherClient.Id.ToHex());
                 res = Client.MessageBuilder.CreateErrorNotFoundResponse(RequestMessage);
                 Client.ForceDisconnect = true;
                 destroyRelay = true;
@@ -551,7 +551,7 @@ namespace HomeNet.Network
             else
             {
               // Client already sent us the initialization message, this is error, destroy the relay.
-              log.Debug("Client ID '0x{0:X16}' on relay '{1}' sent a message before receiving a reply to its initialization message. Relay will be destroyed.", Client.Id, id);
+              log.Debug("Client ID {0} on relay '{1}' sent a message before receiving a reply to its initialization message. Relay will be destroyed.", Client.Id.ToHex(), id);
               res = Client.MessageBuilder.CreateErrorNotFoundResponse(RequestMessage);
               destroyRelay = true;
             }
@@ -571,11 +571,11 @@ namespace HomeNet.Network
               if (await otherClient.SendMessageAndSaveUnfinishedRequestAsync(otherClientMessage, context))
               {
                 // res is null, which is fine, the sender is put on hold and we will get back to it once the recipient confirms that it received the message.
-                log.Debug("Message from client ID '0x{0:X16}' has been relayed to other client ID '0x{1:X16}'.", Client.Id, otherClient.Id);
+                log.Debug("Message from client ID {0} has been relayed to other client ID {1}.", Client.Id.ToHex(), otherClient.Id.ToHex());
               }
               else
               {
-                log.Warn("Unable to relay message to other client ID '0x{0:X16}', closing connection to client and destroying the relay.", otherClient.Id);
+                log.Warn("Unable to relay message to other client ID {0}, closing connection to client and destroying the relay.", otherClient.Id.ToHex());
                 res = Client.MessageBuilder.CreateErrorNotFoundResponse(RequestMessage);
                 Client.ForceDisconnect = true;
                 destroyRelay = true;
@@ -584,7 +584,7 @@ namespace HomeNet.Network
             else
             {
               // This means that the client used a single clAppService port connection for two different relays, which is forbidden.
-              log.Warn("Client ID '0x{0:X16}' mixed relay '{1}' with relay '{2}', closing connection to client and destroying both relays.", otherClient.Id, Client.Relay.id, id);
+              log.Warn("Client ID {0} mixed relay '{1}' with relay '{2}', closing connection to client and destroying both relays.", otherClient.Id.ToHex(), Client.Relay.id, id);
               res = Client.MessageBuilder.CreateErrorNotFoundResponse(RequestMessage);
               Client.ForceDisconnect = true;
               destroyRelay = true;
@@ -646,8 +646,8 @@ namespace HomeNet.Network
         bool isCaller = Client == caller;
 
         Client otherClient = isCaller ? callee : caller;
-        log.Trace("Over relay '{0}', received confirmation (status code {1}) from client ID '0x{2:X16}' of a message sent by client ID '0x{3:X16}'.",
-          id, ResponseMessage.Response.Status, Client.Id, otherClient.Id);
+        log.Trace("Over relay '{0}', received confirmation (status code {1}) from client ID {2} of a message sent by client ID {3}.",
+          id, ResponseMessage.Response.Status, Client.Id.ToHex(), otherClient.Id.ToHex());
 
         if (ResponseMessage.Response.Status == Status.Ok)
         {
@@ -669,7 +669,7 @@ namespace HomeNet.Network
           Message errorResponse = otherClient.MessageBuilder.CreateErrorNotFoundResponse(SenderRequest);
 
           if (!await otherClient.SendMessageAsync(errorResponse))
-            log.Warn("In relay '{0}', unable to send error response to the sender client ID '0x{1:X16}', maybe it is disconnected already, destroying the relay.", id, otherClient.Id);
+            log.Warn("In relay '{0}', unable to send error response to the sender client ID {1}, maybe it is disconnected already, destroying the relay.", id, otherClient.Id.ToHex());
 
           destroyRelay = true;
         }
@@ -704,7 +704,7 @@ namespace HomeNet.Network
     /// <param name="IsRelayConnection">true if the closed connection was to clAppService port, false otherwise.</param>
     public async Task HandleDisconnectedClient(Client Client, bool IsRelayConnection)
     {
-      log.Trace("(Client.Id:'0x{0:X16}',IsRelayConnection:{1})", Client.Id, IsRelayConnection);
+      log.Trace("(Client.Id:{0},IsRelayConnection:{1})", Client.Id.ToHex(), IsRelayConnection);
 
       Client clientToSendMessages = null;
       List<Message> messagesToSend = new List<Message>();
@@ -713,8 +713,8 @@ namespace HomeNet.Network
       await lockObject.WaitAsync();
 
       bool isCallee = Client == callee;
-      if (IsRelayConnection) log.Trace("Client ({0}) ID '0x{1:X16}' disconnected, relay '{2}' status {3}.", isCallee ? "callee" : "caller", Client.Id, id, status);
-      else log.Trace("Client (customer) ID '0x{0:X16}' disconnected, relay '{1}' status {2}.", Client.Id, id, status);
+      if (IsRelayConnection) log.Trace("Client ({0}) ID {1} disconnected, relay '{2}' status {3}.", isCallee ? "callee" : "caller", Client.Id.ToHex(), id, status);
+      else log.Trace("Client (customer) ID {0} disconnected, relay '{1}' status {2}.", Client.Id.ToHex(), id, status);
 
       bool destroyRelay = false;
       switch (status)
@@ -837,7 +837,7 @@ namespace HomeNet.Network
         {
           if (!await clientToSendMessages.SendMessageAsync(messageToSend))
           {
-            log.Warn("Unable to send message to the client ID '{0:X16}', relay '{1}', maybe it is not connected anymore.", clientToSendMessages.Id, id);
+            log.Warn("Unable to send message to the client ID {0}, relay '{1}', maybe it is not connected anymore.", clientToSendMessages.Id.ToHex(), id);
             break;
           }
         }

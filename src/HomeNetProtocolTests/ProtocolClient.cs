@@ -1,4 +1,5 @@
-﻿using HomeNetCrypto;
+﻿using Google.Protobuf;
+using HomeNetCrypto;
 using HomeNetProtocol;
 using Iop.Homenode;
 using System;
@@ -483,6 +484,59 @@ namespace HomeNetProtocolTests
       log.Trace("(-):{0}", res);
       return res;
     }
+
+    /// <summary>
+    /// Issues and signes a relationship card.
+    /// </summary>
+    /// <param name="RecipientPublicKey">Public key of the card recipient.</param>
+    /// <param name="CardType">Type of the card.</param>
+    /// <param name="ValidFrom">Time from which the card is valid. It must not be greater than <paramref name="ValidTo"/>.</param>
+    /// <param name="ValidTo">Time after which the card is not valid.</param>
+    /// <returns>Signed relationship card.</returns>
+    public SignedRelationshipCard IssueRelationshipCard(byte[] RecipientPublicKey, string CardType, DateTime ValidFrom, DateTime ValidTo)
+    {
+      RelationshipCard card = new RelationshipCard()
+      {
+        CardId = ProtocolHelper.ByteArrayToByteString(new byte[32]),
+        IssuerPublicKey = ProtocolHelper.ByteArrayToByteString(keys.PublicKey),
+        RecipientPublicKey = ProtocolHelper.ByteArrayToByteString(RecipientPublicKey),
+        Type = CardType,
+        ValidFrom = ProtocolHelper.DateTimeToUnixTimestampMs(ValidFrom),
+        ValidTo = ProtocolHelper.DateTimeToUnixTimestampMs(ValidTo)
+      };
+
+      byte[] cardDataToHash = card.ToByteArray();
+      byte[] cardId = Crypto.Sha256(cardDataToHash);
+      card.CardId = ProtocolHelper.ByteArrayToByteString(cardId);
+
+      byte[] signature = Ed25519.Sign(cardId, keys.ExpandedPrivateKey);
+      SignedRelationshipCard res = new SignedRelationshipCard()
+      {
+        Card = card,
+        IssuerSignature = ProtocolHelper.ByteArrayToByteString(signature)
+      };
+
+      return res;    
+    }
+
+
+    /// <summary>
+    /// Creates relationship card application.
+    /// </summary>
+    /// <param name="ApplicationId">Unique card application ID.</param>
+    /// <param name="SignedCard">Signed card for which the application is to be created.</param>
+    /// <returns>Card application for a given card.</returns>
+    public CardApplicationInformation CreateRelationshipCardApplication(byte[] ApplicationId, SignedRelationshipCard SignedCard)
+    {
+      CardApplicationInformation res = new CardApplicationInformation()
+      {
+        ApplicationId = ProtocolHelper.ByteArrayToByteString(ApplicationId),
+        CardId = SignedCard.Card.CardId
+      };
+
+      return res;
+    }
+
 
     /// <summary>
     /// Callback routine that validates server TLS certificate.

@@ -28,7 +28,7 @@ namespace HomeNet.Data.Repositories
     /// Obtains hosted identities type statistics.
     /// </summary>
     /// <returns>List of statistics of hosted profile types.</returns>
-    public async Task<List<ProfileStatsItem>> GetProfileStats()
+    public async Task<List<ProfileStatsItem>> GetProfileStatsAsync()
     {
       return await context.Identities.Where(i => i.ExpirationDate == null).GroupBy(i => i.Type)
         .Select(g => new ProfileStatsItem { IdentityType = g.Key, Count = (uint)g.Count() }).ToListAsync();

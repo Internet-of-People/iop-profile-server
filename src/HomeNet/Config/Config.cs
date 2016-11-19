@@ -76,6 +76,9 @@ namespace HomeNet.Config
     /// <summary>Maximal total number of identities hosted by this node.</summary>
     public int MaxHostedIdentities;
 
+    /// <summary>Maximum number of relations that an identity is allowed to have. Must be lower than RelatedIdentity.MaxIdentityRelations.</summary>
+    public int MaxIdenityRelations;
+
     /// <summary>Cryptographic keys of the node that can be used for signing messages and verifying signatures.</summary>
     public KeysEd25519 Keys;
 
@@ -163,6 +166,7 @@ namespace HomeNet.Config
         IPAddress serverInterface = null;
         string imageDataFolder = null;
         int maxHostedIdentities = 0;
+        int maxIdentityRelations = 0;
 
         Dictionary<string, object> nameVal = new Dictionary<string, object>(StringComparer.Ordinal);
 
@@ -179,6 +183,7 @@ namespace HomeNet.Config
           { "tls_server_certificate",               ConfigValueType.StringNonEmpty },
           { "image_data_folder",                    ConfigValueType.StringNonEmpty },
           { "max_hosted_identities",                ConfigValueType.Int            },
+          { "max_identity_relations",               ConfigValueType.Int            },
         };
 
         error = !LinesToNameValueDictionary(Lines, namesDefinition, nameVal);
@@ -195,6 +200,7 @@ namespace HomeNet.Config
           tcpServerTlsCertificateFileName = (string)nameVal["tls_server_certificate"];
           imageDataFolder = (string)nameVal["image_data_folder"];
           maxHostedIdentities = (int)nameVal["max_hosted_identities"];
+          maxIdentityRelations = (int)nameVal["max_identity_relations"];
 
 
           serverRoles = new ServerRolesConfig();
@@ -245,8 +251,24 @@ namespace HomeNet.Config
             log.Error("Exception occurred while initializing image data folder '{0}': {1}", imageDataFolder, e.ToString());
             error = true;
           }
-          
-          
+        }
+
+        if (!error)
+        {
+          if (maxHostedIdentities <= 0)
+          {
+            log.Error("max_hosted_identities must be a positive integer.");
+            error = true;
+          }
+        }
+
+        if (!error)
+        {
+          if ((maxIdentityRelations <= 0) || (maxIdentityRelations > RelatedIdentity.MaxIdentityRelations))
+          {
+            log.Error("max_identity_relations must be an integer between 1 and {0}.", RelatedIdentity.MaxIdentityRelations);
+            error = true;
+          }
         }
 
         // Finally, if everything is OK, change the actual configuration.
@@ -257,6 +279,7 @@ namespace HomeNet.Config
           TcpServerTlsCertificate = tcpServerTlsCertificate;
           ImageDataFolder = imageDataFolder;
           MaxHostedIdentities = maxHostedIdentities;
+          MaxIdenityRelations = maxIdentityRelations;
 
           log.Info("New configuration loaded successfully.");
         }

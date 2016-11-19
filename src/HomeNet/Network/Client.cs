@@ -184,7 +184,7 @@ namespace HomeNet.Network
       RemoteEndPoint = this.TcpClient.Client.RemoteEndPoint;
 
       server = Server;
-      string logPrefix = string.Format("[{0}<=>{1}|0x{2:X16}] ", server.EndPoint, RemoteEndPoint, Id);
+      string logPrefix = string.Format("[{0}<=>{1}|{2}] ", server.EndPoint, RemoteEndPoint, Id.ToHex());
       string logName = "HomeNet.Network.Client";
       this.log = new PrefixLogger(logName, logPrefix);
 

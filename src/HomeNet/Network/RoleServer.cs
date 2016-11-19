@@ -418,7 +418,7 @@ namespace HomeNet.Network
       PrefixLogger log = new PrefixLogger(this.logName, prefix);
 
       clientList.AddNetworkPeer(Client);
-      log.Debug("Client ID set to 0x{0:X16}.", Client.Id);
+      log.Debug("Client ID set to {0}.", Client.Id.ToHex());
 
       await Client.ReceiveMessageLoop();
 

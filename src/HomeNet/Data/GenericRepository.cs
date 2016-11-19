@@ -236,11 +236,10 @@ namespace HomeNet.Data
     {
       log.Trace("(id:{0})", id);
 
-      throw new NotImplementedException("Wait for .NET Core 1.1.0");
-      /*TEntity entityToDelete = dbSet.Find(id);
+      TEntity entityToDelete = dbSet.Find(id);
       Delete(entityToDelete);
 
-      log.Trace("(-)");*/
+      log.Trace("(-)");
     }
 
     /// <summary>

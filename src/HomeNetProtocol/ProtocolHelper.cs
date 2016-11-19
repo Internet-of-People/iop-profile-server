@@ -31,6 +31,12 @@ namespace HomeNetProtocol
     /// <summary>Maximum number of bytes that extraData field in ProfileSearchRequest can occupy.</summary>
     public const int MaxProfileSearchExtraDataLengthBytes = 256;
 
+    /// <summary>Maximum number of bytes that type field in GetIdentityRelationshipsInformationRequest can occupy.</summary>
+    public const int MaxGetIdentityRelationshipsTypeLengthBytes = 64;
+
+    /// <summary>Maximum number of bytes that type field in RelationshipCard can occupy.</summary>
+    public const int MaxRelationshipCardTypeLengthBytes = 64;
+
 
     /// <summary>
     /// Converts an IoP protocol message to a binary format.
@@ -53,18 +59,31 @@ namespace HomeNetProtocol
     /// <returns>64-bit Unix timestamp with milliseconds precision.</returns>
     public static long GetUnixTimestampMs()
     {
-      long res = (long)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalMilliseconds;
-      return res;
+      return DateTimeToUnixTimestampMs(DateTime.UtcNow);
     }
 
     /// <summary>
     /// Converts 64-bit Unix timestamp with milliseconds precision to DateTime.
     /// </summary>
+    /// <param name="UnixTimeStampMs">Unix timestamp to convert.</param>
     /// <returns>Corresponding DateTime.</returns>
     public static DateTime UnixTimestampMsToDateTime(long UnixTimeStampMs)
     {
       return new DateTime(1970, 1, 1).AddMilliseconds(UnixTimeStampMs);
     }
+
+
+    /// <summary>
+    /// Converts DateTime to 64-bit Unix timestamp with milliseconds precision.
+    /// </summary>
+    /// <param name="Date">Date time information to convert.</param>
+    /// <returns>64-bit Unix timestamp with milliseconds precision.</returns>
+    public static long DateTimeToUnixTimestampMs(DateTime Date)
+    {
+      long res = (long)(Date.Subtract(new DateTime(1970, 1, 1))).TotalMilliseconds;
+      return res;
+    }
+
 
     /// <summary>
     /// Encodes a 32-bit unsigned integer value to a little endian byte array.
