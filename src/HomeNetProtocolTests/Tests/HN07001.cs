@@ -16,7 +16,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN07001 - Add/Remove/Get Related Identity
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn07001---addremoveget-related-identity
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN07.md#hn07001---addremoveget-related-identity
   /// </summary>
   public class HN07001 : ProtocolTest
   {

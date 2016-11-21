@@ -15,7 +15,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN02013 - Parallel Verify Identity Requests
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn02013---parallel-verify-identity-requests
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN02.md#hn02013---parallel-verify-identity-requests
   /// </summary>
   public class HN02013 : ProtocolTest
   {

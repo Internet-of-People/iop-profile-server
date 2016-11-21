@@ -15,7 +15,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN01011 - Application Service Send Message - Bad Role
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn01011---application-service-send-message---bad-role
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN01.md#hn01011---application-service-send-message---bad-role
   /// </summary>
   public class HN01011 : ProtocolTest
   {

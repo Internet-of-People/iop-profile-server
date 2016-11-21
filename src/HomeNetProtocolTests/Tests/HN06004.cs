@@ -16,7 +16,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN06004 - Profile Search - Invalid Queries
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn06004---profile-search---invalid-queries
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN06.md#hn06004---profile-search---invalid-queries
   /// </summary>
   public class HN06004 : ProtocolTest
   {

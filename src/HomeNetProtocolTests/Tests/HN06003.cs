@@ -17,7 +17,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN06003 - Profile Search - Mass Location Search
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn06003---profile-search---mass-location-search
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN06.md#hn06003---profile-search---mass-location-search
   /// </summary>
   public class HN06003 : ProtocolTest
   {

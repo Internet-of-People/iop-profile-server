@@ -15,7 +15,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN01016 - Profile Search Part - Bad Role
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn01016---profile-search-part---bad-role
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN01.md#hn01016---profile-search-part---bad-role
   /// </summary>
   public class HN01016 : ProtocolTest
   {

@@ -13,7 +13,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN00007 - Disconnection of Inactive TCP Client from Non-Customer Port - Incomplete Header
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn00007---disconnection-of-inactive-tcp-client-from-non-customer-port---incomplete-header
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN00.md#hn00007---disconnection-of-inactive-tcp-client-from-non-customer-port---incomplete-header
   /// </summary>
   public class HN00007 : ProtocolTest
   {

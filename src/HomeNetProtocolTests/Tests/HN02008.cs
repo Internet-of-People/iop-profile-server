@@ -15,7 +15,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN02008 - Home Node Request - Quota Exceeded
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn02008---home-node-request---already-exists
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN02.md#hn02008---home-node-request---already-exists
   /// </summary>
   public class HN02008 : ProtocolTest
   {

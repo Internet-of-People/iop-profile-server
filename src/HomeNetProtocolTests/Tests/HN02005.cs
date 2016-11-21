@@ -15,7 +15,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN02005 - Home Node Request
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn02005---home-node-request
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN02.md#hn02005---home-node-request
   /// </summary>
   public class HN02005 : ProtocolTest
   {

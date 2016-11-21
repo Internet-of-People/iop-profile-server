@@ -17,7 +17,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN05002 - Application Service Call - Extensive Test
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn05002---application-service-call---extensive-test
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN05.md#hn05002---application-service-call---extensive-test
   /// </summary>
   public class HN05002 : ProtocolTest
   {

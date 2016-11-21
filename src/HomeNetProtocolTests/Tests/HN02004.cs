@@ -15,7 +15,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN02004 - Start Conversation - Unsupported Version
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn02004---start-conversation---unsupported-version
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN02.md#hn02004---start-conversation---unsupported-version
   /// </summary>
   public class HN02004 : ProtocolTest
   {

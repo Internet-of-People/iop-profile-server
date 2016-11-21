@@ -16,7 +16,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN03002 - Home Node Request - Bad Role
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn03002---home-node-request---bad-role
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN03.md#hn03002---home-node-request---bad-role
   /// </summary>
   public class HN03002 : ProtocolTest
   {

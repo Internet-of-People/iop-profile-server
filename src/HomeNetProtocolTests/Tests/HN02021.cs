@@ -16,7 +16,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN02021 - Call Identity Application Service - Uninitialized
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn02021---call-identity-application-service---uninitialized
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN02.md#hn02021---call-identity-application-service---uninitialized
   /// </summary>
   public class HN02021 : ProtocolTest
   {

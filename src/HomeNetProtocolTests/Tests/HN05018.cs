@@ -17,7 +17,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN05018 - Application Service Callee Closes Connection
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn05018---application-service-callee-closes-connection
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN05.md#hn05018---application-service-callee-closes-connection
   /// </summary>
   public class HN05018 : ProtocolTest
   {

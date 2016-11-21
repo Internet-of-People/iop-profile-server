@@ -15,7 +15,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN01017 - Add Related Identity - Bad Role
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn01017---add-related-identity---bad-role
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN01.md#hn01017---add-related-identity---bad-role
   /// </summary>
   public class HN01017 : ProtocolTest
   {

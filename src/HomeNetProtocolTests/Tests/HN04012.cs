@@ -16,7 +16,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN04012 - Update Profile - Unauthorized
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn04012---update-profile---unauthorized
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN04.md#hn04012---update-profile---unauthorized
   /// </summary>
   public class HN04012 : ProtocolTest
   {

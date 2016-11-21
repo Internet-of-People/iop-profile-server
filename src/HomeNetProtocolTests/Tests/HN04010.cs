@@ -16,7 +16,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN04010 - Cancel Home Node Agreement - Invalid New Home Node Id
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn04010---cancel-home-node-agreement---invalid-new-home-node-id
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN04.md#hn04010---cancel-home-node-agreement---invalid-new-home-node-id
   /// </summary>
   public class HN04010 : ProtocolTest
   {

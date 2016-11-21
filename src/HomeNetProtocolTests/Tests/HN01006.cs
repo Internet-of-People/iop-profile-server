@@ -14,7 +14,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN01006 - Check-In - Bad Role
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn01006---check-in---bad-role
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN01.md#hn01006---check-in---bad-role
   /// </summary>
   public class HN01006 : ProtocolTest
   {

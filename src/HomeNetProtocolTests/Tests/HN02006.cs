@@ -15,7 +15,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN02006 - Home Node Request - Bad Conversation Status
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn02006---home-node-request---bad-conversation-status
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN02.md#hn02006---home-node-request---bad-conversation-status
   /// </summary>
   public class HN02006 : ProtocolTest
   {

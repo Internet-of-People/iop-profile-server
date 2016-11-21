@@ -15,7 +15,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN01013 - Application Service Receive Message Notification Response - Bad Role
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn01013---application-service-receive-message-notification-response---bad-role
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN01.md#hn01013---application-service-receive-message-notification-response---bad-role
   /// </summary>
   public class HN01013 : ProtocolTest
   {

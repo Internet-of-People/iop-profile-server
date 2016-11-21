@@ -17,7 +17,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN05009 - Call Identity Application Service - Invalid Service Name
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn05009---call-identity-application-service---invalid-service-name
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN05.md#hn05009---call-identity-application-service---invalid-service-name
   /// </summary>
   public class HN05009 : ProtocolTest
   {

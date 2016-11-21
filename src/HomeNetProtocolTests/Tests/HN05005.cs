@@ -17,7 +17,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN05005 - Disconnection of Inactive TCP Client from AppService Port
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn05005---disconnection-of-inactive-tcp-client-from-appservice-port
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN05.md#hn05005---disconnection-of-inactive-tcp-client-from-appservice-port
   /// </summary>
   public class HN05005 : ProtocolTest
   {

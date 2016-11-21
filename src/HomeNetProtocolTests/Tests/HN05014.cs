@@ -17,7 +17,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN05014 - Application Service Callee Disconnects After Initialization 2
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn05014---application-service-callee-disconnects-after-initialization-2
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN05.md#hn05014---application-service-callee-disconnects-after-initialization-2
   /// </summary>
   public class HN05014 : ProtocolTest
   {

@@ -16,7 +16,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN03005 - Add Related Identity - Unauthorized
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn03005---add-related-identity---unauthorized
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN03.md#hn03005---add-related-identity---unauthorized
   /// </summary>
   public class HN03005 : ProtocolTest
   {

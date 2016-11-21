@@ -14,7 +14,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN02003 - Start Conversation
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn02003---start-conversation
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN02.md#hn02003---start-conversation
   /// </summary>
   public class HN02003 : ProtocolTest
   {

@@ -17,7 +17,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN05019 - Application Service Callee Disconnects Administrative Connection
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn05019---application-service-callee-disconnects-administrative-connection
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN05.md#hn05019---application-service-callee-disconnects-administrative-connection
   /// </summary>
   public class HN05019 : ProtocolTest
   {

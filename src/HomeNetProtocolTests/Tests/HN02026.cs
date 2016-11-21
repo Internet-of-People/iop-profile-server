@@ -15,7 +15,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN02026 - Profile Search Part - Bad Conversation Status
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn02026---profile-search-part---bad-conversation-status
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN02.md#hn02026---profile-search-part---bad-conversation-status
   /// </summary>
   public class HN02026 : ProtocolTest
   {

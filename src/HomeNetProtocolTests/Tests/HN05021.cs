@@ -17,7 +17,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN05021 - Application Service Call - Too Many Pending Messages
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn05021---application-service-call---too-many-pending-messages
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN05.md#hn05021---application-service-call---too-many-pending-messages
   /// </summary>
   public class HN05021 : ProtocolTest
   {

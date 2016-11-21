@@ -11,7 +11,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN00001 - Invalid Message Header
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn00001---invalid-message-header
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN00.md#hn00001---invalid-message-header
   /// </summary>
   public class HN00001 : ProtocolTest
   {

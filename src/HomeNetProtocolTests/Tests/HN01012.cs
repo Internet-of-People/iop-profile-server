@@ -15,7 +15,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN01012 - Application Service Receive Message Notification - Protocol Violation
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn01012---application-service-receive-message-notification---protocol-violation
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN01.md#hn01012---application-service-receive-message-notification---protocol-violation
   /// </summary>
   public class HN01012 : ProtocolTest
   {

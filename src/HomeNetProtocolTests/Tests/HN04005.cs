@@ -16,7 +16,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN04005 - Cancel Home Node Agreement, Register Again and Check-In
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn04005---cancel-home-node-agreement-register-again-and-checks-in
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN04.md#hn04005---cancel-home-node-agreement-register-again-and-checks-in
   /// </summary>
   public class HN04005 : ProtocolTest
   {

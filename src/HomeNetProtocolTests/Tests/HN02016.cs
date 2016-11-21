@@ -16,7 +16,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN02016 - Get Identity Information - Unknown Identity
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn02016---get-identity-information---unknown-identity
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN02.md#hn02016---get-identity-information---unknown-identity
   /// </summary>
   public class HN02016 : ProtocolTest
   {

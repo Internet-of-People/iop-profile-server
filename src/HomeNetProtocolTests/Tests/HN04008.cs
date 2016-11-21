@@ -16,7 +16,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN04008 - Verify Identity, Update Profile - Unauthorized
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn04008---verify-identity-update-profile---unauthorized
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN04.md#hn04008---verify-identity-update-profile---unauthorized
   /// </summary>
   public class HN04008 : ProtocolTest
   {

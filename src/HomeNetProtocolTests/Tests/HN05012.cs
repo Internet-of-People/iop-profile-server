@@ -17,7 +17,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN05012 - Caller Fails AppService Port Initialization - No Connection
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn05012---caller-fails-appservice-port-initialization---no-connection
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN05.md#hn05012---caller-fails-appservice-port-initialization---no-connection
   /// </summary>
   public class HN05012 : ProtocolTest
   {

@@ -15,7 +15,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN01018 - Remove Related Identity - Bad Role
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn01018---remove-related-identity---bad-role
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN01.md#hn01018---remove-related-identity---bad-role
   /// </summary>
   public class HN01018 : ProtocolTest
   {

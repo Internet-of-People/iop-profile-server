@@ -16,7 +16,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN02017 - Verify Identity, Update Profile - Bad Role
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn02017---verify-identity-update-profile---bad-role
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN02.md#hn02017---verify-identity-update-profile---bad-role
   /// </summary>
   public class HN02017 : ProtocolTest
   {

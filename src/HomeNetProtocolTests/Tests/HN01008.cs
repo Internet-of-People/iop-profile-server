@@ -14,7 +14,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN01008 - Get Identity Information - Bad Role
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn01008---get-identity-information---bad-role
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN01.md#hn01008---get-identity-information---bad-role
   /// </summary>
   public class HN01008 : ProtocolTest
   {

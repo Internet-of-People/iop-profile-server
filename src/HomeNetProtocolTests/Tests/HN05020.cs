@@ -17,7 +17,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN05020 - Application Service Call - No Message Confirmation
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn05020---application-service-call---no-message-confirmation
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN05.md#hn05020---application-service-call---no-message-confirmation
   /// </summary>
   public class HN05020 : ProtocolTest
   {

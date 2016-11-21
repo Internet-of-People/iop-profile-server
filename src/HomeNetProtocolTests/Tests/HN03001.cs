@@ -16,7 +16,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN03001 - Check-In - Not Hosted Identity
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn03001---check-in---not-hosted-identity
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN03.md#hn03001---check-in---not-hosted-identity
   /// </summary>
   public class HN03001 : ProtocolTest
   {

@@ -17,7 +17,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN05022 - Application Service Call - Sending Message Before Initialization Completes
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn05022---sending-message-before-initialization-completes
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN05.md#hn05022---sending-message-before-initialization-completes
   /// </summary>
   public class HN05022 : ProtocolTest
   {

@@ -16,7 +16,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN04014 - Check-In - Invalid Signature 2
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn04014---check-in---invalid-signature-2
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN04.md#hn04014---check-in---invalid-signature-2
   /// </summary>
   public class HN04014 : ProtocolTest
   {

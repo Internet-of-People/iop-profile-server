@@ -17,7 +17,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN05008 - Call Identity Application Service - Not Available 3
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn05008---call-identity-application-service---not-available-3
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN05.md#hn05008---call-identity-application-service---not-available-3
   /// </summary>
   public class HN05008 : ProtocolTest
   {

@@ -15,7 +15,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN02011 - Verify Identity - Invalid Challenge
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn02011---verify-identity---invalid-challenge
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN02.md#hn02011---verify-identity---invalid-challenge
   /// </summary>
   public class HN02011 : ProtocolTest
   {

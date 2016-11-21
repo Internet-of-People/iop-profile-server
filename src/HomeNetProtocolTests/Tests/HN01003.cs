@@ -14,7 +14,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN01003 - Primary Port Ping - Invalid Version Value
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn01003---primary-port-ping---invalid-version-value
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN01.md#hn01003---primary-port-ping---invalid-version-value
   /// </summary>
   public class HN01003 : ProtocolTest
   {
