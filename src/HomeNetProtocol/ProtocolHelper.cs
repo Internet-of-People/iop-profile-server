@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace HomeNetProtocol
 {
   /// <summary>
-  /// Helper functions and constants used for handling protocol messages.
+  /// Helper functions and constants used for handling protocol messages across all parts of IoP protocol.
   /// </summary>
   public static class ProtocolHelper
   {
@@ -39,13 +39,28 @@ namespace HomeNetProtocol
 
 
     /// <summary>
-    /// Converts an IoP protocol message to a binary format.
+    /// Converts an IoP Home Network protocol message to a binary format.
     /// </summary>
-    /// <param name="Data">IoP protocol message.</param>
+    /// <param name="Data">Home Network protocol message.</param>
     /// <returns>Binary representation of the message to be sent over the network.</returns>
     public static byte[] GetMessageBytes(Message Data)
     {
       MessageWithHeader mwh = new MessageWithHeader();
+      mwh.Body = Data;
+      // We have to initialize the header before calling CalculateSize.
+      mwh.Header = 1;
+      mwh.Header = (uint)mwh.CalculateSize() - HeaderSize;
+      return mwh.ToByteArray();
+    }
+
+    /// <summary>
+    /// Converts an IoP Location Based Network protocol message to a binary format.
+    /// </summary>
+    /// <param name="Data">Location Based Network protocol message.</param>
+    /// <returns>Binary representation of the message to be sent over the network.</returns>
+    public static byte[] GetMessageBytes(Iop.Locnet.Message Data)
+    {
+      Iop.Locnet.MessageWithHeader mwh = new Iop.Locnet.MessageWithHeader();
       mwh.Body = Data;
       // We have to initialize the header before calling CalculateSize.
       mwh.Header = 1;

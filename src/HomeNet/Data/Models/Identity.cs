@@ -18,6 +18,9 @@ namespace HomeNet.Data.Models
   {
     private static NLog.Logger log = NLog.LogManager.GetLogger("HomeNet.Data.Models.BaseIdentity");
 
+    /// <summary>Maximum number of identities that a profile server can host.</summary>
+    public const int MaxHostedIdentities = 20000;
+
     /// <summary>Maximum number of bytes that identity name can occupy.</summary>
     public const int MaxProfileNameLengthBytes = 64;
 
@@ -37,10 +40,11 @@ namespace HomeNet.Data.Models
     public const int IdentifierLength = 32;
 
     /// <summary>Maximum number of bytes that public key can occupy.</summary>
-    public const int MaxPublicKeyLengthBytes = 256;
+    public const int MaxPublicKeyLengthBytes = 128;
 
     /// <summary>Identity identifier is SHA256 hash of identity's public key.</summary>
     /// <remarks>This is index - see HomeNet.Data.Context.OnModelCreating.</remarks>
+    [Required]
     [MaxLength(IdentifierLength)]
     public byte[] IdentityId { get; set; }
 

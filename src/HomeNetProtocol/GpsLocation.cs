@@ -15,10 +15,10 @@ namespace HomeNetProtocol
     public const decimal LocationTypeFactor = 1000000;
 
     /// <summary>Special LocationType value that represents no location.</summary>
-    public const int NoLocationLocationType = unchecked((int)0xFFFFFFFF);
+    public const int NoLocationLocationType = 0x7FFFFFFF;
 
-    /// <summary>Special decimal value that represents no location.</summary>
-    public const decimal NoLocationDecimal = -999;
+    /// <summary>Special value that represents no location.</summary>
+    public static GpsLocation NoLocation = new GpsLocation(NoLocationLocationType, NoLocationLocationType);
 
     /// <summary>Minimal value of latitude in floating point representation.</summary>
     public const decimal LatitudeMin = -90;

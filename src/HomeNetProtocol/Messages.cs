@@ -12,7 +12,7 @@ using System.Collections;
 namespace HomeNetProtocol
 {
   /// <summary>
-  /// Allows easy construction of requests and responses.
+  /// Allows easy construction of Home Network requests and responses.
   /// </summary>
   public class MessageBuilder
   {
@@ -850,6 +850,7 @@ namespace HomeNetProtocol
     /// <param name="Request">GetIdentityInformationRequest message for which the response is created.</param>
     /// <param name="IsHosted">True if the requested identity is hosted by this node.</param>
     /// <param name="TargetHomeNodeId">If <paramref name="IsHosted"/> is false, then this is the identifier of the requested identity's new home node, or null if the node does not know network ID of the requested identity's new home node.</param>
+    /// <param name="Version">If <paramref name="IsHosted"/> is true, this is version of the identity's profile structure.</param>
     /// <param name="IsOnline">If <paramref name="IsHosted"/> is true, this indicates whether the requested identity is currently online.</param>
     /// <param name="PublicKey">If <paramref name="IsHosted"/> is true, this is the public key of the requested identity.</param>
     /// <param name="Name">If <paramref name="IsHosted"/> is true, this is the name of the requested identity.</param>
@@ -860,7 +861,7 @@ namespace HomeNetProtocol
     /// <param name="ThumbnailImage">If <paramref name="IsHosted"/> is true, this is the identity's thumbnail image, or null if it was not requested.</param>
     /// <param name="ApplicationServices">If <paramref name="IsHosted"/> is true, this is the identity's list of supported application services, or null if it was not requested.</param>
     /// <returns>GetIdentityInformationResponse message that is ready to be sent.</returns>
-    public Message CreateGetIdentityInformationResponse(Message Request, bool IsHosted, byte[] TargetHomeNodeId, bool IsOnline = false, byte[] PublicKey = null, string Name = null, string Type = null, GpsLocation Location = null, string ExtraData = null, byte[] ProfileImage = null, byte[] ThumbnailImage = null, HashSet<string> ApplicationServices = null)
+    public Message CreateGetIdentityInformationResponse(Message Request, bool IsHosted, byte[] TargetHomeNodeId, byte[] Version, bool IsOnline = false, byte[] PublicKey = null, string Name = null, string Type = null, GpsLocation Location = null, string ExtraData = null, byte[] ProfileImage = null, byte[] ThumbnailImage = null, HashSet<string> ApplicationServices = null)
     {
       GetIdentityInformationResponse getIdentityInformationResponse = new GetIdentityInformationResponse();
       getIdentityInformationResponse.IsHosted = IsHosted;
@@ -868,6 +869,7 @@ namespace HomeNetProtocol
       if (IsHosted)
       {
         getIdentityInformationResponse.IsOnline = IsOnline;
+        getIdentityInformationResponse.Version = ProtocolHelper.ByteArrayToByteString(Version);
         getIdentityInformationResponse.IdentityPublicKey = ProtocolHelper.ByteArrayToByteString(PublicKey);
         if (Name != null) getIdentityInformationResponse.Name = Name;
         if (Type != null) getIdentityInformationResponse.Type = Type;
@@ -1115,13 +1117,18 @@ namespace HomeNetProtocol
     /// <param name="Request">ProfileSearchRequest message for which the response is created.</param>
     /// <param name="TotalRecordCount">Total number of profiles that matched the search criteria.</param>
     /// <param name="MaxResponseRecordCount">Limit of the number of results provided.</param>
+    /// <param name="CoveredNodes">List of nodes whose profile databases were be used to produce the result.</param>
     /// <param name="Results">List of results that contains up to <paramref name="MaxRecordCount"/> items.</param>
     /// <returns>ProfileSearchResponse message that is ready to be sent.</returns>
-    public Message CreateProfileSearchResponse(Message Request, uint TotalRecordCount, uint MaxResponseRecordCount, IEnumerable<IdentityNetworkProfileInformation> Results)
+    public Message CreateProfileSearchResponse(Message Request, uint TotalRecordCount, uint MaxResponseRecordCount, IEnumerable<byte[]> CoveredNodes, IEnumerable<IdentityNetworkProfileInformation> Results)
     {
       ProfileSearchResponse profileSearchResponse = new ProfileSearchResponse();
       profileSearchResponse.TotalRecordCount = TotalRecordCount;
       profileSearchResponse.MaxResponseRecordCount = MaxResponseRecordCount;
+
+      foreach (byte[] coveredNode in CoveredNodes)
+        profileSearchResponse.CoveredNodes.Add(ProtocolHelper.ByteArrayToByteString(coveredNode));
+
       if ((Results != null) && (Results.Count() > 0))
         profileSearchResponse.Profiles.AddRange(Results);
       

@@ -8,7 +8,7 @@ using HomeNet.Data;
 namespace HomeNet.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20161114172915_initial")]
+    [Migration("20161122174338_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -44,7 +44,7 @@ namespace HomeNet.Migrations
 
                     b.Property<byte[]>("PublicKey")
                         .IsRequired()
-                        .HasMaxLength(256);
+                        .HasMaxLength(128);
 
                     b.Property<Guid?>("ThumbnailImage");
 
@@ -104,7 +104,7 @@ namespace HomeNet.Migrations
 
                     b.Property<byte[]>("PublicKey")
                         .IsRequired()
-                        .HasMaxLength(256);
+                        .HasMaxLength(128);
 
                     b.Property<Guid?>("ThumbnailImage");
 
@@ -149,14 +149,17 @@ namespace HomeNet.Migrations
                     b.Property<byte[]>("CardId")
                         .HasMaxLength(32);
 
+                    b.Property<byte[]>("CardVersion")
+                        .HasMaxLength(3);
+
                     b.Property<byte[]>("IssuerPublicKey")
-                        .HasMaxLength(256);
+                        .HasMaxLength(128);
 
                     b.Property<byte[]>("IssuerSignature")
                         .HasMaxLength(100);
 
                     b.Property<byte[]>("RecipientPublicKey")
-                        .HasMaxLength(256);
+                        .HasMaxLength(128);
 
                     b.Property<byte[]>("RecipientSignature")
                         .HasMaxLength(100);

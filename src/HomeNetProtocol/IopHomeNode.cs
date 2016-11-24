@@ -65,7 +65,7 @@ namespace Iop.Homenode {
             "bGVTdGF0cxgIIAEoCzIiLmlvcC5ob21lbm9kZS5Qcm9maWxlU3RhdHNSZXNw",
             "b25zZUgAEmgKI2dldElkZW50aXR5UmVsYXRpb25zaGlwc0luZm9ybWF0aW9u",
             "GAkgASgLMjkuaW9wLmhvbWVub2RlLkdldElkZW50aXR5UmVsYXRpb25zaGlw",
-            "c0luZm9ybWF0aW9uUmVzcG9uc2VIAEIOCgxSZXNwb25zZVR5cGUilwgKE0Nv",
+            "c0luZm9ybWF0aW9uUmVzcG9uc2VIAEIOCgxSZXNwb25zZVR5cGUitAoKE0Nv",
             "bnZlcnNhdGlvblJlcXVlc3QSEQoJc2lnbmF0dXJlGAEgASgMEjcKBXN0YXJ0",
             "GAIgASgLMiYuaW9wLmhvbWVub2RlLlN0YXJ0Q29udmVyc2F0aW9uUmVxdWVz",
             "dEgAEj8KD2hvbWVOb2RlUmVxdWVzdBgDIAEoCzIkLmlvcC5ob21lbm9kZS5I",
@@ -88,150 +88,188 @@ namespace Iop.Homenode {
             "cm9maWxlU2VhcmNoUGFydFJlcXVlc3RIABJFChJhZGRSZWxhdGVkSWRlbnRp",
             "dHkYDiABKAsyJy5pb3AuaG9tZW5vZGUuQWRkUmVsYXRlZElkZW50aXR5UmVx",
             "dWVzdEgAEksKFXJlbW92ZVJlbGF0ZWRJZGVudGl0eRgPIAEoCzIqLmlvcC5o",
-            "b21lbm9kZS5SZW1vdmVSZWxhdGVkSWRlbnRpdHlSZXF1ZXN0SABCDQoLUmVx",
-            "dWVzdFR5cGUipwgKFENvbnZlcnNhdGlvblJlc3BvbnNlEhEKCXNpZ25hdHVy",
-            "ZRgBIAEoDBI4CgVzdGFydBgCIAEoCzInLmlvcC5ob21lbm9kZS5TdGFydENv",
-            "bnZlcnNhdGlvblJlc3BvbnNlSAASQAoPaG9tZU5vZGVSZXF1ZXN0GAMgASgL",
-            "MiUuaW9wLmhvbWVub2RlLkhvbWVOb2RlUmVxdWVzdFJlc3BvbnNlSAASMAoH",
-            "Y2hlY2tJbhgEIAEoCzIdLmlvcC5ob21lbm9kZS5DaGVja0luUmVzcG9uc2VI",
-            "ABI+Cg52ZXJpZnlJZGVudGl0eRgFIAEoCzIkLmlvcC5ob21lbm9kZS5WZXJp",
-            "ZnlJZGVudGl0eVJlc3BvbnNlSAASPAoNdXBkYXRlUHJvZmlsZRgGIAEoCzIj",
-            "LmlvcC5ob21lbm9kZS5VcGRhdGVQcm9maWxlUmVzcG9uc2VIABJQChdjYW5j",
-            "ZWxIb21lTm9kZUFncmVlbWVudBgHIAEoCzItLmlvcC5ob21lbm9kZS5DYW5j",
-            "ZWxIb21lTm9kZUFncmVlbWVudFJlc3BvbnNlSAASTAoVYXBwbGljYXRpb25T",
-            "ZXJ2aWNlQWRkGAggASgLMisuaW9wLmhvbWVub2RlLkFwcGxpY2F0aW9uU2Vy",
-            "dmljZUFkZFJlc3BvbnNlSAASUgoYYXBwbGljYXRpb25TZXJ2aWNlUmVtb3Zl",
-            "GAkgASgLMi4uaW9wLmhvbWVub2RlLkFwcGxpY2F0aW9uU2VydmljZVJlbW92",
-            "ZVJlc3BvbnNlSAASXgoeY2FsbElkZW50aXR5QXBwbGljYXRpb25TZXJ2aWNl",
-            "GAogASgLMjQuaW9wLmhvbWVub2RlLkNhbGxJZGVudGl0eUFwcGxpY2F0aW9u",
-            "U2VydmljZVJlc3BvbnNlSAASUgoYaW5jb21pbmdDYWxsTm90aWZpY2F0aW9u",
-            "GAsgASgLMi4uaW9wLmhvbWVub2RlLkluY29taW5nQ2FsbE5vdGlmaWNhdGlv",
-            "blJlc3BvbnNlSAASPAoNcHJvZmlsZVNlYXJjaBgMIAEoCzIjLmlvcC5ob21l",
-            "bm9kZS5Qcm9maWxlU2VhcmNoUmVzcG9uc2VIABJEChFwcm9maWxlU2VhcmNo",
-            "UGFydBgNIAEoCzInLmlvcC5ob21lbm9kZS5Qcm9maWxlU2VhcmNoUGFydFJl",
-            "c3BvbnNlSAASRgoSYWRkUmVsYXRlZElkZW50aXR5GA4gASgLMiguaW9wLmhv",
-            "bWVub2RlLkFkZFJlbGF0ZWRJZGVudGl0eVJlc3BvbnNlSAASTAoVcmVtb3Zl",
-            "UmVsYXRlZElkZW50aXR5GA8gASgLMisuaW9wLmhvbWVub2RlLlJlbW92ZVJl",
-            "bGF0ZWRJZGVudGl0eVJlc3BvbnNlSABCDgoMUmVzcG9uc2VUeXBlIh4KC1Bp",
-            "bmdSZXF1ZXN0Eg8KB3BheWxvYWQYASABKAwiLgoMUGluZ1Jlc3BvbnNlEg8K",
-            "B3BheWxvYWQYASABKAwSDQoFY2xvY2sYAiABKBIiEgoQTGlzdFJvbGVzUmVx",
-            "dWVzdCI8ChFMaXN0Um9sZXNSZXNwb25zZRInCgVyb2xlcxgBIAMoCzIYLmlv",
-            "cC5ob21lbm9kZS5TZXJ2ZXJSb2xlImQKClNlcnZlclJvbGUSKgoEcm9sZRgB",
-            "IAEoDjIcLmlvcC5ob21lbm9kZS5TZXJ2ZXJSb2xlVHlwZRIMCgRwb3J0GAIg",
-            "ASgNEg0KBWlzVGNwGAMgASgIEg0KBWlzVGxzGAQgASgIIjAKGExpc3RIb21l",
-            "Tm9kZVBsYW5zUmVxdWVzdBIUCgxpZGVudGl0eVR5cGUYASABKAkiRgoZTGlz",
-            "dEhvbWVOb2RlUGxhbnNSZXNwb25zZRIpCgVwbGFucxgBIAMoCzIaLmlvcC5o",
-            "b21lbm9kZS5Ib21lTm9kZVBsYW4isQEKDEhvbWVOb2RlUGxhbhIOCgZwbGFu",
-            "SWQYASABKAwSFQoNbm9kZU5ldHdvcmtJZBgCIAEoDBIUCgxpZGVudGl0eVR5",
-            "cGUYAyABKAkSCwoDZmVlGAQgASgEEhwKFGJpbGxpbmdQZXJpb2RTZWNvbmRz",
-            "GAUgASgNEjkKDnBsYW5QYXJhbWV0ZXJzGAkgAygLMiEuaW9wLmhvbWVub2Rl",
-            "Lk5hbWVTdHJpbmdWYWx1ZVBhaXIiMgoTTmFtZVN0cmluZ1ZhbHVlUGFpchIM",
-            "CgRuYW1lGAEgASgJEg0KBXZhbHVlGAIgASgJImEKGFN0YXJ0Q29udmVyc2F0",
-            "aW9uUmVxdWVzdBIZChFzdXBwb3J0ZWRWZXJzaW9ucxgBIAMoDBIRCglwdWJs",
-            "aWNLZXkYAiABKAwSFwoPY2xpZW50Q2hhbGxlbmdlGAMgASgMImsKGVN0YXJ0",
-            "Q29udmVyc2F0aW9uUmVzcG9uc2USDwoHdmVyc2lvbhgBIAEoDBIRCglwdWJs",
-            "aWNLZXkYAiABKAwSEQoJY2hhbGxlbmdlGAMgASgMEhcKD2NsaWVudENoYWxs",
-            "ZW5nZRgEIAEoDCJOChZIb21lTm9kZVJlcXVlc3RSZXF1ZXN0EjQKCGNvbnRy",
-            "YWN0GAEgASgLMiIuaW9wLmhvbWVub2RlLkhvbWVOb2RlUGxhbkNvbnRyYWN0",
-            "Ik8KF0hvbWVOb2RlUmVxdWVzdFJlc3BvbnNlEjQKCGNvbnRyYWN0GAEgASgL",
-            "MiIuaW9wLmhvbWVub2RlLkhvbWVOb2RlUGxhbkNvbnRyYWN0ImoKFEhvbWVO",
-            "b2RlUGxhbkNvbnRyYWN0Eg4KBnBsYW5JZBgBIAEoDBIZChFpZGVudGl0eVB1",
-            "YmxpY0tleRgCIAEoDBIRCglzdGFydFRpbWUYAyABKBISFAoMaWRlbnRpdHlU",
-            "eXBlGAQgASgJIiMKDkNoZWNrSW5SZXF1ZXN0EhEKCWNoYWxsZW5nZRgBIAEo",
-            "DCIRCg9DaGVja0luUmVzcG9uc2UiKgoVVmVyaWZ5SWRlbnRpdHlSZXF1ZXN0",
-            "EhEKCWNoYWxsZW5nZRgBIAEoDCIYChZWZXJpZnlJZGVudGl0eVJlc3BvbnNl",
-            "It4BChRVcGRhdGVQcm9maWxlUmVxdWVzdBISCgpzZXRWZXJzaW9uGAEgASgI",
-            "Eg8KB3NldE5hbWUYAiABKAgSEAoIc2V0SW1hZ2UYAyABKAgSEwoLc2V0TG9j",
-            "YXRpb24YBCABKAgSFAoMc2V0RXh0cmFEYXRhGAUgASgIEg8KB3ZlcnNpb24Y",
-            "CCABKAwSDAoEbmFtZRgJIAEoCRINCgVpbWFnZRgKIAEoDBIQCghsYXRpdHVk",
-            "ZRgLIAEoDxIRCglsb25naXR1ZGUYDCABKA8SEQoJZXh0cmFEYXRhGA0gASgJ",
-            "IhcKFVVwZGF0ZVByb2ZpbGVSZXNwb25zZSJdCh5DYW5jZWxIb21lTm9kZUFn",
-            "cmVlbWVudFJlcXVlc3QSHQoVcmVkaXJlY3RUb05ld0hvbWVOb2RlGAEgASgI",
-            "EhwKFG5ld0hvbWVOb2RlTmV0d29ya0lkGAIgASgMIiEKH0NhbmNlbEhvbWVO",
-            "b2RlQWdyZWVtZW50UmVzcG9uc2UiNAocQXBwbGljYXRpb25TZXJ2aWNlQWRk",
-            "UmVxdWVzdBIUCgxzZXJ2aWNlTmFtZXMYASADKAkiHwodQXBwbGljYXRpb25T",
-            "ZXJ2aWNlQWRkUmVzcG9uc2UiNgofQXBwbGljYXRpb25TZXJ2aWNlUmVtb3Zl",
-            "UmVxdWVzdBITCgtzZXJ2aWNlTmFtZRgBIAEoCSIiCiBBcHBsaWNhdGlvblNl",
-            "cnZpY2VSZW1vdmVSZXNwb25zZSKaAQodR2V0SWRlbnRpdHlJbmZvcm1hdGlv",
-            "blJlcXVlc3QSGQoRaWRlbnRpdHlOZXR3b3JrSWQYASABKAwSGwoTaW5jbHVk",
-            "ZVByb2ZpbGVJbWFnZRgCIAEoCBIdChVpbmNsdWRlVGh1bWJuYWlsSW1hZ2UY",
-            "AyABKAgSIgoaaW5jbHVkZUFwcGxpY2F0aW9uU2VydmljZXMYBCABKAgivgIK",
-            "HkdldElkZW50aXR5SW5mb3JtYXRpb25SZXNwb25zZRIQCghpc0hvc3RlZBgB",
-            "IAEoCBIdChVpc1RhcmdldEhvbWVOb2RlS25vd24YAiABKAgSHwoXdGFyZ2V0",
-            "SG9tZU5vZGVOZXR3b3JrSWQYAyABKAwSEAoIaXNPbmxpbmUYBCABKAgSGQoR",
-            "aWRlbnRpdHlQdWJsaWNLZXkYBSABKAwSDAoEdHlwZRgGIAEoCRIMCgRuYW1l",
-            "GAcgASgJEhAKCGxhdGl0dWRlGAggASgPEhEKCWxvbmdpdHVkZRgJIAEoDxIR",
-            "CglleHRyYURhdGEYCiABKAkSFAoMcHJvZmlsZUltYWdlGAsgASgMEhYKDnRo",
-            "dW1ibmFpbEltYWdlGAwgASgMEhsKE2FwcGxpY2F0aW9uU2VydmljZXMYDSAD",
-            "KAkiVwolQ2FsbElkZW50aXR5QXBwbGljYXRpb25TZXJ2aWNlUmVxdWVzdBIZ",
-            "ChFpZGVudGl0eU5ldHdvcmtJZBgBIAEoDBITCgtzZXJ2aWNlTmFtZRgCIAEo",
-            "CSI9CiZDYWxsSWRlbnRpdHlBcHBsaWNhdGlvblNlcnZpY2VSZXNwb25zZRIT",
-            "CgtjYWxsZXJUb2tlbhgBIAEoDCJkCh9JbmNvbWluZ0NhbGxOb3RpZmljYXRp",
-            "b25SZXF1ZXN0EhcKD2NhbGxlclB1YmxpY0tleRgBIAEoDBITCgtzZXJ2aWNl",
-            "TmFtZRgCIAEoCRITCgtjYWxsZWVUb2tlbhgDIAEoDCIiCiBJbmNvbWluZ0Nh",
-            "bGxOb3RpZmljYXRpb25SZXNwb25zZSJGCiRBcHBsaWNhdGlvblNlcnZpY2VT",
-            "ZW5kTWVzc2FnZVJlcXVlc3QSDQoFdG9rZW4YASABKAwSDwoHbWVzc2FnZRgC",
-            "IAEoDCInCiVBcHBsaWNhdGlvblNlcnZpY2VTZW5kTWVzc2FnZVJlc3BvbnNl",
-            "IkYKM0FwcGxpY2F0aW9uU2VydmljZVJlY2VpdmVNZXNzYWdlTm90aWZpY2F0",
-            "aW9uUmVxdWVzdBIPCgdtZXNzYWdlGAEgASgMIjYKNEFwcGxpY2F0aW9uU2Vy",
-            "dmljZVJlY2VpdmVNZXNzYWdlTm90aWZpY2F0aW9uUmVzcG9uc2UiFQoTUHJv",
-            "ZmlsZVN0YXRzUmVxdWVzdCJFChRQcm9maWxlU3RhdHNSZXNwb25zZRItCgVz",
-            "dGF0cxgBIAMoCzIeLmlvcC5ob21lbm9kZS5Qcm9maWxlU3RhdHNJdGVtIjcK",
-            "EFByb2ZpbGVTdGF0c0l0ZW0SFAoMaWRlbnRpdHlUeXBlGAEgASgJEg0KBWNv",
-            "dW50GAIgASgNIvIBChRQcm9maWxlU2VhcmNoUmVxdWVzdBIZChFpbmNsdWRl",
-            "SG9zdGVkT25seRgBIAEoCBIeChZpbmNsdWRlVGh1bWJuYWlsSW1hZ2VzGAIg",
-            "ASgIEh4KFm1heFJlc3BvbnNlUmVjb3JkQ291bnQYAyABKA0SGwoTbWF4VG90",
-            "YWxSZWNvcmRDb3VudBgEIAEoDRIMCgR0eXBlGAUgASgJEgwKBG5hbWUYBiAB",
-            "KAkSEAoIbGF0aXR1ZGUYByABKA8SEQoJbG9uZ2l0dWRlGAggASgPEg4KBnJh",
-            "ZGl1cxgJIAEoDRIRCglleHRyYURhdGEYCiABKAkilAEKFVByb2ZpbGVTZWFy",
-            "Y2hSZXNwb25zZRIYChB0b3RhbFJlY29yZENvdW50GAEgASgNEh4KFm1heFJl",
-            "c3BvbnNlUmVjb3JkQ291bnQYAiABKA0SQQoIcHJvZmlsZXMYAyADKAsyLy5p",
-            "b3AuaG9tZW5vZGUuSWRlbnRpdHlOZXR3b3JrUHJvZmlsZUluZm9ybWF0aW9u",
-            "Iu0BCiFJZGVudGl0eU5ldHdvcmtQcm9maWxlSW5mb3JtYXRpb24SEAoIaXNI",
-            "b3N0ZWQYASABKAgSHQoVbmVpZ2hib3JOb2RlTmV0d29ya0lkGAIgASgMEhAK",
-            "CGlzT25saW5lGAMgASgIEhkKEWlkZW50aXR5UHVibGljS2V5GAQgASgMEgwK",
-            "BHR5cGUYBSABKAkSDAoEbmFtZRgGIAEoCRIQCghsYXRpdHVkZRgHIAEoDxIR",
-            "Cglsb25naXR1ZGUYCCABKA8SEQoJZXh0cmFEYXRhGAkgASgJEhYKDnRodW1i",
-            "bmFpbEltYWdlGAogASgMIkQKGFByb2ZpbGVTZWFyY2hQYXJ0UmVxdWVzdBIT",
-            "CgtyZWNvcmRJbmRleBgBIAEoDRITCgtyZWNvcmRDb3VudBgCIAEoDSKIAQoZ",
-            "UHJvZmlsZVNlYXJjaFBhcnRSZXNwb25zZRITCgtyZWNvcmRJbmRleBgBIAEo",
-            "DRITCgtyZWNvcmRDb3VudBgCIAEoDRJBCghwcm9maWxlcxgDIAMoCzIvLmlv",
-            "cC5ob21lbm9kZS5JZGVudGl0eU5ldHdvcmtQcm9maWxlSW5mb3JtYXRpb24i",
-            "mAEKGUFkZFJlbGF0ZWRJZGVudGl0eVJlcXVlc3QSQQoPY2FyZEFwcGxpY2F0",
-            "aW9uGAEgASgLMiguaW9wLmhvbWVub2RlLkNhcmRBcHBsaWNhdGlvbkluZm9y",
-            "bWF0aW9uEjgKCnNpZ25lZENhcmQYAiABKAsyJC5pb3AuaG9tZW5vZGUuU2ln",
-            "bmVkUmVsYXRpb25zaGlwQ2FyZCIcChpBZGRSZWxhdGVkSWRlbnRpdHlSZXNw",
-            "b25zZSI1ChxSZW1vdmVSZWxhdGVkSWRlbnRpdHlSZXF1ZXN0EhUKDWFwcGxp",
-            "Y2F0aW9uSWQYASABKAwiHwodUmVtb3ZlUmVsYXRlZElkZW50aXR5UmVzcG9u",
-            "c2UiQwoaQ2FyZEFwcGxpY2F0aW9uSW5mb3JtYXRpb24SDgoGY2FyZElkGAEg",
-            "ASgMEhUKDWFwcGxpY2F0aW9uSWQYAiABKAwiXwoWU2lnbmVkUmVsYXRpb25z",
-            "aGlwQ2FyZBIsCgRjYXJkGAEgASgLMh4uaW9wLmhvbWVub2RlLlJlbGF0aW9u",
-            "c2hpcENhcmQSFwoPaXNzdWVyU2lnbmF0dXJlGAIgASgMIokBChBSZWxhdGlv",
-            "bnNoaXBDYXJkEg4KBmNhcmRJZBgBIAEoDBIMCgR0eXBlGAIgASgJEhEKCXZh",
-            "bGlkRnJvbRgDIAEoEhIPCgd2YWxpZFRvGAQgASgSEhcKD2lzc3VlclB1Ymxp",
-            "Y0tleRgFIAEoDBIaChJyZWNpcGllbnRQdWJsaWNLZXkYBiABKAwingEKKkdl",
-            "dElkZW50aXR5UmVsYXRpb25zaGlwc0luZm9ybWF0aW9uUmVxdWVzdBIZChFp",
-            "ZGVudGl0eU5ldHdvcmtJZBgBIAEoDBIWCg5pbmNsdWRlSW52YWxpZBgCIAEo",
-            "CBIMCgR0eXBlGAMgASgJEhYKDnNwZWNpZmljSXNzdWVyGAQgASgIEhcKD2lz",
-            "c3Vlck5ldHdvcmtJZBgFIAEoDCJoCitHZXRJZGVudGl0eVJlbGF0aW9uc2hp",
-            "cHNJbmZvcm1hdGlvblJlc3BvbnNlEjkKDXJlbGF0aW9uc2hpcHMYASADKAsy",
-            "Ii5pb3AuaG9tZW5vZGUuSWRlbnRpdHlSZWxhdGlvbnNoaXAirwEKFElkZW50",
-            "aXR5UmVsYXRpb25zaGlwEkEKD2NhcmRBcHBsaWNhdGlvbhgBIAEoCzIoLmlv",
-            "cC5ob21lbm9kZS5DYXJkQXBwbGljYXRpb25JbmZvcm1hdGlvbhIgChhjYXJk",
-            "QXBwbGljYXRpb25TaWduYXR1cmUYAiABKAwSMgoEY2FyZBgDIAEoCzIkLmlv",
-            "cC5ob21lbm9kZS5TaWduZWRSZWxhdGlvbnNoaXBDYXJkKpYDCgZTdGF0dXMS",
-            "DQoJU1RBVFVTX09LEAASHAoYRVJST1JfUFJPVE9DT0xfVklPTEFUSU9OEAES",
-            "FQoRRVJST1JfVU5TVVBQT1JURUQQAhIQCgxFUlJPUl9CQU5ORUQQAxIOCgpF",
-            "UlJPUl9CVVNZEAQSFgoSRVJST1JfVU5BVVRIT1JJWkVEEAUSEgoORVJST1Jf",
-            "QkFEX1JPTEUQBhIhCh1FUlJPUl9CQURfQ09OVkVSU0FUSU9OX1NUQVRVUxAH",
-            "EhIKDkVSUk9SX0lOVEVSTkFMEAgSGAoURVJST1JfUVVPVEFfRVhDRUVERUQQ",
-            "MxIbChdFUlJPUl9JTlZBTElEX1NJR05BVFVSRRA0EhMKD0VSUk9SX05PVF9G",
-            "T1VORBA1EhcKE0VSUk9SX0lOVkFMSURfVkFMVUUQNhIYChRFUlJPUl9BTFJF",
-            "QURZX0VYSVNUUxA3EhcKE0VSUk9SX05PVF9BVkFJTEFCTEUQOBISCg5FUlJP",
-            "Ul9SRUpFQ1RFRBA5EhcKE0VSUk9SX1VOSU5JVElBTElaRUQQOip6Cg5TZXJ2",
-            "ZXJSb2xlVHlwZRILCgdQUklNQVJZEAASDwoLTkRfTkVJR0hCT1IQARIQCgxO",
-            "RF9DT0xMRUFHVUUQAhITCg9DTF9OT05fQ1VTVE9NRVIQAxIPCgtDTF9DVVNU",
-            "T01FUhAEEhIKDkNMX0FQUF9TRVJWSUNFEAViBnByb3RvMw=="));
+            "b21lbm9kZS5SZW1vdmVSZWxhdGVkSWRlbnRpdHlSZXF1ZXN0SAASXwofc3Rh",
+            "cnROZWlnaGJvcmhvb2RJbml0aWFsaXphdGlvbhgQIAEoCzI0LmlvcC5ob21l",
+            "bm9kZS5TdGFydE5laWdoYm9yaG9vZEluaXRpYWxpemF0aW9uUmVxdWVzdEgA",
+            "EmEKIGZpbmlzaE5laWdoYm9yaG9vZEluaXRpYWxpemF0aW9uGBEgASgLMjUu",
+            "aW9wLmhvbWVub2RlLkZpbmlzaE5laWdoYm9yaG9vZEluaXRpYWxpemF0aW9u",
+            "UmVxdWVzdEgAElcKG25laWdoYm9yU2hhcmVkUHJvZmlsZVVwZGF0ZRgSIAEo",
+            "CzIwLmlvcC5ob21lbm9kZS5OZWlnaGJvclNoYXJlZFByb2ZpbGVVcGRhdGVS",
+            "ZXF1ZXN0SABCDQoLUmVxdWVzdFR5cGUixwoKFENvbnZlcnNhdGlvblJlc3Bv",
+            "bnNlEhEKCXNpZ25hdHVyZRgBIAEoDBI4CgVzdGFydBgCIAEoCzInLmlvcC5o",
+            "b21lbm9kZS5TdGFydENvbnZlcnNhdGlvblJlc3BvbnNlSAASQAoPaG9tZU5v",
+            "ZGVSZXF1ZXN0GAMgASgLMiUuaW9wLmhvbWVub2RlLkhvbWVOb2RlUmVxdWVz",
+            "dFJlc3BvbnNlSAASMAoHY2hlY2tJbhgEIAEoCzIdLmlvcC5ob21lbm9kZS5D",
+            "aGVja0luUmVzcG9uc2VIABI+Cg52ZXJpZnlJZGVudGl0eRgFIAEoCzIkLmlv",
+            "cC5ob21lbm9kZS5WZXJpZnlJZGVudGl0eVJlc3BvbnNlSAASPAoNdXBkYXRl",
+            "UHJvZmlsZRgGIAEoCzIjLmlvcC5ob21lbm9kZS5VcGRhdGVQcm9maWxlUmVz",
+            "cG9uc2VIABJQChdjYW5jZWxIb21lTm9kZUFncmVlbWVudBgHIAEoCzItLmlv",
+            "cC5ob21lbm9kZS5DYW5jZWxIb21lTm9kZUFncmVlbWVudFJlc3BvbnNlSAAS",
+            "TAoVYXBwbGljYXRpb25TZXJ2aWNlQWRkGAggASgLMisuaW9wLmhvbWVub2Rl",
+            "LkFwcGxpY2F0aW9uU2VydmljZUFkZFJlc3BvbnNlSAASUgoYYXBwbGljYXRp",
+            "b25TZXJ2aWNlUmVtb3ZlGAkgASgLMi4uaW9wLmhvbWVub2RlLkFwcGxpY2F0",
+            "aW9uU2VydmljZVJlbW92ZVJlc3BvbnNlSAASXgoeY2FsbElkZW50aXR5QXBw",
+            "bGljYXRpb25TZXJ2aWNlGAogASgLMjQuaW9wLmhvbWVub2RlLkNhbGxJZGVu",
+            "dGl0eUFwcGxpY2F0aW9uU2VydmljZVJlc3BvbnNlSAASUgoYaW5jb21pbmdD",
+            "YWxsTm90aWZpY2F0aW9uGAsgASgLMi4uaW9wLmhvbWVub2RlLkluY29taW5n",
+            "Q2FsbE5vdGlmaWNhdGlvblJlc3BvbnNlSAASPAoNcHJvZmlsZVNlYXJjaBgM",
+            "IAEoCzIjLmlvcC5ob21lbm9kZS5Qcm9maWxlU2VhcmNoUmVzcG9uc2VIABJE",
+            "ChFwcm9maWxlU2VhcmNoUGFydBgNIAEoCzInLmlvcC5ob21lbm9kZS5Qcm9m",
+            "aWxlU2VhcmNoUGFydFJlc3BvbnNlSAASRgoSYWRkUmVsYXRlZElkZW50aXR5",
+            "GA4gASgLMiguaW9wLmhvbWVub2RlLkFkZFJlbGF0ZWRJZGVudGl0eVJlc3Bv",
+            "bnNlSAASTAoVcmVtb3ZlUmVsYXRlZElkZW50aXR5GA8gASgLMisuaW9wLmhv",
+            "bWVub2RlLlJlbW92ZVJlbGF0ZWRJZGVudGl0eVJlc3BvbnNlSAASYAofc3Rh",
+            "cnROZWlnaGJvcmhvb2RJbml0aWFsaXphdGlvbhgQIAEoCzI1LmlvcC5ob21l",
+            "bm9kZS5TdGFydE5laWdoYm9yaG9vZEluaXRpYWxpemF0aW9uUmVzcG9uc2VI",
+            "ABJiCiBmaW5pc2hOZWlnaGJvcmhvb2RJbml0aWFsaXphdGlvbhgRIAEoCzI2",
+            "LmlvcC5ob21lbm9kZS5GaW5pc2hOZWlnaGJvcmhvb2RJbml0aWFsaXphdGlv",
+            "blJlc3BvbnNlSAASWAobbmVpZ2hib3JTaGFyZWRQcm9maWxlVXBkYXRlGBIg",
+            "ASgLMjEuaW9wLmhvbWVub2RlLk5laWdoYm9yU2hhcmVkUHJvZmlsZVVwZGF0",
+            "ZVJlc3BvbnNlSABCDgoMUmVzcG9uc2VUeXBlIh4KC1BpbmdSZXF1ZXN0Eg8K",
+            "B3BheWxvYWQYASABKAwiLgoMUGluZ1Jlc3BvbnNlEg8KB3BheWxvYWQYASAB",
+            "KAwSDQoFY2xvY2sYAiABKBIiEgoQTGlzdFJvbGVzUmVxdWVzdCI8ChFMaXN0",
+            "Um9sZXNSZXNwb25zZRInCgVyb2xlcxgBIAMoCzIYLmlvcC5ob21lbm9kZS5T",
+            "ZXJ2ZXJSb2xlImQKClNlcnZlclJvbGUSKgoEcm9sZRgBIAEoDjIcLmlvcC5o",
+            "b21lbm9kZS5TZXJ2ZXJSb2xlVHlwZRIMCgRwb3J0GAIgASgNEg0KBWlzVGNw",
+            "GAMgASgIEg0KBWlzVGxzGAQgASgIIjAKGExpc3RIb21lTm9kZVBsYW5zUmVx",
+            "dWVzdBIUCgxpZGVudGl0eVR5cGUYASABKAkiRgoZTGlzdEhvbWVOb2RlUGxh",
+            "bnNSZXNwb25zZRIpCgVwbGFucxgBIAMoCzIaLmlvcC5ob21lbm9kZS5Ib21l",
+            "Tm9kZVBsYW4isQEKDEhvbWVOb2RlUGxhbhIOCgZwbGFuSWQYASABKAwSFQoN",
+            "bm9kZU5ldHdvcmtJZBgCIAEoDBIUCgxpZGVudGl0eVR5cGUYAyABKAkSCwoD",
+            "ZmVlGAQgASgEEhwKFGJpbGxpbmdQZXJpb2RTZWNvbmRzGAUgASgNEjkKDnBs",
+            "YW5QYXJhbWV0ZXJzGAkgAygLMiEuaW9wLmhvbWVub2RlLk5hbWVTdHJpbmdW",
+            "YWx1ZVBhaXIiMgoTTmFtZVN0cmluZ1ZhbHVlUGFpchIMCgRuYW1lGAEgASgJ",
+            "Eg0KBXZhbHVlGAIgASgJImEKGFN0YXJ0Q29udmVyc2F0aW9uUmVxdWVzdBIZ",
+            "ChFzdXBwb3J0ZWRWZXJzaW9ucxgBIAMoDBIRCglwdWJsaWNLZXkYAiABKAwS",
+            "FwoPY2xpZW50Q2hhbGxlbmdlGAMgASgMImsKGVN0YXJ0Q29udmVyc2F0aW9u",
+            "UmVzcG9uc2USDwoHdmVyc2lvbhgBIAEoDBIRCglwdWJsaWNLZXkYAiABKAwS",
+            "EQoJY2hhbGxlbmdlGAMgASgMEhcKD2NsaWVudENoYWxsZW5nZRgEIAEoDCJO",
+            "ChZIb21lTm9kZVJlcXVlc3RSZXF1ZXN0EjQKCGNvbnRyYWN0GAEgASgLMiIu",
+            "aW9wLmhvbWVub2RlLkhvbWVOb2RlUGxhbkNvbnRyYWN0Ik8KF0hvbWVOb2Rl",
+            "UmVxdWVzdFJlc3BvbnNlEjQKCGNvbnRyYWN0GAEgASgLMiIuaW9wLmhvbWVu",
+            "b2RlLkhvbWVOb2RlUGxhbkNvbnRyYWN0ImoKFEhvbWVOb2RlUGxhbkNvbnRy",
+            "YWN0Eg4KBnBsYW5JZBgBIAEoDBIZChFpZGVudGl0eVB1YmxpY0tleRgCIAEo",
+            "DBIRCglzdGFydFRpbWUYAyABKBISFAoMaWRlbnRpdHlUeXBlGAQgASgJIiMK",
+            "DkNoZWNrSW5SZXF1ZXN0EhEKCWNoYWxsZW5nZRgBIAEoDCIRCg9DaGVja0lu",
+            "UmVzcG9uc2UiKgoVVmVyaWZ5SWRlbnRpdHlSZXF1ZXN0EhEKCWNoYWxsZW5n",
+            "ZRgBIAEoDCIYChZWZXJpZnlJZGVudGl0eVJlc3BvbnNlIt4BChRVcGRhdGVQ",
+            "cm9maWxlUmVxdWVzdBISCgpzZXRWZXJzaW9uGAEgASgIEg8KB3NldE5hbWUY",
+            "AiABKAgSEAoIc2V0SW1hZ2UYAyABKAgSEwoLc2V0TG9jYXRpb24YBCABKAgS",
+            "FAoMc2V0RXh0cmFEYXRhGAUgASgIEg8KB3ZlcnNpb24YCCABKAwSDAoEbmFt",
+            "ZRgJIAEoCRINCgVpbWFnZRgKIAEoDBIQCghsYXRpdHVkZRgLIAEoDxIRCgls",
+            "b25naXR1ZGUYDCABKA8SEQoJZXh0cmFEYXRhGA0gASgJIhcKFVVwZGF0ZVBy",
+            "b2ZpbGVSZXNwb25zZSJdCh5DYW5jZWxIb21lTm9kZUFncmVlbWVudFJlcXVl",
+            "c3QSHQoVcmVkaXJlY3RUb05ld0hvbWVOb2RlGAEgASgIEhwKFG5ld0hvbWVO",
+            "b2RlTmV0d29ya0lkGAIgASgMIiEKH0NhbmNlbEhvbWVOb2RlQWdyZWVtZW50",
+            "UmVzcG9uc2UiNAocQXBwbGljYXRpb25TZXJ2aWNlQWRkUmVxdWVzdBIUCgxz",
+            "ZXJ2aWNlTmFtZXMYASADKAkiHwodQXBwbGljYXRpb25TZXJ2aWNlQWRkUmVz",
+            "cG9uc2UiNgofQXBwbGljYXRpb25TZXJ2aWNlUmVtb3ZlUmVxdWVzdBITCgtz",
+            "ZXJ2aWNlTmFtZRgBIAEoCSIiCiBBcHBsaWNhdGlvblNlcnZpY2VSZW1vdmVS",
+            "ZXNwb25zZSKaAQodR2V0SWRlbnRpdHlJbmZvcm1hdGlvblJlcXVlc3QSGQoR",
+            "aWRlbnRpdHlOZXR3b3JrSWQYASABKAwSGwoTaW5jbHVkZVByb2ZpbGVJbWFn",
+            "ZRgCIAEoCBIdChVpbmNsdWRlVGh1bWJuYWlsSW1hZ2UYAyABKAgSIgoaaW5j",
+            "bHVkZUFwcGxpY2F0aW9uU2VydmljZXMYBCABKAgizwIKHkdldElkZW50aXR5",
+            "SW5mb3JtYXRpb25SZXNwb25zZRIQCghpc0hvc3RlZBgBIAEoCBIdChVpc1Rh",
+            "cmdldEhvbWVOb2RlS25vd24YAiABKAgSHwoXdGFyZ2V0SG9tZU5vZGVOZXR3",
+            "b3JrSWQYAyABKAwSEAoIaXNPbmxpbmUYBCABKAgSDwoHdmVyc2lvbhgFIAEo",
+            "DBIZChFpZGVudGl0eVB1YmxpY0tleRgGIAEoDBIMCgR0eXBlGAcgASgJEgwK",
+            "BG5hbWUYCCABKAkSEAoIbGF0aXR1ZGUYCSABKA8SEQoJbG9uZ2l0dWRlGAog",
+            "ASgPEhEKCWV4dHJhRGF0YRgLIAEoCRIUCgxwcm9maWxlSW1hZ2UYDCABKAwS",
+            "FgoOdGh1bWJuYWlsSW1hZ2UYDSABKAwSGwoTYXBwbGljYXRpb25TZXJ2aWNl",
+            "cxgOIAMoCSJXCiVDYWxsSWRlbnRpdHlBcHBsaWNhdGlvblNlcnZpY2VSZXF1",
+            "ZXN0EhkKEWlkZW50aXR5TmV0d29ya0lkGAEgASgMEhMKC3NlcnZpY2VOYW1l",
+            "GAIgASgJIj0KJkNhbGxJZGVudGl0eUFwcGxpY2F0aW9uU2VydmljZVJlc3Bv",
+            "bnNlEhMKC2NhbGxlclRva2VuGAEgASgMImQKH0luY29taW5nQ2FsbE5vdGlm",
+            "aWNhdGlvblJlcXVlc3QSFwoPY2FsbGVyUHVibGljS2V5GAEgASgMEhMKC3Nl",
+            "cnZpY2VOYW1lGAIgASgJEhMKC2NhbGxlZVRva2VuGAMgASgMIiIKIEluY29t",
+            "aW5nQ2FsbE5vdGlmaWNhdGlvblJlc3BvbnNlIkYKJEFwcGxpY2F0aW9uU2Vy",
+            "dmljZVNlbmRNZXNzYWdlUmVxdWVzdBINCgV0b2tlbhgBIAEoDBIPCgdtZXNz",
+            "YWdlGAIgASgMIicKJUFwcGxpY2F0aW9uU2VydmljZVNlbmRNZXNzYWdlUmVz",
+            "cG9uc2UiRgozQXBwbGljYXRpb25TZXJ2aWNlUmVjZWl2ZU1lc3NhZ2VOb3Rp",
+            "ZmljYXRpb25SZXF1ZXN0Eg8KB21lc3NhZ2UYASABKAwiNgo0QXBwbGljYXRp",
+            "b25TZXJ2aWNlUmVjZWl2ZU1lc3NhZ2VOb3RpZmljYXRpb25SZXNwb25zZSIV",
+            "ChNQcm9maWxlU3RhdHNSZXF1ZXN0IkUKFFByb2ZpbGVTdGF0c1Jlc3BvbnNl",
+            "Ei0KBXN0YXRzGAEgAygLMh4uaW9wLmhvbWVub2RlLlByb2ZpbGVTdGF0c0l0",
+            "ZW0iNwoQUHJvZmlsZVN0YXRzSXRlbRIUCgxpZGVudGl0eVR5cGUYASABKAkS",
+            "DQoFY291bnQYAiABKA0i8gEKFFByb2ZpbGVTZWFyY2hSZXF1ZXN0EhkKEWlu",
+            "Y2x1ZGVIb3N0ZWRPbmx5GAEgASgIEh4KFmluY2x1ZGVUaHVtYm5haWxJbWFn",
+            "ZXMYAiABKAgSHgoWbWF4UmVzcG9uc2VSZWNvcmRDb3VudBgDIAEoDRIbChNt",
+            "YXhUb3RhbFJlY29yZENvdW50GAQgASgNEgwKBHR5cGUYBSABKAkSDAoEbmFt",
+            "ZRgGIAEoCRIQCghsYXRpdHVkZRgHIAEoDxIRCglsb25naXR1ZGUYCCABKA8S",
+            "DgoGcmFkaXVzGAkgASgNEhEKCWV4dHJhRGF0YRgKIAEoCSKqAQoVUHJvZmls",
+            "ZVNlYXJjaFJlc3BvbnNlEhgKEHRvdGFsUmVjb3JkQ291bnQYASABKA0SHgoW",
+            "bWF4UmVzcG9uc2VSZWNvcmRDb3VudBgCIAEoDRIUCgxjb3ZlcmVkTm9kZXMY",
+            "AyADKAwSQQoIcHJvZmlsZXMYBCADKAsyLy5pb3AuaG9tZW5vZGUuSWRlbnRp",
+            "dHlOZXR3b3JrUHJvZmlsZUluZm9ybWF0aW9uIv4BCiFJZGVudGl0eU5ldHdv",
+            "cmtQcm9maWxlSW5mb3JtYXRpb24SEAoIaXNIb3N0ZWQYASABKAgSHQoVbmVp",
+            "Z2hib3JOb2RlTmV0d29ya0lkGAIgASgMEhAKCGlzT25saW5lGAMgASgIEg8K",
+            "B3ZlcnNpb24YBCABKAwSGQoRaWRlbnRpdHlQdWJsaWNLZXkYBSABKAwSDAoE",
+            "dHlwZRgGIAEoCRIMCgRuYW1lGAcgASgJEhAKCGxhdGl0dWRlGAggASgPEhEK",
+            "CWxvbmdpdHVkZRgJIAEoDxIRCglleHRyYURhdGEYCiABKAkSFgoOdGh1bWJu",
+            "YWlsSW1hZ2UYCyABKAwiRAoYUHJvZmlsZVNlYXJjaFBhcnRSZXF1ZXN0EhMK",
+            "C3JlY29yZEluZGV4GAEgASgNEhMKC3JlY29yZENvdW50GAIgASgNIogBChlQ",
+            "cm9maWxlU2VhcmNoUGFydFJlc3BvbnNlEhMKC3JlY29yZEluZGV4GAEgASgN",
+            "EhMKC3JlY29yZENvdW50GAIgASgNEkEKCHByb2ZpbGVzGAMgAygLMi8uaW9w",
+            "LmhvbWVub2RlLklkZW50aXR5TmV0d29ya1Byb2ZpbGVJbmZvcm1hdGlvbiKY",
+            "AQoZQWRkUmVsYXRlZElkZW50aXR5UmVxdWVzdBJBCg9jYXJkQXBwbGljYXRp",
+            "b24YASABKAsyKC5pb3AuaG9tZW5vZGUuQ2FyZEFwcGxpY2F0aW9uSW5mb3Jt",
+            "YXRpb24SOAoKc2lnbmVkQ2FyZBgCIAEoCzIkLmlvcC5ob21lbm9kZS5TaWdu",
+            "ZWRSZWxhdGlvbnNoaXBDYXJkIhwKGkFkZFJlbGF0ZWRJZGVudGl0eVJlc3Bv",
+            "bnNlIjUKHFJlbW92ZVJlbGF0ZWRJZGVudGl0eVJlcXVlc3QSFQoNYXBwbGlj",
+            "YXRpb25JZBgBIAEoDCIfCh1SZW1vdmVSZWxhdGVkSWRlbnRpdHlSZXNwb25z",
+            "ZSJDChpDYXJkQXBwbGljYXRpb25JbmZvcm1hdGlvbhIOCgZjYXJkSWQYASAB",
+            "KAwSFQoNYXBwbGljYXRpb25JZBgCIAEoDCJfChZTaWduZWRSZWxhdGlvbnNo",
+            "aXBDYXJkEiwKBGNhcmQYASABKAsyHi5pb3AuaG9tZW5vZGUuUmVsYXRpb25z",
+            "aGlwQ2FyZBIXCg9pc3N1ZXJTaWduYXR1cmUYAiABKAwimgEKEFJlbGF0aW9u",
+            "c2hpcENhcmQSDgoGY2FyZElkGAEgASgMEg8KB3ZlcnNpb24YAiABKAwSDAoE",
+            "dHlwZRgDIAEoCRIRCgl2YWxpZEZyb20YBCABKBISDwoHdmFsaWRUbxgFIAEo",
+            "EhIXCg9pc3N1ZXJQdWJsaWNLZXkYBiABKAwSGgoScmVjaXBpZW50UHVibGlj",
+            "S2V5GAcgASgMIp4BCipHZXRJZGVudGl0eVJlbGF0aW9uc2hpcHNJbmZvcm1h",
+            "dGlvblJlcXVlc3QSGQoRaWRlbnRpdHlOZXR3b3JrSWQYASABKAwSFgoOaW5j",
+            "bHVkZUludmFsaWQYAiABKAgSDAoEdHlwZRgDIAEoCRIWCg5zcGVjaWZpY0lz",
+            "c3VlchgEIAEoCBIXCg9pc3N1ZXJOZXR3b3JrSWQYBSABKAwiaAorR2V0SWRl",
+            "bnRpdHlSZWxhdGlvbnNoaXBzSW5mb3JtYXRpb25SZXNwb25zZRI5Cg1yZWxh",
+            "dGlvbnNoaXBzGAEgAygLMiIuaW9wLmhvbWVub2RlLklkZW50aXR5UmVsYXRp",
+            "b25zaGlwIq8BChRJZGVudGl0eVJlbGF0aW9uc2hpcBJBCg9jYXJkQXBwbGlj",
+            "YXRpb24YASABKAsyKC5pb3AuaG9tZW5vZGUuQ2FyZEFwcGxpY2F0aW9uSW5m",
+            "b3JtYXRpb24SIAoYY2FyZEFwcGxpY2F0aW9uU2lnbmF0dXJlGAIgASgMEjIK",
+            "BGNhcmQYAyABKAsyJC5pb3AuaG9tZW5vZGUuU2lnbmVkUmVsYXRpb25zaGlw",
+            "Q2FyZCIoCiZTdGFydE5laWdoYm9yaG9vZEluaXRpYWxpemF0aW9uUmVxdWVz",
+            "dCIpCidTdGFydE5laWdoYm9yaG9vZEluaXRpYWxpemF0aW9uUmVzcG9uc2Ui",
+            "KQonRmluaXNoTmVpZ2hib3Job29kSW5pdGlhbGl6YXRpb25SZXF1ZXN0IioK",
+            "KEZpbmlzaE5laWdoYm9yaG9vZEluaXRpYWxpemF0aW9uUmVzcG9uc2UiWgoi",
+            "TmVpZ2hib3JTaGFyZWRQcm9maWxlVXBkYXRlUmVxdWVzdBI0CgVpdGVtcxgB",
+            "IAMoCzIlLmlvcC5ob21lbm9kZS5TaGFyZWRQcm9maWxlVXBkYXRlSXRlbSIl",
+            "CiNOZWlnaGJvclNoYXJlZFByb2ZpbGVVcGRhdGVSZXNwb25zZSLMAQoXU2hh",
+            "cmVkUHJvZmlsZVVwZGF0ZUl0ZW0SMQoDYWRkGAEgASgLMiIuaW9wLmhvbWVu",
+            "b2RlLlNoYXJlZFByb2ZpbGVBZGRJdGVtSAASNwoGY2hhbmdlGAIgASgLMiUu",
+            "aW9wLmhvbWVub2RlLlNoYXJlZFByb2ZpbGVDaGFuZ2VJdGVtSAASNwoGZGVs",
+            "ZXRlGAMgASgLMiUuaW9wLmhvbWVub2RlLlNoYXJlZFByb2ZpbGVEZWxldGVJ",
+            "dGVtSABCDAoKQWN0aW9uVHlwZSLJAQoUU2hhcmVkUHJvZmlsZUFkZEl0ZW0S",
+            "DwoHdmVyc2lvbhgBIAEoDBIZChFpZGVudGl0eVB1YmxpY0tleRgCIAEoDBIM",
+            "CgRuYW1lGAMgASgJEgwKBHR5cGUYBCABKAkSGQoRc2V0VGh1bWJuYWlsSW1h",
+            "Z2UYBSABKAgSFgoOdGh1bWJuYWlsSW1hZ2UYBiABKAwSEAoIbGF0aXR1ZGUY",
+            "ByABKA8SEQoJbG9uZ2l0dWRlGAggASgPEhEKCWV4dHJhRGF0YRgJIAEoCSKO",
+            "AgoXU2hhcmVkUHJvZmlsZUNoYW5nZUl0ZW0SGQoRaWRlbnRpdHlOZXR3b3Jr",
+            "SWQYASABKAwSEgoKc2V0VmVyc2lvbhgCIAEoCBIPCgdzZXROYW1lGAMgASgI",
+            "EhkKEXNldFRodW1ibmFpbEltYWdlGAQgASgIEhMKC3NldExvY2F0aW9uGAUg",
+            "ASgIEhQKDHNldEV4dHJhRGF0YRgGIAEoCBIPCgd2ZXJzaW9uGAcgASgMEgwK",
+            "BG5hbWUYCCABKAkSFgoOdGh1bWJuYWlsSW1hZ2UYCSABKAwSEAoIbGF0aXR1",
+            "ZGUYCiABKA8SEQoJbG9uZ2l0dWRlGAsgASgPEhEKCWV4dHJhRGF0YRgMIAEo",
+            "CSI0ChdTaGFyZWRQcm9maWxlRGVsZXRlSXRlbRIZChFpZGVudGl0eU5ldHdv",
+            "cmtJZBgBIAEoDCqWAwoGU3RhdHVzEg0KCVNUQVRVU19PSxAAEhwKGEVSUk9S",
+            "X1BST1RPQ09MX1ZJT0xBVElPThABEhUKEUVSUk9SX1VOU1VQUE9SVEVEEAIS",
+            "EAoMRVJST1JfQkFOTkVEEAMSDgoKRVJST1JfQlVTWRAEEhYKEkVSUk9SX1VO",
+            "QVVUSE9SSVpFRBAFEhIKDkVSUk9SX0JBRF9ST0xFEAYSIQodRVJST1JfQkFE",
+            "X0NPTlZFUlNBVElPTl9TVEFUVVMQBxISCg5FUlJPUl9JTlRFUk5BTBAIEhgK",
+            "FEVSUk9SX1FVT1RBX0VYQ0VFREVEEDMSGwoXRVJST1JfSU5WQUxJRF9TSUdO",
+            "QVRVUkUQNBITCg9FUlJPUl9OT1RfRk9VTkQQNRIXChNFUlJPUl9JTlZBTElE",
+            "X1ZBTFVFEDYSGAoURVJST1JfQUxSRUFEWV9FWElTVFMQNxIXChNFUlJPUl9O",
+            "T1RfQVZBSUxBQkxFEDgSEgoORVJST1JfUkVKRUNURUQQORIXChNFUlJPUl9V",
+            "TklOSVRJQUxJWkVEEDoqegoOU2VydmVyUm9sZVR5cGUSCwoHUFJJTUFSWRAA",
+            "Eg8KC05EX05FSUdIQk9SEAESEAoMTkRfQ09MTEVBR1VFEAISEwoPQ0xfTk9O",
+            "X0NVU1RPTUVSEAMSDwoLQ0xfQ1VTVE9NRVIQBBISCg5DTF9BUFBfU0VSVklD",
+            "RRAFYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Iop.Homenode.Status), typeof(global::Iop.Homenode.ServerRoleType), }, new pbr::GeneratedClrTypeInfo[] {
@@ -241,8 +279,8 @@ namespace Iop.Homenode {
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.Response), global::Iop.Homenode.Response.Parser, new[]{ "Status", "Timestamp", "Details", "SingleResponse", "ConversationResponse" }, new[]{ "ConversationType" }, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.SingleRequest), global::Iop.Homenode.SingleRequest.Parser, new[]{ "Version", "Ping", "ListRoles", "ListHomeNodePlans", "GetIdentityInformation", "ApplicationServiceSendMessage", "ApplicationServiceReceiveMessageNotification", "ProfileStats", "GetIdentityRelationshipsInformation" }, new[]{ "RequestType" }, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.SingleResponse), global::Iop.Homenode.SingleResponse.Parser, new[]{ "Version", "Ping", "ListRoles", "ListHomeNodePlans", "GetIdentityInformation", "ApplicationServiceSendMessage", "ApplicationServiceReceiveMessageNotification", "ProfileStats", "GetIdentityRelationshipsInformation" }, new[]{ "ResponseType" }, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ConversationRequest), global::Iop.Homenode.ConversationRequest.Parser, new[]{ "Signature", "Start", "HomeNodeRequest", "CheckIn", "VerifyIdentity", "UpdateProfile", "CancelHomeNodeAgreement", "ApplicationServiceAdd", "ApplicationServiceRemove", "CallIdentityApplicationService", "IncomingCallNotification", "ProfileSearch", "ProfileSearchPart", "AddRelatedIdentity", "RemoveRelatedIdentity" }, new[]{ "RequestType" }, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ConversationResponse), global::Iop.Homenode.ConversationResponse.Parser, new[]{ "Signature", "Start", "HomeNodeRequest", "CheckIn", "VerifyIdentity", "UpdateProfile", "CancelHomeNodeAgreement", "ApplicationServiceAdd", "ApplicationServiceRemove", "CallIdentityApplicationService", "IncomingCallNotification", "ProfileSearch", "ProfileSearchPart", "AddRelatedIdentity", "RemoveRelatedIdentity" }, new[]{ "ResponseType" }, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ConversationRequest), global::Iop.Homenode.ConversationRequest.Parser, new[]{ "Signature", "Start", "HomeNodeRequest", "CheckIn", "VerifyIdentity", "UpdateProfile", "CancelHomeNodeAgreement", "ApplicationServiceAdd", "ApplicationServiceRemove", "CallIdentityApplicationService", "IncomingCallNotification", "ProfileSearch", "ProfileSearchPart", "AddRelatedIdentity", "RemoveRelatedIdentity", "StartNeighborhoodInitialization", "FinishNeighborhoodInitialization", "NeighborSharedProfileUpdate" }, new[]{ "RequestType" }, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ConversationResponse), global::Iop.Homenode.ConversationResponse.Parser, new[]{ "Signature", "Start", "HomeNodeRequest", "CheckIn", "VerifyIdentity", "UpdateProfile", "CancelHomeNodeAgreement", "ApplicationServiceAdd", "ApplicationServiceRemove", "CallIdentityApplicationService", "IncomingCallNotification", "ProfileSearch", "ProfileSearchPart", "AddRelatedIdentity", "RemoveRelatedIdentity", "StartNeighborhoodInitialization", "FinishNeighborhoodInitialization", "NeighborSharedProfileUpdate" }, new[]{ "ResponseType" }, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.PingRequest), global::Iop.Homenode.PingRequest.Parser, new[]{ "Payload" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.PingResponse), global::Iop.Homenode.PingResponse.Parser, new[]{ "Payload", "Clock" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ListRolesRequest), global::Iop.Homenode.ListRolesRequest.Parser, null, null, null, null),
@@ -270,7 +308,7 @@ namespace Iop.Homenode {
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ApplicationServiceRemoveRequest), global::Iop.Homenode.ApplicationServiceRemoveRequest.Parser, new[]{ "ServiceName" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ApplicationServiceRemoveResponse), global::Iop.Homenode.ApplicationServiceRemoveResponse.Parser, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.GetIdentityInformationRequest), global::Iop.Homenode.GetIdentityInformationRequest.Parser, new[]{ "IdentityNetworkId", "IncludeProfileImage", "IncludeThumbnailImage", "IncludeApplicationServices" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.GetIdentityInformationResponse), global::Iop.Homenode.GetIdentityInformationResponse.Parser, new[]{ "IsHosted", "IsTargetHomeNodeKnown", "TargetHomeNodeNetworkId", "IsOnline", "IdentityPublicKey", "Type", "Name", "Latitude", "Longitude", "ExtraData", "ProfileImage", "ThumbnailImage", "ApplicationServices" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.GetIdentityInformationResponse), global::Iop.Homenode.GetIdentityInformationResponse.Parser, new[]{ "IsHosted", "IsTargetHomeNodeKnown", "TargetHomeNodeNetworkId", "IsOnline", "Version", "IdentityPublicKey", "Type", "Name", "Latitude", "Longitude", "ExtraData", "ProfileImage", "ThumbnailImage", "ApplicationServices" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.CallIdentityApplicationServiceRequest), global::Iop.Homenode.CallIdentityApplicationServiceRequest.Parser, new[]{ "IdentityNetworkId", "ServiceName" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.CallIdentityApplicationServiceResponse), global::Iop.Homenode.CallIdentityApplicationServiceResponse.Parser, new[]{ "CallerToken" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.IncomingCallNotificationRequest), global::Iop.Homenode.IncomingCallNotificationRequest.Parser, new[]{ "CallerPublicKey", "ServiceName", "CalleeToken" }, null, null, null),
@@ -283,8 +321,8 @@ namespace Iop.Homenode {
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ProfileStatsResponse), global::Iop.Homenode.ProfileStatsResponse.Parser, new[]{ "Stats" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ProfileStatsItem), global::Iop.Homenode.ProfileStatsItem.Parser, new[]{ "IdentityType", "Count" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ProfileSearchRequest), global::Iop.Homenode.ProfileSearchRequest.Parser, new[]{ "IncludeHostedOnly", "IncludeThumbnailImages", "MaxResponseRecordCount", "MaxTotalRecordCount", "Type", "Name", "Latitude", "Longitude", "Radius", "ExtraData" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ProfileSearchResponse), global::Iop.Homenode.ProfileSearchResponse.Parser, new[]{ "TotalRecordCount", "MaxResponseRecordCount", "Profiles" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.IdentityNetworkProfileInformation), global::Iop.Homenode.IdentityNetworkProfileInformation.Parser, new[]{ "IsHosted", "NeighborNodeNetworkId", "IsOnline", "IdentityPublicKey", "Type", "Name", "Latitude", "Longitude", "ExtraData", "ThumbnailImage" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ProfileSearchResponse), global::Iop.Homenode.ProfileSearchResponse.Parser, new[]{ "TotalRecordCount", "MaxResponseRecordCount", "CoveredNodes", "Profiles" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.IdentityNetworkProfileInformation), global::Iop.Homenode.IdentityNetworkProfileInformation.Parser, new[]{ "IsHosted", "NeighborNodeNetworkId", "IsOnline", "Version", "IdentityPublicKey", "Type", "Name", "Latitude", "Longitude", "ExtraData", "ThumbnailImage" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ProfileSearchPartRequest), global::Iop.Homenode.ProfileSearchPartRequest.Parser, new[]{ "RecordIndex", "RecordCount" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ProfileSearchPartResponse), global::Iop.Homenode.ProfileSearchPartResponse.Parser, new[]{ "RecordIndex", "RecordCount", "Profiles" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.AddRelatedIdentityRequest), global::Iop.Homenode.AddRelatedIdentityRequest.Parser, new[]{ "CardApplication", "SignedCard" }, null, null, null),
@@ -293,10 +331,20 @@ namespace Iop.Homenode {
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.RemoveRelatedIdentityResponse), global::Iop.Homenode.RemoveRelatedIdentityResponse.Parser, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.CardApplicationInformation), global::Iop.Homenode.CardApplicationInformation.Parser, new[]{ "CardId", "ApplicationId" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.SignedRelationshipCard), global::Iop.Homenode.SignedRelationshipCard.Parser, new[]{ "Card", "IssuerSignature" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.RelationshipCard), global::Iop.Homenode.RelationshipCard.Parser, new[]{ "CardId", "Type", "ValidFrom", "ValidTo", "IssuerPublicKey", "RecipientPublicKey" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.RelationshipCard), global::Iop.Homenode.RelationshipCard.Parser, new[]{ "CardId", "Version", "Type", "ValidFrom", "ValidTo", "IssuerPublicKey", "RecipientPublicKey" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.GetIdentityRelationshipsInformationRequest), global::Iop.Homenode.GetIdentityRelationshipsInformationRequest.Parser, new[]{ "IdentityNetworkId", "IncludeInvalid", "Type", "SpecificIssuer", "IssuerNetworkId" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.GetIdentityRelationshipsInformationResponse), global::Iop.Homenode.GetIdentityRelationshipsInformationResponse.Parser, new[]{ "Relationships" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.IdentityRelationship), global::Iop.Homenode.IdentityRelationship.Parser, new[]{ "CardApplication", "CardApplicationSignature", "Card" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.IdentityRelationship), global::Iop.Homenode.IdentityRelationship.Parser, new[]{ "CardApplication", "CardApplicationSignature", "Card" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.StartNeighborhoodInitializationRequest), global::Iop.Homenode.StartNeighborhoodInitializationRequest.Parser, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.StartNeighborhoodInitializationResponse), global::Iop.Homenode.StartNeighborhoodInitializationResponse.Parser, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.FinishNeighborhoodInitializationRequest), global::Iop.Homenode.FinishNeighborhoodInitializationRequest.Parser, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.FinishNeighborhoodInitializationResponse), global::Iop.Homenode.FinishNeighborhoodInitializationResponse.Parser, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.NeighborSharedProfileUpdateRequest), global::Iop.Homenode.NeighborSharedProfileUpdateRequest.Parser, new[]{ "Items" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.NeighborSharedProfileUpdateResponse), global::Iop.Homenode.NeighborSharedProfileUpdateResponse.Parser, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.SharedProfileUpdateItem), global::Iop.Homenode.SharedProfileUpdateItem.Parser, new[]{ "Add", "Change", "Delete" }, new[]{ "ActionType" }, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.SharedProfileAddItem), global::Iop.Homenode.SharedProfileAddItem.Parser, new[]{ "Version", "IdentityPublicKey", "Name", "Type", "SetThumbnailImage", "ThumbnailImage", "Latitude", "Longitude", "ExtraData" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.SharedProfileChangeItem), global::Iop.Homenode.SharedProfileChangeItem.Parser, new[]{ "IdentityNetworkId", "SetVersion", "SetName", "SetThumbnailImage", "SetLocation", "SetExtraData", "Version", "Name", "ThumbnailImage", "Latitude", "Longitude", "ExtraData" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.SharedProfileDeleteItem), global::Iop.Homenode.SharedProfileDeleteItem.Parser, new[]{ "IdentityNetworkId" }, null, null, null)
           }));
     }
     #endregion
@@ -419,8 +467,8 @@ namespace Iop.Homenode {
   ///    0D 34 12 00 00
   ///
   ///  where 0x0D means type 'fixed32' (which value is 5) + index of 'header', which is 1 &lt;&lt; 3,
-  ///  this is followed be the 4 byte sequence 34 12 00 00, which is little endian of 0x00001234, which is 4660 decimal.
-  ///  Thus the total number of bytes sent over the wire for this message would be 4665 bytes.
+  ///  this is followed be the 4 byte sequence 34 12 00 00, which is little endian of 0x00001234, which is 4,660 decimal.
+  ///  Thus the total number of bytes sent over the wire for this message would be 4,665 bytes.
   /// </summary>
   public sealed partial class MessageWithHeader : pb::IMessage<MessageWithHeader> {
     private static readonly pb::MessageParser<MessageWithHeader> _parser = new pb::MessageParser<MessageWithHeader>(() => new MessageWithHeader());
@@ -2235,6 +2283,15 @@ namespace Iop.Homenode {
         case RequestTypeOneofCase.RemoveRelatedIdentity:
           RemoveRelatedIdentity = other.RemoveRelatedIdentity.Clone();
           break;
+        case RequestTypeOneofCase.StartNeighborhoodInitialization:
+          StartNeighborhoodInitialization = other.StartNeighborhoodInitialization.Clone();
+          break;
+        case RequestTypeOneofCase.FinishNeighborhoodInitialization:
+          FinishNeighborhoodInitialization = other.FinishNeighborhoodInitialization.Clone();
+          break;
+        case RequestTypeOneofCase.NeighborSharedProfileUpdate:
+          NeighborSharedProfileUpdate = other.NeighborSharedProfileUpdate.Clone();
+          break;
       }
 
     }
@@ -2415,6 +2472,39 @@ namespace Iop.Homenode {
       }
     }
 
+    /// <summary>Field number for the "startNeighborhoodInitialization" field.</summary>
+    public const int StartNeighborhoodInitializationFieldNumber = 16;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Homenode.StartNeighborhoodInitializationRequest StartNeighborhoodInitialization {
+      get { return requestTypeCase_ == RequestTypeOneofCase.StartNeighborhoodInitialization ? (global::Iop.Homenode.StartNeighborhoodInitializationRequest) requestType_ : null; }
+      set {
+        requestType_ = value;
+        requestTypeCase_ = value == null ? RequestTypeOneofCase.None : RequestTypeOneofCase.StartNeighborhoodInitialization;
+      }
+    }
+
+    /// <summary>Field number for the "finishNeighborhoodInitialization" field.</summary>
+    public const int FinishNeighborhoodInitializationFieldNumber = 17;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Homenode.FinishNeighborhoodInitializationRequest FinishNeighborhoodInitialization {
+      get { return requestTypeCase_ == RequestTypeOneofCase.FinishNeighborhoodInitialization ? (global::Iop.Homenode.FinishNeighborhoodInitializationRequest) requestType_ : null; }
+      set {
+        requestType_ = value;
+        requestTypeCase_ = value == null ? RequestTypeOneofCase.None : RequestTypeOneofCase.FinishNeighborhoodInitialization;
+      }
+    }
+
+    /// <summary>Field number for the "neighborSharedProfileUpdate" field.</summary>
+    public const int NeighborSharedProfileUpdateFieldNumber = 18;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Homenode.NeighborSharedProfileUpdateRequest NeighborSharedProfileUpdate {
+      get { return requestTypeCase_ == RequestTypeOneofCase.NeighborSharedProfileUpdate ? (global::Iop.Homenode.NeighborSharedProfileUpdateRequest) requestType_ : null; }
+      set {
+        requestType_ = value;
+        requestTypeCase_ = value == null ? RequestTypeOneofCase.None : RequestTypeOneofCase.NeighborSharedProfileUpdate;
+      }
+    }
+
     private object requestType_;
     /// <summary>Enum of possible cases for the "RequestType" oneof.</summary>
     public enum RequestTypeOneofCase {
@@ -2433,6 +2523,9 @@ namespace Iop.Homenode {
       ProfileSearchPart = 13,
       AddRelatedIdentity = 14,
       RemoveRelatedIdentity = 15,
+      StartNeighborhoodInitialization = 16,
+      FinishNeighborhoodInitialization = 17,
+      NeighborSharedProfileUpdate = 18,
     }
     private RequestTypeOneofCase requestTypeCase_ = RequestTypeOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2474,6 +2567,9 @@ namespace Iop.Homenode {
       if (!object.Equals(ProfileSearchPart, other.ProfileSearchPart)) return false;
       if (!object.Equals(AddRelatedIdentity, other.AddRelatedIdentity)) return false;
       if (!object.Equals(RemoveRelatedIdentity, other.RemoveRelatedIdentity)) return false;
+      if (!object.Equals(StartNeighborhoodInitialization, other.StartNeighborhoodInitialization)) return false;
+      if (!object.Equals(FinishNeighborhoodInitialization, other.FinishNeighborhoodInitialization)) return false;
+      if (!object.Equals(NeighborSharedProfileUpdate, other.NeighborSharedProfileUpdate)) return false;
       if (RequestTypeCase != other.RequestTypeCase) return false;
       return true;
     }
@@ -2496,6 +2592,9 @@ namespace Iop.Homenode {
       if (requestTypeCase_ == RequestTypeOneofCase.ProfileSearchPart) hash ^= ProfileSearchPart.GetHashCode();
       if (requestTypeCase_ == RequestTypeOneofCase.AddRelatedIdentity) hash ^= AddRelatedIdentity.GetHashCode();
       if (requestTypeCase_ == RequestTypeOneofCase.RemoveRelatedIdentity) hash ^= RemoveRelatedIdentity.GetHashCode();
+      if (requestTypeCase_ == RequestTypeOneofCase.StartNeighborhoodInitialization) hash ^= StartNeighborhoodInitialization.GetHashCode();
+      if (requestTypeCase_ == RequestTypeOneofCase.FinishNeighborhoodInitialization) hash ^= FinishNeighborhoodInitialization.GetHashCode();
+      if (requestTypeCase_ == RequestTypeOneofCase.NeighborSharedProfileUpdate) hash ^= NeighborSharedProfileUpdate.GetHashCode();
       hash ^= (int) requestTypeCase_;
       return hash;
     }
@@ -2567,6 +2666,18 @@ namespace Iop.Homenode {
         output.WriteRawTag(122);
         output.WriteMessage(RemoveRelatedIdentity);
       }
+      if (requestTypeCase_ == RequestTypeOneofCase.StartNeighborhoodInitialization) {
+        output.WriteRawTag(130, 1);
+        output.WriteMessage(StartNeighborhoodInitialization);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.FinishNeighborhoodInitialization) {
+        output.WriteRawTag(138, 1);
+        output.WriteMessage(FinishNeighborhoodInitialization);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.NeighborSharedProfileUpdate) {
+        output.WriteRawTag(146, 1);
+        output.WriteMessage(NeighborSharedProfileUpdate);
+      }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2616,6 +2727,15 @@ namespace Iop.Homenode {
       }
       if (requestTypeCase_ == RequestTypeOneofCase.RemoveRelatedIdentity) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(RemoveRelatedIdentity);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.StartNeighborhoodInitialization) {
+        size += 2 + pb::CodedOutputStream.ComputeMessageSize(StartNeighborhoodInitialization);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.FinishNeighborhoodInitialization) {
+        size += 2 + pb::CodedOutputStream.ComputeMessageSize(FinishNeighborhoodInitialization);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.NeighborSharedProfileUpdate) {
+        size += 2 + pb::CodedOutputStream.ComputeMessageSize(NeighborSharedProfileUpdate);
       }
       return size;
     }
@@ -2670,6 +2790,15 @@ namespace Iop.Homenode {
           break;
         case RequestTypeOneofCase.RemoveRelatedIdentity:
           RemoveRelatedIdentity = other.RemoveRelatedIdentity;
+          break;
+        case RequestTypeOneofCase.StartNeighborhoodInitialization:
+          StartNeighborhoodInitialization = other.StartNeighborhoodInitialization;
+          break;
+        case RequestTypeOneofCase.FinishNeighborhoodInitialization:
+          FinishNeighborhoodInitialization = other.FinishNeighborhoodInitialization;
+          break;
+        case RequestTypeOneofCase.NeighborSharedProfileUpdate:
+          NeighborSharedProfileUpdate = other.NeighborSharedProfileUpdate;
           break;
       }
 
@@ -2813,6 +2942,33 @@ namespace Iop.Homenode {
             RemoveRelatedIdentity = subBuilder;
             break;
           }
+          case 130: {
+            global::Iop.Homenode.StartNeighborhoodInitializationRequest subBuilder = new global::Iop.Homenode.StartNeighborhoodInitializationRequest();
+            if (requestTypeCase_ == RequestTypeOneofCase.StartNeighborhoodInitialization) {
+              subBuilder.MergeFrom(StartNeighborhoodInitialization);
+            }
+            input.ReadMessage(subBuilder);
+            StartNeighborhoodInitialization = subBuilder;
+            break;
+          }
+          case 138: {
+            global::Iop.Homenode.FinishNeighborhoodInitializationRequest subBuilder = new global::Iop.Homenode.FinishNeighborhoodInitializationRequest();
+            if (requestTypeCase_ == RequestTypeOneofCase.FinishNeighborhoodInitialization) {
+              subBuilder.MergeFrom(FinishNeighborhoodInitialization);
+            }
+            input.ReadMessage(subBuilder);
+            FinishNeighborhoodInitialization = subBuilder;
+            break;
+          }
+          case 146: {
+            global::Iop.Homenode.NeighborSharedProfileUpdateRequest subBuilder = new global::Iop.Homenode.NeighborSharedProfileUpdateRequest();
+            if (requestTypeCase_ == RequestTypeOneofCase.NeighborSharedProfileUpdate) {
+              subBuilder.MergeFrom(NeighborSharedProfileUpdate);
+            }
+            input.ReadMessage(subBuilder);
+            NeighborSharedProfileUpdate = subBuilder;
+            break;
+          }
         }
       }
     }
@@ -2889,6 +3045,15 @@ namespace Iop.Homenode {
           break;
         case ResponseTypeOneofCase.RemoveRelatedIdentity:
           RemoveRelatedIdentity = other.RemoveRelatedIdentity.Clone();
+          break;
+        case ResponseTypeOneofCase.StartNeighborhoodInitialization:
+          StartNeighborhoodInitialization = other.StartNeighborhoodInitialization.Clone();
+          break;
+        case ResponseTypeOneofCase.FinishNeighborhoodInitialization:
+          FinishNeighborhoodInitialization = other.FinishNeighborhoodInitialization.Clone();
+          break;
+        case ResponseTypeOneofCase.NeighborSharedProfileUpdate:
+          NeighborSharedProfileUpdate = other.NeighborSharedProfileUpdate.Clone();
           break;
       }
 
@@ -3070,6 +3235,39 @@ namespace Iop.Homenode {
       }
     }
 
+    /// <summary>Field number for the "startNeighborhoodInitialization" field.</summary>
+    public const int StartNeighborhoodInitializationFieldNumber = 16;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Homenode.StartNeighborhoodInitializationResponse StartNeighborhoodInitialization {
+      get { return responseTypeCase_ == ResponseTypeOneofCase.StartNeighborhoodInitialization ? (global::Iop.Homenode.StartNeighborhoodInitializationResponse) responseType_ : null; }
+      set {
+        responseType_ = value;
+        responseTypeCase_ = value == null ? ResponseTypeOneofCase.None : ResponseTypeOneofCase.StartNeighborhoodInitialization;
+      }
+    }
+
+    /// <summary>Field number for the "finishNeighborhoodInitialization" field.</summary>
+    public const int FinishNeighborhoodInitializationFieldNumber = 17;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Homenode.FinishNeighborhoodInitializationResponse FinishNeighborhoodInitialization {
+      get { return responseTypeCase_ == ResponseTypeOneofCase.FinishNeighborhoodInitialization ? (global::Iop.Homenode.FinishNeighborhoodInitializationResponse) responseType_ : null; }
+      set {
+        responseType_ = value;
+        responseTypeCase_ = value == null ? ResponseTypeOneofCase.None : ResponseTypeOneofCase.FinishNeighborhoodInitialization;
+      }
+    }
+
+    /// <summary>Field number for the "neighborSharedProfileUpdate" field.</summary>
+    public const int NeighborSharedProfileUpdateFieldNumber = 18;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Homenode.NeighborSharedProfileUpdateResponse NeighborSharedProfileUpdate {
+      get { return responseTypeCase_ == ResponseTypeOneofCase.NeighborSharedProfileUpdate ? (global::Iop.Homenode.NeighborSharedProfileUpdateResponse) responseType_ : null; }
+      set {
+        responseType_ = value;
+        responseTypeCase_ = value == null ? ResponseTypeOneofCase.None : ResponseTypeOneofCase.NeighborSharedProfileUpdate;
+      }
+    }
+
     private object responseType_;
     /// <summary>Enum of possible cases for the "ResponseType" oneof.</summary>
     public enum ResponseTypeOneofCase {
@@ -3088,6 +3286,9 @@ namespace Iop.Homenode {
       ProfileSearchPart = 13,
       AddRelatedIdentity = 14,
       RemoveRelatedIdentity = 15,
+      StartNeighborhoodInitialization = 16,
+      FinishNeighborhoodInitialization = 17,
+      NeighborSharedProfileUpdate = 18,
     }
     private ResponseTypeOneofCase responseTypeCase_ = ResponseTypeOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -3129,6 +3330,9 @@ namespace Iop.Homenode {
       if (!object.Equals(ProfileSearchPart, other.ProfileSearchPart)) return false;
       if (!object.Equals(AddRelatedIdentity, other.AddRelatedIdentity)) return false;
       if (!object.Equals(RemoveRelatedIdentity, other.RemoveRelatedIdentity)) return false;
+      if (!object.Equals(StartNeighborhoodInitialization, other.StartNeighborhoodInitialization)) return false;
+      if (!object.Equals(FinishNeighborhoodInitialization, other.FinishNeighborhoodInitialization)) return false;
+      if (!object.Equals(NeighborSharedProfileUpdate, other.NeighborSharedProfileUpdate)) return false;
       if (ResponseTypeCase != other.ResponseTypeCase) return false;
       return true;
     }
@@ -3151,6 +3355,9 @@ namespace Iop.Homenode {
       if (responseTypeCase_ == ResponseTypeOneofCase.ProfileSearchPart) hash ^= ProfileSearchPart.GetHashCode();
       if (responseTypeCase_ == ResponseTypeOneofCase.AddRelatedIdentity) hash ^= AddRelatedIdentity.GetHashCode();
       if (responseTypeCase_ == ResponseTypeOneofCase.RemoveRelatedIdentity) hash ^= RemoveRelatedIdentity.GetHashCode();
+      if (responseTypeCase_ == ResponseTypeOneofCase.StartNeighborhoodInitialization) hash ^= StartNeighborhoodInitialization.GetHashCode();
+      if (responseTypeCase_ == ResponseTypeOneofCase.FinishNeighborhoodInitialization) hash ^= FinishNeighborhoodInitialization.GetHashCode();
+      if (responseTypeCase_ == ResponseTypeOneofCase.NeighborSharedProfileUpdate) hash ^= NeighborSharedProfileUpdate.GetHashCode();
       hash ^= (int) responseTypeCase_;
       return hash;
     }
@@ -3222,6 +3429,18 @@ namespace Iop.Homenode {
         output.WriteRawTag(122);
         output.WriteMessage(RemoveRelatedIdentity);
       }
+      if (responseTypeCase_ == ResponseTypeOneofCase.StartNeighborhoodInitialization) {
+        output.WriteRawTag(130, 1);
+        output.WriteMessage(StartNeighborhoodInitialization);
+      }
+      if (responseTypeCase_ == ResponseTypeOneofCase.FinishNeighborhoodInitialization) {
+        output.WriteRawTag(138, 1);
+        output.WriteMessage(FinishNeighborhoodInitialization);
+      }
+      if (responseTypeCase_ == ResponseTypeOneofCase.NeighborSharedProfileUpdate) {
+        output.WriteRawTag(146, 1);
+        output.WriteMessage(NeighborSharedProfileUpdate);
+      }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -3271,6 +3490,15 @@ namespace Iop.Homenode {
       }
       if (responseTypeCase_ == ResponseTypeOneofCase.RemoveRelatedIdentity) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(RemoveRelatedIdentity);
+      }
+      if (responseTypeCase_ == ResponseTypeOneofCase.StartNeighborhoodInitialization) {
+        size += 2 + pb::CodedOutputStream.ComputeMessageSize(StartNeighborhoodInitialization);
+      }
+      if (responseTypeCase_ == ResponseTypeOneofCase.FinishNeighborhoodInitialization) {
+        size += 2 + pb::CodedOutputStream.ComputeMessageSize(FinishNeighborhoodInitialization);
+      }
+      if (responseTypeCase_ == ResponseTypeOneofCase.NeighborSharedProfileUpdate) {
+        size += 2 + pb::CodedOutputStream.ComputeMessageSize(NeighborSharedProfileUpdate);
       }
       return size;
     }
@@ -3325,6 +3553,15 @@ namespace Iop.Homenode {
           break;
         case ResponseTypeOneofCase.RemoveRelatedIdentity:
           RemoveRelatedIdentity = other.RemoveRelatedIdentity;
+          break;
+        case ResponseTypeOneofCase.StartNeighborhoodInitialization:
+          StartNeighborhoodInitialization = other.StartNeighborhoodInitialization;
+          break;
+        case ResponseTypeOneofCase.FinishNeighborhoodInitialization:
+          FinishNeighborhoodInitialization = other.FinishNeighborhoodInitialization;
+          break;
+        case ResponseTypeOneofCase.NeighborSharedProfileUpdate:
+          NeighborSharedProfileUpdate = other.NeighborSharedProfileUpdate;
           break;
       }
 
@@ -3466,6 +3703,33 @@ namespace Iop.Homenode {
             }
             input.ReadMessage(subBuilder);
             RemoveRelatedIdentity = subBuilder;
+            break;
+          }
+          case 130: {
+            global::Iop.Homenode.StartNeighborhoodInitializationResponse subBuilder = new global::Iop.Homenode.StartNeighborhoodInitializationResponse();
+            if (responseTypeCase_ == ResponseTypeOneofCase.StartNeighborhoodInitialization) {
+              subBuilder.MergeFrom(StartNeighborhoodInitialization);
+            }
+            input.ReadMessage(subBuilder);
+            StartNeighborhoodInitialization = subBuilder;
+            break;
+          }
+          case 138: {
+            global::Iop.Homenode.FinishNeighborhoodInitializationResponse subBuilder = new global::Iop.Homenode.FinishNeighborhoodInitializationResponse();
+            if (responseTypeCase_ == ResponseTypeOneofCase.FinishNeighborhoodInitialization) {
+              subBuilder.MergeFrom(FinishNeighborhoodInitialization);
+            }
+            input.ReadMessage(subBuilder);
+            FinishNeighborhoodInitialization = subBuilder;
+            break;
+          }
+          case 146: {
+            global::Iop.Homenode.NeighborSharedProfileUpdateResponse subBuilder = new global::Iop.Homenode.NeighborSharedProfileUpdateResponse();
+            if (responseTypeCase_ == ResponseTypeOneofCase.NeighborSharedProfileUpdate) {
+              subBuilder.MergeFrom(NeighborSharedProfileUpdate);
+            }
+            input.ReadMessage(subBuilder);
+            NeighborSharedProfileUpdate = subBuilder;
             break;
           }
         }
@@ -4917,7 +5181,7 @@ namespace Iop.Homenode {
     public const int PublicKeyFieldNumber = 2;
     private pb::ByteString publicKey_ = pb::ByteString.Empty;
     /// <summary>
-    ///  Public key of the requestor.
+    ///  Public key of the requestor. Max 128 bytes.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public pb::ByteString PublicKey {
@@ -5053,6 +5317,7 @@ namespace Iop.Homenode {
   ///  Specific Error Responses:
   ///    * ERROR_UNSUPPORTED - If the requestee does not support any of the requestor's versions, it replies with this error code.
   ///    * ERROR_INVALID_VALUE
+  ///      * Response.details == "publicKey" - 'StartConversationRequest.publicKey' is not a valid public key value. 
   ///      * Response.details == "clientChallenge" - 'StartConversationRequest.clientChallenge' is not 32 byte long. 
   /// </summary>
   public sealed partial class StartConversationResponse : pb::IMessage<StartConversationResponse> {
@@ -7733,6 +7998,7 @@ namespace Iop.Homenode {
       isTargetHomeNodeKnown_ = other.isTargetHomeNodeKnown_;
       targetHomeNodeNetworkId_ = other.targetHomeNodeNetworkId_;
       isOnline_ = other.isOnline_;
+      version_ = other.version_;
       identityPublicKey_ = other.identityPublicKey_;
       type_ = other.type_;
       name_ = other.name_;
@@ -7805,8 +8071,22 @@ namespace Iop.Homenode {
       }
     }
 
+    /// <summary>Field number for the "version" field.</summary>
+    public const int VersionFieldNumber = 5;
+    private pb::ByteString version_ = pb::ByteString.Empty;
+    /// <summary>
+    ///  VersionType. Version of the profile.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString Version {
+      get { return version_; }
+      set {
+        version_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
     /// <summary>Field number for the "identityPublicKey" field.</summary>
-    public const int IdentityPublicKeyFieldNumber = 5;
+    public const int IdentityPublicKeyFieldNumber = 6;
     private pb::ByteString identityPublicKey_ = pb::ByteString.Empty;
     /// <summary>
     ///  The requested identity's public key.
@@ -7820,7 +8100,7 @@ namespace Iop.Homenode {
     }
 
     /// <summary>Field number for the "type" field.</summary>
-    public const int TypeFieldNumber = 6;
+    public const int TypeFieldNumber = 7;
     private string type_ = "";
     /// <summary>
     ///  The requested identity's type.
@@ -7834,7 +8114,7 @@ namespace Iop.Homenode {
     }
 
     /// <summary>Field number for the "name" field.</summary>
-    public const int NameFieldNumber = 7;
+    public const int NameFieldNumber = 8;
     private string name_ = "";
     /// <summary>
     ///  The requested identity's name.
@@ -7848,7 +8128,7 @@ namespace Iop.Homenode {
     }
 
     /// <summary>Field number for the "latitude" field.</summary>
-    public const int LatitudeFieldNumber = 8;
+    public const int LatitudeFieldNumber = 9;
     private int latitude_;
     /// <summary>
     ///  LocationType. The requested identity's GPS location latitude information.
@@ -7862,7 +8142,7 @@ namespace Iop.Homenode {
     }
 
     /// <summary>Field number for the "longitude" field.</summary>
-    public const int LongitudeFieldNumber = 9;
+    public const int LongitudeFieldNumber = 10;
     private int longitude_;
     /// <summary>
     ///  LocationType. The requested identity's GPS location longitude information.
@@ -7876,7 +8156,7 @@ namespace Iop.Homenode {
     }
 
     /// <summary>Field number for the "extraData" field.</summary>
-    public const int ExtraDataFieldNumber = 10;
+    public const int ExtraDataFieldNumber = 11;
     private string extraData_ = "";
     /// <summary>
     ///  The requested identity's extra data.
@@ -7890,7 +8170,7 @@ namespace Iop.Homenode {
     }
 
     /// <summary>Field number for the "profileImage" field.</summary>
-    public const int ProfileImageFieldNumber = 11;
+    public const int ProfileImageFieldNumber = 12;
     private pb::ByteString profileImage_ = pb::ByteString.Empty;
     /// <summary>
     ///  If 'GetIdentityInformationRequest.includeProfileImage' was set, this contains the requested identity's profile image.
@@ -7904,7 +8184,7 @@ namespace Iop.Homenode {
     }
 
     /// <summary>Field number for the "thumbnailImage" field.</summary>
-    public const int ThumbnailImageFieldNumber = 12;
+    public const int ThumbnailImageFieldNumber = 13;
     private pb::ByteString thumbnailImage_ = pb::ByteString.Empty;
     /// <summary>
     ///  If 'GetIdentityInformationRequest.includeThumbnailImage' was set, this contains the requested identity's thumbnail image.
@@ -7918,9 +8198,9 @@ namespace Iop.Homenode {
     }
 
     /// <summary>Field number for the "applicationServices" field.</summary>
-    public const int ApplicationServicesFieldNumber = 13;
+    public const int ApplicationServicesFieldNumber = 14;
     private static readonly pb::FieldCodec<string> _repeated_applicationServices_codec
-        = pb::FieldCodec.ForString(106);
+        = pb::FieldCodec.ForString(114);
     private readonly pbc::RepeatedField<string> applicationServices_ = new pbc::RepeatedField<string>();
     /// <summary>
     ///  If 'GetIdentityInformationRequest.includeApplicationServices' was set and if 'isOnline' is true, this contains 
@@ -7947,6 +8227,7 @@ namespace Iop.Homenode {
       if (IsTargetHomeNodeKnown != other.IsTargetHomeNodeKnown) return false;
       if (TargetHomeNodeNetworkId != other.TargetHomeNodeNetworkId) return false;
       if (IsOnline != other.IsOnline) return false;
+      if (Version != other.Version) return false;
       if (IdentityPublicKey != other.IdentityPublicKey) return false;
       if (Type != other.Type) return false;
       if (Name != other.Name) return false;
@@ -7966,6 +8247,7 @@ namespace Iop.Homenode {
       if (IsTargetHomeNodeKnown != false) hash ^= IsTargetHomeNodeKnown.GetHashCode();
       if (TargetHomeNodeNetworkId.Length != 0) hash ^= TargetHomeNodeNetworkId.GetHashCode();
       if (IsOnline != false) hash ^= IsOnline.GetHashCode();
+      if (Version.Length != 0) hash ^= Version.GetHashCode();
       if (IdentityPublicKey.Length != 0) hash ^= IdentityPublicKey.GetHashCode();
       if (Type.Length != 0) hash ^= Type.GetHashCode();
       if (Name.Length != 0) hash ^= Name.GetHashCode();
@@ -8001,36 +8283,40 @@ namespace Iop.Homenode {
         output.WriteRawTag(32);
         output.WriteBool(IsOnline);
       }
-      if (IdentityPublicKey.Length != 0) {
+      if (Version.Length != 0) {
         output.WriteRawTag(42);
+        output.WriteBytes(Version);
+      }
+      if (IdentityPublicKey.Length != 0) {
+        output.WriteRawTag(50);
         output.WriteBytes(IdentityPublicKey);
       }
       if (Type.Length != 0) {
-        output.WriteRawTag(50);
+        output.WriteRawTag(58);
         output.WriteString(Type);
       }
       if (Name.Length != 0) {
-        output.WriteRawTag(58);
+        output.WriteRawTag(66);
         output.WriteString(Name);
       }
       if (Latitude != 0) {
-        output.WriteRawTag(69);
+        output.WriteRawTag(77);
         output.WriteSFixed32(Latitude);
       }
       if (Longitude != 0) {
-        output.WriteRawTag(77);
+        output.WriteRawTag(85);
         output.WriteSFixed32(Longitude);
       }
       if (ExtraData.Length != 0) {
-        output.WriteRawTag(82);
+        output.WriteRawTag(90);
         output.WriteString(ExtraData);
       }
       if (ProfileImage.Length != 0) {
-        output.WriteRawTag(90);
+        output.WriteRawTag(98);
         output.WriteBytes(ProfileImage);
       }
       if (ThumbnailImage.Length != 0) {
-        output.WriteRawTag(98);
+        output.WriteRawTag(106);
         output.WriteBytes(ThumbnailImage);
       }
       applicationServices_.WriteTo(output, _repeated_applicationServices_codec);
@@ -8050,6 +8336,9 @@ namespace Iop.Homenode {
       }
       if (IsOnline != false) {
         size += 1 + 1;
+      }
+      if (Version.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(Version);
       }
       if (IdentityPublicKey.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeBytesSize(IdentityPublicKey);
@@ -8095,6 +8384,9 @@ namespace Iop.Homenode {
       }
       if (other.IsOnline != false) {
         IsOnline = other.IsOnline;
+      }
+      if (other.Version.Length != 0) {
+        Version = other.Version;
       }
       if (other.IdentityPublicKey.Length != 0) {
         IdentityPublicKey = other.IdentityPublicKey;
@@ -8148,38 +8440,42 @@ namespace Iop.Homenode {
             break;
           }
           case 42: {
-            IdentityPublicKey = input.ReadBytes();
+            Version = input.ReadBytes();
             break;
           }
           case 50: {
-            Type = input.ReadString();
+            IdentityPublicKey = input.ReadBytes();
             break;
           }
           case 58: {
+            Type = input.ReadString();
+            break;
+          }
+          case 66: {
             Name = input.ReadString();
             break;
           }
-          case 69: {
+          case 77: {
             Latitude = input.ReadSFixed32();
             break;
           }
-          case 77: {
+          case 85: {
             Longitude = input.ReadSFixed32();
             break;
           }
-          case 82: {
+          case 90: {
             ExtraData = input.ReadString();
             break;
           }
-          case 90: {
+          case 98: {
             ProfileImage = input.ReadBytes();
             break;
           }
-          case 98: {
+          case 106: {
             ThumbnailImage = input.ReadBytes();
             break;
           }
-          case 106: {
+          case 114: {
             applicationServices_.AddEntriesFrom(input, _repeated_applicationServices_codec);
             break;
           }
@@ -10076,6 +10372,12 @@ namespace Iop.Homenode {
   ///
   ///  If 'maxResponseRecordCount' is lower than 'totalRecordCount', the client is allowed to send ProfileSearchPartRequest messages to obtain more results.
   ///
+  ///  If a client is looking for a small set of profiles within a large area, it might need to perform multiple search queries across 
+  ///  several nodes in the target area in order to "cover" it. 'coveredNodes' contains a list of nodes forming the neighborhood of the node being queried. 
+  ///  Neighborhood nodes share their profile databases and a query to one node will thus cover nodes in its neighborhood. Note that this information 
+  ///  is not very much relevant in case the number of result is large and is limited by the protocol. In this case, it is possible that the node 
+  ///  returns results from profile databases only from a small subset of its neighborhood provided in the 'coveredNodes' value.
+  ///
   ///  Specific Error Responses:
   ///    * ERROR_INVALID_VALUE
   ///      * Response.details == "maxResponseRecordCount" - 'ProfileSearchRequest.maxResponseRecordCount' is not within the required range.
@@ -10113,6 +10415,7 @@ namespace Iop.Homenode {
     public ProfileSearchResponse(ProfileSearchResponse other) : this() {
       totalRecordCount_ = other.totalRecordCount_;
       maxResponseRecordCount_ = other.maxResponseRecordCount_;
+      coveredNodes_ = other.coveredNodes_.Clone();
       profiles_ = other.profiles_.Clone();
     }
 
@@ -10149,10 +10452,23 @@ namespace Iop.Homenode {
       }
     }
 
+    /// <summary>Field number for the "coveredNodes" field.</summary>
+    public const int CoveredNodesFieldNumber = 3;
+    private static readonly pb::FieldCodec<pb::ByteString> _repeated_coveredNodes_codec
+        = pb::FieldCodec.ForBytes(26);
+    private readonly pbc::RepeatedField<pb::ByteString> coveredNodes_ = new pbc::RepeatedField<pb::ByteString>();
+    /// <summary>
+    ///  List of network identifiers of nodes whose profile databases were be used to produce the results, 
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<pb::ByteString> CoveredNodes {
+      get { return coveredNodes_; }
+    }
+
     /// <summary>Field number for the "profiles" field.</summary>
-    public const int ProfilesFieldNumber = 3;
+    public const int ProfilesFieldNumber = 4;
     private static readonly pb::FieldCodec<global::Iop.Homenode.IdentityNetworkProfileInformation> _repeated_profiles_codec
-        = pb::FieldCodec.ForMessage(26, global::Iop.Homenode.IdentityNetworkProfileInformation.Parser);
+        = pb::FieldCodec.ForMessage(34, global::Iop.Homenode.IdentityNetworkProfileInformation.Parser);
     private readonly pbc::RepeatedField<global::Iop.Homenode.IdentityNetworkProfileInformation> profiles_ = new pbc::RepeatedField<global::Iop.Homenode.IdentityNetworkProfileInformation>();
     /// <summary>
     ///  Search results.
@@ -10177,6 +10493,7 @@ namespace Iop.Homenode {
       }
       if (TotalRecordCount != other.TotalRecordCount) return false;
       if (MaxResponseRecordCount != other.MaxResponseRecordCount) return false;
+      if(!coveredNodes_.Equals(other.coveredNodes_)) return false;
       if(!profiles_.Equals(other.profiles_)) return false;
       return true;
     }
@@ -10186,6 +10503,7 @@ namespace Iop.Homenode {
       int hash = 1;
       if (TotalRecordCount != 0) hash ^= TotalRecordCount.GetHashCode();
       if (MaxResponseRecordCount != 0) hash ^= MaxResponseRecordCount.GetHashCode();
+      hash ^= coveredNodes_.GetHashCode();
       hash ^= profiles_.GetHashCode();
       return hash;
     }
@@ -10205,6 +10523,7 @@ namespace Iop.Homenode {
         output.WriteRawTag(16);
         output.WriteUInt32(MaxResponseRecordCount);
       }
+      coveredNodes_.WriteTo(output, _repeated_coveredNodes_codec);
       profiles_.WriteTo(output, _repeated_profiles_codec);
     }
 
@@ -10217,6 +10536,7 @@ namespace Iop.Homenode {
       if (MaxResponseRecordCount != 0) {
         size += 1 + pb::CodedOutputStream.ComputeUInt32Size(MaxResponseRecordCount);
       }
+      size += coveredNodes_.CalculateSize(_repeated_coveredNodes_codec);
       size += profiles_.CalculateSize(_repeated_profiles_codec);
       return size;
     }
@@ -10232,6 +10552,7 @@ namespace Iop.Homenode {
       if (other.MaxResponseRecordCount != 0) {
         MaxResponseRecordCount = other.MaxResponseRecordCount;
       }
+      coveredNodes_.Add(other.coveredNodes_);
       profiles_.Add(other.profiles_);
     }
 
@@ -10252,6 +10573,10 @@ namespace Iop.Homenode {
             break;
           }
           case 26: {
+            coveredNodes_.AddEntriesFrom(input, _repeated_coveredNodes_codec);
+            break;
+          }
+          case 34: {
             profiles_.AddEntriesFrom(input, _repeated_profiles_codec);
             break;
           }
@@ -10292,6 +10617,7 @@ namespace Iop.Homenode {
       isHosted_ = other.isHosted_;
       neighborNodeNetworkId_ = other.neighborNodeNetworkId_;
       isOnline_ = other.isOnline_;
+      version_ = other.version_;
       identityPublicKey_ = other.identityPublicKey_;
       type_ = other.type_;
       name_ = other.name_;
@@ -10348,8 +10674,22 @@ namespace Iop.Homenode {
       }
     }
 
+    /// <summary>Field number for the "version" field.</summary>
+    public const int VersionFieldNumber = 4;
+    private pb::ByteString version_ = pb::ByteString.Empty;
+    /// <summary>
+    ///  VersionType. Version of the profile.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString Version {
+      get { return version_; }
+      set {
+        version_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
     /// <summary>Field number for the "identityPublicKey" field.</summary>
-    public const int IdentityPublicKeyFieldNumber = 4;
+    public const int IdentityPublicKeyFieldNumber = 5;
     private pb::ByteString identityPublicKey_ = pb::ByteString.Empty;
     /// <summary>
     ///  The identity's public key.
@@ -10363,7 +10703,7 @@ namespace Iop.Homenode {
     }
 
     /// <summary>Field number for the "type" field.</summary>
-    public const int TypeFieldNumber = 5;
+    public const int TypeFieldNumber = 6;
     private string type_ = "";
     /// <summary>
     ///  The identity's type.
@@ -10377,7 +10717,7 @@ namespace Iop.Homenode {
     }
 
     /// <summary>Field number for the "name" field.</summary>
-    public const int NameFieldNumber = 6;
+    public const int NameFieldNumber = 7;
     private string name_ = "";
     /// <summary>
     ///  The identity's name.
@@ -10391,7 +10731,7 @@ namespace Iop.Homenode {
     }
 
     /// <summary>Field number for the "latitude" field.</summary>
-    public const int LatitudeFieldNumber = 7;
+    public const int LatitudeFieldNumber = 8;
     private int latitude_;
     /// <summary>
     ///  LocationType. The identity's GPS location latitude information.
@@ -10405,7 +10745,7 @@ namespace Iop.Homenode {
     }
 
     /// <summary>Field number for the "longitude" field.</summary>
-    public const int LongitudeFieldNumber = 8;
+    public const int LongitudeFieldNumber = 9;
     private int longitude_;
     /// <summary>
     ///  LocationType. The identity's GPS location longitude information.
@@ -10419,7 +10759,7 @@ namespace Iop.Homenode {
     }
 
     /// <summary>Field number for the "extraData" field.</summary>
-    public const int ExtraDataFieldNumber = 9;
+    public const int ExtraDataFieldNumber = 10;
     private string extraData_ = "";
     /// <summary>
     ///  The identity's extra data.
@@ -10433,10 +10773,10 @@ namespace Iop.Homenode {
     }
 
     /// <summary>Field number for the "thumbnailImage" field.</summary>
-    public const int ThumbnailImageFieldNumber = 10;
+    public const int ThumbnailImageFieldNumber = 11;
     private pb::ByteString thumbnailImage_ = pb::ByteString.Empty;
     /// <summary>
-    ///  If 'ProfileSearchRequest.includeThumbnailImages' was set, this contains the identity's thumbnail image.
+    ///  If 'ProfileSearchRequest.includeThumbnailImages' was set, this contains the identity's thumbnail image, 
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public pb::ByteString ThumbnailImage {
@@ -10462,6 +10802,7 @@ namespace Iop.Homenode {
       if (IsHosted != other.IsHosted) return false;
       if (NeighborNodeNetworkId != other.NeighborNodeNetworkId) return false;
       if (IsOnline != other.IsOnline) return false;
+      if (Version != other.Version) return false;
       if (IdentityPublicKey != other.IdentityPublicKey) return false;
       if (Type != other.Type) return false;
       if (Name != other.Name) return false;
@@ -10478,6 +10819,7 @@ namespace Iop.Homenode {
       if (IsHosted != false) hash ^= IsHosted.GetHashCode();
       if (NeighborNodeNetworkId.Length != 0) hash ^= NeighborNodeNetworkId.GetHashCode();
       if (IsOnline != false) hash ^= IsOnline.GetHashCode();
+      if (Version.Length != 0) hash ^= Version.GetHashCode();
       if (IdentityPublicKey.Length != 0) hash ^= IdentityPublicKey.GetHashCode();
       if (Type.Length != 0) hash ^= Type.GetHashCode();
       if (Name.Length != 0) hash ^= Name.GetHashCode();
@@ -10507,32 +10849,36 @@ namespace Iop.Homenode {
         output.WriteRawTag(24);
         output.WriteBool(IsOnline);
       }
-      if (IdentityPublicKey.Length != 0) {
+      if (Version.Length != 0) {
         output.WriteRawTag(34);
+        output.WriteBytes(Version);
+      }
+      if (IdentityPublicKey.Length != 0) {
+        output.WriteRawTag(42);
         output.WriteBytes(IdentityPublicKey);
       }
       if (Type.Length != 0) {
-        output.WriteRawTag(42);
+        output.WriteRawTag(50);
         output.WriteString(Type);
       }
       if (Name.Length != 0) {
-        output.WriteRawTag(50);
+        output.WriteRawTag(58);
         output.WriteString(Name);
       }
       if (Latitude != 0) {
-        output.WriteRawTag(61);
+        output.WriteRawTag(69);
         output.WriteSFixed32(Latitude);
       }
       if (Longitude != 0) {
-        output.WriteRawTag(69);
+        output.WriteRawTag(77);
         output.WriteSFixed32(Longitude);
       }
       if (ExtraData.Length != 0) {
-        output.WriteRawTag(74);
+        output.WriteRawTag(82);
         output.WriteString(ExtraData);
       }
       if (ThumbnailImage.Length != 0) {
-        output.WriteRawTag(82);
+        output.WriteRawTag(90);
         output.WriteBytes(ThumbnailImage);
       }
     }
@@ -10548,6 +10894,9 @@ namespace Iop.Homenode {
       }
       if (IsOnline != false) {
         size += 1 + 1;
+      }
+      if (Version.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(Version);
       }
       if (IdentityPublicKey.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeBytesSize(IdentityPublicKey);
@@ -10586,6 +10935,9 @@ namespace Iop.Homenode {
       }
       if (other.IsOnline != false) {
         IsOnline = other.IsOnline;
+      }
+      if (other.Version.Length != 0) {
+        Version = other.Version;
       }
       if (other.IdentityPublicKey.Length != 0) {
         IdentityPublicKey = other.IdentityPublicKey;
@@ -10631,30 +10983,34 @@ namespace Iop.Homenode {
             break;
           }
           case 34: {
-            IdentityPublicKey = input.ReadBytes();
+            Version = input.ReadBytes();
             break;
           }
           case 42: {
-            Type = input.ReadString();
+            IdentityPublicKey = input.ReadBytes();
             break;
           }
           case 50: {
+            Type = input.ReadString();
+            break;
+          }
+          case 58: {
             Name = input.ReadString();
             break;
           }
-          case 61: {
+          case 69: {
             Latitude = input.ReadSFixed32();
             break;
           }
-          case 69: {
+          case 77: {
             Longitude = input.ReadSFixed32();
             break;
           }
-          case 74: {
+          case 82: {
             ExtraData = input.ReadString();
             break;
           }
-          case 82: {
+          case 90: {
             ThumbnailImage = input.ReadBytes();
             break;
           }
@@ -11021,7 +11377,7 @@ namespace Iop.Homenode {
   ///  to the card's recipient public key.
   ///
   ///  Each node is allowed to define its own limit of number of relations that a single identity can have.
-  ///  However, this limit should not exceed the maximal limit of 2000 relations, which is given by the maximal protocol message size.
+  ///  However, this limit should not exceed the maximal limit of 2,000 relations, which is given by the maximal protocol message size.
   ///
   ///  Roles: clCustomer
   ///
@@ -11204,7 +11560,9 @@ namespace Iop.Homenode {
   ///      * Response.details == "signedCard.issuerSignature" - 'AddRelatedIdentityRequest.signedCard.issuerSignature' is not a valid signature of 'AddRelatedIdentityRequest.signedCard.card' structure
   ///                                                           using private key of the issuer whose public key is 'AddRelatedIdentityRequest.signedCard.card.issuerPublicKey'.
   ///      * Response.details == "signedCard.card.cardId" - 'AddRelatedIdentityRequest.signedCard.card.cardId' is not a valid SHA256 hash of 'AddRelatedIdentityRequest.signedCard.card' structure.
+  ///      * Response.details == "signedCard.card.version" - 'AddRelatedIdentityRequest.signedCard.card.version' is not a valid card version.
   ///      * Response.details == "signedCard.card.type" - 'AddRelatedIdentityRequest.signedCard.card.type' is not a valid card type.
+  ///      * Response.details == "signedCard.card.issuerPublicKey" - 'AddRelatedIdentityRequest.signedCard.card.issuerPublicKey' is not a valid public key.
   ///      * Response.details == "signedCard.card.recipientPublicKey" - 'AddRelatedIdentityRequest.signedCard.card.recipientPublicKey' is not the public key of the caller.
   ///      * Response.details == "signedCard.card.validFrom" - 'AddRelatedIdentityRequest.signedCard.card.validFrom' is greater than 'AddRelatedIdentityRequest.signedCard.card.validTo'.
   /// </summary>
@@ -11869,6 +12227,7 @@ namespace Iop.Homenode {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public RelationshipCard(RelationshipCard other) : this() {
       cardId_ = other.cardId_;
+      version_ = other.version_;
       type_ = other.type_;
       validFrom_ = other.validFrom_;
       validTo_ = other.validTo_;
@@ -11895,11 +12254,25 @@ namespace Iop.Homenode {
       }
     }
 
-    /// <summary>Field number for the "type" field.</summary>
-    public const int TypeFieldNumber = 2;
-    private string type_ = "";
+    /// <summary>Field number for the "version" field.</summary>
+    public const int VersionFieldNumber = 2;
+    private pb::ByteString version_ = pb::ByteString.Empty;
     /// <summary>
     ///  with cardId initialized to a byte array of 32 zero bytes.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString Version {
+      get { return version_; }
+      set {
+        version_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "type" field.</summary>
+    public const int TypeFieldNumber = 3;
+    private string type_ = "";
+    /// <summary>
+    ///  Type of the relationship card. This is an application defined value. Max 64 bytes long.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string Type {
@@ -11910,7 +12283,7 @@ namespace Iop.Homenode {
     }
 
     /// <summary>Field number for the "validFrom" field.</summary>
-    public const int ValidFromFieldNumber = 3;
+    public const int ValidFromFieldNumber = 4;
     private long validFrom_;
     /// <summary>
     ///  TimestampType. Time from which the card is valid. It must not be greater than 'validTo'.
@@ -11924,7 +12297,7 @@ namespace Iop.Homenode {
     }
 
     /// <summary>Field number for the "validTo" field.</summary>
-    public const int ValidToFieldNumber = 4;
+    public const int ValidToFieldNumber = 5;
     private long validTo_;
     /// <summary>
     ///  TimestampType. Time after which the card is not valid.
@@ -11938,10 +12311,10 @@ namespace Iop.Homenode {
     }
 
     /// <summary>Field number for the "issuerPublicKey" field.</summary>
-    public const int IssuerPublicKeyFieldNumber = 5;
+    public const int IssuerPublicKeyFieldNumber = 6;
     private pb::ByteString issuerPublicKey_ = pb::ByteString.Empty;
     /// <summary>
-    ///  Public key of the issuer of the card.
+    ///  Public key of the issuer of the card. Max 128 bytes long.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public pb::ByteString IssuerPublicKey {
@@ -11952,10 +12325,10 @@ namespace Iop.Homenode {
     }
 
     /// <summary>Field number for the "recipientPublicKey" field.</summary>
-    public const int RecipientPublicKeyFieldNumber = 6;
+    public const int RecipientPublicKeyFieldNumber = 7;
     private pb::ByteString recipientPublicKey_ = pb::ByteString.Empty;
     /// <summary>
-    ///  Public key of the recipient of the card.
+    ///  Public key of the recipient of the card. Max 128 bytes long.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public pb::ByteString RecipientPublicKey {
@@ -11979,6 +12352,7 @@ namespace Iop.Homenode {
         return true;
       }
       if (CardId != other.CardId) return false;
+      if (Version != other.Version) return false;
       if (Type != other.Type) return false;
       if (ValidFrom != other.ValidFrom) return false;
       if (ValidTo != other.ValidTo) return false;
@@ -11991,6 +12365,7 @@ namespace Iop.Homenode {
     public override int GetHashCode() {
       int hash = 1;
       if (CardId.Length != 0) hash ^= CardId.GetHashCode();
+      if (Version.Length != 0) hash ^= Version.GetHashCode();
       if (Type.Length != 0) hash ^= Type.GetHashCode();
       if (ValidFrom != 0L) hash ^= ValidFrom.GetHashCode();
       if (ValidTo != 0L) hash ^= ValidTo.GetHashCode();
@@ -12010,24 +12385,28 @@ namespace Iop.Homenode {
         output.WriteRawTag(10);
         output.WriteBytes(CardId);
       }
-      if (Type.Length != 0) {
+      if (Version.Length != 0) {
         output.WriteRawTag(18);
+        output.WriteBytes(Version);
+      }
+      if (Type.Length != 0) {
+        output.WriteRawTag(26);
         output.WriteString(Type);
       }
       if (ValidFrom != 0L) {
-        output.WriteRawTag(24);
+        output.WriteRawTag(32);
         output.WriteSInt64(ValidFrom);
       }
       if (ValidTo != 0L) {
-        output.WriteRawTag(32);
+        output.WriteRawTag(40);
         output.WriteSInt64(ValidTo);
       }
       if (IssuerPublicKey.Length != 0) {
-        output.WriteRawTag(42);
+        output.WriteRawTag(50);
         output.WriteBytes(IssuerPublicKey);
       }
       if (RecipientPublicKey.Length != 0) {
-        output.WriteRawTag(50);
+        output.WriteRawTag(58);
         output.WriteBytes(RecipientPublicKey);
       }
     }
@@ -12037,6 +12416,9 @@ namespace Iop.Homenode {
       int size = 0;
       if (CardId.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeBytesSize(CardId);
+      }
+      if (Version.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(Version);
       }
       if (Type.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Type);
@@ -12063,6 +12445,9 @@ namespace Iop.Homenode {
       }
       if (other.CardId.Length != 0) {
         CardId = other.CardId;
+      }
+      if (other.Version.Length != 0) {
+        Version = other.Version;
       }
       if (other.Type.Length != 0) {
         Type = other.Type;
@@ -12094,22 +12479,26 @@ namespace Iop.Homenode {
             break;
           }
           case 18: {
+            Version = input.ReadBytes();
+            break;
+          }
+          case 26: {
             Type = input.ReadString();
             break;
           }
-          case 24: {
+          case 32: {
             ValidFrom = input.ReadSInt64();
             break;
           }
-          case 32: {
+          case 40: {
             ValidTo = input.ReadSInt64();
             break;
           }
-          case 42: {
+          case 50: {
             IssuerPublicKey = input.ReadBytes();
             break;
           }
-          case 50: {
+          case 58: {
             RecipientPublicKey = input.ReadBytes();
             break;
           }
@@ -12207,7 +12596,7 @@ namespace Iop.Homenode {
     public const int SpecificIssuerFieldNumber = 4;
     private bool specificIssuer_;
     /// <summary>
-    ///  If set to true, the response will only include relationships which cards were issued by issuer with 'issuerPublicKey' public key.
+    ///  If set to true, the response will only include relationships which cards were issued by issuer with network identifier equal to 'issuerNetworkId'.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool SpecificIssuer {
@@ -12679,6 +13068,1847 @@ namespace Iop.Homenode {
               card_ = new global::Iop.Homenode.SignedRelationshipCard();
             }
             input.ReadMessage(card_);
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///
+  ///  Initiates sharing of the profile database with a neighbor node.
+  ///
+  ///  Node joining the network needs to contact its neighbors and share its profile database with them. 
+  ///  Similarly, nodes that detect a new neighbor in their neighborhood need to contact it and share their 
+  ///  profile databases with the new node.
+  ///
+  ///  Sharing the profile list always goes from one node (the client who sends this request) to the other node 
+  ///  (who acts as a server in this session). If the server node wants to share its profile database with 
+  ///  the client node, it will initiate the same dialog on its own, acting as a client.
+  ///
+  ///  Once the requesting node receives StartNeighborhoodInitializationResponse response, it can proceed with 
+  ///  NeighborSharedProfileUpdateRequest requests. Once it sends all its profiles to the other party, it has to finish 
+  ///  the initialization process using FinishNeighborhoodInitializationRequest. Only then the neighbor 
+  ///  will consider the shared profiles as valid and will consider them in its search.
+  ///
+  ///  If the request is processed successfully, the initialization of the neighbor relationship is started 
+  ///  on the opened session and the initialization process has to be finished with FinishNeighborhoodInitializationRequest 
+  ///  or it will fail when the connection is terminated. The target node can terminate the initialization process 
+  ///  by disconnecting the other party if it takes more than 5 minutes to complete.
+  ///
+  ///  Roles: ndNeighbor
+  ///
+  ///  Conversation status: Verified
+  /// </summary>
+  public sealed partial class StartNeighborhoodInitializationRequest : pb::IMessage<StartNeighborhoodInitializationRequest> {
+    private static readonly pb::MessageParser<StartNeighborhoodInitializationRequest> _parser = new pb::MessageParser<StartNeighborhoodInitializationRequest>(() => new StartNeighborhoodInitializationRequest());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<StartNeighborhoodInitializationRequest> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Homenode.IopHomeNodeReflection.Descriptor.MessageTypes[62]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public StartNeighborhoodInitializationRequest() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public StartNeighborhoodInitializationRequest(StartNeighborhoodInitializationRequest other) : this() {
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public StartNeighborhoodInitializationRequest Clone() {
+      return new StartNeighborhoodInitializationRequest(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as StartNeighborhoodInitializationRequest);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(StartNeighborhoodInitializationRequest other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(StartNeighborhoodInitializationRequest other) {
+      if (other == null) {
+        return;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///
+  ///  A response to StartNeighborhoodInitializationRequest.
+  ///
+  ///  General Error Responses:
+  ///    * ERROR_BUSY - Node can use this error code during the neighborhood initialization process to express that it is currently busy 
+  ///                   with the neighborhood initialization process with one or more other nodes.
+  /// </summary>
+  public sealed partial class StartNeighborhoodInitializationResponse : pb::IMessage<StartNeighborhoodInitializationResponse> {
+    private static readonly pb::MessageParser<StartNeighborhoodInitializationResponse> _parser = new pb::MessageParser<StartNeighborhoodInitializationResponse>(() => new StartNeighborhoodInitializationResponse());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<StartNeighborhoodInitializationResponse> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Homenode.IopHomeNodeReflection.Descriptor.MessageTypes[63]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public StartNeighborhoodInitializationResponse() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public StartNeighborhoodInitializationResponse(StartNeighborhoodInitializationResponse other) : this() {
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public StartNeighborhoodInitializationResponse Clone() {
+      return new StartNeighborhoodInitializationResponse(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as StartNeighborhoodInitializationResponse);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(StartNeighborhoodInitializationResponse other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(StartNeighborhoodInitializationResponse other) {
+      if (other == null) {
+        return;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///
+  ///  Node that initiated sharing of the profile database with its neighbor using StartNeighborhoodInitializationRequest 
+  ///  uses this request to finish the initialization process. A successful response to this requests means that the profile database 
+  ///  is now shared successfully on the target node and it will consider the shared profiles in its search queries.
+  ///
+  ///  Roles: ndNeighbor
+  ///
+  ///  Conversation status: Verified
+  /// </summary>
+  public sealed partial class FinishNeighborhoodInitializationRequest : pb::IMessage<FinishNeighborhoodInitializationRequest> {
+    private static readonly pb::MessageParser<FinishNeighborhoodInitializationRequest> _parser = new pb::MessageParser<FinishNeighborhoodInitializationRequest>(() => new FinishNeighborhoodInitializationRequest());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<FinishNeighborhoodInitializationRequest> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Homenode.IopHomeNodeReflection.Descriptor.MessageTypes[64]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public FinishNeighborhoodInitializationRequest() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public FinishNeighborhoodInitializationRequest(FinishNeighborhoodInitializationRequest other) : this() {
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public FinishNeighborhoodInitializationRequest Clone() {
+      return new FinishNeighborhoodInitializationRequest(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as FinishNeighborhoodInitializationRequest);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(FinishNeighborhoodInitializationRequest other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(FinishNeighborhoodInitializationRequest other) {
+      if (other == null) {
+        return;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///
+  ///  A response to StartNeighborhoodInitializationRequest.
+  ///
+  ///  Specific Error Responses:
+  ///    * ERROR_REJECTED - No neighborhood initialization process was not started on this session using StartNeighborhoodInitializationRequest.
+  /// </summary>
+  public sealed partial class FinishNeighborhoodInitializationResponse : pb::IMessage<FinishNeighborhoodInitializationResponse> {
+    private static readonly pb::MessageParser<FinishNeighborhoodInitializationResponse> _parser = new pb::MessageParser<FinishNeighborhoodInitializationResponse>(() => new FinishNeighborhoodInitializationResponse());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<FinishNeighborhoodInitializationResponse> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Homenode.IopHomeNodeReflection.Descriptor.MessageTypes[65]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public FinishNeighborhoodInitializationResponse() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public FinishNeighborhoodInitializationResponse(FinishNeighborhoodInitializationResponse other) : this() {
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public FinishNeighborhoodInitializationResponse Clone() {
+      return new FinishNeighborhoodInitializationResponse(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as FinishNeighborhoodInitializationResponse);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(FinishNeighborhoodInitializationResponse other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(FinishNeighborhoodInitializationResponse other) {
+      if (other == null) {
+        return;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///
+  ///  This request is sent by a node to announce a change in one or more of the profiles of its customers.
+  ///  This request is also used during the neighborhood initialization to upload the node's profile database to its neighbor.
+  ///  If the request is sent outside the neighborhood initialization process, it is considered as a standalone request.
+  ///
+  ///  Roles: ndNeighbor
+  ///
+  ///  Conversation status: Verified
+  /// </summary>
+  public sealed partial class NeighborSharedProfileUpdateRequest : pb::IMessage<NeighborSharedProfileUpdateRequest> {
+    private static readonly pb::MessageParser<NeighborSharedProfileUpdateRequest> _parser = new pb::MessageParser<NeighborSharedProfileUpdateRequest>(() => new NeighborSharedProfileUpdateRequest());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<NeighborSharedProfileUpdateRequest> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Homenode.IopHomeNodeReflection.Descriptor.MessageTypes[66]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public NeighborSharedProfileUpdateRequest() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public NeighborSharedProfileUpdateRequest(NeighborSharedProfileUpdateRequest other) : this() {
+      items_ = other.items_.Clone();
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public NeighborSharedProfileUpdateRequest Clone() {
+      return new NeighborSharedProfileUpdateRequest(this);
+    }
+
+    /// <summary>Field number for the "items" field.</summary>
+    public const int ItemsFieldNumber = 1;
+    private static readonly pb::FieldCodec<global::Iop.Homenode.SharedProfileUpdateItem> _repeated_items_codec
+        = pb::FieldCodec.ForMessage(10, global::Iop.Homenode.SharedProfileUpdateItem.Parser);
+    private readonly pbc::RepeatedField<global::Iop.Homenode.SharedProfileUpdateItem> items_ = new pbc::RepeatedField<global::Iop.Homenode.SharedProfileUpdateItem>();
+    /// <summary>
+    ///  List of profile update items.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<global::Iop.Homenode.SharedProfileUpdateItem> Items {
+      get { return items_; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as NeighborSharedProfileUpdateRequest);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(NeighborSharedProfileUpdateRequest other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if(!items_.Equals(other.items_)) return false;
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      hash ^= items_.GetHashCode();
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      items_.WriteTo(output, _repeated_items_codec);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      size += items_.CalculateSize(_repeated_items_codec);
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(NeighborSharedProfileUpdateRequest other) {
+      if (other == null) {
+        return;
+      }
+      items_.Add(other.items_);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+          case 10: {
+            items_.AddEntriesFrom(input, _repeated_items_codec);
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///
+  ///  A response to StartNeighborhoodInitializationRequest.
+  ///
+  ///  Specific Error Responses:
+  ///    * ERROR_INVALID_VALUE
+  ///      * Response.details == "$index.$field" - All items up to 'NeighborSharedProfileUpdateRequest.items[$index]' (exclusive) were processed correctly
+  ///                                              and an error occurred while processing the item with zero-based index $index. Items with index greater 
+  ///                                              then $index were not processed. The $field specifies which field was invalid as follows:
+  ///        * $field == "add" - Number of shared profiles from the requesting node exceeds the limit.
+  ///        * $field == "add.version" - `items[$index].add.version` is not a valid VersionType value.
+  ///        * $field == "add.identityPublicKey" - `items[$index].add.identityPublicKey` is not a valid public key value.
+  ///        * $field == "add.name" - `items[$index].add.name` is not a valid profile name.
+  ///        * $field == "add.type" - `items[$index].add.type` is not a valid identity type.
+  ///        * $field == "add.thumbnailImage" - `items[$index].add.thumbnailImage` is not a valid thumbnail image.
+  ///        * $field == "add.latitude" - `items[$index].add.latitude` is not a valid latitude value.
+  ///        * $field == "add.longitude" - `items[$index].add.longitude` is not a valid longitude value.
+  ///        * $field == "add.extraData" - `items[$index].add.extraData` is not a valid extraData value.
+  ///        * $field == "change.identityNetworkId" - `items[$index].change.identityNetworkId` does not represent an existing identity.
+  ///        * $field == "change.version" - `items[$index].change.version` is not a valid VersionType value.
+  ///        * $field == "change.name" - `items[$index].change.name` is not a valid profile name.
+  ///        * $field == "change.thumbnailImage" - `items[$index].change.thumbnailImage` is not a valid thumbnail image.
+  ///        * $field == "change.latitude" - `items[$index].change.latitude` is not a valid latitude value.
+  ///        * $field == "change.longitude" - `items[$index].change.longitude` is not a valid longitude value.
+  ///        * $field == "change.extraData" - `items[$index].change.extraData` is not a valid extraData value.
+  ///        * $field == "delete.identityNetworkId" - `items[$index].delete.identityNetworkId` does not represent an existing identity.
+  /// </summary>
+  public sealed partial class NeighborSharedProfileUpdateResponse : pb::IMessage<NeighborSharedProfileUpdateResponse> {
+    private static readonly pb::MessageParser<NeighborSharedProfileUpdateResponse> _parser = new pb::MessageParser<NeighborSharedProfileUpdateResponse>(() => new NeighborSharedProfileUpdateResponse());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<NeighborSharedProfileUpdateResponse> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Homenode.IopHomeNodeReflection.Descriptor.MessageTypes[67]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public NeighborSharedProfileUpdateResponse() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public NeighborSharedProfileUpdateResponse(NeighborSharedProfileUpdateResponse other) : this() {
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public NeighborSharedProfileUpdateResponse Clone() {
+      return new NeighborSharedProfileUpdateResponse(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as NeighborSharedProfileUpdateResponse);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(NeighborSharedProfileUpdateResponse other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(NeighborSharedProfileUpdateResponse other) {
+      if (other == null) {
+        return;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///
+  ///  Information about update of a neighborhood's profile.
+  /// </summary>
+  public sealed partial class SharedProfileUpdateItem : pb::IMessage<SharedProfileUpdateItem> {
+    private static readonly pb::MessageParser<SharedProfileUpdateItem> _parser = new pb::MessageParser<SharedProfileUpdateItem>(() => new SharedProfileUpdateItem());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<SharedProfileUpdateItem> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Homenode.IopHomeNodeReflection.Descriptor.MessageTypes[68]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public SharedProfileUpdateItem() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public SharedProfileUpdateItem(SharedProfileUpdateItem other) : this() {
+      switch (other.ActionTypeCase) {
+        case ActionTypeOneofCase.Add:
+          Add = other.Add.Clone();
+          break;
+        case ActionTypeOneofCase.Change:
+          Change = other.Change.Clone();
+          break;
+        case ActionTypeOneofCase.Delete:
+          Delete = other.Delete.Clone();
+          break;
+      }
+
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public SharedProfileUpdateItem Clone() {
+      return new SharedProfileUpdateItem(this);
+    }
+
+    /// <summary>Field number for the "add" field.</summary>
+    public const int AddFieldNumber = 1;
+    /// <summary>
+    ///   * adding a new profile to the database,
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Homenode.SharedProfileAddItem Add {
+      get { return actionTypeCase_ == ActionTypeOneofCase.Add ? (global::Iop.Homenode.SharedProfileAddItem) actionType_ : null; }
+      set {
+        actionType_ = value;
+        actionTypeCase_ = value == null ? ActionTypeOneofCase.None : ActionTypeOneofCase.Add;
+      }
+    }
+
+    /// <summary>Field number for the "change" field.</summary>
+    public const int ChangeFieldNumber = 2;
+    /// <summary>
+    ///   * changing an existing profile,
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Homenode.SharedProfileChangeItem Change {
+      get { return actionTypeCase_ == ActionTypeOneofCase.Change ? (global::Iop.Homenode.SharedProfileChangeItem) actionType_ : null; }
+      set {
+        actionType_ = value;
+        actionTypeCase_ = value == null ? ActionTypeOneofCase.None : ActionTypeOneofCase.Change;
+      }
+    }
+
+    /// <summary>Field number for the "delete" field.</summary>
+    public const int DeleteFieldNumber = 3;
+    /// <summary>
+    ///   * deleting an existing profile.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Homenode.SharedProfileDeleteItem Delete {
+      get { return actionTypeCase_ == ActionTypeOneofCase.Delete ? (global::Iop.Homenode.SharedProfileDeleteItem) actionType_ : null; }
+      set {
+        actionType_ = value;
+        actionTypeCase_ = value == null ? ActionTypeOneofCase.None : ActionTypeOneofCase.Delete;
+      }
+    }
+
+    private object actionType_;
+    /// <summary>Enum of possible cases for the "ActionType" oneof.</summary>
+    public enum ActionTypeOneofCase {
+      None = 0,
+      Add = 1,
+      Change = 2,
+      Delete = 3,
+    }
+    private ActionTypeOneofCase actionTypeCase_ = ActionTypeOneofCase.None;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ActionTypeOneofCase ActionTypeCase {
+      get { return actionTypeCase_; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void ClearActionType() {
+      actionTypeCase_ = ActionTypeOneofCase.None;
+      actionType_ = null;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as SharedProfileUpdateItem);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(SharedProfileUpdateItem other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (!object.Equals(Add, other.Add)) return false;
+      if (!object.Equals(Change, other.Change)) return false;
+      if (!object.Equals(Delete, other.Delete)) return false;
+      if (ActionTypeCase != other.ActionTypeCase) return false;
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (actionTypeCase_ == ActionTypeOneofCase.Add) hash ^= Add.GetHashCode();
+      if (actionTypeCase_ == ActionTypeOneofCase.Change) hash ^= Change.GetHashCode();
+      if (actionTypeCase_ == ActionTypeOneofCase.Delete) hash ^= Delete.GetHashCode();
+      hash ^= (int) actionTypeCase_;
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (actionTypeCase_ == ActionTypeOneofCase.Add) {
+        output.WriteRawTag(10);
+        output.WriteMessage(Add);
+      }
+      if (actionTypeCase_ == ActionTypeOneofCase.Change) {
+        output.WriteRawTag(18);
+        output.WriteMessage(Change);
+      }
+      if (actionTypeCase_ == ActionTypeOneofCase.Delete) {
+        output.WriteRawTag(26);
+        output.WriteMessage(Delete);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (actionTypeCase_ == ActionTypeOneofCase.Add) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Add);
+      }
+      if (actionTypeCase_ == ActionTypeOneofCase.Change) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Change);
+      }
+      if (actionTypeCase_ == ActionTypeOneofCase.Delete) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Delete);
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(SharedProfileUpdateItem other) {
+      if (other == null) {
+        return;
+      }
+      switch (other.ActionTypeCase) {
+        case ActionTypeOneofCase.Add:
+          Add = other.Add;
+          break;
+        case ActionTypeOneofCase.Change:
+          Change = other.Change;
+          break;
+        case ActionTypeOneofCase.Delete:
+          Delete = other.Delete;
+          break;
+      }
+
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+          case 10: {
+            global::Iop.Homenode.SharedProfileAddItem subBuilder = new global::Iop.Homenode.SharedProfileAddItem();
+            if (actionTypeCase_ == ActionTypeOneofCase.Add) {
+              subBuilder.MergeFrom(Add);
+            }
+            input.ReadMessage(subBuilder);
+            Add = subBuilder;
+            break;
+          }
+          case 18: {
+            global::Iop.Homenode.SharedProfileChangeItem subBuilder = new global::Iop.Homenode.SharedProfileChangeItem();
+            if (actionTypeCase_ == ActionTypeOneofCase.Change) {
+              subBuilder.MergeFrom(Change);
+            }
+            input.ReadMessage(subBuilder);
+            Change = subBuilder;
+            break;
+          }
+          case 26: {
+            global::Iop.Homenode.SharedProfileDeleteItem subBuilder = new global::Iop.Homenode.SharedProfileDeleteItem();
+            if (actionTypeCase_ == ActionTypeOneofCase.Delete) {
+              subBuilder.MergeFrom(Delete);
+            }
+            input.ReadMessage(subBuilder);
+            Delete = subBuilder;
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///
+  ///  Information about newly created profile that is to be shared with a neighbor.
+  /// </summary>
+  public sealed partial class SharedProfileAddItem : pb::IMessage<SharedProfileAddItem> {
+    private static readonly pb::MessageParser<SharedProfileAddItem> _parser = new pb::MessageParser<SharedProfileAddItem>(() => new SharedProfileAddItem());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<SharedProfileAddItem> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Homenode.IopHomeNodeReflection.Descriptor.MessageTypes[69]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public SharedProfileAddItem() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public SharedProfileAddItem(SharedProfileAddItem other) : this() {
+      version_ = other.version_;
+      identityPublicKey_ = other.identityPublicKey_;
+      name_ = other.name_;
+      type_ = other.type_;
+      setThumbnailImage_ = other.setThumbnailImage_;
+      thumbnailImage_ = other.thumbnailImage_;
+      latitude_ = other.latitude_;
+      longitude_ = other.longitude_;
+      extraData_ = other.extraData_;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public SharedProfileAddItem Clone() {
+      return new SharedProfileAddItem(this);
+    }
+
+    /// <summary>Field number for the "version" field.</summary>
+    public const int VersionFieldNumber = 1;
+    private pb::ByteString version_ = pb::ByteString.Empty;
+    /// <summary>
+    ///  VersionType. Version of the profile structure.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString Version {
+      get { return version_; }
+      set {
+        version_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "identityPublicKey" field.</summary>
+    public const int IdentityPublicKeyFieldNumber = 2;
+    private pb::ByteString identityPublicKey_ = pb::ByteString.Empty;
+    /// <summary>
+    ///  The identity's public key. Max 128 bytes long.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString IdentityPublicKey {
+      get { return identityPublicKey_; }
+      set {
+        identityPublicKey_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "name" field.</summary>
+    public const int NameFieldNumber = 3;
+    private string name_ = "";
+    /// <summary>
+    ///  Name of the profile or empty string, max 64 bytes long.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string Name {
+      get { return name_; }
+      set {
+        name_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "type" field.</summary>
+    public const int TypeFieldNumber = 4;
+    private string type_ = "";
+    /// <summary>
+    ///  The identity's type, non-empty string, max 64 bytes long. 
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string Type {
+      get { return type_; }
+      set {
+        type_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "setThumbnailImage" field.</summary>
+    public const int SetThumbnailImageFieldNumber = 5;
+    private bool setThumbnailImage_;
+    /// <summary>
+    ///  If true, 'thumbnailImage' has to contain valid image date. If false, 'thumbnailImage' is ignored.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool SetThumbnailImage {
+      get { return setThumbnailImage_; }
+      set {
+        setThumbnailImage_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "thumbnailImage" field.</summary>
+    public const int ThumbnailImageFieldNumber = 6;
+    private pb::ByteString thumbnailImage_ = pb::ByteString.Empty;
+    /// <summary>
+    ///  If 'setThumbnailImage' is true, this contains profile image in PNG or JPEG format, max 5,120 bytes long.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString ThumbnailImage {
+      get { return thumbnailImage_; }
+      set {
+        thumbnailImage_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "latitude" field.</summary>
+    public const int LatitudeFieldNumber = 7;
+    private int latitude_;
+    /// <summary>
+    ///  LocationType. GPS location latitude information.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int Latitude {
+      get { return latitude_; }
+      set {
+        latitude_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "longitude" field.</summary>
+    public const int LongitudeFieldNumber = 8;
+    private int longitude_;
+    /// <summary>
+    ///  LocationType. GPS location longitude information.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int Longitude {
+      get { return longitude_; }
+      set {
+        longitude_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "extraData" field.</summary>
+    public const int ExtraDataFieldNumber = 9;
+    private string extraData_ = "";
+    /// <summary>
+    ///  Semicolon separated 'key=value' list, or empty string, max 200 bytes long.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string ExtraData {
+      get { return extraData_; }
+      set {
+        extraData_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as SharedProfileAddItem);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(SharedProfileAddItem other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (Version != other.Version) return false;
+      if (IdentityPublicKey != other.IdentityPublicKey) return false;
+      if (Name != other.Name) return false;
+      if (Type != other.Type) return false;
+      if (SetThumbnailImage != other.SetThumbnailImage) return false;
+      if (ThumbnailImage != other.ThumbnailImage) return false;
+      if (Latitude != other.Latitude) return false;
+      if (Longitude != other.Longitude) return false;
+      if (ExtraData != other.ExtraData) return false;
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (Version.Length != 0) hash ^= Version.GetHashCode();
+      if (IdentityPublicKey.Length != 0) hash ^= IdentityPublicKey.GetHashCode();
+      if (Name.Length != 0) hash ^= Name.GetHashCode();
+      if (Type.Length != 0) hash ^= Type.GetHashCode();
+      if (SetThumbnailImage != false) hash ^= SetThumbnailImage.GetHashCode();
+      if (ThumbnailImage.Length != 0) hash ^= ThumbnailImage.GetHashCode();
+      if (Latitude != 0) hash ^= Latitude.GetHashCode();
+      if (Longitude != 0) hash ^= Longitude.GetHashCode();
+      if (ExtraData.Length != 0) hash ^= ExtraData.GetHashCode();
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (Version.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteBytes(Version);
+      }
+      if (IdentityPublicKey.Length != 0) {
+        output.WriteRawTag(18);
+        output.WriteBytes(IdentityPublicKey);
+      }
+      if (Name.Length != 0) {
+        output.WriteRawTag(26);
+        output.WriteString(Name);
+      }
+      if (Type.Length != 0) {
+        output.WriteRawTag(34);
+        output.WriteString(Type);
+      }
+      if (SetThumbnailImage != false) {
+        output.WriteRawTag(40);
+        output.WriteBool(SetThumbnailImage);
+      }
+      if (ThumbnailImage.Length != 0) {
+        output.WriteRawTag(50);
+        output.WriteBytes(ThumbnailImage);
+      }
+      if (Latitude != 0) {
+        output.WriteRawTag(61);
+        output.WriteSFixed32(Latitude);
+      }
+      if (Longitude != 0) {
+        output.WriteRawTag(69);
+        output.WriteSFixed32(Longitude);
+      }
+      if (ExtraData.Length != 0) {
+        output.WriteRawTag(74);
+        output.WriteString(ExtraData);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (Version.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(Version);
+      }
+      if (IdentityPublicKey.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(IdentityPublicKey);
+      }
+      if (Name.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Name);
+      }
+      if (Type.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Type);
+      }
+      if (SetThumbnailImage != false) {
+        size += 1 + 1;
+      }
+      if (ThumbnailImage.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(ThumbnailImage);
+      }
+      if (Latitude != 0) {
+        size += 1 + 4;
+      }
+      if (Longitude != 0) {
+        size += 1 + 4;
+      }
+      if (ExtraData.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(ExtraData);
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(SharedProfileAddItem other) {
+      if (other == null) {
+        return;
+      }
+      if (other.Version.Length != 0) {
+        Version = other.Version;
+      }
+      if (other.IdentityPublicKey.Length != 0) {
+        IdentityPublicKey = other.IdentityPublicKey;
+      }
+      if (other.Name.Length != 0) {
+        Name = other.Name;
+      }
+      if (other.Type.Length != 0) {
+        Type = other.Type;
+      }
+      if (other.SetThumbnailImage != false) {
+        SetThumbnailImage = other.SetThumbnailImage;
+      }
+      if (other.ThumbnailImage.Length != 0) {
+        ThumbnailImage = other.ThumbnailImage;
+      }
+      if (other.Latitude != 0) {
+        Latitude = other.Latitude;
+      }
+      if (other.Longitude != 0) {
+        Longitude = other.Longitude;
+      }
+      if (other.ExtraData.Length != 0) {
+        ExtraData = other.ExtraData;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+          case 10: {
+            Version = input.ReadBytes();
+            break;
+          }
+          case 18: {
+            IdentityPublicKey = input.ReadBytes();
+            break;
+          }
+          case 26: {
+            Name = input.ReadString();
+            break;
+          }
+          case 34: {
+            Type = input.ReadString();
+            break;
+          }
+          case 40: {
+            SetThumbnailImage = input.ReadBool();
+            break;
+          }
+          case 50: {
+            ThumbnailImage = input.ReadBytes();
+            break;
+          }
+          case 61: {
+            Latitude = input.ReadSFixed32();
+            break;
+          }
+          case 69: {
+            Longitude = input.ReadSFixed32();
+            break;
+          }
+          case 74: {
+            ExtraData = input.ReadString();
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///
+  ///  Information about changes in an existing profile data that are to be shared with a neighbor.
+  /// </summary>
+  public sealed partial class SharedProfileChangeItem : pb::IMessage<SharedProfileChangeItem> {
+    private static readonly pb::MessageParser<SharedProfileChangeItem> _parser = new pb::MessageParser<SharedProfileChangeItem>(() => new SharedProfileChangeItem());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<SharedProfileChangeItem> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Homenode.IopHomeNodeReflection.Descriptor.MessageTypes[70]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public SharedProfileChangeItem() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public SharedProfileChangeItem(SharedProfileChangeItem other) : this() {
+      identityNetworkId_ = other.identityNetworkId_;
+      setVersion_ = other.setVersion_;
+      setName_ = other.setName_;
+      setThumbnailImage_ = other.setThumbnailImage_;
+      setLocation_ = other.setLocation_;
+      setExtraData_ = other.setExtraData_;
+      version_ = other.version_;
+      name_ = other.name_;
+      thumbnailImage_ = other.thumbnailImage_;
+      latitude_ = other.latitude_;
+      longitude_ = other.longitude_;
+      extraData_ = other.extraData_;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public SharedProfileChangeItem Clone() {
+      return new SharedProfileChangeItem(this);
+    }
+
+    /// <summary>Field number for the "identityNetworkId" field.</summary>
+    public const int IdentityNetworkIdFieldNumber = 1;
+    private pb::ByteString identityNetworkId_ = pb::ByteString.Empty;
+    /// <summary>
+    ///  The identity's network identifier.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString IdentityNetworkId {
+      get { return identityNetworkId_; }
+      set {
+        identityNetworkId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "setVersion" field.</summary>
+    public const int SetVersionFieldNumber = 2;
+    private bool setVersion_;
+    /// <summary>
+    ///  Profile version should be updated. 'version' must contain valid data.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool SetVersion {
+      get { return setVersion_; }
+      set {
+        setVersion_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "setName" field.</summary>
+    public const int SetNameFieldNumber = 3;
+    private bool setName_;
+    /// <summary>
+    ///  Profile name should be updated. 'name' must contain valid data.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool SetName {
+      get { return setName_; }
+      set {
+        setName_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "setThumbnailImage" field.</summary>
+    public const int SetThumbnailImageFieldNumber = 4;
+    private bool setThumbnailImage_;
+    /// <summary>
+    ///  Profile image should be updated. 'thumbnailImage' must contain valid data.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool SetThumbnailImage {
+      get { return setThumbnailImage_; }
+      set {
+        setThumbnailImage_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "setLocation" field.</summary>
+    public const int SetLocationFieldNumber = 5;
+    private bool setLocation_;
+    /// <summary>
+    ///  Profile location should be updated. 'latitude' and 'longitude' must contain valid data.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool SetLocation {
+      get { return setLocation_; }
+      set {
+        setLocation_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "setExtraData" field.</summary>
+    public const int SetExtraDataFieldNumber = 6;
+    private bool setExtraData_;
+    /// <summary>
+    ///  Profile extra data should be updated. 'extraData' must contain valid data.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool SetExtraData {
+      get { return setExtraData_; }
+      set {
+        setExtraData_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "version" field.</summary>
+    public const int VersionFieldNumber = 7;
+    private pb::ByteString version_ = pb::ByteString.Empty;
+    /// <summary>
+    ///  VersionType. Version of the profile structure.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString Version {
+      get { return version_; }
+      set {
+        version_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "name" field.</summary>
+    public const int NameFieldNumber = 8;
+    private string name_ = "";
+    /// <summary>
+    ///  Name of the profile, non-empty string, max 64 bytes long.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string Name {
+      get { return name_; }
+      set {
+        name_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "thumbnailImage" field.</summary>
+    public const int ThumbnailImageFieldNumber = 9;
+    private pb::ByteString thumbnailImage_ = pb::ByteString.Empty;
+    /// <summary>
+    ///  Profile thumbnail image in PNG or JPEG format, non-empty binary data, max 5,120 bytes long.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString ThumbnailImage {
+      get { return thumbnailImage_; }
+      set {
+        thumbnailImage_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "latitude" field.</summary>
+    public const int LatitudeFieldNumber = 10;
+    private int latitude_;
+    /// <summary>
+    ///  LocationType. GPS location latitude information.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int Latitude {
+      get { return latitude_; }
+      set {
+        latitude_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "longitude" field.</summary>
+    public const int LongitudeFieldNumber = 11;
+    private int longitude_;
+    /// <summary>
+    ///  LocationType. GPS location longitude information.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int Longitude {
+      get { return longitude_; }
+      set {
+        longitude_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "extraData" field.</summary>
+    public const int ExtraDataFieldNumber = 12;
+    private string extraData_ = "";
+    /// <summary>
+    ///  Semicolon separated 'key=value' list, max 200 bytes long.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string ExtraData {
+      get { return extraData_; }
+      set {
+        extraData_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as SharedProfileChangeItem);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(SharedProfileChangeItem other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (IdentityNetworkId != other.IdentityNetworkId) return false;
+      if (SetVersion != other.SetVersion) return false;
+      if (SetName != other.SetName) return false;
+      if (SetThumbnailImage != other.SetThumbnailImage) return false;
+      if (SetLocation != other.SetLocation) return false;
+      if (SetExtraData != other.SetExtraData) return false;
+      if (Version != other.Version) return false;
+      if (Name != other.Name) return false;
+      if (ThumbnailImage != other.ThumbnailImage) return false;
+      if (Latitude != other.Latitude) return false;
+      if (Longitude != other.Longitude) return false;
+      if (ExtraData != other.ExtraData) return false;
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (IdentityNetworkId.Length != 0) hash ^= IdentityNetworkId.GetHashCode();
+      if (SetVersion != false) hash ^= SetVersion.GetHashCode();
+      if (SetName != false) hash ^= SetName.GetHashCode();
+      if (SetThumbnailImage != false) hash ^= SetThumbnailImage.GetHashCode();
+      if (SetLocation != false) hash ^= SetLocation.GetHashCode();
+      if (SetExtraData != false) hash ^= SetExtraData.GetHashCode();
+      if (Version.Length != 0) hash ^= Version.GetHashCode();
+      if (Name.Length != 0) hash ^= Name.GetHashCode();
+      if (ThumbnailImage.Length != 0) hash ^= ThumbnailImage.GetHashCode();
+      if (Latitude != 0) hash ^= Latitude.GetHashCode();
+      if (Longitude != 0) hash ^= Longitude.GetHashCode();
+      if (ExtraData.Length != 0) hash ^= ExtraData.GetHashCode();
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (IdentityNetworkId.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteBytes(IdentityNetworkId);
+      }
+      if (SetVersion != false) {
+        output.WriteRawTag(16);
+        output.WriteBool(SetVersion);
+      }
+      if (SetName != false) {
+        output.WriteRawTag(24);
+        output.WriteBool(SetName);
+      }
+      if (SetThumbnailImage != false) {
+        output.WriteRawTag(32);
+        output.WriteBool(SetThumbnailImage);
+      }
+      if (SetLocation != false) {
+        output.WriteRawTag(40);
+        output.WriteBool(SetLocation);
+      }
+      if (SetExtraData != false) {
+        output.WriteRawTag(48);
+        output.WriteBool(SetExtraData);
+      }
+      if (Version.Length != 0) {
+        output.WriteRawTag(58);
+        output.WriteBytes(Version);
+      }
+      if (Name.Length != 0) {
+        output.WriteRawTag(66);
+        output.WriteString(Name);
+      }
+      if (ThumbnailImage.Length != 0) {
+        output.WriteRawTag(74);
+        output.WriteBytes(ThumbnailImage);
+      }
+      if (Latitude != 0) {
+        output.WriteRawTag(85);
+        output.WriteSFixed32(Latitude);
+      }
+      if (Longitude != 0) {
+        output.WriteRawTag(93);
+        output.WriteSFixed32(Longitude);
+      }
+      if (ExtraData.Length != 0) {
+        output.WriteRawTag(98);
+        output.WriteString(ExtraData);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (IdentityNetworkId.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(IdentityNetworkId);
+      }
+      if (SetVersion != false) {
+        size += 1 + 1;
+      }
+      if (SetName != false) {
+        size += 1 + 1;
+      }
+      if (SetThumbnailImage != false) {
+        size += 1 + 1;
+      }
+      if (SetLocation != false) {
+        size += 1 + 1;
+      }
+      if (SetExtraData != false) {
+        size += 1 + 1;
+      }
+      if (Version.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(Version);
+      }
+      if (Name.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Name);
+      }
+      if (ThumbnailImage.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(ThumbnailImage);
+      }
+      if (Latitude != 0) {
+        size += 1 + 4;
+      }
+      if (Longitude != 0) {
+        size += 1 + 4;
+      }
+      if (ExtraData.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(ExtraData);
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(SharedProfileChangeItem other) {
+      if (other == null) {
+        return;
+      }
+      if (other.IdentityNetworkId.Length != 0) {
+        IdentityNetworkId = other.IdentityNetworkId;
+      }
+      if (other.SetVersion != false) {
+        SetVersion = other.SetVersion;
+      }
+      if (other.SetName != false) {
+        SetName = other.SetName;
+      }
+      if (other.SetThumbnailImage != false) {
+        SetThumbnailImage = other.SetThumbnailImage;
+      }
+      if (other.SetLocation != false) {
+        SetLocation = other.SetLocation;
+      }
+      if (other.SetExtraData != false) {
+        SetExtraData = other.SetExtraData;
+      }
+      if (other.Version.Length != 0) {
+        Version = other.Version;
+      }
+      if (other.Name.Length != 0) {
+        Name = other.Name;
+      }
+      if (other.ThumbnailImage.Length != 0) {
+        ThumbnailImage = other.ThumbnailImage;
+      }
+      if (other.Latitude != 0) {
+        Latitude = other.Latitude;
+      }
+      if (other.Longitude != 0) {
+        Longitude = other.Longitude;
+      }
+      if (other.ExtraData.Length != 0) {
+        ExtraData = other.ExtraData;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+          case 10: {
+            IdentityNetworkId = input.ReadBytes();
+            break;
+          }
+          case 16: {
+            SetVersion = input.ReadBool();
+            break;
+          }
+          case 24: {
+            SetName = input.ReadBool();
+            break;
+          }
+          case 32: {
+            SetThumbnailImage = input.ReadBool();
+            break;
+          }
+          case 40: {
+            SetLocation = input.ReadBool();
+            break;
+          }
+          case 48: {
+            SetExtraData = input.ReadBool();
+            break;
+          }
+          case 58: {
+            Version = input.ReadBytes();
+            break;
+          }
+          case 66: {
+            Name = input.ReadString();
+            break;
+          }
+          case 74: {
+            ThumbnailImage = input.ReadBytes();
+            break;
+          }
+          case 85: {
+            Latitude = input.ReadSFixed32();
+            break;
+          }
+          case 93: {
+            Longitude = input.ReadSFixed32();
+            break;
+          }
+          case 98: {
+            ExtraData = input.ReadString();
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///
+  ///  Information about the removal of an existing profile that is to be shared with a neighbor.
+  /// </summary>
+  public sealed partial class SharedProfileDeleteItem : pb::IMessage<SharedProfileDeleteItem> {
+    private static readonly pb::MessageParser<SharedProfileDeleteItem> _parser = new pb::MessageParser<SharedProfileDeleteItem>(() => new SharedProfileDeleteItem());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<SharedProfileDeleteItem> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Homenode.IopHomeNodeReflection.Descriptor.MessageTypes[71]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public SharedProfileDeleteItem() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public SharedProfileDeleteItem(SharedProfileDeleteItem other) : this() {
+      identityNetworkId_ = other.identityNetworkId_;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public SharedProfileDeleteItem Clone() {
+      return new SharedProfileDeleteItem(this);
+    }
+
+    /// <summary>Field number for the "identityNetworkId" field.</summary>
+    public const int IdentityNetworkIdFieldNumber = 1;
+    private pb::ByteString identityNetworkId_ = pb::ByteString.Empty;
+    /// <summary>
+    ///  The identity's network identifier.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString IdentityNetworkId {
+      get { return identityNetworkId_; }
+      set {
+        identityNetworkId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as SharedProfileDeleteItem);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(SharedProfileDeleteItem other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (IdentityNetworkId != other.IdentityNetworkId) return false;
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (IdentityNetworkId.Length != 0) hash ^= IdentityNetworkId.GetHashCode();
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (IdentityNetworkId.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteBytes(IdentityNetworkId);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (IdentityNetworkId.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(IdentityNetworkId);
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(SharedProfileDeleteItem other) {
+      if (other == null) {
+        return;
+      }
+      if (other.IdentityNetworkId.Length != 0) {
+        IdentityNetworkId = other.IdentityNetworkId;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+          case 10: {
+            IdentityNetworkId = input.ReadBytes();
             break;
           }
         }

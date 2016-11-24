@@ -495,9 +495,25 @@ namespace HomeNetProtocolTests
     /// <returns>Signed relationship card.</returns>
     public SignedRelationshipCard IssueRelationshipCard(byte[] RecipientPublicKey, string CardType, DateTime ValidFrom, DateTime ValidTo)
     {
+      return IssueRelationshipCard(new byte[] { 1, 0, 0 }, RecipientPublicKey, CardType, ValidFrom, ValidTo);
+    }
+
+
+    /// <summary>
+    /// Issues and signes a relationship card.
+    /// </summary>
+    /// <param name="Version">Relationship card version.</param>
+    /// <param name="RecipientPublicKey">Public key of the card recipient.</param>
+    /// <param name="CardType">Type of the card.</param>
+    /// <param name="ValidFrom">Time from which the card is valid. It must not be greater than <paramref name="ValidTo"/>.</param>
+    /// <param name="ValidTo">Time after which the card is not valid.</param>
+    /// <returns>Signed relationship card.</returns>
+    public SignedRelationshipCard IssueRelationshipCard(byte[] Version, byte[] RecipientPublicKey, string CardType, DateTime ValidFrom, DateTime ValidTo)
+    {
       RelationshipCard card = new RelationshipCard()
       {
         CardId = ProtocolHelper.ByteArrayToByteString(new byte[32]),
+        Version = ProtocolHelper.ByteArrayToByteString(Version),
         IssuerPublicKey = ProtocolHelper.ByteArrayToByteString(keys.PublicKey),
         RecipientPublicKey = ProtocolHelper.ByteArrayToByteString(RecipientPublicKey),
         Type = CardType,
@@ -505,20 +521,30 @@ namespace HomeNetProtocolTests
         ValidTo = ProtocolHelper.DateTimeToUnixTimestampMs(ValidTo)
       };
 
-      byte[] cardDataToHash = card.ToByteArray();
+      return IssueRelationshipCard(card);
+    }
+
+
+    /// <summary>
+    /// Issues and signes a relationship card.
+    /// </summary>
+    /// <param name="Card">Relationship card to hash and sign.</param>
+    /// <returns>Signed relationship card.</returns>
+    public SignedRelationshipCard IssueRelationshipCard(RelationshipCard Card)
+    {
+      byte[] cardDataToHash = Card.ToByteArray();
       byte[] cardId = Crypto.Sha256(cardDataToHash);
-      card.CardId = ProtocolHelper.ByteArrayToByteString(cardId);
+      Card.CardId = ProtocolHelper.ByteArrayToByteString(cardId);
 
       byte[] signature = Ed25519.Sign(cardId, keys.ExpandedPrivateKey);
       SignedRelationshipCard res = new SignedRelationshipCard()
       {
-        Card = card,
+        Card = Card,
         IssuerSignature = ProtocolHelper.ByteArrayToByteString(signature)
       };
 
-      return res;    
+      return res;
     }
-
 
     /// <summary>
     /// Creates relationship card application.

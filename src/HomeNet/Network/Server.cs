@@ -32,7 +32,7 @@ namespace HomeNet.Network
 
 
 
-    /// <summary>Event that is set when clientMaintenanceThread is not running.</summary>
+    /// <summary>Event that is set when serversMaintenanceThread is not running.</summary>
     private ManualResetEvent serversMaintenanceThreadFinished = new ManualResetEvent(true);
 
     /// <summary>Thread that is responsible for maintenance of servers - e.g. closing inactive connections to their clients.</summary>
@@ -101,6 +101,9 @@ namespace HomeNet.Network
       if (!res)
       {
         ShutdownSignaling.SignalShutdown();
+
+        if ((serversMaintenanceThread != null) && !serversMaintenanceThreadFinished.WaitOne(10000))
+          log.Error("Servers maintenance thread did not terminated in 10 seconds.");
 
         if (checkInactiveClientConnectionsTimer != null) checkInactiveClientConnectionsTimer.Dispose();
         checkInactiveClientConnectionsTimer = null;

@@ -41,6 +41,7 @@ namespace HomeNet.Kernel
       {
         { "Config.Config", Configuration },
         { "Network.Server", new Network.Server() },
+        { "Network.LocationBasedNetwork", new Network.LocationBasedNetwork() },
       };
 
       // The component list specifies the order in which the components are going to be initialized.
@@ -48,6 +49,7 @@ namespace HomeNet.Kernel
       {
         ComponentDictionary["Config.Config"],
         ComponentDictionary["Network.Server"],
+        ComponentDictionary["Network.LocationBasedNetwork"],
       };
 
       res = Components.Init(componentList);
