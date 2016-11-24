@@ -276,14 +276,14 @@ namespace HomeNetProtocolTestsExecutor
         }
 
         log.Trace("Starting test '{0}'.", test.Name);
-        File.Copy("HomeNet-binaries\\HomeNet-empty.db", "HomeNet-binaries\\HomeNet.db", true);
-        File.Copy(string.Format("configs\\{0}", test.Conf), "HomeNet-binaries\\HomeNet.conf", true);
+        File.Copy(Path.Combine("HomeNet-binaries", "HomeNet-empty.db"), Path.Combine("HomeNet-binaries", "HomeNet.db"), true);
+        File.Copy(Path.Combine("configs", test.Conf), Path.Combine("HomeNet-binaries", "HomeNet.conf"), true);
 
         NodeReadyEvent.Reset();
         TestPassed = false;
         TestFailed = false;
 
-        Process nodeProcess = RunNode("HomeNet-binaries\\HomeNet");
+        Process nodeProcess = RunNode(Path.Combine("HomeNet-binaries", "HomeNet"));
         if (nodeProcess != null)
         {
           log.Trace("Waiting for node to start ...");
@@ -291,7 +291,7 @@ namespace HomeNetProtocolTestsExecutor
           {
             log.Trace("Node ready!");
 
-            Process testProcess = RunTest("tests-binaries\\HomeNetProtocolTests", test.Name, test.Args);
+            Process testProcess = RunTest(Path.Combine("tests-binaries", "HomeNetProtocolTests"), test.Name, test.Args);
             int maxTime = test.LongTime ? 10 * 60 * 1000 : 2 * 60 * 1000;
             if (testProcess.WaitForExit(maxTime))
             {
