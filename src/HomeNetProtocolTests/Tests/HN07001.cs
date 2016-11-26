@@ -361,8 +361,8 @@ namespace HomeNetProtocolTests.Tests
 
         idOk = responseMessage.Id == requestMessage.Id;
         statusOk = responseMessage.Response.Status == Status.Ok;
-        byte[] receivedVersion = responseMessage.Response.SingleResponse.Version.ToByteArray();
-        bool versionOk = StructuralComparisons.StructuralComparer.Compare(receivedVersion, new byte[] { 1, 0, 0 }) == 0;
+        SemVer receivedVersion = new SemVer(responseMessage.Response.SingleResponse.Version);
+        bool versionOk = receivedVersion.Equals(SemVer.V100);
 
         HashSet<int> numberList = new HashSet<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
         bool relationshipsOk = CheckRelationships(numberList, responseMessage.Response.SingleResponse.GetIdentityRelationshipsInformation.Relationships);
@@ -376,8 +376,8 @@ namespace HomeNetProtocolTests.Tests
 
         idOk = responseMessage.Id == requestMessage.Id;
         statusOk = responseMessage.Response.Status == Status.Ok;
-        receivedVersion = responseMessage.Response.SingleResponse.Version.ToByteArray();
-        versionOk = StructuralComparisons.StructuralComparer.Compare(receivedVersion, new byte[] { 1, 0, 0 }) == 0;
+        receivedVersion = new SemVer(responseMessage.Response.SingleResponse.Version);
+        versionOk = receivedVersion.Equals(SemVer.V100);
 
         numberList = new HashSet<int>() { 1, 3, 5, 6, 7, 8, 9 };
         relationshipsOk = CheckRelationships(numberList, responseMessage.Response.SingleResponse.GetIdentityRelationshipsInformation.Relationships);
@@ -391,8 +391,8 @@ namespace HomeNetProtocolTests.Tests
 
         idOk = responseMessage.Id == requestMessage.Id;
         statusOk = responseMessage.Response.Status == Status.Ok;
-        receivedVersion = responseMessage.Response.SingleResponse.Version.ToByteArray();
-        versionOk = StructuralComparisons.StructuralComparer.Compare(receivedVersion, new byte[] { 1, 0, 0 }) == 0;
+        receivedVersion = new SemVer(responseMessage.Response.SingleResponse.Version);
+        versionOk = receivedVersion.Equals(SemVer.V100);
 
         numberList = new HashSet<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
         relationshipsOk = CheckRelationships(numberList, responseMessage.Response.SingleResponse.GetIdentityRelationshipsInformation.Relationships);
@@ -406,8 +406,8 @@ namespace HomeNetProtocolTests.Tests
 
         idOk = responseMessage.Id == requestMessage.Id;
         statusOk = responseMessage.Response.Status == Status.Ok;
-        receivedVersion = responseMessage.Response.SingleResponse.Version.ToByteArray();
-        versionOk = StructuralComparisons.StructuralComparer.Compare(receivedVersion, new byte[] { 1, 0, 0 }) == 0;
+        receivedVersion = new SemVer(responseMessage.Response.SingleResponse.Version);
+        versionOk = receivedVersion.Equals(SemVer.V100);
 
         numberList = new HashSet<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
         relationshipsOk = CheckRelationships(numberList, responseMessage.Response.SingleResponse.GetIdentityRelationshipsInformation.Relationships);
@@ -421,8 +421,8 @@ namespace HomeNetProtocolTests.Tests
 
         idOk = responseMessage.Id == requestMessage.Id;
         statusOk = responseMessage.Response.Status == Status.Ok;
-        receivedVersion = responseMessage.Response.SingleResponse.Version.ToByteArray();
-        versionOk = StructuralComparisons.StructuralComparer.Compare(receivedVersion, new byte[] { 1, 0, 0 }) == 0;
+        receivedVersion = new SemVer(responseMessage.Response.SingleResponse.Version);
+        versionOk = receivedVersion.Equals(SemVer.V100);
 
         numberList = new HashSet<int>() { 1, 2, 3, 4, 5, 6, 7, 8 };
         relationshipsOk = CheckRelationships(numberList, responseMessage.Response.SingleResponse.GetIdentityRelationshipsInformation.Relationships);
@@ -436,8 +436,8 @@ namespace HomeNetProtocolTests.Tests
 
         idOk = responseMessage.Id == requestMessage.Id;
         statusOk = responseMessage.Response.Status == Status.Ok;
-        receivedVersion = responseMessage.Response.SingleResponse.Version.ToByteArray();
-        versionOk = StructuralComparisons.StructuralComparer.Compare(receivedVersion, new byte[] { 1, 0, 0 }) == 0;
+        receivedVersion = new SemVer(responseMessage.Response.SingleResponse.Version);
+        versionOk = receivedVersion.Equals(SemVer.V100);
 
         numberList = new HashSet<int>() { 1, 2, 3, 4 };
         relationshipsOk = CheckRelationships(numberList, responseMessage.Response.SingleResponse.GetIdentityRelationshipsInformation.Relationships);
@@ -451,8 +451,8 @@ namespace HomeNetProtocolTests.Tests
 
         idOk = responseMessage.Id == requestMessage.Id;
         statusOk = responseMessage.Response.Status == Status.Ok;
-        receivedVersion = responseMessage.Response.SingleResponse.Version.ToByteArray();
-        versionOk = StructuralComparisons.StructuralComparer.Compare(receivedVersion, new byte[] { 1, 0, 0 }) == 0;
+        receivedVersion = new SemVer(responseMessage.Response.SingleResponse.Version);
+        versionOk = receivedVersion.Equals(SemVer.V100);
 
         numberList = new HashSet<int>() { 1, 2, 3, 4, 5, 6, 7, 8 };
         relationshipsOk = CheckRelationships(numberList, responseMessage.Response.SingleResponse.GetIdentityRelationshipsInformation.Relationships);
@@ -466,8 +466,8 @@ namespace HomeNetProtocolTests.Tests
 
         idOk = responseMessage.Id == requestMessage.Id;
         statusOk = responseMessage.Response.Status == Status.Ok;
-        receivedVersion = responseMessage.Response.SingleResponse.Version.ToByteArray();
-        versionOk = StructuralComparisons.StructuralComparer.Compare(receivedVersion, new byte[] { 1, 0, 0 }) == 0;
+        receivedVersion = new SemVer(responseMessage.Response.SingleResponse.Version);
+        versionOk = receivedVersion.Equals(SemVer.V100);
 
         numberList = new HashSet<int>() { 1, 2 };
         relationshipsOk = CheckRelationships(numberList, responseMessage.Response.SingleResponse.GetIdentityRelationshipsInformation.Relationships);
@@ -481,8 +481,8 @@ namespace HomeNetProtocolTests.Tests
 
         idOk = responseMessage.Id == requestMessage.Id;
         statusOk = responseMessage.Response.Status == Status.Ok;
-        receivedVersion = responseMessage.Response.SingleResponse.Version.ToByteArray();
-        versionOk = StructuralComparisons.StructuralComparer.Compare(receivedVersion, new byte[] { 1, 0, 0 }) == 0;
+        receivedVersion = new SemVer(responseMessage.Response.SingleResponse.Version);
+        versionOk = receivedVersion.Equals(SemVer.V100);
 
         numberList = new HashSet<int>() { 7, 8 };
         relationshipsOk = CheckRelationships(numberList, responseMessage.Response.SingleResponse.GetIdentityRelationshipsInformation.Relationships);
@@ -528,8 +528,8 @@ namespace HomeNetProtocolTests.Tests
 
         idOk = responseMessage.Id == requestMessage.Id;
         statusOk = responseMessage.Response.Status == Status.Ok;
-        receivedVersion = responseMessage.Response.SingleResponse.Version.ToByteArray();
-        versionOk = StructuralComparisons.StructuralComparer.Compare(receivedVersion, new byte[] { 1, 0, 0 }) == 0;
+        receivedVersion = new SemVer(responseMessage.Response.SingleResponse.Version);
+        versionOk = receivedVersion.Equals(SemVer.V100);
 
         numberList = new HashSet<int>() { 1, 3 };
         relationshipsOk = CheckRelationships(numberList, responseMessage.Response.SingleResponse.GetIdentityRelationshipsInformation.Relationships);
@@ -546,8 +546,8 @@ namespace HomeNetProtocolTests.Tests
 
         idOk = responseMessage.Id == requestMessage.Id;
         statusOk = responseMessage.Response.Status == Status.Ok;
-        receivedVersion = responseMessage.Response.SingleResponse.Version.ToByteArray();
-        versionOk = StructuralComparisons.StructuralComparer.Compare(receivedVersion, new byte[] { 1, 0, 0 }) == 0;
+        receivedVersion = new SemVer(responseMessage.Response.SingleResponse.Version);
+        versionOk = receivedVersion.Equals(SemVer.V100);
 
         relationshipsOk = responseMessage.Response.SingleResponse.GetIdentityRelationshipsInformation.Relationships.Count == 0;
 

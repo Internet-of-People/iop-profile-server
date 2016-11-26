@@ -26,7 +26,7 @@ namespace HomeNetProtocol
     private List<ByteString> supportedVersions;
 
     /// <summary>Selected protocol version.</summary>
-    private ByteString version;
+    public ByteString Version;
 
     /// <summary>Cryptographic key set representing the identity.</summary>
     private KeysEd25519 keys;
@@ -35,17 +35,17 @@ namespace HomeNetProtocol
     /// Initializes message builder.
     /// </summary>
     /// <param name="IdBase">Base value for message IDs. First message will have ID set to IdBase + 1.</param>
-    /// <param name="SupportedVersions">List of supported versions in binary form ordered by claler's preference.</param>
+    /// <param name="SupportedVersions">List of supported versions ordered by caller's preference.</param>
     /// <param name="Keys">Cryptographic key set representing the caller's identity.</param>
-    public MessageBuilder(uint IdBase, List<byte[]> SupportedVersions, KeysEd25519 Keys)
+    public MessageBuilder(uint IdBase, List<SemVer> SupportedVersions, KeysEd25519 Keys)
     {
       idBase = (int)IdBase;
       id = idBase;
       supportedVersions = new List<ByteString>();
-      foreach (byte[] version in SupportedVersions)
-        supportedVersions.Add(new SemVer(version).ToByteString());
+      foreach (SemVer version in SupportedVersions)
+        supportedVersions.Add(version.ToByteString());
 
-      version = supportedVersions[0];
+      Version = supportedVersions[0];
       keys = Keys;
     }
 
@@ -56,7 +56,7 @@ namespace HomeNetProtocol
     /// <param name="SelectedVersion">Selected version information.</param>
     public void SetProtocolVersion(SemVer SelectedVersion)
     {
-      version =  SelectedVersion.ToByteString();
+      Version =  SelectedVersion.ToByteString();
     }
 
     /// <summary>
@@ -288,7 +288,7 @@ namespace HomeNetProtocol
     {
       Message res = CreateRequest();
       res.Request.SingleRequest = new SingleRequest();
-      res.Request.SingleRequest.Version = version;
+      res.Request.SingleRequest.Version = Version;
 
       return res;
     }
@@ -558,7 +558,7 @@ namespace HomeNetProtocol
     /// <summary>
     /// Creates a new HomeNodeRequestRequest message.
     /// </summary>
-    /// <param name="Contract">List of supported protocol versions.</param>
+    /// <param name="Contract">Home Node contract for one of the node's plan to base the home node agreement on.</param>
     /// <returns>HomeNodeRequestRequest message that is ready to be sent.</returns>
     public Message CreateHomeNodeRequestRequest(HomeNodePlanContract Contract)
     {
@@ -669,7 +669,7 @@ namespace HomeNetProtocol
     /// <param name="Location">Profile location information or null if location is not to be changed.</param>
     /// <param name="ExtraData">Profile's extra data information or null if profile's extra data is not to be changed.</param>
     /// <returns>CreateUpdateProfileRequest message that is ready to be sent.</returns>
-    public Message CreateUpdateProfileRequest(byte[] Version, string Name, byte[] Image, GpsLocation Location, string ExtraData)
+    public Message CreateUpdateProfileRequest(SemVer? Version, string Name, byte[] Image, GpsLocation Location, string ExtraData)
     {
       UpdateProfileRequest updateProfileRequest = new UpdateProfileRequest();
       updateProfileRequest.SetVersion = Version != null;
@@ -679,7 +679,7 @@ namespace HomeNetProtocol
       updateProfileRequest.SetExtraData = ExtraData != null;
 
       if (updateProfileRequest.SetVersion)
-        updateProfileRequest.Version = ProtocolHelper.ByteArrayToByteString(Version);
+        updateProfileRequest.Version = Version.Value.ToByteString();
 
       if (updateProfileRequest.SetName)
         updateProfileRequest.Name = Name;
@@ -861,7 +861,7 @@ namespace HomeNetProtocol
     /// <param name="ThumbnailImage">If <paramref name="IsHosted"/> is true, this is the identity's thumbnail image, or null if it was not requested.</param>
     /// <param name="ApplicationServices">If <paramref name="IsHosted"/> is true, this is the identity's list of supported application services, or null if it was not requested.</param>
     /// <returns>GetIdentityInformationResponse message that is ready to be sent.</returns>
-    public Message CreateGetIdentityInformationResponse(Message Request, bool IsHosted, byte[] TargetHomeNodeId, byte[] Version, bool IsOnline = false, byte[] PublicKey = null, string Name = null, string Type = null, GpsLocation Location = null, string ExtraData = null, byte[] ProfileImage = null, byte[] ThumbnailImage = null, HashSet<string> ApplicationServices = null)
+    public Message CreateGetIdentityInformationResponse(Message Request, bool IsHosted, byte[] TargetHomeNodeId, SemVer? Version = null, bool IsOnline = false, byte[] PublicKey = null, string Name = null, string Type = null, GpsLocation Location = null, string ExtraData = null, byte[] ProfileImage = null, byte[] ThumbnailImage = null, HashSet<string> ApplicationServices = null)
     {
       GetIdentityInformationResponse getIdentityInformationResponse = new GetIdentityInformationResponse();
       getIdentityInformationResponse.IsHosted = IsHosted;
@@ -869,7 +869,7 @@ namespace HomeNetProtocol
       if (IsHosted)
       {
         getIdentityInformationResponse.IsOnline = IsOnline;
-        getIdentityInformationResponse.Version = ProtocolHelper.ByteArrayToByteString(Version);
+        getIdentityInformationResponse.Version = Version.Value.ToByteString();
         getIdentityInformationResponse.IdentityPublicKey = ProtocolHelper.ByteArrayToByteString(PublicKey);
         if (Name != null) getIdentityInformationResponse.Name = Name;
         if (Type != null) getIdentityInformationResponse.Type = Type;

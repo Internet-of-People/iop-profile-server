@@ -81,7 +81,7 @@ namespace HomeNetProtocolTests.Tests
         bool updateProfileOk1 = idOk && statusOk && detailsOk;
 
 
-        requestMessage = mb.CreateUpdateProfileRequest(new byte[] { 1, 0, 0 }, null, null, new GpsLocation(1, 2), null);
+        requestMessage = mb.CreateUpdateProfileRequest(SemVer.V100, null, null, new GpsLocation(1, 2), null);
         await client.SendMessageAsync(requestMessage);
         responseMessage = await client.ReceiveMessageAsync();
 
@@ -92,7 +92,7 @@ namespace HomeNetProtocolTests.Tests
         bool updateProfileOk2 = idOk && statusOk && detailsOk;
 
 
-        requestMessage = mb.CreateUpdateProfileRequest(new byte[] { 1, 0, 0 }, "Test Identity", null, null, null);
+        requestMessage = mb.CreateUpdateProfileRequest(SemVer.V100, "Test Identity", null, null, null);
         await client.SendMessageAsync(requestMessage);
         responseMessage = await client.ReceiveMessageAsync();
 
@@ -103,7 +103,7 @@ namespace HomeNetProtocolTests.Tests
         bool updateProfileOk3 = idOk && statusOk && detailsOk;
 
 
-        requestMessage = mb.CreateUpdateProfileRequest(new byte[] { 0, 0, 0 }, "Test Identity", null, new GpsLocation(1, 2), null);
+        requestMessage = mb.CreateUpdateProfileRequest(new SemVer(0, 0, 0), "Test Identity", null, new GpsLocation(1, 2), null);
         await client.SendMessageAsync(requestMessage);
         responseMessage = await client.ReceiveMessageAsync();
 
@@ -114,7 +114,7 @@ namespace HomeNetProtocolTests.Tests
         bool updateProfileOk4 = idOk && statusOk && detailsOk;
 
 
-        requestMessage = mb.CreateUpdateProfileRequest(new byte[] { 255, 0, 0 }, "Test Identity", null, new GpsLocation(1, 2), null);
+        requestMessage = mb.CreateUpdateProfileRequest(new SemVer(255, 0, 0), "Test Identity", null, new GpsLocation(1, 2), null);
         await client.SendMessageAsync(requestMessage);
         responseMessage = await client.ReceiveMessageAsync();
 
@@ -125,7 +125,7 @@ namespace HomeNetProtocolTests.Tests
         bool updateProfileOk5 = idOk && statusOk && detailsOk;
 
 
-        requestMessage = mb.CreateUpdateProfileRequest(new byte[] { 1, 0, 0 }, "", null, new GpsLocation(1, 2), null);
+        requestMessage = mb.CreateUpdateProfileRequest(SemVer.V100, "", null, new GpsLocation(1, 2), null);
         await client.SendMessageAsync(requestMessage);
         responseMessage = await client.ReceiveMessageAsync();
 
@@ -136,7 +136,7 @@ namespace HomeNetProtocolTests.Tests
         bool updateProfileOk6 = idOk && statusOk && detailsOk;
 
         string name = new string('a', 100);
-        requestMessage = mb.CreateUpdateProfileRequest(new byte[] { 1, 0, 0 }, name, null, new GpsLocation(1, 2), null);
+        requestMessage = mb.CreateUpdateProfileRequest(SemVer.V100, name, null, new GpsLocation(1, 2), null);
         await client.SendMessageAsync(requestMessage);
         responseMessage = await client.ReceiveMessageAsync();
 
@@ -148,7 +148,7 @@ namespace HomeNetProtocolTests.Tests
 
 
         name = new string('ɐ', 50);
-        requestMessage = mb.CreateUpdateProfileRequest(new byte[] { 1, 0, 0 }, name, null, new GpsLocation(1, 2), null);
+        requestMessage = mb.CreateUpdateProfileRequest(SemVer.V100, name, null, new GpsLocation(1, 2), null);
         await client.SendMessageAsync(requestMessage);
         responseMessage = await client.ReceiveMessageAsync();
 
@@ -160,7 +160,7 @@ namespace HomeNetProtocolTests.Tests
 
         
         byte[] imageData = File.ReadAllBytes(string.Format("images{0}HN04007-too-big.jpg", Path.DirectorySeparatorChar));
-        requestMessage = mb.CreateUpdateProfileRequest(new byte[] { 1, 0, 0 }, "Test Identity", imageData, new GpsLocation(1, 2), null);
+        requestMessage = mb.CreateUpdateProfileRequest(SemVer.V100, "Test Identity", imageData, new GpsLocation(1, 2), null);
         await client.SendMessageAsync(requestMessage);
         responseMessage = await client.ReceiveMessageAsync();
 
@@ -172,7 +172,7 @@ namespace HomeNetProtocolTests.Tests
 
         
         imageData = File.ReadAllBytes(string.Format("images{0}HN04007-not-image.jpg", Path.DirectorySeparatorChar));
-        requestMessage = mb.CreateUpdateProfileRequest(new byte[] { 1, 0, 0 }, "Test Identity", imageData, new GpsLocation(1, 2), null);
+        requestMessage = mb.CreateUpdateProfileRequest(SemVer.V100, "Test Identity", imageData, new GpsLocation(1, 2), null);
         await client.SendMessageAsync(requestMessage);
         responseMessage = await client.ReceiveMessageAsync();
 
@@ -184,7 +184,7 @@ namespace HomeNetProtocolTests.Tests
 
   
         string extraData = new string('a', 300);
-        requestMessage = mb.CreateUpdateProfileRequest(new byte[] { 1, 0, 0 }, "Test Identity", null, new GpsLocation(1, 2), extraData);
+        requestMessage = mb.CreateUpdateProfileRequest(SemVer.V100, "Test Identity", null, new GpsLocation(1, 2), extraData);
         await client.SendMessageAsync(requestMessage);
         responseMessage = await client.ReceiveMessageAsync();
 
@@ -196,7 +196,7 @@ namespace HomeNetProtocolTests.Tests
 
 
         extraData = new string('ɐ', 150);
-        requestMessage = mb.CreateUpdateProfileRequest(new byte[] { 1, 0, 0 }, "Test Identity", null, new GpsLocation(1, 2), extraData);
+        requestMessage = mb.CreateUpdateProfileRequest(SemVer.V100, "Test Identity", null, new GpsLocation(1, 2), extraData);
         await client.SendMessageAsync(requestMessage);
         responseMessage = await client.ReceiveMessageAsync();
 
@@ -207,7 +207,7 @@ namespace HomeNetProtocolTests.Tests
         bool updateProfileOk12 = idOk && statusOk && detailsOk;
 
 
-        requestMessage = mb.CreateUpdateProfileRequest(new byte[] { 1, 0, 0 }, "Test Identity", null, new GpsLocation(1, 2), null);
+        requestMessage = mb.CreateUpdateProfileRequest(SemVer.V100, "Test Identity", null, new GpsLocation(1, 2), null);
         await client.SendMessageAsync(requestMessage);
         responseMessage = await client.ReceiveMessageAsync();
 

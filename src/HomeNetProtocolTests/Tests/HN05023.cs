@@ -49,10 +49,10 @@ namespace HomeNetProtocolTests.Tests
       Passed = false;
 
       ProtocolClient clientCallee = new ProtocolClient();
-      ProtocolClient clientCalleeAppService = new ProtocolClient(0, new byte[] { 1, 0, 0 }, clientCallee.GetIdentityKeys());
+      ProtocolClient clientCalleeAppService = new ProtocolClient(0, SemVer.V100, clientCallee.GetIdentityKeys());
 
       ProtocolClient clientCaller = new ProtocolClient();
-      ProtocolClient clientCallerAppService = new ProtocolClient(0, new byte[] { 1, 0, 0 }, clientCaller.GetIdentityKeys());
+      ProtocolClient clientCallerAppService = new ProtocolClient(0, SemVer.V100, clientCaller.GetIdentityKeys());
       try
       {
         MessageBuilder mbCallee = clientCallee.MessageBuilder;
@@ -247,8 +247,8 @@ namespace HomeNetProtocolTests.Tests
         log.Trace("Step 7");
         // Receive message #1.
         Message nodeRequestAppServiceCallee = await clientCalleeAppService.ReceiveMessageAsync();
-        byte[] receivedVersion = nodeRequestAppServiceCallee.Request.SingleRequest.Version.ToByteArray();
-        bool versionOk = StructuralComparisons.StructuralComparer.Compare(receivedVersion, new byte[] { 1, 0, 0 }) == 0;
+        SemVer receivedVersion = new SemVer(nodeRequestAppServiceCallee.Request.SingleRequest.Version);
+        bool versionOk = receivedVersion.Equals(SemVer.V100);
 
         typeOk = (nodeRequestAppServiceCallee.MessageTypeCase == Message.MessageTypeOneofCase.Request)
           && (nodeRequestAppServiceCallee.Request.ConversationTypeCase == Request.ConversationTypeOneofCase.SingleRequest)
@@ -267,8 +267,8 @@ namespace HomeNetProtocolTests.Tests
 
         // Receive message #2.
         nodeRequestAppServiceCallee = await clientCalleeAppService.ReceiveMessageAsync();
-        receivedVersion = nodeRequestAppServiceCallee.Request.SingleRequest.Version.ToByteArray();
-        versionOk = StructuralComparisons.StructuralComparer.Compare(receivedVersion, new byte[] { 1, 0, 0 }) == 0;
+        receivedVersion = new SemVer(nodeRequestAppServiceCallee.Request.SingleRequest.Version);
+        versionOk = receivedVersion.Equals(SemVer.V100);
 
         typeOk = (nodeRequestAppServiceCallee.MessageTypeCase == Message.MessageTypeOneofCase.Request)
           && (nodeRequestAppServiceCallee.Request.ConversationTypeCase == Request.ConversationTypeOneofCase.SingleRequest)
@@ -295,8 +295,8 @@ namespace HomeNetProtocolTests.Tests
 
         // Receive message #3.
         nodeRequestAppServiceCallee = await clientCalleeAppService.ReceiveMessageAsync();
-        receivedVersion = nodeRequestAppServiceCallee.Request.SingleRequest.Version.ToByteArray();
-        versionOk = StructuralComparisons.StructuralComparer.Compare(receivedVersion, new byte[] { 1, 0, 0 }) == 0;
+        receivedVersion = new SemVer(nodeRequestAppServiceCallee.Request.SingleRequest.Version);
+        versionOk = receivedVersion.Equals(SemVer.V100);
 
         typeOk = (nodeRequestAppServiceCallee.MessageTypeCase == Message.MessageTypeOneofCase.Request)
           && (nodeRequestAppServiceCallee.Request.ConversationTypeCase == Request.ConversationTypeOneofCase.SingleRequest)
@@ -339,8 +339,8 @@ namespace HomeNetProtocolTests.Tests
         responseMessageAppServiceCaller = await clientCallerAppService.ReceiveMessageAsync();
         idOk = responseMessageAppServiceCaller.Id == callerMessage1Id;
         statusOk = responseMessageAppServiceCaller.Response.Status == Status.Ok;
-        receivedVersion = responseMessageAppServiceCaller.Response.SingleResponse.Version.ToByteArray();
-        versionOk = StructuralComparisons.StructuralComparer.Compare(receivedVersion, new byte[] { 1, 0, 0 }) == 0;
+        receivedVersion = new SemVer(responseMessageAppServiceCaller.Response.SingleResponse.Version);
+        versionOk = receivedVersion.Equals(SemVer.V100);
 
         bool receiveAck1Ok = idOk && statusOk && versionOk;
 
@@ -350,8 +350,8 @@ namespace HomeNetProtocolTests.Tests
         responseMessageAppServiceCaller = await clientCallerAppService.ReceiveMessageAsync();
         idOk = responseMessageAppServiceCaller.Id == callerMessage2Id;
         statusOk = responseMessageAppServiceCaller.Response.Status == Status.Ok;
-        receivedVersion = responseMessageAppServiceCaller.Response.SingleResponse.Version.ToByteArray();
-        versionOk = StructuralComparisons.StructuralComparer.Compare(receivedVersion, new byte[] { 1, 0, 0 }) == 0;
+        receivedVersion = new SemVer(responseMessageAppServiceCaller.Response.SingleResponse.Version);
+        versionOk = receivedVersion.Equals(SemVer.V100);
 
         bool receiveAck2Ok = idOk && statusOk && versionOk;
 
@@ -359,8 +359,8 @@ namespace HomeNetProtocolTests.Tests
 
         // Receive message #1 from callee.
         Message nodeRequestAppServiceCaller = await clientCallerAppService.ReceiveMessageAsync();
-        receivedVersion = nodeRequestAppServiceCaller.Request.SingleRequest.Version.ToByteArray();
-        versionOk = StructuralComparisons.StructuralComparer.Compare(receivedVersion, new byte[] { 1, 0, 0 }) == 0;
+        receivedVersion = new SemVer(nodeRequestAppServiceCaller.Request.SingleRequest.Version);
+        versionOk = receivedVersion.Equals(SemVer.V100);
 
         typeOk = (nodeRequestAppServiceCaller.MessageTypeCase == Message.MessageTypeOneofCase.Request)
           && (nodeRequestAppServiceCaller.Request.ConversationTypeCase == Request.ConversationTypeOneofCase.SingleRequest)
@@ -385,8 +385,8 @@ namespace HomeNetProtocolTests.Tests
         responseMessageAppServiceCaller = await clientCallerAppService.ReceiveMessageAsync();
         idOk = responseMessageAppServiceCaller.Id == callerMessage3Id;
         statusOk = responseMessageAppServiceCaller.Response.Status == Status.Ok;
-        receivedVersion = responseMessageAppServiceCaller.Response.SingleResponse.Version.ToByteArray();
-        versionOk = StructuralComparisons.StructuralComparer.Compare(receivedVersion, new byte[] { 1, 0, 0 }) == 0;
+        receivedVersion = new SemVer(responseMessageAppServiceCaller.Response.SingleResponse.Version);
+        versionOk = receivedVersion.Equals(SemVer.V100);
 
         bool receiveAck3Ok = idOk && statusOk && versionOk;
 
@@ -394,8 +394,8 @@ namespace HomeNetProtocolTests.Tests
 
         // Receive message #2 from callee.
         nodeRequestAppServiceCaller = await clientCallerAppService.ReceiveMessageAsync();
-        receivedVersion = nodeRequestAppServiceCaller.Request.SingleRequest.Version.ToByteArray();
-        versionOk = StructuralComparisons.StructuralComparer.Compare(receivedVersion, new byte[] { 1, 0, 0 }) == 0;
+        receivedVersion = new SemVer(nodeRequestAppServiceCaller.Request.SingleRequest.Version);
+        versionOk = receivedVersion.Equals(SemVer.V100);
 
         typeOk = (nodeRequestAppServiceCaller.MessageTypeCase == Message.MessageTypeOneofCase.Request)
           && (nodeRequestAppServiceCaller.Request.ConversationTypeCase == Request.ConversationTypeOneofCase.SingleRequest)
@@ -427,8 +427,8 @@ namespace HomeNetProtocolTests.Tests
         responseMessageAppServiceCallee = await clientCalleeAppService.ReceiveMessageAsync();
         idOk = responseMessageAppServiceCallee.Id == calleeMessage1Id;
         statusOk = responseMessageAppServiceCallee.Response.Status == Status.Ok;
-        receivedVersion = responseMessageAppServiceCallee.Response.SingleResponse.Version.ToByteArray();
-        versionOk = StructuralComparisons.StructuralComparer.Compare(receivedVersion, new byte[] { 1, 0, 0 }) == 0;
+        receivedVersion = new SemVer(responseMessageAppServiceCallee.Response.SingleResponse.Version);
+        versionOk = receivedVersion.Equals(SemVer.V100);
 
         receiveAck1Ok = idOk && statusOk && versionOk;
 
@@ -436,8 +436,8 @@ namespace HomeNetProtocolTests.Tests
         responseMessageAppServiceCallee = await clientCalleeAppService.ReceiveMessageAsync();
         idOk = responseMessageAppServiceCallee.Id == calleeMessage2Id;
         statusOk = responseMessageAppServiceCallee.Response.Status == Status.Ok;
-        receivedVersion = responseMessageAppServiceCallee.Response.SingleResponse.Version.ToByteArray();
-        versionOk = StructuralComparisons.StructuralComparer.Compare(receivedVersion, new byte[] { 1, 0, 0 }) == 0;
+        receivedVersion = new SemVer(responseMessageAppServiceCallee.Response.SingleResponse.Version);
+        versionOk = receivedVersion.Equals(SemVer.V100);
 
         receiveAck2Ok = idOk && statusOk && versionOk;
 

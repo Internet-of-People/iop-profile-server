@@ -51,7 +51,7 @@ namespace HomeNetProtocolTests.Tests
       MessageBuilder mb1 = client1.MessageBuilder;
 
       // Second client will use the same identity as the first client.
-      ProtocolClient client2 = new ProtocolClient(0, new byte[] { 1, 0, 0 }, client1.GetIdentityKeys() );
+      ProtocolClient client2 = new ProtocolClient(0, SemVer.V100, client1.GetIdentityKeys() );
       MessageBuilder mb2 = client2.MessageBuilder;
       try
       {

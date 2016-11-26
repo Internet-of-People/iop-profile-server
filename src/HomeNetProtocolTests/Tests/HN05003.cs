@@ -102,10 +102,10 @@ namespace HomeNetProtocolTests.Tests
       PassedArray[Index] = false;
 
       ProtocolClient clientCallee = new ProtocolClient();
-      ProtocolClient clientCalleeAppService = new ProtocolClient(0, new byte[] { 1, 0, 0 }, clientCallee.GetIdentityKeys());
+      ProtocolClient clientCalleeAppService = new ProtocolClient(0, SemVer.V100, clientCallee.GetIdentityKeys());
 
       ProtocolClient clientCaller = new ProtocolClient();
-      ProtocolClient clientCallerAppService = new ProtocolClient(0, new byte[] { 1, 0, 0 }, clientCaller.GetIdentityKeys());
+      ProtocolClient clientCallerAppService = new ProtocolClient(0, SemVer.V100, clientCaller.GetIdentityKeys());
       try
       {
         MessageBuilder mbCallee = clientCallee.MessageBuilder;

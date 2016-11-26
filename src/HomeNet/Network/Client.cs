@@ -190,7 +190,7 @@ namespace HomeNet.Network
       if (this.UseTls)
         Stream = new SslStream(Stream, false, PeerCertificateValidationCallback);
 
-      MessageBuilder = new MessageBuilder(server.IdBase, new List<byte[]>() { new byte[] { 1, 0, 0 } }, Base.Configuration.Keys);
+      MessageBuilder = new MessageBuilder(server.IdBase, new List<SemVer>() { SemVer.V100 }, Base.Configuration.Keys);
       ConversationStatus = ClientConversationStatus.NoConversation;
       IsOurCheckedInClient = false;
 

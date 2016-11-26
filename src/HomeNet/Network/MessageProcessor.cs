@@ -348,7 +348,7 @@ namespace HomeNet.Network
     /// <param name="Client">Client to send the error to.</param>
     public async Task SendProtocolViolation(Client Client)
     {
-      MessageBuilder mb = new MessageBuilder(0, new List<byte[]>() { new byte[] { 1, 0, 0 } }, null);
+      MessageBuilder mb = new MessageBuilder(0, new List<SemVer>() { SemVer.V100 }, null);
       Message response = mb.CreateErrorProtocolViolationResponse(new Message() { Id = 0x0BADC0DE });
 
       await Client.SendMessageAsync(response);
@@ -614,7 +614,7 @@ namespace HomeNet.Network
                 Client targetClient = clientList.GetCheckedInClient(identityId);
                 bool isOnline = targetClient != null;
                 byte[] publicKey = identity.PublicKey;
-                byte[] version = identity.Version;
+                SemVer version = new SemVer(identity.Version);
                 string type = identity.Type;
                 string name = identity.Name;
                 GpsLocation location = identity.GetInitialLocation();
@@ -1204,7 +1204,7 @@ namespace HomeNet.Network
         {
           SemVer version = new SemVer(UpdateProfileRequest.Version);
 
-          // Currently only supported version is 1,0,0.
+          // Currently only supported version is 1.0.0.
           if (!version.Equals(SemVer.V100))
           {
             log.Debug("Unsupported version '{0}'.", version);
@@ -1321,7 +1321,7 @@ namespace HomeNet.Network
             {
               // We artificially initialize the profile when we cancel it in order to allow queries towards this profile.
               if (!identity.IsProfileInitialized())
-                identity.Version = new byte[] { 1, 0, 0 };
+                identity.Version = SemVer.V100.ToByteArray();
 
               profileImageToDelete = identity.ProfileImage;
               thumbnailImageToDelete = identity.ThumbnailImage;
@@ -2369,9 +2369,8 @@ namespace HomeNet.Network
 
       if (details == null)
       {
-        byte[] version10 = new byte[] { 1, 0, 0 };
-        byte[] cardVersion = card.Version.ToByteArray();
-        if (!StructuralEqualityComparer<byte[]>.Default.Equals(cardVersion, version10))
+        SemVer cardVersion = new SemVer(card.Version);
+        if (!cardVersion.Equals(SemVer.V100))
         {
           log.Debug("Card version is invalid or not supported.");
           details = "signedCard.card.version";

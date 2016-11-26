@@ -267,7 +267,7 @@ namespace HomeNetProtocolTests.Tests
         RelationshipCard card = new RelationshipCard()
         {
           CardId = ProtocolHelper.ByteArrayToByteString(new byte[32]),
-          Version = ProtocolHelper.ByteArrayToByteString(new byte[] { 1, 0, 0 }),
+          Version = SemVer.V100.ToByteString(),
           IssuerPublicKey = signedCard.Card.IssuerPublicKey,
           RecipientPublicKey = signedCard.Card.RecipientPublicKey,
           Type = signedCard.Card.Type,
@@ -309,7 +309,7 @@ namespace HomeNetProtocolTests.Tests
         card = new RelationshipCard()
         {
           CardId = ProtocolHelper.ByteArrayToByteString(new byte[32]),
-          Version = ProtocolHelper.ByteArrayToByteString(new byte[] { 1, 0, 0 }),
+          Version = SemVer.V100.ToByteString(),
           IssuerPublicKey = signedCard.Card.IssuerPublicKey,
           RecipientPublicKey = signedCard.Card.RecipientPublicKey,
           Type = signedCard.Card.Type,
@@ -600,7 +600,7 @@ namespace HomeNetProtocolTests.Tests
         RelationshipCard badIssuerKeyCard = new RelationshipCard()
         {
           CardId = ProtocolHelper.ByteArrayToByteString(new byte[32]),
-          Version = ProtocolHelper.ByteArrayToByteString(new byte[] { 1, 0, 0 }),
+          Version = SemVer.V100.ToByteString(),
           IssuerPublicKey = ProtocolHelper.ByteArrayToByteString(badPubKey),
           RecipientPublicKey = ProtocolHelper.ByteArrayToByteString(primaryPubKey),
           Type = type,
