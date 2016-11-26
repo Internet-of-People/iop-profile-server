@@ -89,9 +89,10 @@ namespace HomeNet.Network
                 case Request.ConversationTypeOneofCase.SingleRequest:
                   {
                     SingleRequest singleRequest = request.SingleRequest;
-                    log.Trace("Single request type is {0}, version is {1}.", singleRequest.RequestTypeCase, ProtocolHelper.VersionBytesToString(singleRequest.Version.ToByteArray()));
+                    SemVer version = new SemVer(singleRequest.Version);
+                    log.Trace("Single request type is {0}, version is {1}.", singleRequest.RequestTypeCase, version);
 
-                    if (!ProtocolHelper.IsValidVersion(singleRequest.Version.ToByteArray()))
+                    if (!version.IsValid())
                     {
                       responseMessage.Response.Details = "version";
                       break;
@@ -444,23 +445,22 @@ namespace HomeNet.Network
     /// <param name="ClientVersions">List of versions that the client supports. The list is ordered by client's preference.</param>
     /// <param name="SelectedCommonVersion">If the function succeeds, this is set to the selected version that both client and server support.</param>
     /// <returns>true if the function succeeds, false otherwise.</returns>
-    public bool GetCommonSupportedVersion(IEnumerable<ByteString> ClientVersions, out byte[] SelectedCommonVersion)
+    public bool GetCommonSupportedVersion(IEnumerable<ByteString> ClientVersions, out SemVer SelectedCommonVersion)
     {
 #warning TODO: This function is currently implemented only to support version 1.0.0.
       log.Trace("()");
       log.Warn("TODO UNIMPLEMENTED");
-      SelectedCommonVersion = null;
+      SelectedCommonVersion = SemVer.Invalid;
 
-      string selectedVersion = null;
+      SemVer selectedVersion = SemVer.Invalid;
       bool res = false;
       foreach (ByteString clVersion in ClientVersions)
       {
-        byte[] version = clVersion.ToByteArray();
-        string clVersionString = ProtocolHelper.VersionBytesToString(version);
-        if (clVersionString == "1.0.0")
+        SemVer version = new SemVer(clVersion);
+        if (version.Equals(SemVer.V100))
         {
           SelectedCommonVersion = version;
-          selectedVersion = clVersionString;
+          selectedVersion = version;
           res = true;
           break;
         }
@@ -693,7 +693,7 @@ namespace HomeNet.Network
       {
         if ((0 < pubKey.Length) && (pubKey.Length <= BaseIdentity.MaxPublicKeyLengthBytes))
         {
-          byte[] version;
+          SemVer version;
           if (GetCommonSupportedVersion(startConversationRequest.SupportedVersions, out version))
           {
             Client.PublicKey = pubKey;
@@ -709,7 +709,7 @@ namespace HomeNet.Network
               Client.ConversationStatus = ClientConversationStatus.ConversationStarted;
 
               log.Debug("Client {0} conversation status updated to {1}, selected version is '{2}', client public key set to '{3}', client identity ID set to '{4}', challenge set to '{5}'.",
-                Client.RemoteEndPoint, Client.ConversationStatus, ProtocolHelper.VersionBytesToString(version), Client.PublicKey.ToHex(), Client.IdentityId.ToHex(), Client.AuthenticationChallenge.ToHex());
+                Client.RemoteEndPoint, Client.ConversationStatus, version, Client.PublicKey.ToHex(), Client.IdentityId.ToHex(), Client.AuthenticationChallenge.ToHex());
 
               res = messageBuilder.CreateStartConversationResponse(RequestMessage, version, Base.Configuration.Keys.PublicKey, Client.AuthenticationChallenge, clientChallenge);
             }
@@ -1202,12 +1202,12 @@ namespace HomeNet.Network
         // Now check if the values we received are valid.
         if (UpdateProfileRequest.SetVersion)
         {
-          byte[] version = UpdateProfileRequest.Version.ToByteArray();
+          SemVer version = new SemVer(UpdateProfileRequest.Version);
 
           // Currently only supported version is 1,0,0.
-          if (!StructuralEqualityComparer<byte[]>.Default.Equals(version, new byte[] { 1, 0, 0 }))
+          if (!version.Equals(SemVer.V100))
           {
-            log.Debug("Unsupported version '{0}'.", ProtocolHelper.VersionBytesToString(version));
+            log.Debug("Unsupported version '{0}'.", version);
             details = "version";
           }
         }

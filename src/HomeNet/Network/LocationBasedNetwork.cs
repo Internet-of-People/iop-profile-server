@@ -144,6 +144,7 @@ namespace HomeNet.Network
     /// <returns>true if the function succeeded, false if connection was established before the component shutdown.</returns>
     private async Task<bool> Connect()
     {
+      log.Trace("()");
       bool res = false;
 
       // Close TCP connection and dispose client in case it is connected.
@@ -153,14 +154,12 @@ namespace HomeNet.Network
       client = new TcpClient();
       client.NoDelay = true;
       client.LingerState = new LingerOption(true, 0);
-      messageBuilder = new MessageBuilderLocNet(0, new List<byte[]> { new byte[] { 1, 0, 0 } });
+      messageBuilder = new MessageBuilderLocNet(0, new List<SemVer> { SemVer.V100 });
 
       while (!res && !ShutdownSignaling.IsShutdown)
       {
         try
         {
-          log.Trace("Connecting to LBN server '{0}'.", Base.Configuration.LbnEndPoint);
-
           await client.ConnectAsync(Base.Configuration.LbnEndPoint.Address, Base.Configuration.LbnEndPoint.Port);
           stream = client.GetStream();
           res = true;
@@ -171,9 +170,19 @@ namespace HomeNet.Network
         }
 
         if (!res)
-          await Task.Delay(10000, ShutdownSignaling.ShutdownCancellationTokenSource.Token);
+        {
+          try
+          {
+            await Task.Delay(10000, ShutdownSignaling.ShutdownCancellationTokenSource.Token);
+          }
+          catch
+          {
+            // Catch cancellation exception.
+          }
+        }
       }
 
+      log.Trace("(-):{0}", res);
       return res;
     }
 
@@ -267,7 +276,7 @@ namespace HomeNet.Network
     /// <param name="Client">Client to send the error to.</param>
     public async Task SendProtocolViolation()
     {
-      MessageBuilderLocNet mb = new MessageBuilderLocNet(0, new List<byte[]>() { new byte[] { 1, 0, 0 } });
+      MessageBuilderLocNet mb = new MessageBuilderLocNet(0, new List<SemVer> { SemVer.V100 });
       Message response = mb.CreateErrorProtocolViolationResponse(new Message() { Id = 0x0BADC0DE });
 
       await SendMessageAsync(response);
@@ -354,7 +363,8 @@ namespace HomeNet.Network
               Message responseMessage = messageBuilder.CreateErrorProtocolViolationResponse(IncomingMessage);
               Request request = IncomingMessage.Request;
 
-              log.Trace("Request type is {0}, version is {1}.", request.RequestTypeCase, ProtocolHelper.VersionBytesToString(request.Version.ToByteArray()));
+              SemVer version = new SemVer(request.Version);
+              log.Trace("Request type is {0}, version is {1}.", request.RequestTypeCase, version);
               switch (request.RequestTypeCase)
               {
                 case Request.RequestTypeOneofCase.LocalService:

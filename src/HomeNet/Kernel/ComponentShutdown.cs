@@ -15,7 +15,7 @@ namespace HomeNet.Kernel
     private static NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
 
     /// <summary>Component-defined shutdown flag. This can be used to complement the global shutdown flag.</summary>
-    public bool IsShutdown = false;
+    public volatile bool IsShutdown = false;
 
     /// <summary>Event that is set when the component shutdown is initiated.</summary>
     public ManualResetEvent ShutdownEvent = new ManualResetEvent(false);

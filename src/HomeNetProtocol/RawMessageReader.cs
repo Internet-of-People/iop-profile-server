@@ -12,10 +12,10 @@ namespace HomeNetProtocol
   /// </summary>
   public enum ReaderStatus
   {
-    /// <summary>Server is waiting for the message header to be read from the socket.</summary>
+    /// <summary>Peer is waiting for the message header to be read from the socket.</summary>
     ReadingHeader,
 
-    /// <summary>Server read the message header and is now waiting for the message body to be read.</summary>
+    /// <summary>Peer has read the message header and is now waiting for the message body to be read.</summary>
     ReadingBody
   }
 
@@ -42,7 +42,8 @@ namespace HomeNetProtocol
 
   /// <summary>
   /// Implements the ability of reading a message from a raw stream in the format that is common 
-  /// to IoP network protocols.
+  /// to IoP network protocols. As long as the given protocol is based on MessageWithHeader with 5 byte header,
+  /// it is compatible with this reader.
   /// </summary>
   public class RawMessageReader
   {

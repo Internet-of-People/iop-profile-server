@@ -14,7 +14,7 @@ namespace HomeNetProtocolTestsExecutor
   /// in https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md.
   /// 
   /// 
-  /// Usage: HomeNetProtocolTestsExecutor [<TestFirst> <TestLast>] ["EnableLongTime"]
+  /// Usage: HomeNetProtocolTestsExecutor [TestFirst TestLast] ["EnableLongTime"]
   ///   * TestFirst is a name of the first test to execute, this is optional.
   ///   * TestLast is a name of the last test to execute, can only be used with TestFirst.
   ///   * "EnableLongtime" - if this string is not included, the test executor skips long time tests.

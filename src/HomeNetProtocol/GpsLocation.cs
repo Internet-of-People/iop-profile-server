@@ -141,6 +141,9 @@ namespace HomeNetProtocol
 
     public override bool Equals(object obj)
     {
+      if (!(obj is GpsLocation))
+        return false;
+
       GpsLocation val = (GpsLocation)obj;
       return Latitude.Equals(val.Latitude) && Longitude.Equals(val.Longitude);
     }

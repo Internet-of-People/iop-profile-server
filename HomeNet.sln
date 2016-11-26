@@ -25,6 +25,8 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "HomeNetProtocolTests", "src
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "HomeNetProtocolTestsExecutor", "src\HomeNetProtocolTestsExecutor\HomeNetProtocolTestsExecutor.xproj", "{B1683DD3-75F5-41F3-93B3-27C784557625}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "HomeNetSimulator", "src\HomeNetSimulator\HomeNetSimulator.xproj", "{4E155391-DE1C-45D2-ABCE-B038B755C7A2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,10 @@ Global
 		{B1683DD3-75F5-41F3-93B3-27C784557625}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B1683DD3-75F5-41F3-93B3-27C784557625}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B1683DD3-75F5-41F3-93B3-27C784557625}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E155391-DE1C-45D2-ABCE-B038B755C7A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E155391-DE1C-45D2-ABCE-B038B755C7A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E155391-DE1C-45D2-ABCE-B038B755C7A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E155391-DE1C-45D2-ABCE-B038B755C7A2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -66,5 +72,6 @@ Global
 		{1DED740D-F28F-4865-B01E-370E4BFDDBF0} = {89D7AACD-E07B-44CF-AAC6-339DA84C423D}
 		{BEEEB71B-D983-4907-ADA0-93A0FF33F7BC} = {89D7AACD-E07B-44CF-AAC6-339DA84C423D}
 		{B1683DD3-75F5-41F3-93B3-27C784557625} = {89D7AACD-E07B-44CF-AAC6-339DA84C423D}
+		{4E155391-DE1C-45D2-ABCE-B038B755C7A2} = {89D7AACD-E07B-44CF-AAC6-339DA84C423D}
 	EndGlobalSection
 EndGlobal

@@ -32,14 +32,14 @@ namespace HomeNetProtocol
     /// Initializes message builder.
     /// </summary>
     /// <param name="IdBase">Base value for message IDs. First message will have ID set to IdBase + 1.</param>
-    /// <param name="SupportedVersions">List of supported versions in binary form ordered by claler's preference.</param>
-    public MessageBuilderLocNet(uint IdBase, List<byte[]> SupportedVersions)
+    /// <param name="SupportedVersions">List of supported versions ordered by caller's preference.</param>
+    public MessageBuilderLocNet(uint IdBase, List<SemVer> SupportedVersions)
     {
       idBase = (int)IdBase;
       id = idBase;
       supportedVersions = new List<ByteString>();
-      foreach (byte[] version in SupportedVersions)
-        supportedVersions.Add(ProtocolHelper.VersionToByteString(version));
+      foreach (SemVer version in SupportedVersions)
+        supportedVersions.Add(version.ToByteString());
 
       version = supportedVersions[0];
     }
@@ -48,10 +48,10 @@ namespace HomeNetProtocol
     /// <summary>
     /// Sets the version of the protocol that will be used by the message builder.
     /// </summary>
-    /// <param name="SelectedVersion">Selected version information in binary format.</param>
-    public void SetProtocolVersion(byte[] SelectedVersion)
+    /// <param name="SelectedVersion">Selected version information.</param>
+    public void SetProtocolVersion(SemVer SelectedVersion)
     {
-      version = ProtocolHelper.VersionToByteString(SelectedVersion);
+      version = SelectedVersion.ToByteString();
     }
 
     /// <summary>

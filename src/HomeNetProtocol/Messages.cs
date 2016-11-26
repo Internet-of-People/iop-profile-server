@@ -43,7 +43,7 @@ namespace HomeNetProtocol
       id = idBase;
       supportedVersions = new List<ByteString>();
       foreach (byte[] version in SupportedVersions)
-        supportedVersions.Add(ProtocolHelper.VersionToByteString(version));
+        supportedVersions.Add(new SemVer(version).ToByteString());
 
       version = supportedVersions[0];
       keys = Keys;
@@ -53,10 +53,10 @@ namespace HomeNetProtocol
     /// <summary>
     /// Sets the version of the protocol that will be used by the message builder.
     /// </summary>
-    /// <param name="SelectedVersion">Selected version information in binary format.</param>
-    public void SetProtocolVersion(byte[] SelectedVersion)
+    /// <param name="SelectedVersion">Selected version information.</param>
+    public void SetProtocolVersion(SemVer SelectedVersion)
     {
-      version = ProtocolHelper.VersionToByteString(SelectedVersion);
+      version =  SelectedVersion.ToByteString();
     }
 
     /// <summary>
@@ -537,10 +537,10 @@ namespace HomeNetProtocol
     /// <param name="Challenge">Server's generated challenge data for client's authentication.</param>
     /// <param name="Challenge">ClientChallenge from StartConversationRequest that the server received from the client.</param>
     /// <returns>StartConversationResponse message that is ready to be sent.</returns>
-    public Message CreateStartConversationResponse(Message Request, byte[] Version, byte[] PublicKey, byte[] Challenge, byte[] ClientChallenge)
+    public Message CreateStartConversationResponse(Message Request, SemVer Version, byte[] PublicKey, byte[] Challenge, byte[] ClientChallenge)
     {
       StartConversationResponse startConversationResponse = new StartConversationResponse();
-      startConversationResponse.Version = ProtocolHelper.VersionToByteString(Version);
+      startConversationResponse.Version = Version.ToByteString();
       startConversationResponse.PublicKey = ProtocolHelper.ByteArrayToByteString(PublicKey);
       startConversationResponse.Challenge = ProtocolHelper.ByteArrayToByteString(Challenge);
       startConversationResponse.ClientChallenge = ProtocolHelper.ByteArrayToByteString(ClientChallenge);
