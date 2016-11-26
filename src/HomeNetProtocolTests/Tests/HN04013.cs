@@ -71,7 +71,7 @@ namespace HomeNetProtocolTests.Tests
         bool checkInOk = await client.CheckInAsync();
 
 
-        Message requestMessage = mb.CreateUpdateProfileRequest(new byte[] { 1, 0, 0 }, "Test Identity", null, new GpsLocation(0, 0), null);
+        Message requestMessage = mb.CreateUpdateProfileRequest(SemVer.V100, "Test Identity", null, new GpsLocation(0, 0), null);
         await client.SendMessageAsync(requestMessage);
         Message responseMessage = await client.ReceiveMessageAsync();
 
@@ -104,8 +104,8 @@ namespace HomeNetProtocolTests.Tests
 
         byte[] receivedPubKey = responseMessage.Response.SingleResponse.GetIdentityInformation.IdentityPublicKey.ToByteArray();
         bool pubKeyOk = StructuralComparisons.StructuralComparer.Compare(receivedPubKey, testPubKey) == 0;
-        byte[] receivedVersion = responseMessage.Response.SingleResponse.GetIdentityInformation.Version.ToByteArray();
-        bool versionOk = StructuralComparisons.StructuralComparer.Compare(receivedVersion, new byte[] { 1, 0, 0 }) == 0;
+        SemVer receivedVersion = new SemVer(responseMessage.Response.SingleResponse.GetIdentityInformation.Version);
+        bool versionOk = receivedVersion.Equals(SemVer.V100);
 
         HashSet<string> expectedAsList = new HashSet<string>() { "a", "b", "c", "d" };
         HashSet<string> receivedAsList = new HashSet<string>(responseMessage.Response.SingleResponse.GetIdentityInformation.ApplicationServices);
@@ -138,8 +138,8 @@ namespace HomeNetProtocolTests.Tests
 
         receivedPubKey = responseMessage.Response.SingleResponse.GetIdentityInformation.IdentityPublicKey.ToByteArray();
         pubKeyOk = StructuralComparisons.StructuralComparer.Compare(receivedPubKey, testPubKey) == 0;
-        receivedVersion = responseMessage.Response.SingleResponse.GetIdentityInformation.Version.ToByteArray();
-        versionOk = StructuralComparisons.StructuralComparer.Compare(receivedVersion, new byte[] { 1, 0, 0 }) == 0;
+        receivedVersion = new SemVer(responseMessage.Response.SingleResponse.GetIdentityInformation.Version);
+        versionOk = receivedVersion.Equals(SemVer.V100);
 
         expectedAsList = new HashSet<string>() { "a", "b", "c", "d", "e" };
         receivedAsList = new HashSet<string>(responseMessage.Response.SingleResponse.GetIdentityInformation.ApplicationServices);
@@ -171,8 +171,8 @@ namespace HomeNetProtocolTests.Tests
 
         receivedPubKey = responseMessage.Response.SingleResponse.GetIdentityInformation.IdentityPublicKey.ToByteArray();
         pubKeyOk = StructuralComparisons.StructuralComparer.Compare(receivedPubKey, testPubKey) == 0;
-        receivedVersion = responseMessage.Response.SingleResponse.GetIdentityInformation.Version.ToByteArray();
-        versionOk = StructuralComparisons.StructuralComparer.Compare(receivedVersion, new byte[] { 1, 0, 0 }) == 0;
+        receivedVersion = new SemVer(responseMessage.Response.SingleResponse.GetIdentityInformation.Version);
+        versionOk = receivedVersion.Equals(SemVer.V100);
 
         expectedAsList = new HashSet<string>() { "b", "c", "d", "e" };
         receivedAsList = new HashSet<string>(responseMessage.Response.SingleResponse.GetIdentityInformation.ApplicationServices);
@@ -205,8 +205,8 @@ namespace HomeNetProtocolTests.Tests
 
         receivedPubKey = responseMessage.Response.SingleResponse.GetIdentityInformation.IdentityPublicKey.ToByteArray();
         pubKeyOk = StructuralComparisons.StructuralComparer.Compare(receivedPubKey, testPubKey) == 0;
-        receivedVersion = responseMessage.Response.SingleResponse.GetIdentityInformation.Version.ToByteArray();
-        versionOk = StructuralComparisons.StructuralComparer.Compare(receivedVersion, new byte[] { 1, 0, 0 }) == 0;
+        receivedVersion = new SemVer(responseMessage.Response.SingleResponse.GetIdentityInformation.Version);
+        versionOk = receivedVersion.Equals(SemVer.V100);
 
         expectedAsList = new HashSet<string>() { "b", "c", "d", "e" };
         receivedAsList = new HashSet<string>(responseMessage.Response.SingleResponse.GetIdentityInformation.ApplicationServices);
@@ -241,8 +241,8 @@ namespace HomeNetProtocolTests.Tests
 
         receivedPubKey = responseMessage.Response.SingleResponse.GetIdentityInformation.IdentityPublicKey.ToByteArray();
         pubKeyOk = StructuralComparisons.StructuralComparer.Compare(receivedPubKey, testPubKey) == 0;
-        receivedVersion = responseMessage.Response.SingleResponse.GetIdentityInformation.Version.ToByteArray();
-        versionOk = StructuralComparisons.StructuralComparer.Compare(receivedVersion, new byte[] { 1, 0, 0 }) == 0;
+        receivedVersion = new SemVer(responseMessage.Response.SingleResponse.GetIdentityInformation.Version);
+        versionOk = receivedVersion.Equals(SemVer.V100);
 
         expectedAsList = new HashSet<string>() { "b", "c", "d", "e" };
         receivedAsList = new HashSet<string>(responseMessage.Response.SingleResponse.GetIdentityInformation.ApplicationServices);
@@ -288,8 +288,8 @@ namespace HomeNetProtocolTests.Tests
 
         receivedPubKey = responseMessage.Response.SingleResponse.GetIdentityInformation.IdentityPublicKey.ToByteArray();
         pubKeyOk = StructuralComparisons.StructuralComparer.Compare(receivedPubKey, testPubKey) == 0;
-        receivedVersion = responseMessage.Response.SingleResponse.GetIdentityInformation.Version.ToByteArray();
-        versionOk = StructuralComparisons.StructuralComparer.Compare(receivedVersion, new byte[] { 1, 0, 0 }) == 0;
+        receivedVersion = new SemVer(responseMessage.Response.SingleResponse.GetIdentityInformation.Version);
+        versionOk = receivedVersion.Equals(SemVer.V100);
 
         expectedAsList = new HashSet<string>() { "b", "c", "d", "e", "a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8", "a9", "a10", "b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "b10" };
         receivedAsList = new HashSet<string>(responseMessage.Response.SingleResponse.GetIdentityInformation.ApplicationServices);
@@ -322,8 +322,8 @@ namespace HomeNetProtocolTests.Tests
 
         receivedPubKey = responseMessage.Response.SingleResponse.GetIdentityInformation.IdentityPublicKey.ToByteArray();
         pubKeyOk = StructuralComparisons.StructuralComparer.Compare(receivedPubKey, testPubKey) == 0;
-        receivedVersion = responseMessage.Response.SingleResponse.GetIdentityInformation.Version.ToByteArray();
-        versionOk = StructuralComparisons.StructuralComparer.Compare(receivedVersion, new byte[] { 1, 0, 0 }) == 0;
+        receivedVersion = new SemVer(responseMessage.Response.SingleResponse.GetIdentityInformation.Version);
+        versionOk = receivedVersion.Equals(SemVer.V100);
 
         expectedAsList = new HashSet<string>() { "b", "c", "d", "e", "a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8", "a9", "a10", "b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "b10" };
         receivedAsList = new HashSet<string>(responseMessage.Response.SingleResponse.GetIdentityInformation.ApplicationServices);

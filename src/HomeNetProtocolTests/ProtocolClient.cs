@@ -60,7 +60,7 @@ namespace HomeNetProtocolTests
     /// </summary>
     /// <param name="IdBase">Base for message numbering.</param>
     public ProtocolClient(uint IdBase):
-      this(IdBase, new byte[] { 1, 0, 0 })
+      this(IdBase, SemVer.V100)
     {
     }
 
@@ -68,8 +68,8 @@ namespace HomeNetProtocolTests
     /// Initializes the instance.
     /// </summary>
     /// <param name="IdBase">Base for message numbering.</param>
-    /// <param name="ProtocolVersion">Protocol version in binary form.</param>
-    public ProtocolClient(uint IdBase, byte[] ProtocolVersion):
+    /// <param name="ProtocolVersion">Protocol version.</param>
+    public ProtocolClient(uint IdBase, SemVer ProtocolVersion):
       this(IdBase, ProtocolVersion, Ed25519.GenerateKeys())
     {
     }
@@ -78,15 +78,15 @@ namespace HomeNetProtocolTests
     /// Initializes the instance.
     /// </summary>
     /// <param name="IdBase">Base for message numbering.</param>
-    /// <param name="ProtocolVersion">Protocol version in binary form.</param>
+    /// <param name="ProtocolVersion">Protocol version.</param>
     /// <param name="Keys">Keys that represent the client's identity.</param>
-    public ProtocolClient(uint IdBase, byte[] ProtocolVersion, KeysEd25519 Keys)
+    public ProtocolClient(uint IdBase, SemVer ProtocolVersion, KeysEd25519 Keys)
     {
       client = new TcpClient();
       client.NoDelay = true;
       client.LingerState = new LingerOption(true, 0);
       keys = Keys;
-      MessageBuilder = new MessageBuilder(IdBase, new List<byte[]>() { ProtocolVersion }, keys);
+      MessageBuilder = new MessageBuilder(IdBase, new List<SemVer>() { ProtocolVersion }, keys);
     }
 
 
@@ -230,9 +230,8 @@ namespace HomeNetProtocolTests
       bool statusOk = responseMessage.Response.Status == Status.Ok;
       bool challengeVerifyOk = VerifyNodeChallengeSignature(responseMessage);
 
-      byte[] receivedVersion = responseMessage.Response.ConversationResponse.Start.Version.ToByteArray();
-      byte[] expectedVersion = new byte[] { 1, 0, 0 };
-      bool versionOk = StructuralComparisons.StructuralComparer.Compare(receivedVersion, expectedVersion) == 0;
+      SemVer receivedVersion = new SemVer(responseMessage.Response.ConversationResponse.Start.Version);
+      bool versionOk = receivedVersion.Equals(new SemVer(MessageBuilder.Version));
 
       bool pubKeyLenOk = responseMessage.Response.ConversationResponse.Start.PublicKey.Length == 32;
       bool challengeOk = responseMessage.Response.ConversationResponse.Start.Challenge.Length == 32;
@@ -380,7 +379,7 @@ namespace HomeNetProtocolTests
     {
       log.Trace("()");
 
-      Message requestMessage = MessageBuilder.CreateUpdateProfileRequest(new byte[] { 1, 0, 0 }, Name, Image, Location, ExtraData);
+      Message requestMessage = MessageBuilder.CreateUpdateProfileRequest(SemVer.V100, Name, Image, Location, ExtraData);
       await SendMessageAsync(requestMessage);
       Message responseMessage = await ReceiveMessageAsync();
 
@@ -495,7 +494,7 @@ namespace HomeNetProtocolTests
     /// <returns>Signed relationship card.</returns>
     public SignedRelationshipCard IssueRelationshipCard(byte[] RecipientPublicKey, string CardType, DateTime ValidFrom, DateTime ValidTo)
     {
-      return IssueRelationshipCard(new byte[] { 1, 0, 0 }, RecipientPublicKey, CardType, ValidFrom, ValidTo);
+      return IssueRelationshipCard(SemVer.V100.ToByteArray(), RecipientPublicKey, CardType, ValidFrom, ValidTo);
     }
 
 

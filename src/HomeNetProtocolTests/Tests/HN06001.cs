@@ -848,7 +848,7 @@ namespace HomeNetProtocolTests.Tests
             bool piLatitudeOk = profileInfo.Latitude == ProfileLocations[profileIndex].GetLocationTypeLatitude();
             bool piLongitudeOk = profileInfo.Longitude == ProfileLocations[profileIndex].GetLocationTypeLongitude();
             bool piExtraDataOk = (string.IsNullOrEmpty(profileInfo.ExtraData) && string.IsNullOrEmpty(ProfileExtraData[profileIndex])) || (profileInfo.ExtraData == ProfileExtraData[profileIndex]);
-            bool piVersionOk = StructuralComparisons.StructuralComparer.Compare(profileInfo.Version.ToByteArray(), new byte[] { 1, 0, 0 }) == 0;
+            bool piVersionOk = new SemVer(profileInfo.Version).Equals(SemVer.V100);
 
             bool piImageOk = true;
             if (NoImages) piImageOk = profileInfo.ThumbnailImage.Length == 0;

@@ -70,7 +70,7 @@ namespace HomeNetProtocolTests.Tests
         await client.ConnectAsync(NodeIp, ClCustomerPort, true);
         bool checkInOk = await client.CheckInAsync();
 
-        Message requestMessage = mb.CreateUpdateProfileRequest(new byte[] { 1, 0, 0 }, "Test Identity", null, new GpsLocation(1, 2), null);
+        Message requestMessage = mb.CreateUpdateProfileRequest(SemVer.V100, "Test Identity", null, new GpsLocation(1, 2), null);
         await client.SendMessageAsync(requestMessage);
         Message responseMessage = await client.ReceiveMessageAsync();
 
@@ -91,8 +91,8 @@ namespace HomeNetProtocolTests.Tests
 
         byte[] receivedPubKey = responseMessage.Response.SingleResponse.GetIdentityInformation.IdentityPublicKey.ToByteArray();
         bool pubKeyOk = StructuralComparisons.StructuralComparer.Compare(receivedPubKey, testPubKey) == 0;
-        byte[] receivedVersion = responseMessage.Response.SingleResponse.GetIdentityInformation.Version.ToByteArray();
-        bool versionOk = StructuralComparisons.StructuralComparer.Compare(receivedVersion, new byte[] { 1, 0, 0 }) == 0;
+        SemVer receivedVersion = new SemVer(responseMessage.Response.SingleResponse.GetIdentityInformation.Version);
+        bool versionOk = receivedVersion.Equals(SemVer.V100);
 
         bool nameOk = responseMessage.Response.SingleResponse.GetIdentityInformation.Name == "Test Identity";
         bool extraDataOk = responseMessage.Response.SingleResponse.GetIdentityInformation.ExtraData == "";
@@ -123,8 +123,8 @@ namespace HomeNetProtocolTests.Tests
 
         receivedPubKey = responseMessage.Response.SingleResponse.GetIdentityInformation.IdentityPublicKey.ToByteArray();
         pubKeyOk = StructuralComparisons.StructuralComparer.Compare(testPubKey, receivedPubKey) == 0;
-        receivedVersion = responseMessage.Response.SingleResponse.GetIdentityInformation.Version.ToByteArray();
-        versionOk = StructuralComparisons.StructuralComparer.Compare(receivedVersion, new byte[] { 1, 0, 0 }) == 0;
+        receivedVersion = new SemVer(responseMessage.Response.SingleResponse.GetIdentityInformation.Version);
+        versionOk = receivedVersion.Equals(SemVer.V100);
 
         nameOk = responseMessage.Response.SingleResponse.GetIdentityInformation.Name == "Test Identity Renamed";
         extraDataOk = responseMessage.Response.SingleResponse.GetIdentityInformation.ExtraData == "a=b";

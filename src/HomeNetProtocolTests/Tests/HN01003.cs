@@ -56,7 +56,7 @@ namespace HomeNetProtocolTests.Tests
 
         byte[] payload = Encoding.UTF8.GetBytes("Hello");
         Message requestMessage = mb.CreatePingRequest(payload);
-        requestMessage.Request.SingleRequest.Version = ProtocolHelper.ByteArrayToByteString(new byte[] { 0, 0, 0 });
+        requestMessage.Request.SingleRequest.Version = SemVer.Invalid.ToByteString();
 
         await client.SendMessageAsync(requestMessage);
 

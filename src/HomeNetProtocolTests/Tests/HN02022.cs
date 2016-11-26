@@ -63,7 +63,7 @@ namespace HomeNetProtocolTests.Tests
         requestMessage.Request.ConversationRequest.Start = new StartConversationRequest();
         requestMessage.Request.ConversationRequest.Start.PublicKey = myKey;
         requestMessage.Request.ConversationRequest.Start.ClientChallenge = ProtocolHelper.ByteArrayToByteString(badChallenge);
-        requestMessage.Request.ConversationRequest.Start.SupportedVersions.Add(ProtocolHelper.ByteArrayToByteString(new byte[] { 1, 0, 0 }));
+        requestMessage.Request.ConversationRequest.Start.SupportedVersions.Add(SemVer.V100.ToByteString());
 
         await client.SendMessageAsync(requestMessage);
         Message responseMessage = await client.ReceiveMessageAsync();
