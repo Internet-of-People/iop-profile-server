@@ -16,7 +16,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN04006 - Home Node Agreement, Update Profile, Get Identity Information 
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn04006---home-node-agreement-update-profile-get-identity-information
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN04.md#hn04006---home-node-agreement-update-profile-get-identity-information
   /// </summary>
   public class HN04006 : ProtocolTest
   {

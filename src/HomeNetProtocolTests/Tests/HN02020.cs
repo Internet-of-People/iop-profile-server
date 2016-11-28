@@ -16,7 +16,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN02020 - Call Identity Application Service - Invalid Id
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn02020---call-identity-application-service---invalid-id
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN02.md#hn02020---call-identity-application-service---invalid-id
   /// </summary>
   public class HN02020 : ProtocolTest
   {

@@ -16,7 +16,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN04001 - Check-In - Different Customer and Non-Customer Ports
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn04001---check-in---different-customer-and-non-customer-ports
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN04.md#hn04001---check-in---different-customer-and-non-customer-ports
   /// </summary>
   public class HN04001 : ProtocolTest
   {

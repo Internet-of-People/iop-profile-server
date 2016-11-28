@@ -15,7 +15,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN02009 - Verify Identity
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn02009---verify-identity
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN02.md#hn02009---verify-identity
   /// </summary>
   public class HN02009 : ProtocolTest
   {

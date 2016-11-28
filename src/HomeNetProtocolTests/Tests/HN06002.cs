@@ -16,7 +16,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN06002 - Profile Search - Empty Database
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn06002---profile-search---empty-database
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN06.md#hn06002---profile-search---empty-database
   /// </summary>
   public class HN06002 : ProtocolTest
   {

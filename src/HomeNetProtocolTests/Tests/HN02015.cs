@@ -15,7 +15,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN02015 - Get Identity Information - Uninitialized
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn02015---get-identity-information---uninitialized
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN02.md#hn02015---get-identity-information---uninitialized
   /// </summary>
   public class HN02015 : ProtocolTest
   {

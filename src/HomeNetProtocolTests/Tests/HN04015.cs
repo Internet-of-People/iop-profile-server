@@ -16,7 +16,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN04015 - Check-In - Invalid Challenge 2
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn04015---check-in---invalid-challenge-2
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN04.md#hn04015---check-in---invalid-challenge-2
   /// </summary>
   public class HN04015 : ProtocolTest
   {

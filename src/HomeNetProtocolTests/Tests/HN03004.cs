@@ -16,7 +16,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN03004 - Check-In - Bad Conversation Status
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn03004---check-in---bad-conversation-status
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN03.md#hn03004---check-in---bad-conversation-status
   /// </summary>
   public class HN03004 : ProtocolTest
   {

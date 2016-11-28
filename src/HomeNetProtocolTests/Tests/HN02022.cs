@@ -16,7 +16,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN02022 - Start Conversation - Invalid Challenge
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn02022---start-conversation---invalid-challenge
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN02.md#hn02022---start-conversation---invalid-challenge
   /// </summary>
   public class HN02022 : ProtocolTest
   {

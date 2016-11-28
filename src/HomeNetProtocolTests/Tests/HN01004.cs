@@ -14,7 +14,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN01004 - List Roles
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn01004---list-roles
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN01.md#hn01004---list-roles
   /// </summary>
   public class HN01004 : ProtocolTest
   {

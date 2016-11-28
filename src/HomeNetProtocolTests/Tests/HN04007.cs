@@ -16,7 +16,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN04007 - Update Profile - Invalid Initialization and Invalid Values
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn04007---update-profile---invalid-initialization-and-invalid-values
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN04.md#hn04007---update-profile---invalid-initialization-and-invalid-values
   /// </summary>
   public class HN04007 : ProtocolTest
   {

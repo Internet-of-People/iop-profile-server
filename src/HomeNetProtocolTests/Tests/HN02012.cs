@@ -15,7 +15,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN02012 - Verify Identity - Bad Conversation Status
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn02012---verify-identity---bad-conversation-status
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN02.md#hn02012---verify-identity---bad-conversation-status
   /// </summary>
   public class HN02012 : ProtocolTest
   {

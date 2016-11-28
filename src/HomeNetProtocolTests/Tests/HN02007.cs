@@ -15,7 +15,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN02007 - Home Node Request - Quota Exceeded
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn02007---home-node-request---quota-exceeded
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN02.md#hn02007---home-node-request---quota-exceeded
   /// </summary>
   public class HN02007 : ProtocolTest
   {

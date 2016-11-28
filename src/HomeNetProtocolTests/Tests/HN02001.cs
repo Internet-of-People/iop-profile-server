@@ -14,7 +14,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN02001 - Client Non-Customer Port Ping
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn02001---client-non-customer-port-ping
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN02.md#hn02001---client-non-customer-port-ping
   /// </summary>
   public class HN02001 : ProtocolTest
   {

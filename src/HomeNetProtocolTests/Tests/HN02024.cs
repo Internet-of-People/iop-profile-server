@@ -15,7 +15,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN02024 - Profile Stats - No Stats
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn02024---profile-stats---no-stats
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN02.md#hn02024---profile-stats---no-stats
   /// </summary>
   public class HN02024 : ProtocolTest
   {

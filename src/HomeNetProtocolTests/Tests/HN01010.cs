@@ -15,7 +15,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN01010 - Incoming Call Notification - Protocol Violation
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn01010---incoming-call-notification---protocol-violation
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN01.md#hn01010---incoming-call-notification---protocol-violation
   /// </summary>
   public class HN01010 : ProtocolTest
   {

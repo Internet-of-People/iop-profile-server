@@ -16,7 +16,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN02019 - Call Identity Application Service - Unauthorized 2
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn02019---call-identity-application-service---unauthorized-2
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN02.md#hn02019---call-identity-application-service---unauthorized-2
   /// </summary>
   public class HN02019 : ProtocolTest
   {

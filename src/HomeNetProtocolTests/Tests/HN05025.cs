@@ -17,7 +17,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN05025 - Application Service Callee Uses Same Connection Twice 2
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn05025---application-service-callee-uses-same-connection-twice-2
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN05.md#hn05025---application-service-callee-uses-same-connection-twice-2
   /// </summary>
   public class HN05025 : ProtocolTest
   {

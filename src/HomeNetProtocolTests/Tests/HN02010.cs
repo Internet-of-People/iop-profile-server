@@ -15,7 +15,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN02010 - Verify Identity - Invalid Signature
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn02010---verify-identity---invalid-signature
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN02.md#hn02010---verify-identity---invalid-signature
   /// </summary>
   public class HN02010 : ProtocolTest
   {

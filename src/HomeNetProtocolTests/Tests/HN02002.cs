@@ -14,7 +14,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN02002 - Invalid Role Request - List Roles
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn02002---invalid-role-request---list-roles
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN02.md#hn02002---invalid-role-request---list-roles
   /// </summary>
   public class HN02002 : ProtocolTest
   {

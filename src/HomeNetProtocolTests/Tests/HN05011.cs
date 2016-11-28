@@ -17,7 +17,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN05011 - Callee Fails AppService Port Initialization - No Connection
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn05011---callee-fails-appservice-port-initialization---no-connection
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN05.md#hn05011---callee-fails-appservice-port-initialization---no-connection
   /// </summary>
   public class HN05011 : ProtocolTest
   {

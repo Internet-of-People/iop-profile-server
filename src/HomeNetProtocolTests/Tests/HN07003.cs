@@ -16,7 +16,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN07003 - Add Related Identity - Quota Exceeded
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn07003---add-related-identity---quota-exceeded
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN07.md#hn07003---add-related-identity---quota-exceeded
   /// </summary>
   public class HN07003 : ProtocolTest
   {

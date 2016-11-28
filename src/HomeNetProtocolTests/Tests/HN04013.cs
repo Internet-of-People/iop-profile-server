@@ -16,7 +16,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN04013 - Application Service Add, Remove, Query
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn04013---application-service-add-remove-query
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN04.md#hn04013---application-service-add-remove-query
   /// </summary>
   public class HN04013 : ProtocolTest
   {

@@ -16,7 +16,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN04009 - Cancel Home Node Agreement - Redirection
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn04009---cancel-home-node-agreement---redirection
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN04.md#hn04009---cancel-home-node-agreement---redirection
   /// </summary>
   public class HN04009 : ProtocolTest
   {

@@ -17,7 +17,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN05015 - Application Service Caller Uses Invalid Token
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn05015---application-service-caller-uses-invalid-token
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN05.md#hn05015---application-service-caller-uses-invalid-token
   /// </summary>
   public class HN05015 : ProtocolTest
   {

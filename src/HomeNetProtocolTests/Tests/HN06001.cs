@@ -16,7 +16,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN06001 - Profile Search - Simple Search 1
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn06001---profile-search---simple-search-1
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN06.md#hn06001---profile-search---simple-search-1
   /// </summary>
   public class HN06001 : ProtocolTest
   {

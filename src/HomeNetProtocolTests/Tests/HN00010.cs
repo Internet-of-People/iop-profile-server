@@ -14,7 +14,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN00010 - Message Too Large
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn00010---message-too-large
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN00.md#hn00010---message-too-large
   /// </summary>
   public class HN00010 : ProtocolTest
   {

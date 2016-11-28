@@ -16,7 +16,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN04011 - Parallel Check-Ins
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn04011---parallel-check-ins
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN04.md#hn04011---parallel-check-ins
   /// </summary>
   public class HN04011 : ProtocolTest
   {

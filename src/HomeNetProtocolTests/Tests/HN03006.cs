@@ -16,7 +16,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN03006 - Remove Related Identity - Unauthorized
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn03006---remove-related-identity---unauthorized
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN03.md#hn03006---remove-related-identity---unauthorized
   /// </summary>
   public class HN03006 : ProtocolTest
   {

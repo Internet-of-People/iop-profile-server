@@ -14,7 +14,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN01001 - Primary Port Ping
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn01001---primary-port-ping
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN01.md#hn01001---primary-port-ping
   /// </summary>
   public class HN01001 : ProtocolTest
   {

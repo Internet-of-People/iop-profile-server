@@ -13,7 +13,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN00003 - Disconnection of Inactive TCP Client from Primary Port - No Message
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn00003---disconnection-of-inactive-tcp-client-from-primary-port---no-message
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN00.md#hn00003---disconnection-of-inactive-tcp-client-from-primary-port---no-message
   /// </summary>
   public class HN00003 : ProtocolTest
   {

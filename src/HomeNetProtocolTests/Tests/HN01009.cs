@@ -15,7 +15,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN01009 - Call Identity Application Service - Bad Role
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn01009---call-identity-application-service---bad-role
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN01.md#hn01009---call-identity-application-service---bad-role
   /// </summary>
   public class HN01009 : ProtocolTest
   {

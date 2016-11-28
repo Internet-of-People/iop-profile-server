@@ -17,7 +17,7 @@ namespace HomeNetProtocolTests.Tests
 {
   /// <summary>
   /// HN05016 - Application Service First Client Late Join
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#hn05016---application-service-first-client-late-join
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/HN05.md#hn05016---application-service-first-client-late-join
   /// </summary>
   public class HN05016 : ProtocolTest
   {
