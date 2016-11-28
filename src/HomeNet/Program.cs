@@ -29,6 +29,7 @@ namespace HomeNet
       log.Info("()");
       if (Base.Init())
       {
+        Console.WriteLine("Profile server is running now.");
         Console.WriteLine("Press ENTER to exit.");
         Console.ReadLine();
 
@@ -37,6 +38,10 @@ namespace HomeNet
       else Console.WriteLine("Initialization failed.");
 
       log.Info("(-)");
+
+      // Make sure async logs are flushed before program ends.
+      NLog.LogManager.Flush();
+      NLog.LogManager.Shutdown();
     }
   }
 }

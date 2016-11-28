@@ -37,6 +37,9 @@ namespace HomeNetCrypto
   /// </summary>
   public class Ed25519
   {
+    /// <summary>Size of signatures in bytes.</summary>
+    public const int SignatureLengthBytes = 64;
+
     /// <summary>
     /// Generates new keys using random seed.
     /// </summary>
@@ -117,7 +120,12 @@ namespace HomeNetCrypto
     /// <returns>true if the signature represents a valid cryptographic signature of the message using the private key for which the public key was provided.</returns>
     public static bool Verify(byte[] Signature, byte[] Message, byte[] PublicKey)
     {
-      return Chaos.NaCl.Ed25519.Verify(Signature, Message, PublicKey);
+      bool res = false;
+
+      if ((Signature != null) && (Signature.Length == SignatureLengthBytes))
+        res = Chaos.NaCl.Ed25519.Verify(Signature, Message, PublicKey);
+
+      return res;
     }
   }
 
@@ -130,7 +138,7 @@ namespace HomeNetCrypto
     /// <summary>Cryptographically secure random number generator.</summary>
     public static RandomNumberGenerator Rng = RandomNumberGenerator.Create();
 
-    private static SHA1 sha1Engine = SHA1.Create();
+    private static SHA256 sha256Engine = SHA256.Create();
 
     /// <summary>
     /// Converts a binary data to an uppercase hexadecimal string representation.
@@ -154,16 +162,16 @@ namespace HomeNetCrypto
 
 
     /// <summary>
-    /// Computes SHA1 hash of binary data.
+    /// Computes SHA256 hash of binary data.
     /// </summary>
     /// <param name="Data">Data to be hashed.</param>
-    /// <returns>SHA1 hash in binary form.</returns>
-    public static byte[] Sha1(byte[] Data)
+    /// <returns>SHA256 hash in binary form.</returns>
+    public static byte[] Sha256(byte[] Data)
     {
       byte[] res = null;
-      lock (sha1Engine)
+      lock (sha256Engine)
       {
-        res = sha1Engine.ComputeHash(Data);
+        res = sha256Engine.ComputeHash(Data);
       }
       return res;
     }

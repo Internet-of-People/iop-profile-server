@@ -142,7 +142,7 @@ namespace HomeNetProtocolTests.Tests
 
         await clientCallee.ConnectAsync(NodeIp, (int)rolePorts[ServerRoleType.ClCustomer], true);
         bool checkInOk = await clientCallee.CheckInAsync();
-        bool initializeProfileOk = await clientCallee.InitializeProfileAsync("Test Identity", null, 0x12345678, null);
+        bool initializeProfileOk = await clientCallee.InitializeProfileAsync("Test Identity", null, new GpsLocation(0, 0), null);
 
 
         // Add application service to the current session.
@@ -355,7 +355,7 @@ namespace HomeNetProtocolTests.Tests
         offset += chunk.Length;
       }
         
-      byte[] finalHash = Crypto.Sha1(data);
+      byte[] finalHash = Crypto.Sha256(data);
 
       log.Trace(prefix + "(-):{0}", Crypto.ToHex(finalHash));
       return finalHash;
@@ -438,7 +438,7 @@ namespace HomeNetProtocolTests.Tests
         offset += chunk.Length;
       }
 
-      byte[] finalHash = Crypto.Sha1(data);
+      byte[] finalHash = Crypto.Sha256(data);
 
       log.Trace(prefix + "(-):{0}", Crypto.ToHex(finalHash));
       return finalHash;

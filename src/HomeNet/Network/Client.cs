@@ -45,7 +45,10 @@ namespace HomeNet.Network
     Verified,
 
     /// <summary>There is an established conversation with the client and the authentication process has already been completed.</summary>
-    Authenticated
+    Authenticated,
+
+    /// <summary>The conversation status of the client is ConversationStarted, Verified, or Authenticated.</summary>
+    ConversationAny
   };
 
   /// <summary>
@@ -64,6 +67,13 @@ namespace HomeNet.Network
 
     /// <summary>Maximal number of unconfirmed messages that one relay client can send to the other one.</summary>
     public const int MaxUnfinishedRequests = 20;
+
+
+    /// <summary>
+    /// Length of the profile search cache expiration period in seconds.
+    /// Minimal value defined by the protocol is 60 seconds.
+    /// </summary>
+    public const int ProfileSearchResultCacheExpirationTimeSeconds = 180;
 
 
     /// <summary>Role server assigned client identifier.</summary>
@@ -126,6 +136,22 @@ namespace HomeNet.Network
     /// </summary>
     public RelayConnection Relay;
 
+
+
+    /// <summary>Lock object to protect access to profile search result cache objects.</summary>
+    private object profileSearchResultCacheLock = new object();
+
+    /// <summary>Cache for profile search result queries.</summary>
+    private List<IdentityNetworkProfileInformation> profileSearchResultCache;
+
+    /// <summary>Original value of ProfileSearchResponse.includeThumbnailImages from the search query request.</summary>
+    private bool profileSearchResultCacheIncludeImages;
+
+    /// <summary>
+    /// Timer for profile search result cache expiration. When the timer's routine is called, 
+    /// the cache is deleted and cached results are no longer available.
+    /// </summary>
+    private Timer profileSearchResultCacheExpirationTimer;
     // \Client Context Section
 
 
@@ -410,7 +436,7 @@ namespace HomeNet.Network
       bool res = false;
 
       string msgStr = Message.ToString();
-      log.Trace("Sending response to client:\n{0}", msgStr.Substring(0, Math.Min(msgStr.Length, 512)));
+      log.Trace("Sending response to client:\n{0}", msgStr.SubstrMax(512));
       byte[] responseBytes = ProtocolHelper.GetMessageBytes(Message);
 
       await StreamWriteLock.WaitAsync();
@@ -541,6 +567,107 @@ namespace HomeNet.Network
     }
 
 
+    /// <summary>
+    /// Saves search results to the client session cache.
+    /// </summary>
+    /// <param name="SearchResults">Search results to save.</param>
+    /// <param name="IncludeImages">Original value of ProfileSearchResponse.includeThumbnailImages from the search query request.</param>
+    public void SaveProfileSearchResults(List<IdentityNetworkProfileInformation> SearchResults, bool IncludeImages)
+    {
+      log.Trace("(SearchResults.GetHashCode():{0},IncludeImages:{1})", SearchResults.GetHashCode(), IncludeImages);
+
+      lock (profileSearchResultCacheLock)
+      {
+        if (profileSearchResultCacheExpirationTimer != null)
+          profileSearchResultCacheExpirationTimer.Dispose();
+
+        profileSearchResultCache = SearchResults;
+        profileSearchResultCacheIncludeImages = IncludeImages;
+
+        profileSearchResultCacheExpirationTimer = new Timer(ProfileSearchResultCacheTimerCallback, profileSearchResultCache, ProfileSearchResultCacheExpirationTimeSeconds * 1000, Timeout.Infinite);
+      }
+
+      log.Trace("(-)");
+    }
+
+
+    /// <summary>
+    /// Gets information about the search result cache.
+    /// </summary>
+    /// <param name="Count">If the result cache is not empty, this is filled with the number of items in the cache.</param>
+    /// <param name="IncludeImages">If the result cache is not empty, this is filled with the original value of ProfileSearchResponse.includeThumbnailImages from the search query request.</param>
+    /// <returns>true if the result cache is not empty, false otherwise.</returns>
+    public bool GetProfileSearchResultsInfo(out int Count, out bool IncludeImages)
+    {
+      log.Trace("()");
+
+      bool res = false;
+      Count = 0;
+      IncludeImages = false;
+
+      lock (profileSearchResultCacheLock)
+      {
+        if (profileSearchResultCache != null)
+        {
+          Count = profileSearchResultCache.Count;
+          IncludeImages = profileSearchResultCacheIncludeImages;
+          res = true;
+        }
+      }
+
+      if (res) log.Trace("(-):{0},Count={1},IncludeImages={2}", res, Count, IncludeImages);
+      else log.Trace("(-):{0}", res);
+      return res;
+    }
+
+    /// <summary>
+    /// Loads search results from the client session cache.
+    /// </summary>
+    /// <param name="Index">Index of the first item to retrieve.</param>
+    /// <param name="Count">Number of items to retrieve.</param>
+    /// <returns>A copy of search results loaded from the cache or null if the required item range is not available.</returns>
+    public List<IdentityNetworkProfileInformation> GetProfileSearchResults(int Index, int Count)
+    {
+      log.Trace("()");
+
+      List<IdentityNetworkProfileInformation> res = null;
+      lock (profileSearchResultCacheLock)
+      {
+        if ((profileSearchResultCache != null) && (Index + Count <= profileSearchResultCache.Count))
+          res = new List<IdentityNetworkProfileInformation>(profileSearchResultCache.GetRange(Index, Count));
+      }
+
+      log.Trace("(-):*.Count={0}", res != null ? res.Count.ToString() : "N/A");
+      return res;
+    }
+
+    /// <summary>
+    /// Callback routine that is called once the profileSearchResultCacheExpirationTimer expires to delete cached search results.
+    /// </summary>
+    /// <param name="state">Search results object that was set during the timer initialization.
+    /// this has to match the current search results, otherwise it means the results have been replaced already.</param>
+    private void ProfileSearchResultCacheTimerCallback(object State)
+    {
+      List<IdentityNetworkProfileInformation> searchResults = (List<IdentityNetworkProfileInformation>)State;
+      log.Trace("(State.GetHashCode():{0})", searchResults.GetHashCode());
+
+      lock (profileSearchResultCacheLock)
+      {
+        if (profileSearchResultCache == searchResults)
+        {
+          if (profileSearchResultCacheExpirationTimer != null)
+            profileSearchResultCacheExpirationTimer.Dispose();
+
+          profileSearchResultCache = null;
+
+          log.Debug("Search result cache has been cleaned.");
+        }
+        else log.Debug("Current search result cache is not the same as the cache this timer was about to delete.");
+      }
+
+      log.Trace("(-)");
+    }
+
 
     /// <summary>
     /// Closes connection if it is opened and frees used resources.
@@ -657,6 +784,18 @@ namespace HomeNet.Network
       if (Disposing)
       {
         CloseConnection().Wait();
+
+        lock (profileSearchResultCacheLock)
+        {
+          if (profileSearchResultCacheExpirationTimer != null)
+            profileSearchResultCacheExpirationTimer.Dispose();
+
+          profileSearchResultCacheExpirationTimer = null;
+          profileSearchResultCache = null;
+        }
+
+        // Relay is not disposed here as it is being destroyed using HandleDisconnect method
+        // which is called by the RoleServer in ClientHandlerAsync method.
       }
     }
   }

@@ -90,7 +90,7 @@ namespace HomeNetProtocolTests.Tests
 
         await clientCallee.ConnectAsync(NodeIp, (int)rolePorts[ServerRoleType.ClCustomer], true);
         bool checkInOk = await clientCallee.CheckInAsync();
-        bool initializeProfileOk = await clientCallee.InitializeProfileAsync("Test Identity", null, 0x12345678, null);
+        bool initializeProfileOk = await clientCallee.InitializeProfileAsync("Test Identity", null, new GpsLocation(0, 0), null);
 
 
         // Add application service to the current session.
@@ -256,6 +256,9 @@ namespace HomeNetProtocolTests.Tests
 
         // Step 8 
         log.Trace("Step 8");
+
+        await Task.Delay(5000);
+
         // Receive ACK message #1.
         responseMessageAppServiceCaller = await clientCallerAppService.ReceiveMessageAsync();
         idOk = responseMessageAppServiceCaller.Id == callerMessage1Id;

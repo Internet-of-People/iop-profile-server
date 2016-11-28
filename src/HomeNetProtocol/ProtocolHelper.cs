@@ -21,6 +21,17 @@ namespace HomeNetProtocol
     /// <summary>Size in bytes of an authentication challenge data.</summary>
     public const int ChallengeDataSize = 32;
 
+    
+    /// <summary>Maximum number of bytes that type field in ProfileSearchRequest can occupy.</summary>
+    public const int MaxProfileSearchTypeLengthBytes = 64;
+
+    /// <summary>Maximum number of bytes that name field in ProfileSearchRequest can occupy.</summary>
+    public const int MaxProfileSearchNameLengthBytes = 64;
+
+    /// <summary>Maximum number of bytes that extraData field in ProfileSearchRequest can occupy.</summary>
+    public const int MaxProfileSearchExtraDataLengthBytes = 256;
+
+
     /// <summary>
     /// Converts an IoP protocol message to a binary format.
     /// </summary>

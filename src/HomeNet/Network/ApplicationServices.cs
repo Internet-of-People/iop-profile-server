@@ -20,7 +20,7 @@ namespace HomeNet.Network
     private object lockObject = new object();
 
     /// <summary>Server assigned client identifier for internal client maintanence purposes.</summary>
-    private HashSet<string> serviceNames = new HashSet<string>();
+    private HashSet<string> serviceNames = new HashSet<string>(StringComparer.Ordinal);
 
 
     /// <summary>Initializes the class logger.</summary>

@@ -164,10 +164,10 @@ namespace HomeNet.Config
         string imageDataFolder = null;
         int maxHostedIdentities = 0;
 
-        Dictionary<string, object> nameVal = new Dictionary<string, object>();
+        Dictionary<string, object> nameVal = new Dictionary<string, object>(StringComparer.Ordinal);
 
         // Definition of all supported values in configuration file together with their types.
-        Dictionary<string, ConfigValueType> namesDefinition = new Dictionary<string, ConfigValueType>()
+        Dictionary<string, ConfigValueType> namesDefinition = new Dictionary<string, ConfigValueType>(StringComparer.Ordinal)
         {
           { "server_interface",                     ConfigValueType.IpAddress      },
           { "primary_interface_port",               ConfigValueType.Port           },
@@ -208,11 +208,16 @@ namespace HomeNet.Config
 
         if (!error)
         {
-          if (!FindFile(tcpServerTlsCertificateFileName, out tcpServerTlsCertificateFileName))
+          string finalTlsCertFileName;
+          if (FindFile(tcpServerTlsCertificateFileName, out finalTlsCertFileName))
+          {
+            tcpServerTlsCertificateFileName = finalTlsCertFileName;
+          }
+          else 
           {
             log.Error("File '{0}' not found.", tcpServerTlsCertificateFileName);
             error = true;
-          }
+          }          
         }
 
         if (!error)
@@ -273,6 +278,8 @@ namespace HomeNet.Config
     /// <returns>true if the file is found, false otherwise.</returns>
     public bool FindFile(string FileName, out string ExistingFileName)
     {
+      log.Trace("(FileName:'{0}')", FileName);
+
       bool res = false;
       ExistingFileName = null;
       if (File.Exists(FileName))
@@ -285,12 +292,16 @@ namespace HomeNet.Config
         string path = System.Reflection.Assembly.GetEntryAssembly().Location;
         path = Path.GetDirectoryName(path);
         path = Path.Combine(path, FileName);
+        log.Trace("Checking path '{0}'.", path);
         if (File.Exists(path))
         {
           ExistingFileName = path;
           res = true;
         }
       }
+
+      if (res) log.Trace("(-):{0},ExistingFileName='{1}'", res, ExistingFileName);
+      else log.Trace("(-):{0}", res);
       return res;
     }
 
@@ -380,7 +391,7 @@ namespace HomeNet.Config
           case ConfigValueType.IpAddress:
             {
               IPAddress val = IPAddress.Any;
-              if ((value.ToLower() == "any") || IPAddress.TryParse(value, out val))
+              if ((value.ToLowerInvariant() == "any") || IPAddress.TryParse(value, out val))
               {
                 NameVal.Add(name, val);
                 error = false;

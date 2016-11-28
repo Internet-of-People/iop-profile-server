@@ -69,7 +69,7 @@ namespace HomeNetProtocolTests.Tests
         await client.ConnectAsync(NodeIp, ClCustomerPort, true);
         bool checkInOk = await client.CheckInAsync();
 
-        byte[] newNodeId = Crypto.Sha1(Encoding.UTF8.GetBytes("test"));
+        byte[] newNodeId = Crypto.Sha256(Encoding.UTF8.GetBytes("test"));
         Message requestMessage = mb.CreateCancelHomeNodeAgreementRequest(newNodeId);
         await client.SendMessageAsync(requestMessage);
         Message responseMessage = await client.ReceiveMessageAsync();

@@ -1,10 +1,11 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using HomeNet.Data.Models;
 using HomeNet.Kernel;
+using HomeNet.Utils;
 
 namespace HomeNet.Data
 {
@@ -20,18 +21,50 @@ namespace HomeNet.Data
     public DbSet<Setting> Settings { get; set; }
 
     /// <summary>Access to IoP identities, for which the node acts as a home node, in the database.</summary>
-    public DbSet<Identity> Identities { get; set; }
+    public DbSet<HomeIdentity> Identities { get; set; }
+
+    /// <summary>Access to IoP identities, which are not hosted on this node, but are hosted in this node's neighborhood.</summary>
+    public DbSet<NeighborIdentity> NeighborhoodIdentities { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-      var currentDirectory = System.IO.Directory.GetCurrentDirectory();
-      optionsBuilder.UseSqlite(string.Format("Filename={0}", System.IO.Path.Combine(currentDirectory, DatabaseFileName)));
+      string currentDirectory = Directory.GetCurrentDirectory();
+      optionsBuilder.UseSqlite(string.Format("Filename={0}", Path.Combine(currentDirectory, DatabaseFileName)));
+
+      Microsoft.Extensions.Logging.LoggerFactory loggerFactory = new Microsoft.Extensions.Logging.LoggerFactory();
+      loggerFactory.AddProvider(new DbLoggerProvider());
+      optionsBuilder.UseLoggerFactory(loggerFactory);
+      optionsBuilder.EnableSensitiveDataLogging();
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-      modelBuilder.Entity<Identity>()
-          .HasIndex(i => new { i.IdentityId, i.HomeNodeId, i.Name, i.Type, i.ExtraData, i.ExpirationDate });
+      base.OnModelCreating(modelBuilder);
+
+      modelBuilder.Entity<HomeIdentity>().HasKey(i => i.IdentityId);
+      modelBuilder.Entity<HomeIdentity>().HasIndex(i => new { i.IdentityId }).IsUnique();
+      modelBuilder.Entity<HomeIdentity>().HasIndex(i => new { i.Name });
+      modelBuilder.Entity<HomeIdentity>().HasIndex(i => new { i.Type });
+      modelBuilder.Entity<HomeIdentity>().HasIndex(i => new { i.InitialLocationLatitude, i.InitialLocationLongitude });
+      modelBuilder.Entity<HomeIdentity>().HasIndex(i => new { i.ExtraData });
+      modelBuilder.Entity<HomeIdentity>().HasIndex(i => new { i.ExpirationDate });
+      modelBuilder.Entity<HomeIdentity>().HasIndex(i => new { i.ExpirationDate, i.InitialLocationLatitude, i.InitialLocationLongitude, i.Type, i.Name });
+
+      modelBuilder.Entity<HomeIdentity>().Property(i => i.InitialLocationLatitude).HasColumnType("decimal(9,6)").IsRequired(true);
+      modelBuilder.Entity<HomeIdentity>().Property(i => i.InitialLocationLongitude).HasColumnType("decimal(9,6)").IsRequired(true);
+
+      modelBuilder.Entity<NeighborIdentity>().HasKey(i => i.IdentityId);
+      modelBuilder.Entity<NeighborIdentity>().HasIndex(i => new { i.IdentityId }).IsUnique();
+      modelBuilder.Entity<NeighborIdentity>().HasIndex(i => new { i.HomeNodeId });
+      modelBuilder.Entity<NeighborIdentity>().HasIndex(i => new { i.Name });
+      modelBuilder.Entity<NeighborIdentity>().HasIndex(i => new { i.Type });
+      modelBuilder.Entity<NeighborIdentity>().HasIndex(i => new { i.InitialLocationLatitude, i.InitialLocationLongitude });
+      modelBuilder.Entity<NeighborIdentity>().HasIndex(i => new { i.ExtraData });
+      modelBuilder.Entity<NeighborIdentity>().HasIndex(i => new { i.ExpirationDate });
+      modelBuilder.Entity<NeighborIdentity>().HasIndex(i => new { i.InitialLocationLatitude, i.InitialLocationLongitude, i.Type, i.Name });
+
+      modelBuilder.Entity<NeighborIdentity>().Property(i => i.InitialLocationLatitude).HasColumnType("decimal(9,6)").IsRequired(true);
+      modelBuilder.Entity<NeighborIdentity>().Property(i => i.InitialLocationLongitude).HasColumnType("decimal(9,6)").IsRequired(true);
     }
   }
 }

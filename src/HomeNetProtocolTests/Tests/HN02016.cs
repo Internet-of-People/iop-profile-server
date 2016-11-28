@@ -57,7 +57,7 @@ namespace HomeNetProtocolTests.Tests
         await client.ConnectAsync(NodeIp, ClNonCustomerPort, true);
 
         byte[] data = Encoding.UTF8.GetBytes("test");
-        Message requestMessage = mb.CreateGetIdentityInformationRequest(Crypto.Sha1(data));
+        Message requestMessage = mb.CreateGetIdentityInformationRequest(Crypto.Sha256(data));
         await client.SendMessageAsync(requestMessage);
         Message responseMessage = await client.ReceiveMessageAsync();
 

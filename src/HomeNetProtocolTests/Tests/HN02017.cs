@@ -65,7 +65,7 @@ namespace HomeNetProtocolTests.Tests
         bool statusOk = responseMessage.Response.Status == Status.Ok;
         bool verifyIdentityOk = idOk && statusOk;
 
-        requestMessage = mb.CreateUpdateProfileRequest(new byte[] { 1, 0, 0 }, "Test Identity", null, 0x12345678, null);
+        requestMessage = mb.CreateUpdateProfileRequest(new byte[] { 1, 0, 0 }, "Test Identity", null, new GpsLocation(0, 0), null);
         await client.SendMessageAsync(requestMessage);
         responseMessage = await client.ReceiveMessageAsync();
 

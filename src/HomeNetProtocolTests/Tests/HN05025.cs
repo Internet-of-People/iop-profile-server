@@ -103,7 +103,7 @@ namespace HomeNetProtocolTests.Tests
 
         await clientCallee.ConnectAsync(NodeIp, (int)rolePorts[ServerRoleType.ClCustomer], true);
         bool checkInOk = await clientCallee.CheckInAsync();
-        bool initializeProfileOk = await clientCallee.InitializeProfileAsync("Test Identity", null, 0x12345678, null);
+        bool initializeProfileOk = await clientCallee.InitializeProfileAsync("Test Identity", null, new GpsLocation(0, 0), null);
 
 
         // Add application service to the current session.

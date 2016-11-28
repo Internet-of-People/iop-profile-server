@@ -58,7 +58,7 @@ namespace HomeNetProtocolTests.Tests
         bool verifyIdentityOk = await client.VerifyIdentityAsync();
 
         byte[] data = Encoding.UTF8.GetBytes("test");
-        byte[] fakeId = Crypto.Sha1(data);
+        byte[] fakeId = Crypto.Sha256(data);
         Message requestMessage = mb.CreateCallIdentityApplicationServiceRequest(fakeId, "Test Service");
 
         await client.SendMessageAsync(requestMessage);

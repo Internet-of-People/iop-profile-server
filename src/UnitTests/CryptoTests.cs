@@ -10,6 +10,9 @@ namespace UnitTests
 {
   public class CryptoTests
   {
+    /// <summary>
+    /// Tests key generation and signing using Ed25519.
+    /// </summary>
     [Fact]
     public void Ed25519GenerateSignVerifyTest()
     {
@@ -26,6 +29,9 @@ namespace UnitTests
       Assert.Equal(false, Ed25519.Verify(signature, message + "x", keys.PublicKey));
     }
 
+    /// <summary>
+    /// Provides test vectors for Ed25519 key generation.
+    /// </summary>
     [Fact]
     public void Ed25519KeyPairs()
     {

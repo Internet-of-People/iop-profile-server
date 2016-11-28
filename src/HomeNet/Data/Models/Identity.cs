@@ -1,4 +1,6 @@
-﻿using System;
+﻿using HomeNet.Utils;
+using HomeNetProtocol;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -9,14 +11,18 @@ using System.Threading.Tasks;
 namespace HomeNet.Data.Models
 {
   /// <summary>
-  /// Database representation of IoP Identity profile.
+  /// Database representation of IoP Identity profile. This is base class for HomeIdentity and NeighborIdentity classes
+  /// and must not be used on its own.
   /// </summary>
-  public class Identity
+  public class BaseIdentity
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("HomeNet.Data.Models.Identity");
+    private static NLog.Logger log = NLog.LogManager.GetLogger("HomeNet.Data.Models.BaseIdentity");
 
     /// <summary>Maximum number of bytes that identity name can occupy.</summary>
     public const int MaxProfileNameLengthBytes = 64;
+
+    /// <summary>Maximum number of bytes that identity type can occupy.</summary>
+    public const int MaxProfileTypeLengthBytes = 64;
 
     /// <summary>Maximum number of bytes that profile image can occupy.</summary>
     public const int MaxProfileImageLengthBytes = 20 * 1024;
@@ -28,9 +34,9 @@ namespace HomeNet.Data.Models
     public const int MaxProfileExtraDataLengthBytes = 200;
 
     /// <summary>Length in bytes of node/identity identifiers.</summary>
-    public const int IdentifierLength = 20;
+    public const int IdentifierLength = 32;
 
-    /// <summary>Identity identifier is SHA1 hash of identity's public key.</summary>
+    /// <summary>Identity identifier is SHA256 hash of identity's public key.</summary>
     /// <remarks>This is index - see HomeNet.Data.Context.OnModelCreating.</remarks>
     [MaxLength(IdentifierLength)]
     public byte[] IdentityId { get; set; }
@@ -62,12 +68,23 @@ namespace HomeNet.Data.Models
     /// <summary>Profile type.</summary>
     /// <remarks>This is index - see HomeNet.Data.Context.OnModelCreating.</remarks>
     [Required]
-    [MaxLength(32)]
+    [MaxLength(MaxProfileTypeLengthBytes)]
     public string Type { get; set; }
 
 
-    /// <summary>Encoded representation of the user's initial GPS location.</summary>
-    public uint InitialLocationEncoded { get; set; }
+    /// <summary>User's initial GPS location latitude.</summary>
+    /// <remarks>For precision definition see HomeNet.Data.Context.OnModelCreating.</remarks>
+    /// <remarks>This is index - see HomeNet.Data.Context.OnModelCreating.</remarks>
+    [Required]
+    [Range(-90, 90)]
+    public decimal InitialLocationLatitude { get; set; }
+
+    /// <summary>User's initial GPS location longitude.</summary>
+    /// <remarks>For precision definition see HomeNet.Data.Context.OnModelCreating.</remarks>
+    /// <remarks>This is index - see HomeNet.Data.Context.OnModelCreating.</remarks>
+    [Required]
+    [Range(-180, 180)]
+    public decimal InitialLocationLongitude { get; set; }
 
     /// <summary>User defined extra data that serve for satisfying search queries in HomeNet.</summary>
     /// <remarks>This is index - see HomeNet.Data.Context.OnModelCreating.</remarks>
@@ -80,11 +97,12 @@ namespace HomeNet.Data.Models
     /// and the node holds the redirection information. The redirect is maintained 
     /// only until the expiration date.
     /// 
-    /// In the IdentityRepository, if ExpirationDate is null, the identity's contract 
+    /// In the HomeIdentityRepository, if ExpirationDate is null, the identity's contract 
     /// is valid. If it is not null, it has been cancelled.
     /// </summary>
     /// <remarks>This is index - see HomeNet.Data.Context.OnModelCreating.</remarks>
     public DateTime? ExpirationDate { get; set; }
+#warning TODO: clean up expired identities
 
 
 
@@ -243,7 +261,27 @@ namespace HomeNet.Data.Models
     /// <returns>true if the identity's profile was initialized properly, false otherwise.</returns>
     public bool IsProfileInitialized()
     {
-      return StructuralComparisons.StructuralComparer.Compare(this.Version, new byte[] { 0, 0, 0 }) != 0;
+      return !StructuralEqualityComparer<byte[]>.Default.Equals(Version, new byte[] { 0, 0, 0 });
+    }
+
+
+    /// <summary>
+    /// Creates GPS location from identity's latitude and longitude.
+    /// </summary>
+    /// <returns>GPS location information.</returns>
+    public GpsLocation GetInitialLocation()
+    {
+      return new GpsLocation(InitialLocationLatitude, InitialLocationLongitude);
+    }
+
+    /// <summary>
+    /// Sets identity's GPS location information.
+    /// </summary>
+    /// <param name="Location">Location information.</param>
+    public void SetInitialLocation(GpsLocation Location)
+    {
+      InitialLocationLatitude = Location.Latitude;
+      InitialLocationLongitude = Location.Longitude;
     }
   }
 }

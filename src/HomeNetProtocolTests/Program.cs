@@ -77,6 +77,11 @@ namespace HomeNetProtocolTests
 
 
       log.Debug("(-):{0}", res);
+
+      // Make sure async logs are flushed before program ends.
+      NLog.LogManager.Flush();
+      NLog.LogManager.Shutdown();
+
       return res;
     }
   }

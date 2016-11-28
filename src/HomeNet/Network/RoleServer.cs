@@ -6,20 +6,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using HomeNet.Kernel;
-using System.Text;
-using HomeNetProtocol;
-using System.Runtime.InteropServices;
-using System.Net.Security;
-using System.Security.Authentication;
-using Iop.Homenode;
-using System.IO;
 using HomeNet.Utils;
-using HomeNetCrypto;
-using Google.Protobuf;
-using HomeNet.Data;
-using Microsoft.EntityFrameworkCore.Storage;
-using HomeNet.Data.Models;
-using System.Collections;
 
 namespace HomeNet.Network
 {
