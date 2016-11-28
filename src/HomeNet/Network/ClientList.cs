@@ -91,7 +91,7 @@ namespace HomeNet.Network
       long newId = Interlocked.Increment(ref clientLastId);
       res = (ulong)newId;
 
-      log.Trace("(-):0x{0:X16}", res);
+      log.Trace("(-):{0}", res.ToHex());
       return res;
     }
 
@@ -111,7 +111,7 @@ namespace HomeNet.Network
       {
         peersByInternalId.Add(Client.Id, peer);
       }
-      log.Trace("Client.Id is 0x{0:X16}.", Client.Id);
+      log.Trace("Client.Id is {0}.", Client.Id.ToHex());
 
       log.Trace("(-)");
     }
@@ -125,7 +125,7 @@ namespace HomeNet.Network
     /// if there is an asynchrony in internal peer lists, which should never happen.</returns>
     public bool AddNetworkPeerWithIdentity(Client Client)
     {
-      log.Trace("(Client.Id:0x{0:X16})", Client.Id);
+      log.Trace("(Client.Id:{0})", Client.Id.ToHex());
 
       bool res = false;
 
@@ -153,7 +153,7 @@ namespace HomeNet.Network
       }
 
       if (!res)
-        log.Error("peersByInternalId does not contain peer with internal ID 0x{0:X16}.", Client.Id);
+        log.Error("peersByInternalId does not contain peer with internal ID {0}.", Client.Id.ToHex());
 
       log.Trace("(-):{0}", res);
       return res;
@@ -168,7 +168,7 @@ namespace HomeNet.Network
     /// if there is an asynchrony in internal peer lists, which should never happen.</returns>
     public async Task<bool> AddCheckedInClient(Client Client)
     {
-      log.Trace("(Client.Id:0x{0:X16})", Client.Id);
+      log.Trace("(Client.Id:{0})", Client.Id.ToHex());
 
       bool res = false;
 
@@ -199,12 +199,12 @@ namespace HomeNet.Network
 
       if (res && (clientToCheckOut != null))
       {
-        log.Info("Identity ID '{0}' has been checked-in already via network peer internal ID 0x{1:X16} and will now be disconnected.", Crypto.ToHex(identityId), clientToCheckOut.Client.Id);
+        log.Info("Identity ID '{0}' has been checked-in already via network peer internal ID {1} and will now be disconnected.", identityId.ToHex(), clientToCheckOut.Client.Id.ToHex());
         await clientToCheckOut.Client.CloseConnection();
       }
 
       if (!res)
-        log.Error("peersByInternalId does not contain peer with internal ID 0x{0:X16}.", Client.Id);
+        log.Error("peersByInternalId does not contain peer with internal ID {0}.", Client.Id.ToHex());
 
       log.Trace("(-):{0}", res);
       return res;
@@ -217,7 +217,7 @@ namespace HomeNet.Network
     /// <param name="Client">Network client to remove.</param>
     public void RemoveNetworkPeer(Client Client)
     {
-      log.Trace("(Client.Id:0x{0:X16})", Client.Id);
+      log.Trace("(Client.Id:{0})", Client.Id.ToHex());
 
       ulong internalId = Client.Id;
       byte[] identityId = Client.IdentityId;
@@ -265,13 +265,13 @@ namespace HomeNet.Network
       }
 
       if (peerByInternalIdRemoveError)
-        log.Error("Peer internal ID 0x{0:X16} not found in peersByInternalId list.", internalId);
+        log.Error("Peer internal ID {0} not found in peersByInternalId list.", internalId.ToHex());
 
       if (peerByIdentityIdRemoveError)
-        log.Error("Peer Identity ID '{0}' not found in peersByIdentityId list.", Crypto.ToHex(identityId));
+        log.Error("Peer Identity ID '{0}' not found in peersByIdentityId list.", identityId.ToHex());
 
       if (clientByIdentityIdRemoveError)
-        log.Error("Checked-in client Identity ID '{0}' not found in clientsByIdentityId list.", Crypto.ToHex(identityId));
+        log.Error("Checked-in client Identity ID '{0}' not found in clientsByIdentityId list.", identityId.ToHex());
 
       log.Trace("(-)");
     }
@@ -284,7 +284,7 @@ namespace HomeNet.Network
     /// <returns>Client object of the requested online identity, or null if the identity is not online.</returns>
     public Client GetCheckedInClient(byte[] IdentityId)
     {
-      log.Trace("(IdentityId:'{0}')", Crypto.ToHex(IdentityId));
+      log.Trace("(IdentityId:'{0}')", IdentityId.ToHex());
 
       Client res = null;
       PeerListItem peer;
@@ -294,7 +294,7 @@ namespace HomeNet.Network
           res = peer.Client;
       }
 
-      if (res != null) log.Trace("(-):0x{0:X16}", res.Id);
+      if (res != null) log.Trace("(-):{0}", res.Id.ToHex());
       else log.Trace("(-):null");
       return res;
     }
@@ -307,7 +307,7 @@ namespace HomeNet.Network
     /// <returns>true if the identity is online, false otherwise.</returns>
     public bool IsIdentityOnline(byte[] IdentityId)
     {
-      log.Trace("(IdentityId:'{0}')", Crypto.ToHex(IdentityId));
+      log.Trace("(IdentityId:'{0}')", IdentityId.ToHex());
 
       bool res = GetCheckedInClient(IdentityId) != null;
 
@@ -325,7 +325,7 @@ namespace HomeNet.Network
     /// <returns>New relay connection object if the function succeeds, or null otherwise.</returns>
     public RelayConnection CreateNetworkRelay(Client Caller, Client Callee, string ServiceName, Message RequestMessage)
     {
-      log.Trace("(Caller.Id:{0:X16},Callee.Id:{1:X16},ServiceName:'{2}')", Caller.Id, Callee.Id, ServiceName);
+      log.Trace("(Caller.Id:{0},Callee.Id:{1},ServiceName:'{2}')", Caller.Id.ToHex(), Callee.Id.ToHex(), ServiceName);
 
       RelayConnection res = null;
 

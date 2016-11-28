@@ -33,5 +33,37 @@ namespace HomeNet.Utils
       
       return Str.Substring(0, Limit - 1) + "…";
     }
+
+
+    /// <summary>
+    /// Converts a binary data to an uppercase hexadecimal string representation.
+    /// </summary>
+    /// <param name="Data">Data to convert to hex string.</param>
+    /// <returns>Uppercase hex string representing the data.</returns>
+    public static string ToHex(this byte[] Data)
+    {
+      return HomeNetCrypto.Crypto.ToHex(Data);
+    }
+
+    /// <summary>
+    /// Converts a binary data to an uppercase hexadecimal string representation with string length limit.
+    /// </summary>
+    /// <param name="Data">Data to convert to hex string.</param>
+    /// <param name="Limit">Maximal number of chars of the final string.</param>
+    /// <returns>Uppercase hex string representing the data.</returns>
+    public static string ToHex(this byte[] Data, int Limit)
+    {
+      return HomeNetCrypto.Crypto.ToHex(Data).SubstrMax(Limit);
+    }
+
+    /// <summary>
+    /// Converts an ulong value to hexadecimal string.
+    /// </summary>
+    /// <param name="Value">Value to convert to hex string.</param>
+    /// <returns>Uppercase hex string representing the value.</returns>
+    public static string ToHex(this ulong Value)
+    {
+      return string.Format("0x{0:X16}", Value);
+    }
   }
 }

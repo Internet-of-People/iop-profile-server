@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using HomeNet.Config;
 using System.Net;
 using System.Threading;
+using HomeNet.Utils;
 
 namespace HomeNet.Network
 {
@@ -222,7 +223,7 @@ namespace HomeNet.Network
             try
             {
               id = client.Id;
-              log.Trace("Client ID 0x{0:X16} has NextKeepAliveTime set to {1}.", id, client.NextKeepAliveTime.ToString("yyyy-MM-dd HH:mm:ss"));
+              log.Trace("Client ID {0} has NextKeepAliveTime set to {1}.", id.ToHex(), client.NextKeepAliveTime.ToString("yyyy-MM-dd HH:mm:ss"));
               if (client.NextKeepAliveTime < DateTime.UtcNow)
               {
                 // Client's connection is now considered inactive. 

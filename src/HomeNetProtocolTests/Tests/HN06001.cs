@@ -813,13 +813,14 @@ namespace HomeNetProtocolTests.Tests
     /// <summary>
     /// Verifies contents of list of profiles returned by the node as a result of a search query.
     /// </summary>
-    /// <param name="ProfileNumbers">Profile numbers of profiles that are expected to be in the profile list.</param>
+    /// <param name="ProfileNumbers">Numbers of profiles that are expected to be in the profile list.</param>
     /// <param name="ProfileList">Profile list returned by the node.</param>
     /// <param name="ExactMatch">If set to true, the profile list is expected to contain only profiles specified in <paramref name="ProfileNumbers"/>.</param>
     /// <param name="NoImages">If set to true, the profile list must not contain images.</param>
     /// <returns>true if the <paramref name="ProfileList"/> contains profiles specified by profile numbers in <paramref name="ProfileNumbers"/>.</returns>
     public bool CheckProfileList(HashSet<int> ProfileNumbers, IEnumerable<IdentityNetworkProfileInformation> ProfileList, bool ExactMatch = true, bool NoImages = false)
     {
+      log.Trace("()");
       bool error = false;
       bool[] profilesOk = new bool[ProfileNames.Count];
       foreach (IdentityNetworkProfileInformation profileInfo in ProfileList)
@@ -855,7 +856,7 @@ namespace HomeNetProtocolTests.Tests
             bool profileOk = piIsHostedOk && piIsOnlineOk && piTypeOk && piNameOk && piLatitudeOk && piLongitudeOk && piExtraDataOk && piImageOk;
             if (!profileOk)
             {
-              log.Trace("Profile index {0} is corrupted.", profileIndex);
+              log.Trace("Profile index {0} is corrupted.", profileIndex + 1);
               error = true;
               break;
             }
@@ -864,7 +865,7 @@ namespace HomeNetProtocolTests.Tests
           }
           else if (ExactMatch)
           {
-            log.Trace("Profile index {0} should not be on the list.", profileIndex);
+            log.Trace("Profile index {0} should not be on the list.", profileIndex + 1);
             error = true;
             break;
           }
@@ -888,6 +889,7 @@ namespace HomeNetProtocolTests.Tests
       }
       
       bool res = !error;
+      log.Trace("(-):{0}", res);
       return res;
     }
   }

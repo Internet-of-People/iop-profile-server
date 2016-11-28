@@ -60,7 +60,7 @@ namespace HomeNet.Data.Repositories
       // Apply type filter if any.
       if (!string.IsNullOrEmpty(TypeFilter) && (TypeFilter != "*") && (TypeFilter != "**"))
       {
-        Expression<Func<T, bool>> typeFilterExpression = GetTypeFilterExpression(TypeFilter);
+        Expression<Func<T, bool>> typeFilterExpression = GetTypeFilterExpression<T>(TypeFilter);
         query = query.Where(typeFilterExpression);
       }
 
@@ -68,7 +68,7 @@ namespace HomeNet.Data.Repositories
       // Apply name filter if any.
       if (!string.IsNullOrEmpty(NameFilter) && (NameFilter != "*") && (NameFilter != "**"))
       {
-        Expression<Func<T, bool>> nameFilterExpression = GetNameFilterExpression(NameFilter);
+        Expression<Func<T, bool>> nameFilterExpression = GetNameFilterExpression<T>(NameFilter);
         query = query.Where(nameFilterExpression);
       }
 
@@ -79,7 +79,7 @@ namespace HomeNet.Data.Repositories
       // we then filter those that are out of the target area.
       if (LocationFilter != null)
       {
-        Expression<Func<T, bool>> locationFilterExpression = GetLocationFilterExpression(LocationFilter, Radius);
+        Expression<Func<T, bool>> locationFilterExpression = GetLocationFilterExpression<T>(LocationFilter, Radius);
         if (locationFilterExpression != null)
           query = query.Where(locationFilterExpression);
       }
@@ -97,77 +97,81 @@ namespace HomeNet.Data.Repositories
 
 
     /// <summary>
-    /// Creates filter expression for name wildcard.
+    /// Creates filter expression for name.
     /// </summary>
-    /// <param name="NameFilter">Name wildcard filter.</param>
+    /// <param name="WildcardFilter">Wildcard filter.</param>
     /// <returns>Filter expression for the database query.</returns>
-    private Expression<Func<T, bool>> GetNameFilterExpression(string NameFilter)
+    public static Expression<Func<T, bool>> GetNameFilterExpression<T>(string WildcardFilter) where T : BaseIdentity
     {
-      string nameFilter = NameFilter.ToLowerInvariant();
-      Expression<Func<T, bool>> res = i => i.Name.ToLower() == nameFilter;
+      log.Trace("(WildcardFilter:'{0}')", WildcardFilter);
+      string wildcardFilter = WildcardFilter.ToLowerInvariant();
+      Expression<Func<T, bool>> res = i => i.Name.ToLower() == wildcardFilter;
 
-      // Example: NameFilter = "*abc"
-      // This means that when filter STARTS with '*', we want identity name to END with "abc".
-      // Note that NameFilter == "*" case is handled elsewhere.
-      bool startsWith = nameFilter.EndsWith("*");
-      bool endsWith = nameFilter.StartsWith("*");
-      bool contains = startsWith && endsWith;
+      // Example: WildcardFilter = "*abc"
+      // This means that when filter STARTS with '*', we want the property value to END with "abc".
+      // Note that WildcardFilter == "*" case is handled elsewhere.
+      bool valueStartsWith = wildcardFilter.EndsWith("*");
+      bool valueEndsWith = wildcardFilter.StartsWith("*");
+      bool valueContains = valueStartsWith && valueEndsWith;
 
-      if (contains)
+      if (valueContains)
       {
-        nameFilter = nameFilter.Substring(1, nameFilter.Length - 2);
-        res = i => i.Name.ToLower().Contains(nameFilter);
+        wildcardFilter = wildcardFilter.Substring(1, wildcardFilter.Length - 2);
+        res = i => i.Name.ToLower().Contains(wildcardFilter);
       }
-      else if (startsWith)
+      else if (valueStartsWith)
       {
-        nameFilter = nameFilter.Substring(0, nameFilter.Length - 1);
-        res = i => i.Name.ToLower().StartsWith(nameFilter);
+        wildcardFilter = wildcardFilter.Substring(0, wildcardFilter.Length - 1);
+        res = i => i.Name.ToLower().StartsWith(wildcardFilter);
       }
-      else if (endsWith)
+      else if (valueEndsWith)
       {
-        nameFilter = nameFilter.Substring(1);
-        res = i => i.Name.ToLower().EndsWith(nameFilter);
+        wildcardFilter = wildcardFilter.Substring(1);
+        res = i => i.Name.ToLower().EndsWith(wildcardFilter);
       }
 
+      log.Trace("(-)");
       return res;
     }
+
 
     /// <summary>
-    /// Creates filter expression for type wildcard.
+    /// Creates filter expression for type.
     /// </summary>
-    /// <param name="TypeFilter">Type wildcard filter.</param>
+    /// <param name="WildcardFilter">Type filter.</param>
     /// <returns>Filter expression for the database query.</returns>
-    private Expression<Func<T, bool>> GetTypeFilterExpression(string TypeFilter)
+    public static Expression<Func<T, bool>> GetTypeFilterExpression<T>(string WildcardFilter) where T:BaseIdentity
     {
-      string typeFilter = TypeFilter.ToLowerInvariant();
-      Expression<Func<T, bool>> res = i => i.Type.ToLower() == typeFilter;
+      log.Trace("(WildcardFilter:'{0}')", WildcardFilter);
+      string wildcardFilter = WildcardFilter.ToLowerInvariant();
+      Expression<Func<T, bool>> res = i => i.Type.ToLower() == wildcardFilter;
 
-      // Example: TypeFilter = "*abc"
-      // This means that when filter STARTS with '*', we want identity type to END with "abc".
-      // Note that TypeFilter == "*" case is handled elsewhere.
-      bool startsWith = typeFilter.EndsWith("*");
-      bool endsWith = typeFilter.StartsWith("*");
-      bool contains = startsWith && endsWith;
+      // Example: WildcardFilter = "*abc"
+      // This means that when filter STARTS with '*', we want the property value to END with "abc".
+      // Note that WildcardFilter == "*" case is handled elsewhere.
+      bool valueStartsWith = wildcardFilter.EndsWith("*");
+      bool valueEndsWith = wildcardFilter.StartsWith("*");
+      bool valueContains = valueStartsWith && valueEndsWith;
 
-      if (contains)
+      if (valueContains)
       {
-        typeFilter = typeFilter.Substring(1, typeFilter.Length - 2);
-        res = i => i.Type.ToLower().Contains(typeFilter);
+        wildcardFilter = wildcardFilter.Substring(1, wildcardFilter.Length - 2);
+        res = i => i.Type.ToLower().Contains(wildcardFilter);
       }
-      else if (startsWith)
+      else if (valueStartsWith)
       {
-        typeFilter = typeFilter.Substring(0, typeFilter.Length - 1);
-        res = i => i.Type.ToLower().StartsWith(typeFilter);
+        wildcardFilter = wildcardFilter.Substring(0, wildcardFilter.Length - 1);
+        res = i => i.Type.ToLower().StartsWith(wildcardFilter);
       }
-      else if (endsWith)
+      else if (valueEndsWith)
       {
-        typeFilter = typeFilter.Substring(1);
-        res = i => i.Type.ToLower().EndsWith(typeFilter);
+        wildcardFilter = wildcardFilter.Substring(1);
+        res = i => i.Type.ToLower().EndsWith(wildcardFilter);
       }
 
+      log.Trace("(-)");
       return res;
     }
-
 
 
     /// <summary>
@@ -177,7 +181,7 @@ namespace HomeNet.Data.Repositories
     /// <param name="LocationFilter">GPS location of the target area centre.</param>
     /// <param name="Radius">Target area radius in metres.</param>
     /// <returns>Filter expression for the database query.</returns>
-    private Expression<Func<T, bool>> GetLocationFilterExpression(GpsLocation LocationFilter, uint Radius)
+    public static Expression<Func<T, bool>> GetLocationFilterExpression<T>(GpsLocation LocationFilter, uint Radius) where T : BaseIdentity
     {
       log.Trace("(LocationFilter:'{0:US}',Radius:{1})", LocationFilter, Radius);
       Expression<Func<T, bool>> res = null;
@@ -232,7 +236,7 @@ namespace HomeNet.Data.Repositories
         // 
         // In this case we create a rectangle on the sphere, in which the target identities are expected to be.
         // Using this square we will find latitude and longitude ranges for the database query.
-        
+
         // Find a GPS square that contains the whole target circle area.
         GpsSquare square = LocationFilter.GetSquare((double)Radius);
 
@@ -246,8 +250,8 @@ namespace HomeNet.Data.Repositories
         // and there are several different cases due to possibility of crossing longitude 180.
 
         bool leftCornersSameSign = Math.Sign(square.LeftBottom.Longitude) == Math.Sign(square.LeftTop.Longitude);
-        bool rightCornersSameSign = Math.Sign(square.RightBottom.Longitude) == Math.Sign(square.RightTop.Longitude);        
-        
+        bool rightCornersSameSign = Math.Sign(square.RightBottom.Longitude) == Math.Sign(square.RightTop.Longitude);
+
         if (leftCornersSameSign && rightCornersSameSign && (Math.Sign(square.LeftTop.Longitude) == Math.Sign(square.RightTop.Longitude)))
         {
           // a) Square does not cross longitude 180. This case is simple, we find left most and right most longitudes 
@@ -304,5 +308,7 @@ namespace HomeNet.Data.Repositories
       log.Trace("(-)");
       return res;
     }
+
+
   }
 }

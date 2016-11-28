@@ -8,7 +8,7 @@ using HomeNet.Data;
 namespace HomeNet.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20161113130451_initial")]
+    [Migration("20161114172915_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -136,6 +136,56 @@ namespace HomeNet.Migrations
                     b.HasIndex("InitialLocationLatitude", "InitialLocationLongitude", "Type", "Name");
 
                     b.ToTable("NeighborhoodIdentities");
+                });
+
+            modelBuilder.Entity("HomeNet.Data.Models.RelatedIdentity", b =>
+                {
+                    b.Property<byte[]>("IdentityId")
+                        .HasMaxLength(32);
+
+                    b.Property<byte[]>("ApplicationId")
+                        .HasMaxLength(32);
+
+                    b.Property<byte[]>("CardId")
+                        .HasMaxLength(32);
+
+                    b.Property<byte[]>("IssuerPublicKey")
+                        .HasMaxLength(256);
+
+                    b.Property<byte[]>("IssuerSignature")
+                        .HasMaxLength(100);
+
+                    b.Property<byte[]>("RecipientPublicKey")
+                        .HasMaxLength(256);
+
+                    b.Property<byte[]>("RecipientSignature")
+                        .HasMaxLength(100);
+
+                    b.Property<byte[]>("RelatedToIdentityId")
+                        .HasMaxLength(32);
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(64);
+
+                    b.Property<DateTime>("ValidFrom");
+
+                    b.Property<DateTime>("ValidTo");
+
+                    b.HasKey("IdentityId", "ApplicationId");
+
+                    b.HasIndex("RelatedToIdentityId");
+
+                    b.HasIndex("Type");
+
+                    b.HasIndex("IdentityId", "ApplicationId")
+                        .IsUnique();
+
+                    b.HasIndex("ValidFrom", "ValidTo");
+
+                    b.HasIndex("IdentityId", "Type", "RelatedToIdentityId", "ValidFrom", "ValidTo");
+
+                    b.ToTable("RelatedIdentities");
                 });
 
             modelBuilder.Entity("HomeNet.Data.Models.Setting", b =>

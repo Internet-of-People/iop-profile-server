@@ -201,38 +201,37 @@ namespace Iop.Homenode {
             "aW9uGAEgASgLMiguaW9wLmhvbWVub2RlLkNhcmRBcHBsaWNhdGlvbkluZm9y",
             "bWF0aW9uEjgKCnNpZ25lZENhcmQYAiABKAsyJC5pb3AuaG9tZW5vZGUuU2ln",
             "bmVkUmVsYXRpb25zaGlwQ2FyZCIcChpBZGRSZWxhdGVkSWRlbnRpdHlSZXNw",
-            "b25zZSI9ChxSZW1vdmVSZWxhdGVkSWRlbnRpdHlSZXF1ZXN0Eh0KFWFwcGxp",
-            "Y2F0aW9uSWRlbnRpZmllchgBIAEoDCIfCh1SZW1vdmVSZWxhdGVkSWRlbnRp",
-            "dHlSZXNwb25zZSJLChpDYXJkQXBwbGljYXRpb25JbmZvcm1hdGlvbhIOCgZj",
-            "YXJkSWQYASABKAwSHQoVYXBwbGljYXRpb25JZGVudGlmaWVyGAIgASgMIl8K",
-            "FlNpZ25lZFJlbGF0aW9uc2hpcENhcmQSLAoEY2FyZBgBIAEoCzIeLmlvcC5o",
-            "b21lbm9kZS5SZWxhdGlvbnNoaXBDYXJkEhcKD2lzc3VlclNpZ25hdHVyZRgC",
-            "IAEoDCKJAQoQUmVsYXRpb25zaGlwQ2FyZBIOCgZjYXJkSWQYASABKAwSDAoE",
-            "dHlwZRgCIAEoCRIRCgl2YWxpZEZyb20YAyABKBISDwoHdmFsaWRUbxgEIAEo",
-            "EhIXCg9pc3N1ZXJQdWJsaWNLZXkYBSABKAwSGgoScmVjaXBpZW50UHVibGlj",
-            "S2V5GAYgASgMIp4BCipHZXRJZGVudGl0eVJlbGF0aW9uc2hpcHNJbmZvcm1h",
-            "dGlvblJlcXVlc3QSGQoRaWRlbnRpdHlOZXR3b3JrSWQYASABKAwSFgoOaW5j",
-            "bHVkZUludmFsaWQYAiABKAgSDAoEdHlwZRgDIAEoCRIWCg5zcGVjaWZpY0lz",
-            "c3VlchgEIAEoCBIXCg9pc3N1ZXJQdWJsaWNLZXkYBSABKAwiaAorR2V0SWRl",
-            "bnRpdHlSZWxhdGlvbnNoaXBzSW5mb3JtYXRpb25SZXNwb25zZRI5Cg1yZWxh",
-            "dGlvbnNoaXBzGAEgAygLMiIuaW9wLmhvbWVub2RlLklkZW50aXR5UmVsYXRp",
-            "b25zaGlwIq8BChRJZGVudGl0eVJlbGF0aW9uc2hpcBJBCg9jYXJkQXBwbGlj",
-            "YXRpb24YASABKAsyKC5pb3AuaG9tZW5vZGUuQ2FyZEFwcGxpY2F0aW9uSW5m",
-            "b3JtYXRpb24SIAoYY2FyZEFwcGxpY2F0aW9uU2lnbmF0dXJlGAIgASgMEjIK",
-            "BGNhcmQYAyABKAsyJC5pb3AuaG9tZW5vZGUuU2lnbmVkUmVsYXRpb25zaGlw",
-            "Q2FyZCqWAwoGU3RhdHVzEg0KCVNUQVRVU19PSxAAEhwKGEVSUk9SX1BST1RP",
-            "Q09MX1ZJT0xBVElPThABEhUKEUVSUk9SX1VOU1VQUE9SVEVEEAISEAoMRVJS",
-            "T1JfQkFOTkVEEAMSDgoKRVJST1JfQlVTWRAEEhYKEkVSUk9SX1VOQVVUSE9S",
-            "SVpFRBAFEhIKDkVSUk9SX0JBRF9ST0xFEAYSIQodRVJST1JfQkFEX0NPTlZF",
-            "UlNBVElPTl9TVEFUVVMQBxISCg5FUlJPUl9JTlRFUk5BTBAIEhgKFEVSUk9S",
-            "X1FVT1RBX0VYQ0VFREVEEDMSGwoXRVJST1JfSU5WQUxJRF9TSUdOQVRVUkUQ",
-            "NBITCg9FUlJPUl9OT1RfRk9VTkQQNRIXChNFUlJPUl9JTlZBTElEX1ZBTFVF",
-            "EDYSGAoURVJST1JfQUxSRUFEWV9FWElTVFMQNxIXChNFUlJPUl9OT1RfQVZB",
-            "SUxBQkxFEDgSEgoORVJST1JfUkVKRUNURUQQORIXChNFUlJPUl9VTklOSVRJ",
-            "QUxJWkVEEDoqegoOU2VydmVyUm9sZVR5cGUSCwoHUFJJTUFSWRAAEg8KC05E",
-            "X05FSUdIQk9SEAESEAoMTkRfQ09MTEVBR1VFEAISEwoPQ0xfTk9OX0NVU1RP",
-            "TUVSEAMSDwoLQ0xfQ1VTVE9NRVIQBBISCg5DTF9BUFBfU0VSVklDRRAFYgZw",
-            "cm90bzM="));
+            "b25zZSI1ChxSZW1vdmVSZWxhdGVkSWRlbnRpdHlSZXF1ZXN0EhUKDWFwcGxp",
+            "Y2F0aW9uSWQYASABKAwiHwodUmVtb3ZlUmVsYXRlZElkZW50aXR5UmVzcG9u",
+            "c2UiQwoaQ2FyZEFwcGxpY2F0aW9uSW5mb3JtYXRpb24SDgoGY2FyZElkGAEg",
+            "ASgMEhUKDWFwcGxpY2F0aW9uSWQYAiABKAwiXwoWU2lnbmVkUmVsYXRpb25z",
+            "aGlwQ2FyZBIsCgRjYXJkGAEgASgLMh4uaW9wLmhvbWVub2RlLlJlbGF0aW9u",
+            "c2hpcENhcmQSFwoPaXNzdWVyU2lnbmF0dXJlGAIgASgMIokBChBSZWxhdGlv",
+            "bnNoaXBDYXJkEg4KBmNhcmRJZBgBIAEoDBIMCgR0eXBlGAIgASgJEhEKCXZh",
+            "bGlkRnJvbRgDIAEoEhIPCgd2YWxpZFRvGAQgASgSEhcKD2lzc3VlclB1Ymxp",
+            "Y0tleRgFIAEoDBIaChJyZWNpcGllbnRQdWJsaWNLZXkYBiABKAwingEKKkdl",
+            "dElkZW50aXR5UmVsYXRpb25zaGlwc0luZm9ybWF0aW9uUmVxdWVzdBIZChFp",
+            "ZGVudGl0eU5ldHdvcmtJZBgBIAEoDBIWCg5pbmNsdWRlSW52YWxpZBgCIAEo",
+            "CBIMCgR0eXBlGAMgASgJEhYKDnNwZWNpZmljSXNzdWVyGAQgASgIEhcKD2lz",
+            "c3Vlck5ldHdvcmtJZBgFIAEoDCJoCitHZXRJZGVudGl0eVJlbGF0aW9uc2hp",
+            "cHNJbmZvcm1hdGlvblJlc3BvbnNlEjkKDXJlbGF0aW9uc2hpcHMYASADKAsy",
+            "Ii5pb3AuaG9tZW5vZGUuSWRlbnRpdHlSZWxhdGlvbnNoaXAirwEKFElkZW50",
+            "aXR5UmVsYXRpb25zaGlwEkEKD2NhcmRBcHBsaWNhdGlvbhgBIAEoCzIoLmlv",
+            "cC5ob21lbm9kZS5DYXJkQXBwbGljYXRpb25JbmZvcm1hdGlvbhIgChhjYXJk",
+            "QXBwbGljYXRpb25TaWduYXR1cmUYAiABKAwSMgoEY2FyZBgDIAEoCzIkLmlv",
+            "cC5ob21lbm9kZS5TaWduZWRSZWxhdGlvbnNoaXBDYXJkKpYDCgZTdGF0dXMS",
+            "DQoJU1RBVFVTX09LEAASHAoYRVJST1JfUFJPVE9DT0xfVklPTEFUSU9OEAES",
+            "FQoRRVJST1JfVU5TVVBQT1JURUQQAhIQCgxFUlJPUl9CQU5ORUQQAxIOCgpF",
+            "UlJPUl9CVVNZEAQSFgoSRVJST1JfVU5BVVRIT1JJWkVEEAUSEgoORVJST1Jf",
+            "QkFEX1JPTEUQBhIhCh1FUlJPUl9CQURfQ09OVkVSU0FUSU9OX1NUQVRVUxAH",
+            "EhIKDkVSUk9SX0lOVEVSTkFMEAgSGAoURVJST1JfUVVPVEFfRVhDRUVERUQQ",
+            "MxIbChdFUlJPUl9JTlZBTElEX1NJR05BVFVSRRA0EhMKD0VSUk9SX05PVF9G",
+            "T1VORBA1EhcKE0VSUk9SX0lOVkFMSURfVkFMVUUQNhIYChRFUlJPUl9BTFJF",
+            "QURZX0VYSVNUUxA3EhcKE0VSUk9SX05PVF9BVkFJTEFCTEUQOBISCg5FUlJP",
+            "Ul9SRUpFQ1RFRBA5EhcKE0VSUk9SX1VOSU5JVElBTElaRUQQOip6Cg5TZXJ2",
+            "ZXJSb2xlVHlwZRILCgdQUklNQVJZEAASDwoLTkRfTkVJR0hCT1IQARIQCgxO",
+            "RF9DT0xMRUFHVUUQAhITCg9DTF9OT05fQ1VTVE9NRVIQAxIPCgtDTF9DVVNU",
+            "T01FUhAEEhIKDkNMX0FQUF9TRVJWSUNFEAViBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Iop.Homenode.Status), typeof(global::Iop.Homenode.ServerRoleType), }, new pbr::GeneratedClrTypeInfo[] {
@@ -290,12 +289,12 @@ namespace Iop.Homenode {
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.ProfileSearchPartResponse), global::Iop.Homenode.ProfileSearchPartResponse.Parser, new[]{ "RecordIndex", "RecordCount", "Profiles" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.AddRelatedIdentityRequest), global::Iop.Homenode.AddRelatedIdentityRequest.Parser, new[]{ "CardApplication", "SignedCard" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.AddRelatedIdentityResponse), global::Iop.Homenode.AddRelatedIdentityResponse.Parser, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.RemoveRelatedIdentityRequest), global::Iop.Homenode.RemoveRelatedIdentityRequest.Parser, new[]{ "ApplicationIdentifier" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.RemoveRelatedIdentityRequest), global::Iop.Homenode.RemoveRelatedIdentityRequest.Parser, new[]{ "ApplicationId" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.RemoveRelatedIdentityResponse), global::Iop.Homenode.RemoveRelatedIdentityResponse.Parser, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.CardApplicationInformation), global::Iop.Homenode.CardApplicationInformation.Parser, new[]{ "CardId", "ApplicationIdentifier" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.CardApplicationInformation), global::Iop.Homenode.CardApplicationInformation.Parser, new[]{ "CardId", "ApplicationId" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.SignedRelationshipCard), global::Iop.Homenode.SignedRelationshipCard.Parser, new[]{ "Card", "IssuerSignature" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.RelationshipCard), global::Iop.Homenode.RelationshipCard.Parser, new[]{ "CardId", "Type", "ValidFrom", "ValidTo", "IssuerPublicKey", "RecipientPublicKey" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.GetIdentityRelationshipsInformationRequest), global::Iop.Homenode.GetIdentityRelationshipsInformationRequest.Parser, new[]{ "IdentityNetworkId", "IncludeInvalid", "Type", "SpecificIssuer", "IssuerPublicKey" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.GetIdentityRelationshipsInformationRequest), global::Iop.Homenode.GetIdentityRelationshipsInformationRequest.Parser, new[]{ "IdentityNetworkId", "IncludeInvalid", "Type", "SpecificIssuer", "IssuerNetworkId" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.GetIdentityRelationshipsInformationResponse), global::Iop.Homenode.GetIdentityRelationshipsInformationResponse.Parser, new[]{ "Relationships" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Homenode.IdentityRelationship), global::Iop.Homenode.IdentityRelationship.Parser, new[]{ "CardApplication", "CardApplicationSignature", "Card" }, null, null, null)
           }));
@@ -5046,7 +5045,7 @@ namespace Iop.Homenode {
   ///  A response to StartConversationRequest in case the requestee found at least one protocol version that 
   ///  both peers are willing to use. 
   ///  
-  ///  The 'clientChallenge' field is signed with a signature in 'ConversationResponse.signature'.
+  ///  The 'clientChallenge' field value in raw format is signed with a signature in 'ConversationResponse.signature'.
   ///  
   ///
   ///  After StartConversationResponse is sent, the conversation context includes version and keys of both peers.
@@ -9280,6 +9279,8 @@ namespace Iop.Homenode {
   ///
   ///  Obtains identity profiles statistics from a node.
   ///
+  ///  Only actively hosted profiles are counted regardless of whether or not the profiles are initialized.
+  ///
   ///  Roles: clNonCustomer, clCustomer
   /// </summary>
   public sealed partial class ProfileStatsRequest : pb::IMessage<ProfileStatsRequest> {
@@ -9655,7 +9656,8 @@ namespace Iop.Homenode {
   ///  to obtain more results with subsequent ProfileSearchPartRequest messages.
   ///
   ///  The node will not save more than 'maxTotalRecordCount' search requests. 
-  ///  The node will delete the cached search results after 5 minutes from receiving ProfileSearchRequest. 
+  ///  The node has allow the client to get additional results at least 1 minute from receiving ProfileSearchRequest,
+  ///  but it can maintain the result cache for longer than that.
   ///
   ///  Once the client sends another ProfileSearchRequest, or if it disconnects, the old search results are discarded.
   ///
@@ -9751,7 +9753,7 @@ namespace Iop.Homenode {
     private uint maxTotalRecordCount_;
     /// <summary>
     ///  is true, this has to be an integer between 1 and 100. If 'includeThumbnailImages' is false,
-    ///  this has to be an integer between 1 and 1000.
+    ///  this has to be an integer between 1 and 1000. The value must not be greater than 'maxTotalRecordCount'.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public uint MaxTotalRecordCount {
@@ -11195,14 +11197,16 @@ namespace Iop.Homenode {
   ///  Specific Error Responses:
   ///    * ERROR_QUOTA_EXCEEDED - The caller has reached its limit for a number of related identities on its profile.
   ///    * ERROR_INVALID_SIGNATURE - The client's signature of the 'AddRelatedIdentityRequest.cardApplication' in 'ConversationRequest.signature' is not valid.
-  ///    * ERROR_ALREADY_EXISTS - A relationship with application identifier equal to 'AddRelatedIdentityRequest.cardApplication.applicationIdentifier' already exists.
+  ///    * ERROR_ALREADY_EXISTS - A relationship with application identifier equal to 'AddRelatedIdentityRequest.cardApplication.applicationId' already exists.
   ///    * ERROR_INVALID_VALUE
-  ///      * Response.details == "cardApplication.cardId" - 'AddRelatedIdentityRequest.cardApplication.cardId' does not match 'signedCard.card.cardId'.
-  ///      * Response.details == "cardApplication.applicationIdentifier" - 'AddRelatedIdentityRequest.cardApplication.applicationIdentifier' is not a valid application identifier.
+  ///      * Response.details == "cardApplication.cardId" - 'AddRelatedIdentityRequest.cardApplication.cardId' does not match 'AddRelatedIdentityRequest.signedCard.card.cardId'.
+  ///      * Response.details == "cardApplication.applicationId" - 'AddRelatedIdentityRequest.cardApplication.applicationId' is not a valid application identifier.
   ///      * Response.details == "signedCard.issuerSignature" - 'AddRelatedIdentityRequest.signedCard.issuerSignature' is not a valid signature of 'AddRelatedIdentityRequest.signedCard.card' structure
   ///                                                           using private key of the issuer whose public key is 'AddRelatedIdentityRequest.signedCard.card.issuerPublicKey'.
   ///      * Response.details == "signedCard.card.cardId" - 'AddRelatedIdentityRequest.signedCard.card.cardId' is not a valid SHA256 hash of 'AddRelatedIdentityRequest.signedCard.card' structure.
+  ///      * Response.details == "signedCard.card.type" - 'AddRelatedIdentityRequest.signedCard.card.type' is not a valid card type.
   ///      * Response.details == "signedCard.card.recipientPublicKey" - 'AddRelatedIdentityRequest.signedCard.card.recipientPublicKey' is not the public key of the caller.
+  ///      * Response.details == "signedCard.card.validFrom" - 'AddRelatedIdentityRequest.signedCard.card.validFrom' is greater than 'AddRelatedIdentityRequest.signedCard.card.validTo'.
   /// </summary>
   public sealed partial class AddRelatedIdentityResponse : pb::IMessage<AddRelatedIdentityResponse> {
     private static readonly pb::MessageParser<AddRelatedIdentityResponse> _parser = new pb::MessageParser<AddRelatedIdentityResponse>(() => new AddRelatedIdentityResponse());
@@ -11325,7 +11329,7 @@ namespace Iop.Homenode {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public RemoveRelatedIdentityRequest(RemoveRelatedIdentityRequest other) : this() {
-      applicationIdentifier_ = other.applicationIdentifier_;
+      applicationId_ = other.applicationId_;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -11333,17 +11337,17 @@ namespace Iop.Homenode {
       return new RemoveRelatedIdentityRequest(this);
     }
 
-    /// <summary>Field number for the "applicationIdentifier" field.</summary>
-    public const int ApplicationIdentifierFieldNumber = 1;
-    private pb::ByteString applicationIdentifier_ = pb::ByteString.Empty;
+    /// <summary>Field number for the "applicationId" field.</summary>
+    public const int ApplicationIdFieldNumber = 1;
+    private pb::ByteString applicationId_ = pb::ByteString.Empty;
     /// <summary>
     ///  Identifier of the card application to remove. 
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pb::ByteString ApplicationIdentifier {
-      get { return applicationIdentifier_; }
+    public pb::ByteString ApplicationId {
+      get { return applicationId_; }
       set {
-        applicationIdentifier_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+        applicationId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
     }
 
@@ -11360,14 +11364,14 @@ namespace Iop.Homenode {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (ApplicationIdentifier != other.ApplicationIdentifier) return false;
+      if (ApplicationId != other.ApplicationId) return false;
       return true;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      if (ApplicationIdentifier.Length != 0) hash ^= ApplicationIdentifier.GetHashCode();
+      if (ApplicationId.Length != 0) hash ^= ApplicationId.GetHashCode();
       return hash;
     }
 
@@ -11378,17 +11382,17 @@ namespace Iop.Homenode {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (ApplicationIdentifier.Length != 0) {
+      if (ApplicationId.Length != 0) {
         output.WriteRawTag(10);
-        output.WriteBytes(ApplicationIdentifier);
+        output.WriteBytes(ApplicationId);
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      if (ApplicationIdentifier.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeBytesSize(ApplicationIdentifier);
+      if (ApplicationId.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(ApplicationId);
       }
       return size;
     }
@@ -11398,8 +11402,8 @@ namespace Iop.Homenode {
       if (other == null) {
         return;
       }
-      if (other.ApplicationIdentifier.Length != 0) {
-        ApplicationIdentifier = other.ApplicationIdentifier;
+      if (other.ApplicationId.Length != 0) {
+        ApplicationId = other.ApplicationId;
       }
     }
 
@@ -11412,7 +11416,7 @@ namespace Iop.Homenode {
             input.SkipLastField();
             break;
           case 10: {
-            ApplicationIdentifier = input.ReadBytes();
+            ApplicationId = input.ReadBytes();
             break;
           }
         }
@@ -11426,7 +11430,7 @@ namespace Iop.Homenode {
   ///  A response to RemoveRelatedIdentityRequest.
   ///
   ///  Specific Error Responses:
-  ///    * ERROR_NOT_FOUND - A relationship with application identifier equal to 'AddRelatedIdentityRequest.cardApplication.applicationIdentifier' was not found.
+  ///    * ERROR_NOT_FOUND - A relationship with application identifier equal to 'AddRelatedIdentityRequest.cardApplication.applicationId' was not found.
   /// </summary>
   public sealed partial class RemoveRelatedIdentityResponse : pb::IMessage<RemoveRelatedIdentityResponse> {
     private static readonly pb::MessageParser<RemoveRelatedIdentityResponse> _parser = new pb::MessageParser<RemoveRelatedIdentityResponse>(() => new RemoveRelatedIdentityResponse());
@@ -11520,7 +11524,7 @@ namespace Iop.Homenode {
   /// <summary>
   ///
   ///  Description of a relationship card application. It consists of a card identifier, which is a hash of the card data
-  ///  and the applicationIdentifier, which binds the use of the card with some other object, transaction, or action, which is specific 
+  ///  and the 'applicationId', which binds the use of the card with some other object, transaction, or action, which is specific 
   ///  for the given use of the card.
   /// </summary>
   public sealed partial class CardApplicationInformation : pb::IMessage<CardApplicationInformation> {
@@ -11548,7 +11552,7 @@ namespace Iop.Homenode {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public CardApplicationInformation(CardApplicationInformation other) : this() {
       cardId_ = other.cardId_;
-      applicationIdentifier_ = other.applicationIdentifier_;
+      applicationId_ = other.applicationId_;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -11570,17 +11574,17 @@ namespace Iop.Homenode {
       }
     }
 
-    /// <summary>Field number for the "applicationIdentifier" field.</summary>
-    public const int ApplicationIdentifierFieldNumber = 2;
-    private pb::ByteString applicationIdentifier_ = pb::ByteString.Empty;
+    /// <summary>Field number for the "applicationId" field.</summary>
+    public const int ApplicationIdFieldNumber = 2;
+    private pb::ByteString applicationId_ = pb::ByteString.Empty;
     /// <summary>
     ///  Unique identifier of the action that represents using the card. This is used to bind the application of the card 
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pb::ByteString ApplicationIdentifier {
-      get { return applicationIdentifier_; }
+    public pb::ByteString ApplicationId {
+      get { return applicationId_; }
       set {
-        applicationIdentifier_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+        applicationId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
     }
 
@@ -11598,7 +11602,7 @@ namespace Iop.Homenode {
         return true;
       }
       if (CardId != other.CardId) return false;
-      if (ApplicationIdentifier != other.ApplicationIdentifier) return false;
+      if (ApplicationId != other.ApplicationId) return false;
       return true;
     }
 
@@ -11606,7 +11610,7 @@ namespace Iop.Homenode {
     public override int GetHashCode() {
       int hash = 1;
       if (CardId.Length != 0) hash ^= CardId.GetHashCode();
-      if (ApplicationIdentifier.Length != 0) hash ^= ApplicationIdentifier.GetHashCode();
+      if (ApplicationId.Length != 0) hash ^= ApplicationId.GetHashCode();
       return hash;
     }
 
@@ -11621,9 +11625,9 @@ namespace Iop.Homenode {
         output.WriteRawTag(10);
         output.WriteBytes(CardId);
       }
-      if (ApplicationIdentifier.Length != 0) {
+      if (ApplicationId.Length != 0) {
         output.WriteRawTag(18);
-        output.WriteBytes(ApplicationIdentifier);
+        output.WriteBytes(ApplicationId);
       }
     }
 
@@ -11633,8 +11637,8 @@ namespace Iop.Homenode {
       if (CardId.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeBytesSize(CardId);
       }
-      if (ApplicationIdentifier.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeBytesSize(ApplicationIdentifier);
+      if (ApplicationId.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(ApplicationId);
       }
       return size;
     }
@@ -11647,8 +11651,8 @@ namespace Iop.Homenode {
       if (other.CardId.Length != 0) {
         CardId = other.CardId;
       }
-      if (other.ApplicationIdentifier.Length != 0) {
-        ApplicationIdentifier = other.ApplicationIdentifier;
+      if (other.ApplicationId.Length != 0) {
+        ApplicationId = other.ApplicationId;
       }
     }
 
@@ -11665,7 +11669,7 @@ namespace Iop.Homenode {
             break;
           }
           case 18: {
-            ApplicationIdentifier = input.ReadBytes();
+            ApplicationId = input.ReadBytes();
             break;
           }
         }
@@ -11730,7 +11734,7 @@ namespace Iop.Homenode {
     public const int IssuerSignatureFieldNumber = 2;
     private pb::ByteString issuerSignature_ = pb::ByteString.Empty;
     /// <summary>
-    ///  Signature of 'card.cardId' using private key of the issuer of the card.
+    ///  Signature of 'card.cardId' value in raw format using private key of the issuer of the card.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public pb::ByteString IssuerSignature {
@@ -11909,7 +11913,7 @@ namespace Iop.Homenode {
     public const int ValidFromFieldNumber = 3;
     private long validFrom_;
     /// <summary>
-    ///  TimestampType. Time from which the card is valid.
+    ///  TimestampType. Time from which the card is valid. It must not be greater than 'validTo'.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public long ValidFrom {
@@ -12149,7 +12153,7 @@ namespace Iop.Homenode {
       includeInvalid_ = other.includeInvalid_;
       type_ = other.type_;
       specificIssuer_ = other.specificIssuer_;
-      issuerPublicKey_ = other.issuerPublicKey_;
+      issuerNetworkId_ = other.issuerNetworkId_;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -12213,17 +12217,17 @@ namespace Iop.Homenode {
       }
     }
 
-    /// <summary>Field number for the "issuerPublicKey" field.</summary>
-    public const int IssuerPublicKeyFieldNumber = 5;
-    private pb::ByteString issuerPublicKey_ = pb::ByteString.Empty;
+    /// <summary>Field number for the "issuerNetworkId" field.</summary>
+    public const int IssuerNetworkIdFieldNumber = 5;
+    private pb::ByteString issuerNetworkId_ = pb::ByteString.Empty;
     /// <summary>
-    ///  If 'specificIssuer' is true, this is the public key of the card issuer whose relationships with the target identity are being queried.
+    ///  If 'specificIssuer' is true, this is the network identifier of the card issuer whose relationships with the target identity are being queried.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pb::ByteString IssuerPublicKey {
-      get { return issuerPublicKey_; }
+    public pb::ByteString IssuerNetworkId {
+      get { return issuerNetworkId_; }
       set {
-        issuerPublicKey_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+        issuerNetworkId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
     }
 
@@ -12244,7 +12248,7 @@ namespace Iop.Homenode {
       if (IncludeInvalid != other.IncludeInvalid) return false;
       if (Type != other.Type) return false;
       if (SpecificIssuer != other.SpecificIssuer) return false;
-      if (IssuerPublicKey != other.IssuerPublicKey) return false;
+      if (IssuerNetworkId != other.IssuerNetworkId) return false;
       return true;
     }
 
@@ -12255,7 +12259,7 @@ namespace Iop.Homenode {
       if (IncludeInvalid != false) hash ^= IncludeInvalid.GetHashCode();
       if (Type.Length != 0) hash ^= Type.GetHashCode();
       if (SpecificIssuer != false) hash ^= SpecificIssuer.GetHashCode();
-      if (IssuerPublicKey.Length != 0) hash ^= IssuerPublicKey.GetHashCode();
+      if (IssuerNetworkId.Length != 0) hash ^= IssuerNetworkId.GetHashCode();
       return hash;
     }
 
@@ -12282,9 +12286,9 @@ namespace Iop.Homenode {
         output.WriteRawTag(32);
         output.WriteBool(SpecificIssuer);
       }
-      if (IssuerPublicKey.Length != 0) {
+      if (IssuerNetworkId.Length != 0) {
         output.WriteRawTag(42);
-        output.WriteBytes(IssuerPublicKey);
+        output.WriteBytes(IssuerNetworkId);
       }
     }
 
@@ -12303,8 +12307,8 @@ namespace Iop.Homenode {
       if (SpecificIssuer != false) {
         size += 1 + 1;
       }
-      if (IssuerPublicKey.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeBytesSize(IssuerPublicKey);
+      if (IssuerNetworkId.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(IssuerNetworkId);
       }
       return size;
     }
@@ -12326,8 +12330,8 @@ namespace Iop.Homenode {
       if (other.SpecificIssuer != false) {
         SpecificIssuer = other.SpecificIssuer;
       }
-      if (other.IssuerPublicKey.Length != 0) {
-        IssuerPublicKey = other.IssuerPublicKey;
+      if (other.IssuerNetworkId.Length != 0) {
+        IssuerNetworkId = other.IssuerNetworkId;
       }
     }
 
@@ -12356,7 +12360,7 @@ namespace Iop.Homenode {
             break;
           }
           case 42: {
-            IssuerPublicKey = input.ReadBytes();
+            IssuerNetworkId = input.ReadBytes();
             break;
           }
         }
@@ -12370,8 +12374,6 @@ namespace Iop.Homenode {
   ///  A response to GetIdentityRelationshipsInformationRequest.
   ///
   ///  Specific Error Responses:
-  ///    * ERROR_NOT_FOUND - 'GetIdentityInformationRequest.identityNetworkId' does not identify an identity hosted by the node.
-  ///    * ERROR_UNINITIALIZED - The target identity's profile has not been initialized yet.
   ///    * ERROR_INVALID_VALUE
   ///      * Response.details == "type" - 'GetIdentityRelationshipsInformationRequest.type' is too long.
   /// </summary>

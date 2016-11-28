@@ -36,6 +36,9 @@ namespace HomeNet.Data.Models
     /// <summary>Length in bytes of node/identity identifiers.</summary>
     public const int IdentifierLength = 32;
 
+    /// <summary>Maximum number of bytes that public key can occupy.</summary>
+    public const int MaxPublicKeyLengthBytes = 256;
+
     /// <summary>Identity identifier is SHA256 hash of identity's public key.</summary>
     /// <remarks>This is index - see HomeNet.Data.Context.OnModelCreating.</remarks>
     [MaxLength(IdentifierLength)]
@@ -48,7 +51,7 @@ namespace HomeNet.Data.Models
 
     /// <summary>Cryptographic public key that represents the identity.</summary>
     [Required]
-    [MaxLength(256)]
+    [MaxLength(MaxPublicKeyLengthBytes)]
     public byte[] PublicKey { get; set; }
 
     /// <summary>

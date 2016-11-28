@@ -66,10 +66,14 @@ namespace HomeNet.Data
     /// <summary>Lock for the neighborhood identity repository.</summary>
     public static DatabaseLock NeighborhoodIdentityLock = new DatabaseLock("NEIGHBORHOOD_IDENTITY");
 
+    /// <summary>Lock for the related identity repository.</summary>
+    public static DatabaseLock RelatedIdentityLock = new DatabaseLock("RELATED_IDENTITY");
+
 
     private SettingsRepository settingsRepository;
     private HomeIdentityRepository homeIdentityRepository;
     private NeighborhoodIdentityRepository neighborhoodIdentityRepository;
+    private RelatedIdentityRepository relatedIdentityRepository;
 
 
     /// <summary>Settings repository.</summary>
@@ -106,6 +110,18 @@ namespace HomeNet.Data
           neighborhoodIdentityRepository = new NeighborhoodIdentityRepository(Context);
 
         return neighborhoodIdentityRepository;
+      }
+    }
+
+    /// <summary>Repository of relations of hosted identities.</summary>
+    public RelatedIdentityRepository RelatedIdentityRepository
+    {
+      get
+      {
+        if (relatedIdentityRepository == null)
+          relatedIdentityRepository = new RelatedIdentityRepository(Context);
+
+        return relatedIdentityRepository;
       }
     }
 

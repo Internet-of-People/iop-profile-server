@@ -314,8 +314,7 @@ namespace HomeNetProtocol
     public void SignConversationRequestBody(Message Message, IMessage RequestBody)
     {
       byte[] msg = RequestBody.ToByteArray();
-      byte[] signature = Ed25519.Sign(msg, keys.ExpandedPrivateKey);
-      Message.Request.ConversationRequest.Signature = ProtocolHelper.ByteArrayToByteString(signature);
+      SignConversationRequestBodyPart(Message, msg);
     }
 
 
@@ -341,10 +340,7 @@ namespace HomeNetProtocol
     public bool VerifySignedConversationRequestBody(Message Message, IMessage RequestBody, byte[] PublicKey)
     {
       byte[] msg = RequestBody.ToByteArray();
-      byte[] signature = Message.Request.ConversationRequest.Signature.ToByteArray();
-
-      bool res = Ed25519.Verify(signature, msg, PublicKey);
-      return res;
+      return VerifySignedConversationRequestBodyPart(Message, msg, PublicKey);
     }
 
 
@@ -372,8 +368,7 @@ namespace HomeNetProtocol
     public void SignConversationResponseBody(Message Message, IMessage ResponseBody)
     {
       byte[] msg = ResponseBody.ToByteArray();
-      byte[] signature = Ed25519.Sign(msg, keys.ExpandedPrivateKey);
-      Message.Response.ConversationResponse.Signature = ProtocolHelper.ByteArrayToByteString(signature);
+      SignConversationResponseBodyPart(Message, msg);
     }
 
 
@@ -399,10 +394,7 @@ namespace HomeNetProtocol
     public bool VerifySignedConversationResponseBody(Message Message, IMessage ResponseBody, byte[] PublicKey)
     {
       byte[] msg = ResponseBody.ToByteArray();
-      byte[] signature = Message.Response.ConversationResponse.Signature.ToByteArray();
-
-      bool res = Ed25519.Verify(signature, msg, PublicKey);
-      return res;
+      return VerifySignedConversationResponseBodyPart(Message, msg, PublicKey);
     }
 
 
@@ -1197,6 +1189,7 @@ namespace HomeNetProtocol
       Message res = CreateConversationRequest();
       res.Request.ConversationRequest.AddRelatedIdentity = addRelatedIdentityRequest;
 
+      SignConversationRequestBodyPart(res, CardApplication.ToByteArray());
       return res;
     }
 
@@ -1226,7 +1219,7 @@ namespace HomeNetProtocol
     public Message CreateRemoveRelatedIdentityRequest(byte[] CardApplicationIdentifier)
     {
       RemoveRelatedIdentityRequest removeRelatedIdentityRequest = new RemoveRelatedIdentityRequest();
-      removeRelatedIdentityRequest.ApplicationIdentifier = ProtocolHelper.ByteArrayToByteString(CardApplicationIdentifier);
+      removeRelatedIdentityRequest.ApplicationId = ProtocolHelper.ByteArrayToByteString(CardApplicationIdentifier);
 
       Message res = CreateConversationRequest();
       res.Request.ConversationRequest.RemoveRelatedIdentity = removeRelatedIdentityRequest;
@@ -1259,17 +1252,17 @@ namespace HomeNetProtocol
     /// <param name="IdentityNetworkId">Identity's network identifier.</param>
     /// <param name="IncludeInvalid">If set to true, the response may include relationships which cards are no longer valid or not yet valid.</param>
     /// <param name="CardType">Wildcard string filter for card type. If filtering by card type name is not required this is set to null.</param>
-    /// <param name="IssuerPublicKey">Public key of the card issuer whose relationships with the target identity are being queried.</param>
+    /// <param name="IssuerPublicKey">Network identifier of the card issuer whose relationships with the target identity are being queried.</param>
     /// <returns>GetIdentityRelationshipsInformationRequest message that is ready to be sent.</returns>
-    public Message CreateGetIdentityRelationshipsInformationRequest(byte[] IdentityNetworkId, bool IncludeInvalid, string CardType, byte[] IssuerPublicKey)
+    public Message CreateGetIdentityRelationshipsInformationRequest(byte[] IdentityNetworkId, bool IncludeInvalid, string CardType, byte[] IssuerNetworkId)
     {
       GetIdentityRelationshipsInformationRequest getIdentityRelationshipsInformationRequest = new GetIdentityRelationshipsInformationRequest();
       getIdentityRelationshipsInformationRequest.IdentityNetworkId = ProtocolHelper.ByteArrayToByteString(IdentityNetworkId);
       getIdentityRelationshipsInformationRequest.IncludeInvalid = IncludeInvalid;
       getIdentityRelationshipsInformationRequest.Type = CardType != null ? CardType : "";
-      getIdentityRelationshipsInformationRequest.SpecificIssuer = IssuerPublicKey != null;
-      if (IssuerPublicKey != null)
-        getIdentityRelationshipsInformationRequest.IssuerPublicKey = ProtocolHelper.ByteArrayToByteString(IssuerPublicKey);
+      getIdentityRelationshipsInformationRequest.SpecificIssuer = IssuerNetworkId != null;
+      if (IssuerNetworkId != null)
+        getIdentityRelationshipsInformationRequest.IssuerNetworkId = ProtocolHelper.ByteArrayToByteString(IssuerNetworkId);
 
       Message res = CreateSingleRequest();
       res.Request.SingleRequest.GetIdentityRelationshipsInformation = getIdentityRelationshipsInformationRequest;

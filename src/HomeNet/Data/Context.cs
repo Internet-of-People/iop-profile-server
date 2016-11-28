@@ -26,6 +26,10 @@ namespace HomeNet.Data
     /// <summary>Access to IoP identities, which are not hosted on this node, but are hosted in this node's neighborhood.</summary>
     public DbSet<NeighborIdentity> NeighborhoodIdentities { get; set; }
 
+    /// <summary>Related identities announced by hosted identities.</summary>
+    public DbSet<RelatedIdentity> RelatedIdentities { get; set; }
+
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
       string currentDirectory = Directory.GetCurrentDirectory();
@@ -65,6 +69,14 @@ namespace HomeNet.Data
 
       modelBuilder.Entity<NeighborIdentity>().Property(i => i.InitialLocationLatitude).HasColumnType("decimal(9,6)").IsRequired(true);
       modelBuilder.Entity<NeighborIdentity>().Property(i => i.InitialLocationLongitude).HasColumnType("decimal(9,6)").IsRequired(true);
+
+
+      modelBuilder.Entity<RelatedIdentity>().HasKey(i => new { i.IdentityId, i.ApplicationId });
+      modelBuilder.Entity<RelatedIdentity>().HasIndex(i => new { i.IdentityId, i.ApplicationId }).IsUnique();
+      modelBuilder.Entity<RelatedIdentity>().HasIndex(i => new { i.Type });
+      modelBuilder.Entity<RelatedIdentity>().HasIndex(i => new { i.ValidFrom, i.ValidTo });
+      modelBuilder.Entity<RelatedIdentity>().HasIndex(i => new { i.RelatedToIdentityId });
+      modelBuilder.Entity<RelatedIdentity>().HasIndex(i => new { i.IdentityId, i.Type, i.RelatedToIdentityId, i.ValidFrom, i.ValidTo });
     }
   }
 }

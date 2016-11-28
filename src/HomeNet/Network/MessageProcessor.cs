@@ -73,7 +73,7 @@ namespace HomeNet.Network
       {
         // Update time until this client's connection is considered inactive.
         Client.NextKeepAliveTime = DateTime.UtcNow.AddSeconds(Client.KeepAliveIntervalSeconds);
-        log.Trace("Client ID 0x{0:X16} NextKeepAliveTime updated to {1}.", Client.Id, Client.NextKeepAliveTime.ToString("yyyy-MM-dd HH:mm:ss"));
+        log.Trace("Client ID {0} NextKeepAliveTime updated to {1}.", Client.Id.ToHex(), Client.NextKeepAliveTime.ToString("yyyy-MM-dd HH:mm:ss"));
 
         string msgStr = IncomingMessage.ToString();
         log.Trace("Received message type is {0}, message ID is {1}:\n{2}", IncomingMessage.MessageTypeCase, IncomingMessage.Id, msgStr.SubstrMax(512));
@@ -119,6 +119,10 @@ namespace HomeNet.Network
                         responseMessage = await ProcessMessageProfileStatsRequestAsync(Client, IncomingMessage);
                         break;
 
+                      case SingleRequest.RequestTypeOneofCase.GetIdentityRelationshipsInformation:
+                        responseMessage = await ProcessMessageGetIdentityRelationshipsInformationRequestAsync(Client, IncomingMessage);
+                        break;
+
                       default:
                         log.Warn("Invalid request type '{0}'.", singleRequest.RequestTypeCase);
                         break;
@@ -131,7 +135,7 @@ namespace HomeNet.Network
                   {
                     ConversationRequest conversationRequest = request.ConversationRequest;
                     log.Trace("Conversation request type is {0}.", conversationRequest.RequestTypeCase);
-                    if (conversationRequest.Signature.Length > 0) log.Trace("Conversation signature is '{0}'.", Crypto.ToHex(conversationRequest.Signature.ToByteArray()));
+                    if (conversationRequest.Signature.Length > 0) log.Trace("Conversation signature is '{0}'.", conversationRequest.Signature.ToByteArray().ToHex());
                     else log.Trace("No signature provided.");
 
                     switch (conversationRequest.RequestTypeCase)
@@ -178,6 +182,14 @@ namespace HomeNet.Network
 
                       case ConversationRequest.RequestTypeOneofCase.ProfileSearchPart:
                         responseMessage = ProcessMessageProfileSearchPartRequest(Client, IncomingMessage);
+                        break;
+
+                      case ConversationRequest.RequestTypeOneofCase.AddRelatedIdentity:
+                        responseMessage = await ProcessMessageAddRelatedIdentityRequestAsync(Client, IncomingMessage);
+                        break;
+
+                      case ConversationRequest.RequestTypeOneofCase.RemoveRelatedIdentity:
+                        responseMessage = await ProcessMessageRemoveRelatedIdentityRequestAsync(Client, IncomingMessage);
                         break;
 
                       default:
@@ -630,13 +642,13 @@ namespace HomeNet.Network
             }
             else
             {
-              log.Trace("Identity ID '{0}' profile not initialized.", Crypto.ToHex(identityId));
+              log.Trace("Identity ID '{0}' profile not initialized.", identityId.ToHex());
               res = messageBuilder.CreateErrorUninitializedResponse(RequestMessage);
             }
           }
           else
           {
-            log.Trace("Identity ID '{0}' is not hosted by this node.", Crypto.ToHex(identityId));
+            log.Trace("Identity ID '{0}' is not hosted by this node.", identityId.ToHex());
             res = messageBuilder.CreateErrorNotFoundResponse(RequestMessage);
           }
         }
@@ -693,7 +705,7 @@ namespace HomeNet.Network
             Client.ConversationStatus = ClientConversationStatus.ConversationStarted;
 
             log.Debug("Client {0} conversation status updated to {1}, selected version is '{2}', client public key set to '{3}', client identity ID set to '{4}', challenge set to '{5}'.",
-              Client.RemoteEndPoint, Client.ConversationStatus, ProtocolHelper.VersionBytesToString(version), Crypto.ToHex(Client.PublicKey), Crypto.ToHex(Client.IdentityId), Crypto.ToHex(Client.AuthenticationChallenge));
+              Client.RemoteEndPoint, Client.ConversationStatus, ProtocolHelper.VersionBytesToString(version), Client.PublicKey.ToHex(), Client.IdentityId.ToHex(), Client.AuthenticationChallenge.ToHex());
 
             res = messageBuilder.CreateStartConversationResponse(RequestMessage, version, Base.Configuration.Keys.PublicKey, Client.AuthenticationChallenge, clientChallenge);
           }
@@ -771,7 +783,7 @@ namespace HomeNet.Network
                 // We do not have the identity in our client's database,
                 // OR we do have the identity in our client's database, but it's contract has been cancelled.
                 if (existingIdentity != null)
-                  log.Debug("Identity ID '{0}' is already a client of this node, but its contract has been cancelled.", Crypto.ToHex(Client.IdentityId));
+                  log.Debug("Identity ID '{0}' is already a client of this node, but its contract has been cancelled.", Client.IdentityId.ToHex());
 
                 HomeIdentity identity = existingIdentity == null ? new HomeIdentity() : existingIdentity;
 
@@ -801,7 +813,7 @@ namespace HomeNet.Network
               else
               {
                 // We have the identity in our client's database with an active contract.
-                log.Debug("Identity ID '{0}' is already a client of this node.", Crypto.ToHex(Client.IdentityId));
+                log.Debug("Identity ID '{0}' is already a client of this node.", Client.IdentityId.ToHex());
                 res = messageBuilder.CreateErrorAlreadyExistsResponse(RequestMessage);
               }
             }
@@ -829,7 +841,7 @@ namespace HomeNet.Network
 
       if (success)
       {
-        log.Debug("Identity '{0}' added to database.", Crypto.ToHex(Client.IdentityId));
+        log.Debug("Identity '{0}' added to database.", Client.IdentityId.ToHex());
         res = messageBuilder.CreateHomeNodeRequestResponse(RequestMessage, contract);
       }
 
@@ -870,7 +882,7 @@ namespace HomeNet.Network
       {
         if (messageBuilder.VerifySignedConversationRequestBody(RequestMessage, checkInRequest, Client.PublicKey))
         {
-          log.Debug("Identity '{0}' is about to check in ...", Crypto.ToHex(Client.IdentityId));
+          log.Debug("Identity '{0}' is about to check in ...", Client.IdentityId.ToHex());
 
           bool success = false;
           res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
@@ -887,11 +899,11 @@ namespace HomeNet.Network
 
                   success = true;
                 }
-                else log.Error("Identity '{0}' failed to check-in.", Crypto.ToHex(Client.IdentityId));
+                else log.Error("Identity '{0}' failed to check-in.", Client.IdentityId.ToHex());
               }
               else
               {
-                log.Debug("Identity '{0}' is not a client of this node.", Crypto.ToHex(Client.IdentityId));
+                log.Debug("Identity '{0}' is not a client of this node.", Client.IdentityId.ToHex());
                 res = messageBuilder.CreateErrorNotFoundResponse(RequestMessage);
               }
             }
@@ -904,7 +916,7 @@ namespace HomeNet.Network
 
           if (success)
           {
-            log.Debug("Identity '{0}' successfully checked in ...", Crypto.ToHex(Client.IdentityId));
+            log.Debug("Identity '{0}' successfully checked in ...", Client.IdentityId.ToHex());
             res = messageBuilder.CreateCheckInResponse(RequestMessage);
           }
         }
@@ -953,7 +965,7 @@ namespace HomeNet.Network
       {
         if (messageBuilder.VerifySignedConversationRequestBody(RequestMessage, verifyIdentityRequest, Client.PublicKey))
         {
-          log.Debug("Identity '{0}' successfully verified its public key.", Crypto.ToHex(Client.IdentityId));
+          log.Debug("Identity '{0}' successfully verified its public key.", Client.IdentityId.ToHex());
           Client.ConversationStatus = ClientConversationStatus.Verified;
           res = messageBuilder.CreateVerifyIdentityResponse(RequestMessage);
         }
@@ -1077,7 +1089,7 @@ namespace HomeNet.Network
                 }
                 else
                 {
-                  log.Debug("Identity '{0}' is not a client of this node.", Crypto.ToHex(Client.IdentityId));
+                  log.Debug("Identity '{0}' is not a client of this node.", Client.IdentityId.ToHex());
                   res = messageBuilder.CreateErrorNotFoundResponse(RequestMessage);
                 }
               }
@@ -1089,7 +1101,7 @@ namespace HomeNet.Network
 
               if (success)
               {
-                log.Debug("Identity '{0}' updated its profile in the database.", Crypto.ToHex(Client.IdentityId));
+                log.Debug("Identity '{0}' updated its profile in the database.", Client.IdentityId.ToHex());
                 res = messageBuilder.CreateUpdateProfileResponse(RequestMessage);
               }
 
@@ -1109,7 +1121,7 @@ namespace HomeNet.Network
           }
           else
           {
-            log.Debug("Identity '{0}' is not a client of this node.", Crypto.ToHex(Client.IdentityId));
+            log.Debug("Identity '{0}' is not a client of this node.", Client.IdentityId.ToHex());
             res = messageBuilder.CreateErrorNotFoundResponse(RequestMessage);
           }
         }
@@ -1135,7 +1147,7 @@ namespace HomeNet.Network
     /// <returns>true if the profile update request can be applied, false otherwise.</returns>
     private bool ValidateUpdateProfileRequest(HomeIdentity Identity, UpdateProfileRequest UpdateProfileRequest, MessageBuilder MessageBuilder, Message RequestMessage, out Message ErrorResponse)
     {
-      log.Trace("(Identity.IdentityId:'{0}')", Crypto.ToHex(Identity.IdentityId));
+      log.Trace("(Identity.IdentityId:'{0}')", Identity.IdentityId.ToHex());
 
       bool res = false;
       ErrorResponse = null;
@@ -1320,7 +1332,7 @@ namespace HomeNet.Network
             }
             else
             {
-              log.Debug("Identity '{0}' is not a client of this node.", Crypto.ToHex(Client.IdentityId));
+              log.Debug("Identity '{0}' is not a client of this node.", Client.IdentityId.ToHex());
               res = messageBuilder.CreateErrorNotFoundResponse(RequestMessage);
             }
           }
@@ -1333,8 +1345,8 @@ namespace HomeNet.Network
 
           if (success)
           {
-            if (cancelHomeNodeAgreementRequest.RedirectToNewHomeNode) log.Debug("Identity '{0}' home node agreement cancelled and redirection set to node '{1}'.", Crypto.ToHex(Client.IdentityId), Crypto.ToHex(cancelHomeNodeAgreementRequest.NewHomeNodeNetworkId.ToByteArray()));
-            else log.Debug("Identity '{0}' home node agreement cancelled and no redirection set.", Crypto.ToHex(Client.IdentityId));
+            if (cancelHomeNodeAgreementRequest.RedirectToNewHomeNode) log.Debug("Identity '{0}' home node agreement cancelled and redirection set to node '{1}'.", Client.IdentityId.ToHex(), cancelHomeNodeAgreementRequest.NewHomeNodeNetworkId.ToByteArray().ToHex());
+            else log.Debug("Identity '{0}' home node agreement cancelled and no redirection set.", Client.IdentityId.ToHex());
 
             res = messageBuilder.CreateCancelHomeNodeAgreementResponse(RequestMessage);
           }
@@ -1354,7 +1366,7 @@ namespace HomeNet.Network
       }
       else
       {
-        log.Debug("Invalid home node identifier '{0}'.", Crypto.ToHex(cancelHomeNodeAgreementRequest.NewHomeNodeNetworkId.ToByteArray()));
+        log.Debug("Invalid home node identifier '{0}'.", cancelHomeNodeAgreementRequest.NewHomeNodeNetworkId.ToByteArray().ToHex());
         res = messageBuilder.CreateErrorInvalidValueResponse(RequestMessage, "newHomeNodeNetworkId");
       }
 
@@ -1401,12 +1413,12 @@ namespace HomeNet.Network
       {
         if (Client.ApplicationServices.AddServices(applicationServiceAddRequest.ServiceNames))
         {
-          log.Debug("Service names added to identity '{0}': {1}", Crypto.ToHex(Client.IdentityId), string.Join(", ", applicationServiceAddRequest.ServiceNames));
+          log.Debug("Service names added to identity '{0}': {1}", Client.IdentityId.ToHex(), string.Join(", ", applicationServiceAddRequest.ServiceNames));
           res = messageBuilder.CreateApplicationServiceAddResponse(RequestMessage);
         }
         else
         {
-          log.Debug("Identity '{0}' application services list not changed, number of services would exceed the limit {1}.", Crypto.ToHex(Client.IdentityId), Client.MaxClientApplicationServices);
+          log.Debug("Identity '{0}' application services list not changed, number of services would exceed the limit {1}.", Client.IdentityId.ToHex(), Client.MaxClientApplicationServices);
           res = messageBuilder.CreateErrorQuotaExceededResponse(RequestMessage);
         }
       }
@@ -1444,11 +1456,11 @@ namespace HomeNet.Network
       if (Client.ApplicationServices.RemoveService(serviceName))
       {
         res = messageBuilder.CreateApplicationServiceRemoveResponse(RequestMessage);
-        log.Debug("Service name '{0}' removed from identity '{1}'.", serviceName, Crypto.ToHex(Client.IdentityId));
+        log.Debug("Service name '{0}' removed from identity '{1}'.", serviceName, Client.IdentityId.ToHex());
       }
       else
       {
-        log.Warn("Service name '{0}' not found on the list of supported services of identity '{1}'.", serviceName, Crypto.ToHex(Client.IdentityId));
+        log.Warn("Service name '{0}' not found on the list of supported services of identity '{1}'.", serviceName, Client.IdentityId.ToHex());
         res = messageBuilder.CreateErrorNotFoundResponse(RequestMessage);
       }
 
@@ -1493,13 +1505,13 @@ namespace HomeNet.Network
           {
             if (!identity.IsProfileInitialized())
             {
-              log.Debug("Identity ID '{0}' not initialized and can not be called.", Crypto.ToHex(calleeIdentityId));
+              log.Debug("Identity ID '{0}' not initialized and can not be called.", calleeIdentityId.ToHex());
               res = messageBuilder.CreateErrorUninitializedResponse(RequestMessage);
             }
           }
           else
           {
-            log.Warn("Identity ID '{0}' not found.", Crypto.ToHex(calleeIdentityId));
+            log.Warn("Identity ID '{0}' not found.", calleeIdentityId.ToHex());
             res = messageBuilder.CreateErrorInvalidValueResponse(RequestMessage, "identityNetworkId");
           }
         }
@@ -1533,11 +1545,11 @@ namespace HomeNet.Network
                 // 2) We do not receive response from the callee within a reasonable time, in which case we send ERROR_NOT_AVAILABLE to the caller and destroy the relay.
                 // 3) We receive a rejection from the callee, in which case we send ERROR_REJECTED to the caller and destroy the relay.
                 // 4) We receive an acceptance from the callee, in which case we send CallIdentityApplicationServiceResponse to the caller and continue.
-                log.Debug("Incoming call notification request sent to the callee '{0}'.", Crypto.ToHex(calleeIdentityId));
+                log.Debug("Incoming call notification request sent to the callee '{0}'.", calleeIdentityId.ToHex());
               }
               else
               {
-                log.Debug("Unable to send incoming call notification to the callee '{0}'.", Crypto.ToHex(calleeIdentityId));
+                log.Debug("Unable to send incoming call notification to the callee '{0}'.", calleeIdentityId.ToHex());
                 res = messageBuilder.CreateErrorNotAvailableResponse(RequestMessage);
                 error = true;
               }
@@ -1546,19 +1558,19 @@ namespace HomeNet.Network
             }
             else
             {
-              log.Debug("Token issueing failed, callee '{0}' is probably not available anymore.", Crypto.ToHex(calleeIdentityId));
+              log.Debug("Token issueing failed, callee '{0}' is probably not available anymore.", calleeIdentityId.ToHex());
               res = messageBuilder.CreateErrorNotAvailableResponse(RequestMessage);
             }
           }
           else
           {
-            log.Debug("Callee's identity '{0}' does not have service name '{1}' enabled.", Crypto.ToHex(calleeIdentityId), serviceName);
+            log.Debug("Callee's identity '{0}' does not have service name '{1}' enabled.", calleeIdentityId.ToHex(), serviceName);
             res = messageBuilder.CreateErrorInvalidValueResponse(RequestMessage, "serviceName");
           }
         }
         else
         {
-          log.Debug("Callee's identity '{0}' not found among online clients.", Crypto.ToHex(calleeIdentityId));
+          log.Debug("Callee's identity '{0}' not found among online clients.", calleeIdentityId.ToHex());
           res = messageBuilder.CreateErrorNotAvailableResponse(RequestMessage);
         }
       }
@@ -1690,7 +1702,7 @@ namespace HomeNet.Network
       {
         try
         {
-          List<ProfileStatsItem> stats = await unitOfWork.HomeIdentityRepository.GetProfileStats();
+          List<ProfileStatsItem> stats = await unitOfWork.HomeIdentityRepository.GetProfileStatsAsync();
           res = messageBuilder.CreateProfileStatsResponse(RequestMessage, stats);
         }
         catch (Exception e)
@@ -1726,10 +1738,10 @@ namespace HomeNet.Network
     public const int ProfileSearchMaxTimeMs = 15000;
 
     /// <summary>Maximum amount of time in milliseconds that we want to spend on regular expression matching of extraData.</summary>
-    public const int ProfileSearchMaxExtraDataMatchingTimeTotalMs = 1500;
+    public const int ProfileSearchMaxExtraDataMatchingTimeTotalMs = 1000;
 
     /// <summary>Maximum amount of time in milliseconds that we want to spend on regular expression matching of extraData of a single profile.</summary>
-    public const int ProfileSearchMaxExtraDataMatchingTimeSingleMs = 150;
+    public const int ProfileSearchMaxExtraDataMatchingTimeSingleMs = 25;
 
     /// <summary>Maximum number of results the node can send in the response if images are included.</summary>
     public const int ProfileSearchMaxResponseRecordsWithImage = 100;
@@ -2126,7 +2138,7 @@ namespace HomeNet.Network
           }
           else
           {
-            log.Trace("Cached results are no longer available for client ID 0x{0:X16}.", Client.Id);
+            log.Trace("Cached results are no longer available for client ID {0}.", Client.Id.ToHex());
             res = messageBuilder.CreateErrorNotAvailableResponse(RequestMessage);
           }
         }
@@ -2138,11 +2150,390 @@ namespace HomeNet.Network
       }
       else
       {
-        log.Trace("No cached results are available for client ID 0x{0:X16}.", Client.Id);
+        log.Trace("No cached results are available for client ID {0}.", Client.Id.ToHex());
         res = messageBuilder.CreateErrorNotAvailableResponse(RequestMessage);
       }
 
       log.Trace("(-):*.Response.Status={0}", res.Response.Status);      
+      return res;
+    }
+
+
+
+    /// <summary>
+    /// Processes AddRelatedIdentityRequest message from client.
+    /// <para>Adds a proven relationship between an identity and the client to the list of client's related identities.</para>
+    /// </summary>
+    /// <param name="Client">Client that sent the request.</param>
+    /// <param name="RequestMessage">Full request message.</param>
+    /// <returns>Response message to be sent to the client.</returns>
+    public async Task<Message> ProcessMessageAddRelatedIdentityRequestAsync(Client Client, Message RequestMessage)
+    {
+      log.Trace("()");
+
+      Message res = null;
+      if (!CheckSessionConditions(Client, RequestMessage, ServerRole.ClientCustomer, ClientConversationStatus.Authenticated, out res))
+      {
+        log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+        return res;
+      }
+
+      MessageBuilder messageBuilder = Client.MessageBuilder;
+      AddRelatedIdentityRequest addRelatedIdentityRequest = RequestMessage.Request.ConversationRequest.AddRelatedIdentity;
+
+      Message errorResponse;
+      if (ValidateAddRelatedIdentityRequest(Client, addRelatedIdentityRequest, messageBuilder, RequestMessage, out errorResponse))
+      {
+        CardApplicationInformation application = addRelatedIdentityRequest.CardApplication;
+        SignedRelationshipCard signedCard = addRelatedIdentityRequest.SignedCard;
+        RelationshipCard card = signedCard.Card;
+        byte[] issuerSignature = signedCard.IssuerSignature.ToByteArray();
+        byte[] recipientSignature = RequestMessage.Request.ConversationRequest.Signature.ToByteArray();
+        byte[] cardId = card.CardId.ToByteArray();
+        byte[] applicationId = application.ApplicationId.ToByteArray();
+        string cardType = card.Type;
+        DateTime validFrom = ProtocolHelper.UnixTimestampMsToDateTime(card.ValidFrom);
+        DateTime validTo = ProtocolHelper.UnixTimestampMsToDateTime(card.ValidTo);
+        byte[] issuerPublicKey = card.IssuerPublicKey.ToByteArray();
+        byte[] recipientPublicKey = Client.PublicKey;
+        byte[] issuerIdentityId = Crypto.Sha256(issuerPublicKey);
+
+        RelatedIdentity newRelation = new RelatedIdentity()
+        {
+          ApplicationId = applicationId,
+          CardId = cardId,
+          IdentityId = Client.IdentityId,
+          IssuerPublicKey = issuerPublicKey,
+          IssuerSignature = issuerSignature,
+          RecipientPublicKey = recipientPublicKey,
+          RecipientSignature = recipientSignature,
+          RelatedToIdentityId = issuerIdentityId,
+          Type = cardType,
+          ValidFrom = validFrom,
+          ValidTo = validTo
+        };
+
+        res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
+        using (UnitOfWork unitOfWork = new UnitOfWork())
+        {
+          bool success = false;
+          DatabaseLock lockObject = UnitOfWork.RelatedIdentityLock;
+          using (IDbContextTransaction transaction = await unitOfWork.BeginTransactionWithLockAsync(lockObject))
+          {
+            try
+            {
+              int count = await unitOfWork.RelatedIdentityRepository.CountAsync(ri => ri.IdentityId == Client.IdentityId);
+              if (count < Base.Configuration.MaxIdenityRelations)
+              {
+                RelatedIdentity existingRelation = (await unitOfWork.RelatedIdentityRepository.GetAsync(ri => (ri.IdentityId == Client.IdentityId) && (ri.ApplicationId == applicationId))).FirstOrDefault();
+                if (existingRelation == null)
+                {
+                  unitOfWork.RelatedIdentityRepository.Insert(newRelation);
+                  await unitOfWork.SaveThrowAsync();
+                  transaction.Commit();
+                  success = true;
+                }
+                else
+                {
+                  log.Warn("Client identity ID '{0}' already has relation application ID '{1}'.", Client.IdentityId.ToHex(), applicationId.ToHex());
+                  res = messageBuilder.CreateErrorAlreadyExistsResponse(RequestMessage);
+                }
+              }
+              else
+              {
+                log.Warn("Client identity '{0}' has too many ({1}) relations already.", Client.IdentityId.ToHex(), count);
+                res = messageBuilder.CreateErrorQuotaExceededResponse(RequestMessage);
+              }
+            }
+            catch (Exception e)
+            {
+              log.Error("Exception occurred: {0}", e.ToString());
+            }
+
+            if (success)
+            {
+              res = messageBuilder.CreateAddRelatedIdentityResponse(RequestMessage);
+            }
+            else 
+            {
+              log.Warn("Rolling back transaction.");
+              unitOfWork.SafeTransactionRollback(transaction);
+            }
+
+            unitOfWork.ReleaseLock(lockObject);
+          }
+        }
+      }
+      else res = errorResponse;
+
+      log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+      return res;
+    }
+
+
+    /// <summary>
+    /// Checks whether AddRelatedIdentityRequest request is valid.
+    /// </summary>
+    /// <param name="Client">Client that sent the request.</param>
+    /// <param name="AddRelatedIdentityRequest">Client's request message to validate.</param>
+    /// <param name="MessageBuilder">Client's network message builder.</param>
+    /// <param name="RequestMessage">Full request message from client.</param>
+    /// <param name="ErrorResponse">If the function fails, this is filled with error response message that is ready to be sent to the client.</param>
+    /// <returns>true if the profile update request can be applied, false otherwise.</returns>
+    private bool ValidateAddRelatedIdentityRequest(Client Client, AddRelatedIdentityRequest AddRelatedIdentityRequest, MessageBuilder MessageBuilder, Message RequestMessage, out Message ErrorResponse)
+    {
+      log.Trace("()");
+
+      bool res = false;
+      ErrorResponse = null;
+      string details = null;
+
+      CardApplicationInformation cardApplication = AddRelatedIdentityRequest.CardApplication;
+      SignedRelationshipCard signedCard = AddRelatedIdentityRequest.SignedCard;
+      RelationshipCard card = signedCard.Card;
+
+      byte[] applicationId = cardApplication.ApplicationId.ToByteArray();
+      byte[] cardId = card.CardId.ToByteArray();
+
+      if ((applicationId.Length == 0) || (applicationId.Length > RelatedIdentity.CardIdentifierLength))
+      {
+        log.Debug("Card application ID is too long.");
+        details = "cardApplication.applicationId";
+      }
+
+      if (details == null)
+      {
+        byte[] appCardId = cardApplication.CardId.ToByteArray();
+        if (!StructuralEqualityComparer<byte[]>.Default.Equals(cardId, appCardId))
+        {
+          log.Debug("Card IDs in application card and relationship card do not match.");
+          details = "cardApplication.cardId";
+        }
+      }
+
+      if (details == null)
+      {
+        if (card.ValidFrom > card.ValidTo)
+        {
+          log.Debug("Card validFrom field is greater than validTo field.");
+          details = "signedCard.card.validFrom";
+        }
+      }
+
+      if (details == null)
+      {
+        byte[] recipientPublicKey = card.RecipientPublicKey.ToByteArray();
+        if (!StructuralEqualityComparer<byte[]>.Default.Equals(recipientPublicKey, Client.PublicKey))
+        {
+          log.Debug("Caller is not recipient of the card.");
+          details = "signedCard.card.recipientPublicKey";
+        }
+      }
+
+      if (details == null)
+      {
+        if (!Client.MessageBuilder.VerifySignedConversationRequestBodyPart(RequestMessage, cardApplication.ToByteArray(), Client.PublicKey))
+        {
+          log.Debug("Caller is not recipient of the card.");
+          ErrorResponse = Client.MessageBuilder.CreateErrorInvalidSignatureResponse(RequestMessage);
+          details = "";
+        }
+      }
+
+      if (details == null)
+      {
+        RelationshipCard emptyIdCard = new RelationshipCard()
+        {
+          CardId = ProtocolHelper.ByteArrayToByteString(new byte[RelatedIdentity.CardIdentifierLength]),
+          IssuerPublicKey = card.IssuerPublicKey,
+          RecipientPublicKey = card.RecipientPublicKey,
+          Type = card.Type,
+          ValidFrom = card.ValidFrom,
+          ValidTo = card.ValidTo          
+        };
+
+        byte[] hash = Crypto.Sha256(emptyIdCard.ToByteArray());
+        if (!StructuralEqualityComparer<byte[]>.Default.Equals(hash, cardId))
+        {
+          log.Debug("Card ID '{0}' does not match its hash '{1}'.", cardId.ToHex(64), hash.ToHex());
+          details = "signedCard.card.cardId";
+        }
+      }
+
+      if (details == null)
+      {
+        if (Encoding.UTF8.GetByteCount(card.Type) > ProtocolHelper.MaxRelationshipCardTypeLengthBytes)
+        {
+          log.Debug("Card type is too long.");
+          details = "signedCard.card.type";
+        }
+      }
+
+      if (details == null)
+      {
+        byte[] issuerSignature = signedCard.IssuerSignature.ToByteArray();
+        byte[] issuerPublicKey = card.IssuerPublicKey.ToByteArray();
+        if (!Ed25519.Verify(issuerSignature, cardId, issuerPublicKey))
+        {
+          log.Debug("Issuer signature is invalid.");
+          details = "signedCard.issuerSignature";
+        }
+      }
+
+      if (details == null)
+      {
+        res = true;
+      }
+      else
+      {
+        if (ErrorResponse == null)
+          ErrorResponse = MessageBuilder.CreateErrorInvalidValueResponse(RequestMessage, details);
+      }
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+
+
+
+    /// <summary>
+    /// Processes RemoveRelatedIdentityRequest message from client.
+    /// <para>Remove related identity from the list of client's related identities.</para>
+    /// </summary>
+    /// <param name="Client">Client that sent the request.</param>
+    /// <param name="RequestMessage">Full request message.</param>
+    /// <returns>Response message to be sent to the client.</returns>
+    public async Task<Message> ProcessMessageRemoveRelatedIdentityRequestAsync(Client Client, Message RequestMessage)
+    {
+      log.Trace("()");
+
+      Message res = null;
+      if (!CheckSessionConditions(Client, RequestMessage, ServerRole.ClientCustomer, ClientConversationStatus.Authenticated, out res))
+      {
+        log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+        return res;
+      }
+
+      MessageBuilder messageBuilder = Client.MessageBuilder;
+      RemoveRelatedIdentityRequest removeRelatedIdentityRequest = RequestMessage.Request.ConversationRequest.RemoveRelatedIdentity;
+      byte[] applicationId = removeRelatedIdentityRequest.ApplicationId.ToByteArray();
+
+      res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
+      using (UnitOfWork unitOfWork = new UnitOfWork())
+      {
+        DatabaseLock lockObject = UnitOfWork.RelatedIdentityLock;
+        await unitOfWork.AcquireLockAsync(lockObject);
+        try
+        {
+          RelatedIdentity existingRelation = (await unitOfWork.RelatedIdentityRepository.GetAsync(ri => (ri.IdentityId == Client.IdentityId) && (ri.ApplicationId == applicationId))).FirstOrDefault();
+          if (existingRelation != null)
+          {
+            unitOfWork.RelatedIdentityRepository.Delete(existingRelation);
+            if (await unitOfWork.SaveAsync())
+            {
+              res = messageBuilder.CreateRemoveRelatedIdentityResponse(RequestMessage);
+            }
+            else log.Error("Unable to delete client ID '{0}' relation application ID '{1}' from the database.", Client.IdentityId.ToHex(), applicationId.ToHex());
+          }
+          else
+          {
+            log.Warn("Client identity '{0}' relation application ID '{1}' does not exist.", Client.IdentityId.ToHex(), applicationId.ToHex());
+            res = messageBuilder.CreateErrorNotFoundResponse(RequestMessage);
+          }
+        }
+        catch (Exception e)
+        {
+          log.Error("Exception occurred: {0}", e.ToString());
+        }
+
+        unitOfWork.ReleaseLock(lockObject);
+      }
+
+      log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+      return res;
+    }
+
+
+
+    /// <summary>
+    /// Processes GetIdentityRelationshipsInformationRequest message from client.
+    /// <para>Obtains a list of related identities of that match given criteria.</para>
+    /// </summary>
+    /// <param name="Client">Client that sent the request.</param>
+    /// <param name="RequestMessage">Full request message.</param>
+    /// <returns>Response message to be sent to the client.</returns>
+    public async Task<Message> ProcessMessageGetIdentityRelationshipsInformationRequestAsync(Client Client, Message RequestMessage)
+    {
+      log.Trace("()");
+
+      Message res = null;
+      if (!CheckSessionConditions(Client, RequestMessage, ServerRole.ClientCustomer | ServerRole.ClientNonCustomer, null, out res))
+      {
+        log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+        return res;
+      }
+
+      MessageBuilder messageBuilder = Client.MessageBuilder;
+      GetIdentityRelationshipsInformationRequest getIdentityRelationshipsInformationRequest = RequestMessage.Request.SingleRequest.GetIdentityRelationshipsInformation;
+      byte[] identityId = getIdentityRelationshipsInformationRequest.IdentityNetworkId.ToByteArray();
+      bool includeInvalid = getIdentityRelationshipsInformationRequest.IncludeInvalid;
+      string type = getIdentityRelationshipsInformationRequest.Type;
+      bool specificIssuer = getIdentityRelationshipsInformationRequest.SpecificIssuer;
+      byte[] issuerId = specificIssuer ? getIdentityRelationshipsInformationRequest.IssuerNetworkId.ToByteArray() : null;
+
+      if (Encoding.UTF8.GetByteCount(type) <= ProtocolHelper.MaxGetIdentityRelationshipsTypeLengthBytes)
+      {
+        res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
+        using (UnitOfWork unitOfWork = new UnitOfWork())
+        {
+          List<RelatedIdentity> relations = await unitOfWork.RelatedIdentityRepository.GetRelationsAsync(identityId, type, includeInvalid, issuerId);
+
+          List<IdentityRelationship> identityRelationships = new List<IdentityRelationship>();
+          foreach (RelatedIdentity relatedIdentity in relations)
+          {
+            CardApplicationInformation cardApplication = new CardApplicationInformation()
+            {
+              ApplicationId = ProtocolHelper.ByteArrayToByteString(relatedIdentity.ApplicationId),
+              CardId = ProtocolHelper.ByteArrayToByteString(relatedIdentity.CardId),
+            };
+
+            RelationshipCard card = new RelationshipCard()
+            {
+              CardId = ProtocolHelper.ByteArrayToByteString(relatedIdentity.CardId),
+              IssuerPublicKey = ProtocolHelper.ByteArrayToByteString(relatedIdentity.IssuerPublicKey),
+              RecipientPublicKey = ProtocolHelper.ByteArrayToByteString(relatedIdentity.RecipientPublicKey),
+              Type = relatedIdentity.Type,
+              ValidFrom = ProtocolHelper.DateTimeToUnixTimestampMs(relatedIdentity.ValidFrom),
+              ValidTo = ProtocolHelper.DateTimeToUnixTimestampMs(relatedIdentity.ValidTo)
+            };
+
+            SignedRelationshipCard signedCard = new SignedRelationshipCard()
+            {
+              Card = card,
+              IssuerSignature = ProtocolHelper.ByteArrayToByteString(relatedIdentity.IssuerSignature)
+            };
+
+            IdentityRelationship relationship = new IdentityRelationship()
+            {
+              Card = signedCard,
+              CardApplication = cardApplication,
+              CardApplicationSignature = ProtocolHelper.ByteArrayToByteString(relatedIdentity.RecipientSignature)
+            };
+
+            identityRelationships.Add(relationship);
+          }
+
+          res = messageBuilder.CreateGetIdentityRelationshipsInformationResponse(RequestMessage, identityRelationships);
+        }
+      }
+      else
+      {
+        log.Warn("Type filter is too long.");
+        res = messageBuilder.CreateErrorInvalidValueResponse(RequestMessage, "type");
+      }
+
+      log.Trace("(-):*.Response.Status={0}", res.Response.Status);
       return res;
     }
   }
