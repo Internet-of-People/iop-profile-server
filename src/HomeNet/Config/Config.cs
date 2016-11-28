@@ -218,7 +218,7 @@ namespace HomeNet.Config
 
           serverRoles = new ServerRolesConfig();
           error = !(serverRoles.AddRoleServer(primaryInterfacePort, ServerRole.PrimaryUnrelated)
-                 && serverRoles.AddRoleServer(nodeNeighborInterfacePort, ServerRole.NodeNeighbor)
+                 && serverRoles.AddRoleServer(nodeNeighborInterfacePort, ServerRole.ServerNeighbor)
                  && serverRoles.AddRoleServer(nodeColleagueInterfacePort, ServerRole.NodeColleague)
                  && serverRoles.AddRoleServer(clientNonCustomerInterfacePort, ServerRole.ClientNonCustomer)
                  && serverRoles.AddRoleServer(clientCustomerInterfacePort, ServerRole.ClientCustomer)

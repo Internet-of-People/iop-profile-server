@@ -546,7 +546,7 @@ namespace HomeNet.Network
             switch (role)
             {
               case ServerRole.PrimaryUnrelated: srt = ServerRoleType.Primary; break;
-              case ServerRole.NodeNeighbor: srt = ServerRoleType.NdNeighbor; break;
+              case ServerRole.ServerNeighbor: srt = ServerRoleType.NdNeighbor; break;
               case ServerRole.NodeColleague: srt = ServerRoleType.NdColleague; break;
               case ServerRole.ClientNonCustomer: srt = ServerRoleType.ClNonCustomer; break;
               case ServerRole.ClientCustomer: srt = ServerRoleType.ClCustomer; break;
