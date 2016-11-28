@@ -51,7 +51,7 @@ namespace HomeNetProtocolTests.Tests
       Passed = false;
 
       ProtocolClient client1 = new ProtocolClient();
-      ProtocolClient client2 = new ProtocolClient(0, new byte[] { 1, 0, 0}, client1.GetIdentityKeys());
+      ProtocolClient client2 = new ProtocolClient(0, SemVer.V100, client1.GetIdentityKeys());
       try
       {
         MessageBuilder mb1 = client1.MessageBuilder;

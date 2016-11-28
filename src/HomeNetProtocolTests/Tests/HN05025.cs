@@ -50,14 +50,14 @@ namespace HomeNetProtocolTests.Tests
       Passed = false;
 
       ProtocolClient clientCallee = new ProtocolClient();
-      ProtocolClient clientCallee1AppService = new ProtocolClient(0, new byte[] { 1, 0, 0 }, clientCallee.GetIdentityKeys());
-      ProtocolClient clientCallee2AppService = new ProtocolClient(0, new byte[] { 1, 0, 0 }, clientCallee.GetIdentityKeys());
+      ProtocolClient clientCallee1AppService = new ProtocolClient(0, SemVer.V100, clientCallee.GetIdentityKeys());
+      ProtocolClient clientCallee2AppService = new ProtocolClient(0, SemVer.V100, clientCallee.GetIdentityKeys());
 
       ProtocolClient clientCaller1 = new ProtocolClient();
-      ProtocolClient clientCaller1AppService = new ProtocolClient(0, new byte[] { 1, 0, 0 }, clientCaller1.GetIdentityKeys());
+      ProtocolClient clientCaller1AppService = new ProtocolClient(0, SemVer.V100, clientCaller1.GetIdentityKeys());
 
       ProtocolClient clientCaller2 = new ProtocolClient();
-      ProtocolClient clientCaller2AppService = new ProtocolClient(0, new byte[] { 1, 0, 0 }, clientCaller2.GetIdentityKeys());
+      ProtocolClient clientCaller2AppService = new ProtocolClient(0, SemVer.V100, clientCaller2.GetIdentityKeys());
       try
       {
         MessageBuilder mbCallee = clientCallee.MessageBuilder;
@@ -297,8 +297,8 @@ namespace HomeNetProtocolTests.Tests
         log.Trace("Step 7");
         // Receive message #1.
         Message nodeRequestAppServiceCallee = await clientCallee1AppService.ReceiveMessageAsync();
-        byte[] receivedVersion = nodeRequestAppServiceCallee.Request.SingleRequest.Version.ToByteArray();
-        bool versionOk = StructuralComparisons.StructuralComparer.Compare(receivedVersion, new byte[] { 1, 0, 0 }) == 0;
+        SemVer receivedVersion = new SemVer(nodeRequestAppServiceCallee.Request.SingleRequest.Version);
+        bool versionOk = receivedVersion.Equals(SemVer.V100);
 
         typeOk = (nodeRequestAppServiceCallee.MessageTypeCase == Message.MessageTypeOneofCase.Request)
           && (nodeRequestAppServiceCallee.Request.ConversationTypeCase == Request.ConversationTypeOneofCase.SingleRequest)
@@ -375,8 +375,8 @@ namespace HomeNetProtocolTests.Tests
         responseMessageAppServiceCaller = await clientCaller1AppService.ReceiveMessageAsync();
         idOk = responseMessageAppServiceCaller.Id == callerMessage1Id;
         statusOk = responseMessageAppServiceCaller.Response.Status == Status.Ok;
-        receivedVersion = responseMessageAppServiceCaller.Response.SingleResponse.Version.ToByteArray();
-        versionOk = StructuralComparisons.StructuralComparer.Compare(receivedVersion, new byte[] { 1, 0, 0 }) == 0;
+        receivedVersion = new SemVer(responseMessageAppServiceCaller.Response.SingleResponse.Version);
+        versionOk = receivedVersion.Equals(SemVer.V100);
 
         bool receiveAckOk = idOk && statusOk && versionOk;
 

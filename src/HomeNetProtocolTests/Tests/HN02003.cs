@@ -63,9 +63,8 @@ namespace HomeNetProtocolTests.Tests
         bool statusOk = responseMessage.Response.Status == Status.Ok;
         bool verifyChallengeOk = client.VerifyNodeChallengeSignature(responseMessage);
 
-        byte[] receivedVersion = responseMessage.Response.ConversationResponse.Start.Version.ToByteArray();
-        byte[] expectedVersion = new byte[] { 1, 0, 0 };
-        bool versionOk = StructuralComparisons.StructuralComparer.Compare(receivedVersion, expectedVersion) == 0;
+        SemVer receivedVersion = new SemVer(responseMessage.Response.ConversationResponse.Start.Version);
+        bool versionOk = receivedVersion.Equals(SemVer.V100);
 
         bool pubKeyLenOk = responseMessage.Response.ConversationResponse.Start.PublicKey.Length == 32;
         bool challengeOk = responseMessage.Response.ConversationResponse.Start.Challenge.Length == 32;

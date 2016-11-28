@@ -79,6 +79,12 @@ namespace HomeNet.Config
     /// <summary>Maximum number of relations that an identity is allowed to have. Must be lower than RelatedIdentity.MaxIdentityRelations.</summary>
     public int MaxIdenityRelations;
 
+    /// <summary>Maximum number of parallel neighborhood initialization processes that the node is willing to process.</summary>
+    public int NeighborhoodInitializationParallelism;
+
+    /// <summary>End point of the Location Based Network server.</summary>
+    public IPEndPoint LbnEndPoint;
+
     /// <summary>Cryptographic keys of the node that can be used for signing messages and verifying signatures.</summary>
     public KeysEd25519 Keys;
 
@@ -167,23 +173,28 @@ namespace HomeNet.Config
         string imageDataFolder = null;
         int maxHostedIdentities = 0;
         int maxIdentityRelations = 0;
+        int neighborhoodInitializationParallelism = 0;
+        int lbnPort = 0;
+        IPEndPoint lbnEndPoint = null;
 
         Dictionary<string, object> nameVal = new Dictionary<string, object>(StringComparer.Ordinal);
 
         // Definition of all supported values in configuration file together with their types.
         Dictionary<string, ConfigValueType> namesDefinition = new Dictionary<string, ConfigValueType>(StringComparer.Ordinal)
         {
-          { "server_interface",                     ConfigValueType.IpAddress      },
-          { "primary_interface_port",               ConfigValueType.Port           },
-          { "node_neighbor_interface_port",         ConfigValueType.Port           },
-          { "node_colleague_interface_port",        ConfigValueType.Port           },
-          { "client_non_customer_interface_port",   ConfigValueType.Port           },
-          { "client_customer_interface_port",       ConfigValueType.Port           },
-          { "client_app_service_interface_port",    ConfigValueType.Port           },          
-          { "tls_server_certificate",               ConfigValueType.StringNonEmpty },
-          { "image_data_folder",                    ConfigValueType.StringNonEmpty },
-          { "max_hosted_identities",                ConfigValueType.Int            },
-          { "max_identity_relations",               ConfigValueType.Int            },
+          { "server_interface",                        ConfigValueType.IpAddress      },
+          { "primary_interface_port",                  ConfigValueType.Port           },
+          { "node_neighbor_interface_port",            ConfigValueType.Port           },
+          { "node_colleague_interface_port",           ConfigValueType.Port           },
+          { "client_non_customer_interface_port",      ConfigValueType.Port           },
+          { "client_customer_interface_port",          ConfigValueType.Port           },
+          { "client_app_service_interface_port",       ConfigValueType.Port           },          
+          { "tls_server_certificate",                  ConfigValueType.StringNonEmpty },
+          { "image_data_folder",                       ConfigValueType.StringNonEmpty },
+          { "max_hosted_identities",                   ConfigValueType.Int            },
+          { "max_identity_relations",                  ConfigValueType.Int            },
+          { "neighborhood_initialization_parallelism", ConfigValueType.Int            },
+          { "lbn_port",                                ConfigValueType.Port           },
         };
 
         error = !LinesToNameValueDictionary(Lines, namesDefinition, nameVal);
@@ -201,11 +212,13 @@ namespace HomeNet.Config
           imageDataFolder = (string)nameVal["image_data_folder"];
           maxHostedIdentities = (int)nameVal["max_hosted_identities"];
           maxIdentityRelations = (int)nameVal["max_identity_relations"];
+          neighborhoodInitializationParallelism = (int)nameVal["neighborhood_initialization_parallelism"];
 
+          lbnPort = (int)nameVal["lbn_port"];
 
           serverRoles = new ServerRolesConfig();
           error = !(serverRoles.AddRoleServer(primaryInterfacePort, ServerRole.PrimaryUnrelated)
-                 && serverRoles.AddRoleServer(nodeNeighborInterfacePort, ServerRole.NodeNeighbor)
+                 && serverRoles.AddRoleServer(nodeNeighborInterfacePort, ServerRole.ServerNeighbor)
                  && serverRoles.AddRoleServer(nodeColleagueInterfacePort, ServerRole.NodeColleague)
                  && serverRoles.AddRoleServer(clientNonCustomerInterfacePort, ServerRole.ClientNonCustomer)
                  && serverRoles.AddRoleServer(clientCustomerInterfacePort, ServerRole.ClientCustomer)
@@ -255,9 +268,9 @@ namespace HomeNet.Config
 
         if (!error)
         {
-          if (maxHostedIdentities <= 0)
+          if ((maxHostedIdentities <= 0) || (maxHostedIdentities > BaseIdentity.MaxHostedIdentities))
           {
-            log.Error("max_hosted_identities must be a positive integer.");
+            log.Error("max_hosted_identities must be an integer between 1 and {0}.", BaseIdentity.MaxHostedIdentities);
             error = true;
           }
         }
@@ -271,6 +284,31 @@ namespace HomeNet.Config
           }
         }
 
+        if (!error)
+        {
+          if (neighborhoodInitializationParallelism <= 0)
+          {
+            log.Error("neighborhood_initialization_parallelism must be a positive integer.");
+            error = true;
+          }
+        }
+
+        if (!error)
+        {
+          foreach (RoleServerConfiguration rsc in serverRoles.RoleServers.Values)
+          {
+            if (lbnPort == rsc.Port)
+            {
+              log.Error("lbn_port {0} collides with port of server role {1}.", lbnPort, rsc.Roles);
+              error = true;
+              break;
+            }
+          }
+
+          if (!error)
+            lbnEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), lbnPort);
+        }
+
         // Finally, if everything is OK, change the actual configuration.
         if (!error)
         {
@@ -280,6 +318,8 @@ namespace HomeNet.Config
           ImageDataFolder = imageDataFolder;
           MaxHostedIdentities = maxHostedIdentities;
           MaxIdenityRelations = maxIdentityRelations;
+          NeighborhoodInitializationParallelism = neighborhoodInitializationParallelism;
+          LbnEndPoint = lbnEndPoint;
 
           log.Info("New configuration loaded successfully.");
         }

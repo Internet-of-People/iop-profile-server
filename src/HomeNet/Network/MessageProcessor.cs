@@ -89,9 +89,10 @@ namespace HomeNet.Network
                 case Request.ConversationTypeOneofCase.SingleRequest:
                   {
                     SingleRequest singleRequest = request.SingleRequest;
-                    log.Trace("Single request type is {0}, version is {1}.", singleRequest.RequestTypeCase, ProtocolHelper.VersionBytesToString(singleRequest.Version.ToByteArray()));
+                    SemVer version = new SemVer(singleRequest.Version);
+                    log.Trace("Single request type is {0}, version is {1}.", singleRequest.RequestTypeCase, version);
 
-                    if (!ProtocolHelper.IsValidVersion(singleRequest.Version.ToByteArray()))
+                    if (!version.IsValid())
                     {
                       responseMessage.Response.Details = "version";
                       break;
@@ -347,7 +348,7 @@ namespace HomeNet.Network
     /// <param name="Client">Client to send the error to.</param>
     public async Task SendProtocolViolation(Client Client)
     {
-      MessageBuilder mb = new MessageBuilder(0, new List<byte[]>() { new byte[] { 1, 0, 0 } }, null);
+      MessageBuilder mb = new MessageBuilder(0, new List<SemVer>() { SemVer.V100 }, null);
       Message response = mb.CreateErrorProtocolViolationResponse(new Message() { Id = 0x0BADC0DE });
 
       await Client.SendMessageAsync(response);
@@ -444,23 +445,22 @@ namespace HomeNet.Network
     /// <param name="ClientVersions">List of versions that the client supports. The list is ordered by client's preference.</param>
     /// <param name="SelectedCommonVersion">If the function succeeds, this is set to the selected version that both client and server support.</param>
     /// <returns>true if the function succeeds, false otherwise.</returns>
-    public bool GetCommonSupportedVersion(IEnumerable<ByteString> ClientVersions, out byte[] SelectedCommonVersion)
+    public bool GetCommonSupportedVersion(IEnumerable<ByteString> ClientVersions, out SemVer SelectedCommonVersion)
     {
 #warning TODO: This function is currently implemented only to support version 1.0.0.
       log.Trace("()");
       log.Warn("TODO UNIMPLEMENTED");
-      SelectedCommonVersion = null;
+      SelectedCommonVersion = SemVer.Invalid;
 
-      string selectedVersion = null;
+      SemVer selectedVersion = SemVer.Invalid;
       bool res = false;
       foreach (ByteString clVersion in ClientVersions)
       {
-        byte[] version = clVersion.ToByteArray();
-        string clVersionString = ProtocolHelper.VersionBytesToString(version);
-        if (clVersionString == "1.0.0")
+        SemVer version = new SemVer(clVersion);
+        if (version.Equals(SemVer.V100))
         {
           SelectedCommonVersion = version;
-          selectedVersion = clVersionString;
+          selectedVersion = version;
           res = true;
           break;
         }
@@ -546,7 +546,7 @@ namespace HomeNet.Network
             switch (role)
             {
               case ServerRole.PrimaryUnrelated: srt = ServerRoleType.Primary; break;
-              case ServerRole.NodeNeighbor: srt = ServerRoleType.NdNeighbor; break;
+              case ServerRole.ServerNeighbor: srt = ServerRoleType.NdNeighbor; break;
               case ServerRole.NodeColleague: srt = ServerRoleType.NdColleague; break;
               case ServerRole.ClientNonCustomer: srt = ServerRoleType.ClNonCustomer; break;
               case ServerRole.ClientCustomer: srt = ServerRoleType.ClCustomer; break;
@@ -614,6 +614,7 @@ namespace HomeNet.Network
                 Client targetClient = clientList.GetCheckedInClient(identityId);
                 bool isOnline = targetClient != null;
                 byte[] publicKey = identity.PublicKey;
+                SemVer version = new SemVer(identity.Version);
                 string type = identity.Type;
                 string name = identity.Name;
                 GpsLocation location = identity.GetInitialLocation();
@@ -632,12 +633,12 @@ namespace HomeNet.Network
                 if (getIdentityInformationRequest.IncludeApplicationServices)
                   applicationServices = targetClient.ApplicationServices.GetServices();
 
-                res = messageBuilder.CreateGetIdentityInformationResponse(RequestMessage, isHosted, null, isOnline, publicKey, name, type, location, extraData, profileImage, thumbnailImage, applicationServices);
+                res = messageBuilder.CreateGetIdentityInformationResponse(RequestMessage, isHosted, null, version, isOnline, publicKey, name, type, location, extraData, profileImage, thumbnailImage, applicationServices);
               }
               else
               {
                 byte[] targetHomeNode = identity.HomeNodeId;
-                res = messageBuilder.CreateGetIdentityInformationResponse(RequestMessage, isHosted, targetHomeNode);
+                res = messageBuilder.CreateGetIdentityInformationResponse(RequestMessage, isHosted, targetHomeNode, null);
               }
             }
             else
@@ -686,40 +687,49 @@ namespace HomeNet.Network
       MessageBuilder messageBuilder = Client.MessageBuilder;
       StartConversationRequest startConversationRequest = RequestMessage.Request.ConversationRequest.Start;
       byte[] clientChallenge = startConversationRequest.ClientChallenge.ToByteArray();
+      byte[] pubKey = startConversationRequest.PublicKey.ToByteArray();
 
       if (clientChallenge.Length == ProtocolHelper.ChallengeDataSize)
       {
-        byte[] version;
-        if (GetCommonSupportedVersion(startConversationRequest.SupportedVersions, out version))
+        if ((0 < pubKey.Length) && (pubKey.Length <= BaseIdentity.MaxPublicKeyLengthBytes))
         {
-          Client.PublicKey = startConversationRequest.PublicKey.ToByteArray();
-          Client.IdentityId = Crypto.Sha256(Client.PublicKey);
-
-          if (clientList.AddNetworkPeerWithIdentity(Client))
+          SemVer version;
+          if (GetCommonSupportedVersion(startConversationRequest.SupportedVersions, out version))
           {
-            Client.MessageBuilder.SetProtocolVersion(version);
+            Client.PublicKey = pubKey;
+            Client.IdentityId = Crypto.Sha256(Client.PublicKey);
 
-            byte[] challenge = new byte[ProtocolHelper.ChallengeDataSize];
-            Crypto.Rng.GetBytes(challenge);
-            Client.AuthenticationChallenge = challenge;
-            Client.ConversationStatus = ClientConversationStatus.ConversationStarted;
+            if (clientList.AddNetworkPeerWithIdentity(Client))
+            {
+              Client.MessageBuilder.SetProtocolVersion(version);
 
-            log.Debug("Client {0} conversation status updated to {1}, selected version is '{2}', client public key set to '{3}', client identity ID set to '{4}', challenge set to '{5}'.",
-              Client.RemoteEndPoint, Client.ConversationStatus, ProtocolHelper.VersionBytesToString(version), Client.PublicKey.ToHex(), Client.IdentityId.ToHex(), Client.AuthenticationChallenge.ToHex());
+              byte[] challenge = new byte[ProtocolHelper.ChallengeDataSize];
+              Crypto.Rng.GetBytes(challenge);
+              Client.AuthenticationChallenge = challenge;
+              Client.ConversationStatus = ClientConversationStatus.ConversationStarted;
 
-            res = messageBuilder.CreateStartConversationResponse(RequestMessage, version, Base.Configuration.Keys.PublicKey, Client.AuthenticationChallenge, clientChallenge);
+              log.Debug("Client {0} conversation status updated to {1}, selected version is '{2}', client public key set to '{3}', client identity ID set to '{4}', challenge set to '{5}'.",
+                Client.RemoteEndPoint, Client.ConversationStatus, version, Client.PublicKey.ToHex(), Client.IdentityId.ToHex(), Client.AuthenticationChallenge.ToHex());
+
+              res = messageBuilder.CreateStartConversationResponse(RequestMessage, version, Base.Configuration.Keys.PublicKey, Client.AuthenticationChallenge, clientChallenge);
+            }
+            else res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
           }
-          else res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
+          else
+          {
+            log.Warn("Client and server are incompatible in protocol versions.");
+            res = messageBuilder.CreateErrorUnsupportedResponse(RequestMessage);
+          }
         }
         else
         {
-          log.Warn("Client and server are incompatible in protocol versions.");
-          res = messageBuilder.CreateErrorUnsupportedResponse(RequestMessage);
+          log.Warn("Client send public key of invalid length of {0} bytes.", pubKey.Length);
+          res = messageBuilder.CreateErrorInvalidValueResponse(RequestMessage, "publicKey");
         }
       }
       else
       {
-        log.Warn("Client send clientChallenge, which is {0} bytes, but it should be {1} bytes.", clientChallenge.Length, ProtocolHelper.ChallengeDataSize);
+        log.Warn("Client send clientChallenge, which is {0} bytes long, but it should be {1} bytes long.", clientChallenge.Length, ProtocolHelper.ChallengeDataSize);
         res = messageBuilder.CreateErrorInvalidValueResponse(RequestMessage, "clientChallenge");
       }
 
@@ -746,6 +756,7 @@ namespace HomeNet.Network
       // * startTime is per specification
       // * identityPublicKey is client's key 
       // * identityType is valid
+      // * contract.IdentityType is not longer than 64 bytes and it does not contain '*'
       log.Trace("()");
       log.Fatal("TODO UNIMPLEMENTED");
 
@@ -798,8 +809,8 @@ namespace HomeNet.Network
                 // Existing cancelled identity profile does not have images, no need to delete anything at this point.
                 identity.ProfileImage = null;
                 identity.ThumbnailImage = null;
-                identity.InitialLocationLatitude = GpsLocation.NoLocationDecimal;
-                identity.InitialLocationLongitude = GpsLocation.NoLocationDecimal;
+                identity.InitialLocationLatitude = GpsLocation.NoLocation.Latitude;
+                identity.InitialLocationLongitude = GpsLocation.NoLocation.Longitude;
                 identity.ExtraData = null;
                 identity.ExpirationDate = null;
 
@@ -1191,12 +1202,12 @@ namespace HomeNet.Network
         // Now check if the values we received are valid.
         if (UpdateProfileRequest.SetVersion)
         {
-          byte[] version = UpdateProfileRequest.Version.ToByteArray();
+          SemVer version = new SemVer(UpdateProfileRequest.Version);
 
-          // Currently only supported version is 1,0,0.
-          if (!StructuralEqualityComparer<byte[]>.Default.Equals(version, new byte[] { 1, 0, 0 }))
+          // Currently only supported version is 1.0.0.
+          if (!version.Equals(SemVer.V100))
           {
-            log.Debug("Unsupported version '{0}'.", ProtocolHelper.VersionBytesToString(version));
+            log.Debug("Unsupported version '{0}'.", version);
             details = "version";
           }
         }
@@ -1310,7 +1321,7 @@ namespace HomeNet.Network
             {
               // We artificially initialize the profile when we cancel it in order to allow queries towards this profile.
               if (!identity.IsProfileInitialized())
-                identity.Version = new byte[] { 1, 0, 0 };
+                identity.Version = SemVer.V100.ToByteArray();
 
               profileImageToDelete = identity.ProfileImage;
               thumbnailImageToDelete = identity.ThumbnailImage;
@@ -1831,7 +1842,9 @@ namespace HomeNet.Network
                   responseResults.AddRange(allResults.GetRange(0, (int)maxResponseResults));
                 }
 
-                res = messageBuilder.CreateProfileSearchResponse(RequestMessage, (uint)allResults.Count, maxResponseResults, responseResults);
+#warning TODO: implement coveredNodes
+                List<byte[]> coveredNodes = new List<byte[]>();
+                res = messageBuilder.CreateProfileSearchResponse(RequestMessage, (uint)allResults.Count, maxResponseResults, coveredNodes, responseResults);
               }
             }
             else log.Error("Profile search among hosted identities failed.");
@@ -2062,6 +2075,7 @@ namespace HomeNet.Network
                 inpi.NeighborNodeNetworkId = ProtocolHelper.ByteArrayToByteString(identity.HomeNodeId);
               }
 
+              inpi.Version = ProtocolHelper.ByteArrayToByteString(identity.Version);
               inpi.IdentityPublicKey = ProtocolHelper.ByteArrayToByteString(identity.PublicKey);
               inpi.Type = identity.Type != null ? identity.Type : "";
               inpi.Name = identity.Name != null ? identity.Name : "";
@@ -2071,8 +2085,8 @@ namespace HomeNet.Network
               if (IncludeImages)
               {
                 byte[] image = await identity.GetThumbnailImageDataAsync();
-                if (image != null)
-                  inpi.ThumbnailImage = ProtocolHelper.ByteArrayToByteString(image);
+                if (image != null) inpi.ThumbnailImage = ProtocolHelper.ByteArrayToByteString(image);
+                else inpi.ThumbnailImage = ProtocolHelper.ByteArrayToByteString(new byte[0]);
               }
 
               res.Add(inpi);
@@ -2190,6 +2204,7 @@ namespace HomeNet.Network
         byte[] issuerSignature = signedCard.IssuerSignature.ToByteArray();
         byte[] recipientSignature = RequestMessage.Request.ConversationRequest.Signature.ToByteArray();
         byte[] cardId = card.CardId.ToByteArray();
+        byte[] cardVersion = card.Version.ToByteArray();
         byte[] applicationId = application.ApplicationId.ToByteArray();
         string cardType = card.Type;
         DateTime validFrom = ProtocolHelper.UnixTimestampMsToDateTime(card.ValidFrom);
@@ -2202,6 +2217,7 @@ namespace HomeNet.Network
         {
           ApplicationId = applicationId,
           CardId = cardId,
+          CardVersion = cardVersion,
           IdentityId = Client.IdentityId,
           IssuerPublicKey = issuerPublicKey,
           IssuerSignature = issuerSignature,
@@ -2322,6 +2338,17 @@ namespace HomeNet.Network
 
       if (details == null)
       {
+        byte[] issuerPublicKey = card.IssuerPublicKey.ToByteArray();
+        bool pubKeyValid = (0 < issuerPublicKey.Length) && (issuerPublicKey.Length <= BaseIdentity.MaxPublicKeyLengthBytes);
+        if (!pubKeyValid)
+        {
+          log.Debug("Issuer public key has invalid length {0} bytes.", issuerPublicKey.Length);
+          details = "signedCard.card.issuerPublicKey";
+        }
+      }
+
+      if (details == null)
+      {
         byte[] recipientPublicKey = card.RecipientPublicKey.ToByteArray();
         if (!StructuralEqualityComparer<byte[]>.Default.Equals(recipientPublicKey, Client.PublicKey))
         {
@@ -2342,9 +2369,29 @@ namespace HomeNet.Network
 
       if (details == null)
       {
+        SemVer cardVersion = new SemVer(card.Version);
+        if (!cardVersion.Equals(SemVer.V100))
+        {
+          log.Debug("Card version is invalid or not supported.");
+          details = "signedCard.card.version";
+        }
+      }
+
+      if (details == null)
+      {
+        if (Encoding.UTF8.GetByteCount(card.Type) > ProtocolHelper.MaxRelationshipCardTypeLengthBytes)
+        {
+          log.Debug("Card type is too long.");
+          details = "signedCard.card.type";
+        }
+      }
+
+      if (details == null)
+      {
         RelationshipCard emptyIdCard = new RelationshipCard()
         {
           CardId = ProtocolHelper.ByteArrayToByteString(new byte[RelatedIdentity.CardIdentifierLength]),
+          Version = card.Version,
           IssuerPublicKey = card.IssuerPublicKey,
           RecipientPublicKey = card.RecipientPublicKey,
           Type = card.Type,
@@ -2357,15 +2404,6 @@ namespace HomeNet.Network
         {
           log.Debug("Card ID '{0}' does not match its hash '{1}'.", cardId.ToHex(64), hash.ToHex());
           details = "signedCard.card.cardId";
-        }
-      }
-
-      if (details == null)
-      {
-        if (Encoding.UTF8.GetByteCount(card.Type) > ProtocolHelper.MaxRelationshipCardTypeLengthBytes)
-        {
-          log.Debug("Card type is too long.");
-          details = "signedCard.card.type";
         }
       }
 
@@ -2501,6 +2539,7 @@ namespace HomeNet.Network
             RelationshipCard card = new RelationshipCard()
             {
               CardId = ProtocolHelper.ByteArrayToByteString(relatedIdentity.CardId),
+              Version = ProtocolHelper.ByteArrayToByteString(relatedIdentity.CardVersion),
               IssuerPublicKey = ProtocolHelper.ByteArrayToByteString(relatedIdentity.IssuerPublicKey),
               RecipientPublicKey = ProtocolHelper.ByteArrayToByteString(relatedIdentity.RecipientPublicKey),
               Type = relatedIdentity.Type,

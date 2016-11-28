@@ -101,11 +101,11 @@ namespace HomeNet.Data.Repositories
     /// </summary>
     /// <param name="WildcardFilter">Wildcard filter.</param>
     /// <returns>Filter expression for the database query.</returns>
-    public static Expression<Func<T, bool>> GetNameFilterExpression<T>(string WildcardFilter) where T : BaseIdentity
+    public static Expression<Func<Q, bool>> GetNameFilterExpression<Q>(string WildcardFilter) where Q : BaseIdentity
     {
       log.Trace("(WildcardFilter:'{0}')", WildcardFilter);
       string wildcardFilter = WildcardFilter.ToLowerInvariant();
-      Expression<Func<T, bool>> res = i => i.Name.ToLower() == wildcardFilter;
+      Expression<Func<Q, bool>> res = i => i.Name.ToLower() == wildcardFilter;
 
       // Example: WildcardFilter = "*abc"
       // This means that when filter STARTS with '*', we want the property value to END with "abc".
@@ -140,11 +140,11 @@ namespace HomeNet.Data.Repositories
     /// </summary>
     /// <param name="WildcardFilter">Type filter.</param>
     /// <returns>Filter expression for the database query.</returns>
-    public static Expression<Func<T, bool>> GetTypeFilterExpression<T>(string WildcardFilter) where T:BaseIdentity
+    public static Expression<Func<Q, bool>> GetTypeFilterExpression<Q>(string WildcardFilter) where Q : BaseIdentity
     {
       log.Trace("(WildcardFilter:'{0}')", WildcardFilter);
       string wildcardFilter = WildcardFilter.ToLowerInvariant();
-      Expression<Func<T, bool>> res = i => i.Type.ToLower() == wildcardFilter;
+      Expression<Func<Q, bool>> res = i => i.Type.ToLower() == wildcardFilter;
 
       // Example: WildcardFilter = "*abc"
       // This means that when filter STARTS with '*', we want the property value to END with "abc".
@@ -181,10 +181,10 @@ namespace HomeNet.Data.Repositories
     /// <param name="LocationFilter">GPS location of the target area centre.</param>
     /// <param name="Radius">Target area radius in metres.</param>
     /// <returns>Filter expression for the database query.</returns>
-    public static Expression<Func<T, bool>> GetLocationFilterExpression<T>(GpsLocation LocationFilter, uint Radius) where T : BaseIdentity
+    public static Expression<Func<Q, bool>> GetLocationFilterExpression<Q>(GpsLocation LocationFilter, uint Radius) where Q : BaseIdentity
     {
       log.Trace("(LocationFilter:'{0:US}',Radius:{1})", LocationFilter, Radius);
-      Expression<Func<T, bool>> res = null;
+      Expression<Func<Q, bool>> res = null;
 
       // There are several separated cases:
       //  1) Radius is very large - i.e. greater than 5,000 km. In this case, we do no filtering on this level at all.

@@ -57,8 +57,10 @@ namespace HomeNet.Data
       modelBuilder.Entity<HomeIdentity>().Property(i => i.InitialLocationLatitude).HasColumnType("decimal(9,6)").IsRequired(true);
       modelBuilder.Entity<HomeIdentity>().Property(i => i.InitialLocationLongitude).HasColumnType("decimal(9,6)").IsRequired(true);
 
-      modelBuilder.Entity<NeighborIdentity>().HasKey(i => i.IdentityId);
-      modelBuilder.Entity<NeighborIdentity>().HasIndex(i => new { i.IdentityId }).IsUnique();
+      // In case of neighbors, it is possible that a single identity is hosted on multiple nodes.
+      // Therefore IdentityId on itself does not form a unique key.
+      modelBuilder.Entity<NeighborIdentity>().HasKey(i => new { i.IdentityId, i.HomeNodeId });
+      modelBuilder.Entity<NeighborIdentity>().HasIndex(i => new { i.IdentityId, i.HomeNodeId }).IsUnique();
       modelBuilder.Entity<NeighborIdentity>().HasIndex(i => new { i.HomeNodeId });
       modelBuilder.Entity<NeighborIdentity>().HasIndex(i => new { i.Name });
       modelBuilder.Entity<NeighborIdentity>().HasIndex(i => new { i.Type });

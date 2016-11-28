@@ -57,6 +57,10 @@ namespace HomeNet.Data.Models
     [MaxLength(CardIdentifierLength)]
     public byte[] CardId { get; set; }
 
+    /// <summary>Version of the relationship card.</summary>
+    [MaxLength(3)]
+    public byte[] CardVersion { get; set; }
+
 
     /// <summary>Type of the relationship card.</summary>
     /// <remarks>This is index - see HomeNet.Data.Context.OnModelCreating.</remarks>

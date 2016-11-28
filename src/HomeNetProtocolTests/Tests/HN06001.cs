@@ -848,12 +848,13 @@ namespace HomeNetProtocolTests.Tests
             bool piLatitudeOk = profileInfo.Latitude == ProfileLocations[profileIndex].GetLocationTypeLatitude();
             bool piLongitudeOk = profileInfo.Longitude == ProfileLocations[profileIndex].GetLocationTypeLongitude();
             bool piExtraDataOk = (string.IsNullOrEmpty(profileInfo.ExtraData) && string.IsNullOrEmpty(ProfileExtraData[profileIndex])) || (profileInfo.ExtraData == ProfileExtraData[profileIndex]);
+            bool piVersionOk = new SemVer(profileInfo.Version).Equals(SemVer.V100);
 
             bool piImageOk = true;
             if (NoImages) piImageOk = profileInfo.ThumbnailImage.Length == 0;
             else piImageOk = ProfileImages[profileIndex] != null ? profileInfo.ThumbnailImage.Length > 0 : profileInfo.ThumbnailImage.Length == 0;
 
-            bool profileOk = piIsHostedOk && piIsOnlineOk && piTypeOk && piNameOk && piLatitudeOk && piLongitudeOk && piExtraDataOk && piImageOk;
+            bool profileOk = piIsHostedOk && piIsOnlineOk && piTypeOk && piNameOk && piLatitudeOk && piLongitudeOk && piExtraDataOk && piVersionOk && piImageOk;
             if (!profileOk)
             {
               log.Trace("Profile index {0} is corrupted.", profileIndex + 1);

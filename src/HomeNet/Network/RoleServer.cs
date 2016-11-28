@@ -22,16 +22,13 @@ namespace HomeNet.Network
     PrimaryUnrelated = 1,
 
     /// <summary>Neighbors Interface server role.</summary>
-    NodeNeighbor = 2,
-
-    /// <summary>Colleagues Interface server role.</summary>
-    NodeColleague = 4,
+    ServerNeighbor = 4,
 
     /// <summary>Customer Clients Interface server role.</summary>
-    ClientCustomer = 32,
+    ClientCustomer = 16,
 
     /// <summary>Non Customer Clients Interface server role.</summary>
-    ClientNonCustomer = 64,
+    ClientNonCustomer = 32,
 
     /// <summary>Application Service Interface server role.</summary>
     ClientAppService = 128
@@ -67,7 +64,7 @@ namespace HomeNet.Network
     public static Dictionary<ServerRole, bool> ServerRoleEncryption = new Dictionary<ServerRole, bool>()
     {
       { ServerRole.PrimaryUnrelated,  false },
-      { ServerRole.NodeNeighbor,      false },
+      { ServerRole.ServerNeighbor,      true  },
       { ServerRole.NodeColleague,     false },
       { ServerRole.ClientCustomer,    true  },
       { ServerRole.ClientNonCustomer, true  },
@@ -81,7 +78,7 @@ namespace HomeNet.Network
     public static Dictionary<ServerRole, bool> ServerRoleForNodes = new Dictionary<ServerRole, bool>()
     {
       { ServerRole.PrimaryUnrelated,  true  },
-      { ServerRole.NodeNeighbor,      true  },
+      { ServerRole.ServerNeighbor,      true  },
       { ServerRole.NodeColleague,     true  },
       { ServerRole.ClientCustomer,    false },
       { ServerRole.ClientNonCustomer, false },

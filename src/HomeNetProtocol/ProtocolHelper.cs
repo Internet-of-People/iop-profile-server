@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace HomeNetProtocol
 {
   /// <summary>
-  /// Helper functions and constants used for handling protocol messages.
+  /// Helper functions and constants used for handling protocol messages across all parts of IoP protocol.
   /// </summary>
   public static class ProtocolHelper
   {
@@ -39,13 +39,28 @@ namespace HomeNetProtocol
 
 
     /// <summary>
-    /// Converts an IoP protocol message to a binary format.
+    /// Converts an IoP Home Network protocol message to a binary format.
     /// </summary>
-    /// <param name="Data">IoP protocol message.</param>
+    /// <param name="Data">Home Network protocol message.</param>
     /// <returns>Binary representation of the message to be sent over the network.</returns>
     public static byte[] GetMessageBytes(Message Data)
     {
       MessageWithHeader mwh = new MessageWithHeader();
+      mwh.Body = Data;
+      // We have to initialize the header before calling CalculateSize.
+      mwh.Header = 1;
+      mwh.Header = (uint)mwh.CalculateSize() - HeaderSize;
+      return mwh.ToByteArray();
+    }
+
+    /// <summary>
+    /// Converts an IoP Location Based Network protocol message to a binary format.
+    /// </summary>
+    /// <param name="Data">Location Based Network protocol message.</param>
+    /// <returns>Binary representation of the message to be sent over the network.</returns>
+    public static byte[] GetMessageBytes(Iop.Locnet.Message Data)
+    {
+      Iop.Locnet.MessageWithHeader mwh = new Iop.Locnet.MessageWithHeader();
       mwh.Body = Data;
       // We have to initialize the header before calling CalculateSize.
       mwh.Header = 1;
@@ -116,55 +131,6 @@ namespace HomeNetProtocol
 
       uint res = b1 + (uint)(b2 << 8) + (uint)(b3 << 16) + (uint)(b4 << 24);
       return res;
-    }
-
-    /// <summary>
-    /// Checks whether the version in binary form is a valid version.
-    /// Note that version 0.0.0 is not a valid version.
-    /// </summary>
-    /// <param name="Version">Version information in binary form</param>
-    /// <returns>true if the version is valid, false otherwise.</returns>
-    public static bool IsValidVersion(byte[] Version)
-    {
-      return !((Version == null) || (Version.Length != 3) || ((Version[0] == 0) && (Version[1] == 0) && (Version[2] == 0)));
-    }
-
-
-    /// <summary>
-    /// Converts 3 byte representation of version information to string.
-    /// </summary>
-    /// <param name="Version">Version information in binary form.</param>
-    /// <returns>Version information as string.</returns>
-    public static string VersionBytesToString(byte[] Version)
-    {
-      string res = "<INVALID>";
-      
-      if (Version.Length == 3)
-        res = string.Format("{0}.{1}.{2}", Version[0], Version[1], Version[2]);
-
-      return res;        
-    }
-
-    /// <summary>
-    /// Converts version to Protobuf ByteString format.
-    /// </summary>
-    /// <param name="Major">Major version.</param>
-    /// <param name="Minor">Minor version.</param>
-    /// <param name="Patch">Patch version.</param>
-    /// <returns>Version in ByteString format to be used directly in Protobuf message.</returns>
-    public static ByteString VersionToByteString(byte Major, byte Minor, byte Patch)
-    {
-      return ByteArrayToByteString(new byte[] { Major, Minor, Patch });
-    }
-
-    /// <summary>
-    /// Converts binary version to Protobuf ByteString format.
-    /// </summary>
-    /// <param name="Version">Binary version information.</param>
-    /// <returns>Version in ByteString format to be used directly in Protobuf message.</returns>
-    public static ByteString VersionToByteString(byte[] Version)
-    {
-      return ByteArrayToByteString(new byte[] { Version[0], Version[1], Version[2] });
     }
 
     /// <summary>

@@ -68,7 +68,7 @@ namespace HomeNetProtocolTests.Tests
         await client.ConnectAsync(NodeIp, ClCustomerPort, true);
         bool startConversationOk = await client.StartConversationAsync();
         
-        Message requestMessage = mb.CreateUpdateProfileRequest(new byte[] { 1, 0, 0 }, "Test Identity", null, new GpsLocation(0, 0), null);
+        Message requestMessage = mb.CreateUpdateProfileRequest(SemVer.V100, "Test Identity", null, new GpsLocation(0, 0), null);
         await client.SendMessageAsync(requestMessage);
         Message responseMessage = await client.ReceiveMessageAsync();
 

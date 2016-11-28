@@ -267,6 +267,7 @@ namespace HomeNetProtocolTests.Tests
         RelationshipCard card = new RelationshipCard()
         {
           CardId = ProtocolHelper.ByteArrayToByteString(new byte[32]),
+          Version = SemVer.V100.ToByteString(),
           IssuerPublicKey = signedCard.Card.IssuerPublicKey,
           RecipientPublicKey = signedCard.Card.RecipientPublicKey,
           Type = signedCard.Card.Type,
@@ -308,6 +309,7 @@ namespace HomeNetProtocolTests.Tests
         card = new RelationshipCard()
         {
           CardId = ProtocolHelper.ByteArrayToByteString(new byte[32]),
+          Version = SemVer.V100.ToByteString(),
           IssuerPublicKey = signedCard.Card.IssuerPublicKey,
           RecipientPublicKey = signedCard.Card.RecipientPublicKey,
           Type = signedCard.Card.Type,
@@ -531,10 +533,102 @@ namespace HomeNetProtocolTests.Tests
         bool req19Ok = idOk && statusOk && detailsOk;
 
 
+        type = "Card Type A";
+        validFrom = ProtocolHelper.UnixTimestampMsToDateTime(1479220556000);
+        validTo = ProtocolHelper.UnixTimestampMsToDateTime(2479220556000);
+        signedCard = issuer.IssueRelationshipCard(new byte[] { 0, 0, 0 }, primaryPubKey, type, validFrom, validTo);
+
+        applicationId = new byte[] { 17 };
+        cardApplication = client.CreateRelationshipCardApplication(applicationId, signedCard);
+
+        requestMessage = mb.CreateAddRelatedIdentityRequest(cardApplication, signedCard);
+        await client.SendMessageAsync(requestMessage);
+        responseMessage = await client.ReceiveMessageAsync();
+
+        idOk = responseMessage.Id == requestMessage.Id;
+        statusOk = responseMessage.Response.Status == Status.ErrorInvalidValue;
+        detailsOk = responseMessage.Response.Details == "signedCard.card.version";
+
+        bool req20Ok = idOk && statusOk && detailsOk;
+
+
+        type = "Card Type A";
+        validFrom = ProtocolHelper.UnixTimestampMsToDateTime(1479220556000);
+        validTo = ProtocolHelper.UnixTimestampMsToDateTime(2479220556000);
+        signedCard = issuer.IssueRelationshipCard(new byte[] { 1, 0 }, primaryPubKey, type, validFrom, validTo);
+
+        applicationId = new byte[] { 18 };
+        cardApplication = client.CreateRelationshipCardApplication(applicationId, signedCard);
+
+        requestMessage = mb.CreateAddRelatedIdentityRequest(cardApplication, signedCard);
+        await client.SendMessageAsync(requestMessage);
+        responseMessage = await client.ReceiveMessageAsync();
+
+        idOk = responseMessage.Id == requestMessage.Id;
+        statusOk = responseMessage.Response.Status == Status.ErrorInvalidValue;
+        detailsOk = responseMessage.Response.Details == "signedCard.card.version";
+
+        bool req21Ok = idOk && statusOk && detailsOk;
+
+
+        type = "Card Type A";
+        validFrom = ProtocolHelper.UnixTimestampMsToDateTime(1479220556000);
+        validTo = ProtocolHelper.UnixTimestampMsToDateTime(2479220556000);
+        signedCard = issuer.IssueRelationshipCard(new byte[] { 1, 0, 0, 0 }, primaryPubKey, type, validFrom, validTo);
+
+        applicationId = new byte[] { 19 };
+        cardApplication = client.CreateRelationshipCardApplication(applicationId, signedCard);
+
+        requestMessage = mb.CreateAddRelatedIdentityRequest(cardApplication, signedCard);
+        await client.SendMessageAsync(requestMessage);
+        responseMessage = await client.ReceiveMessageAsync();
+
+        idOk = responseMessage.Id == requestMessage.Id;
+        statusOk = responseMessage.Response.Status == Status.ErrorInvalidValue;
+        detailsOk = responseMessage.Response.Details == "signedCard.card.version";
+
+        bool req22Ok = idOk && statusOk && detailsOk;
+
+
+        type = "Card Type A";
+        validFrom = ProtocolHelper.UnixTimestampMsToDateTime(1479220556000);
+        validTo = ProtocolHelper.UnixTimestampMsToDateTime(2479220556000);
+        byte[] badPubKey = new byte[130];
+        for (int i = 0; i < badPubKey.Length; i++)
+          badPubKey[i] = 0x40;
+
+        RelationshipCard badIssuerKeyCard = new RelationshipCard()
+        {
+          CardId = ProtocolHelper.ByteArrayToByteString(new byte[32]),
+          Version = SemVer.V100.ToByteString(),
+          IssuerPublicKey = ProtocolHelper.ByteArrayToByteString(badPubKey),
+          RecipientPublicKey = ProtocolHelper.ByteArrayToByteString(primaryPubKey),
+          Type = type,
+          ValidFrom = ProtocolHelper.DateTimeToUnixTimestampMs(validFrom),
+          ValidTo = ProtocolHelper.DateTimeToUnixTimestampMs(validTo)
+        };
+
+        signedCard = issuer.IssueRelationshipCard(badIssuerKeyCard);
+
+        applicationId = new byte[] { 20 };
+        cardApplication = client.CreateRelationshipCardApplication(applicationId, signedCard);
+
+        requestMessage = mb.CreateAddRelatedIdentityRequest(cardApplication, signedCard);
+        await client.SendMessageAsync(requestMessage);
+        responseMessage = await client.ReceiveMessageAsync();
+
+        idOk = responseMessage.Id == requestMessage.Id;
+        statusOk = responseMessage.Response.Status == Status.ErrorInvalidValue;
+        detailsOk = responseMessage.Response.Details == "signedCard.card.issuerPublicKey";
+
+        bool req23Ok = idOk && statusOk && detailsOk;
+
+
 
         // Step 2 Acceptance
         bool step2Ok = req1Ok && req2Ok && req3Ok && req4Ok && req5Ok && req6Ok && req7Ok && req8Ok && req9Ok && req10Ok
-          && req11Ok && req12Ok && req13Ok && req14Ok && req15Ok && req16Ok && req17Ok && req18Ok && req19Ok;
+          && req11Ok && req12Ok && req13Ok && req14Ok && req15Ok && req16Ok && req17Ok && req18Ok && req19Ok && req20Ok 
+          && req21Ok && req22Ok && req23Ok;
 
         log.Trace("Step 2: {0}", step2Ok ? "PASSED" : "FAILED");
 
@@ -543,7 +637,7 @@ namespace HomeNetProtocolTests.Tests
         // Step 3
         log.Trace("Step 3");
 
-        applicationId = new byte[] { 17 };
+        applicationId = new byte[] { 21 };
         requestMessage = mb.CreateRemoveRelatedIdentityRequest(applicationId);
         await client.SendMessageAsync(requestMessage);
         responseMessage = await client.ReceiveMessageAsync();
