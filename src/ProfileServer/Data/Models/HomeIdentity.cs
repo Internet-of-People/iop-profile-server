@@ -1,5 +1,5 @@
 ﻿using ProfileServer.Utils;
-using HomeNetProtocol;
+using ProfileServerProtocol;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -15,6 +15,6 @@ namespace ProfileServer.Data.Models
   /// </summary>
   public class HostedIdentity : BaseIdentity
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("HomeNet.Data.Models.HostedIdentity");
+    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Data.Models.HostedIdentity");
   }
 }

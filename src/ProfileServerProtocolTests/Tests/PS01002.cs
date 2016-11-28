@@ -1,4 +1,4 @@
-﻿using HomeNetProtocol;
+﻿using ProfileServerProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -10,13 +10,13 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeNetProtocolTests.Tests
+namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
   /// PS01002 - Primary Port Ping - Invalid Version Format
   /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS01.md#ps01002---primary-port-ping---invalid-version-format
   /// </summary>
-  public class HN01002 : ProtocolTest
+  public class PS01002 : ProtocolTest
   {
     public const string TestName = "PS01002";
     private static NLog.Logger log = NLog.LogManager.GetLogger("Test." + TestName);

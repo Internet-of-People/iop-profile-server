@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
-using HomeNetProtocol;
+using ProfileServerProtocol;
 using ProfileServer.Network;
 
 namespace ProfileServer.Data.Repositories
@@ -17,7 +17,7 @@ namespace ProfileServer.Data.Repositories
   /// </summary>
   public class IdentityRepository<T> : GenericRepository<T> where T:BaseIdentity
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("HomeNet.Data.Repositories.IdentityRepository");
+    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Data.Repositories.IdentityRepository");
 
 
     /// <summary>

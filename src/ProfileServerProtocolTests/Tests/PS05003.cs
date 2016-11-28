@@ -1,6 +1,6 @@
 ﻿using Google.Protobuf;
-using HomeNetCrypto;
-using HomeNetProtocol;
+using ProfileServerCrypto;
+using ProfileServerProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -13,13 +13,13 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace HomeNetProtocolTests.Tests
+namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
   /// PS05003 - Application Service Call - Extensive Test 2
   /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS05.md#ps05003---application-service-call---extensive-test-2
   /// </summary>
-  public class HN05003 : ProtocolTest
+  public class PS05003 : ProtocolTest
   {
     public const string TestName = "PS05003";
     private static NLog.Logger log = NLog.LogManager.GetLogger("Test." + TestName);

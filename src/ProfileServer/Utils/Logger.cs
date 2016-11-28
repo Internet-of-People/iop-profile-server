@@ -158,7 +158,7 @@ namespace ProfileServer.Utils
     /// <param name="CategoryName">The category name for messages produced by the logger.</param>
     public DbLogger(string CategoryName)
     {
-      string logName = "HomeNet.Utils.DbLogger." + CategoryName;
+      string logName = "ProfileServer.Utils.DbLogger." + CategoryName;
       log = new PrefixLogger(logName, "");
     }
 

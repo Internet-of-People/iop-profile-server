@@ -1,4 +1,4 @@
-﻿using HomeNetProtocol;
+﻿using ProfileServerProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -10,13 +10,13 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeNetProtocolTests.Tests
+namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
   /// PS02001 - Client Non-Customer Port Ping
   /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS02.md#ps02001---client-non-customer-port-ping
   /// </summary>
-  public class HN02001 : ProtocolTest
+  public class PS02001 : ProtocolTest
   {
     public const string TestName = "PS02001";
     private static NLog.Logger log = NLog.LogManager.GetLogger("Test." + TestName);

@@ -15,7 +15,7 @@ namespace ProfileServer.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.0-preview1-22509");
 
-            modelBuilder.Entity("HomeNet.Data.Models.HomeIdentity", b =>
+            modelBuilder.Entity("ProfileServer.Data.Models.HostedIdentity", b =>
                 {
                     b.Property<byte[]>("IdentityId")
                         .ValueGeneratedOnAdd()
@@ -75,19 +75,18 @@ namespace ProfileServer.Migrations
                     b.ToTable("Identities");
                 });
 
-            modelBuilder.Entity("HomeNet.Data.Models.NeighborIdentity", b =>
+            modelBuilder.Entity("ProfileServer.Data.Models.NeighborIdentity", b =>
                 {
                     b.Property<byte[]>("IdentityId")
-                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(32);
+
+                    b.Property<byte[]>("HomeNodeId")
                         .HasMaxLength(32);
 
                     b.Property<DateTime?>("ExpirationDate");
 
                     b.Property<string>("ExtraData")
                         .HasMaxLength(200);
-
-                    b.Property<byte[]>("HomeNodeId")
-                        .HasMaxLength(32);
 
                     b.Property<decimal>("InitialLocationLatitude")
                         .HasColumnType("decimal(9,6)");
@@ -115,7 +114,7 @@ namespace ProfileServer.Migrations
                         .IsRequired()
                         .HasMaxLength(3);
 
-                    b.HasKey("IdentityId");
+                    b.HasKey("IdentityId", "HomeNodeId");
 
                     b.HasIndex("ExpirationDate");
 
@@ -123,12 +122,12 @@ namespace ProfileServer.Migrations
 
                     b.HasIndex("HomeNodeId");
 
-                    b.HasIndex("IdentityId")
-                        .IsUnique();
-
                     b.HasIndex("Name");
 
                     b.HasIndex("Type");
+
+                    b.HasIndex("IdentityId", "HomeNodeId")
+                        .IsUnique();
 
                     b.HasIndex("InitialLocationLatitude", "InitialLocationLongitude");
 
@@ -137,7 +136,7 @@ namespace ProfileServer.Migrations
                     b.ToTable("NeighborhoodIdentities");
                 });
 
-            modelBuilder.Entity("HomeNet.Data.Models.RelatedIdentity", b =>
+            modelBuilder.Entity("ProfileServer.Data.Models.RelatedIdentity", b =>
                 {
                     b.Property<byte[]>("IdentityId")
                         .HasMaxLength(32);
@@ -190,7 +189,7 @@ namespace ProfileServer.Migrations
                     b.ToTable("RelatedIdentities");
                 });
 
-            modelBuilder.Entity("HomeNet.Data.Models.Setting", b =>
+            modelBuilder.Entity("ProfileServer.Data.Models.Setting", b =>
                 {
                     b.Property<string>("Name")
                         .ValueGeneratedOnAdd();

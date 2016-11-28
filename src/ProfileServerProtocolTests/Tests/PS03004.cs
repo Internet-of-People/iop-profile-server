@@ -1,6 +1,6 @@
 ﻿using Google.Protobuf;
-using HomeNetCrypto;
-using HomeNetProtocol;
+using ProfileServerCrypto;
+using ProfileServerProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -12,13 +12,13 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeNetProtocolTests.Tests
+namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
   /// PS03004 - Check-In - Bad Conversation Status
   /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS03.md#ps03004---check-in---bad-conversation-status
   /// </summary>
-  public class HN03004 : ProtocolTest
+  public class PS03004 : ProtocolTest
   {
     public const string TestName = "PS03004";
     private static NLog.Logger log = NLog.LogManager.GetLogger("Test." + TestName);

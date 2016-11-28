@@ -1,6 +1,6 @@
 ﻿using Google.Protobuf;
-using HomeNetCrypto;
-using HomeNetProtocol;
+using ProfileServerCrypto;
+using ProfileServerProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -12,13 +12,13 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeNetProtocolTests.Tests
+namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
   /// PS03003 - Verify Identity - Bad Role
   /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS03.md#ps03003---verify-identity---bad-role
   /// </summary>
-  public class HN03003 : ProtocolTest
+  public class PS03003 : ProtocolTest
   {
     public const string TestName = "PS03003";
     private static NLog.Logger log = NLog.LogManager.GetLogger("Test." + TestName);

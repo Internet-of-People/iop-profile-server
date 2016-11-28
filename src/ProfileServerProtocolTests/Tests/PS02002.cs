@@ -1,4 +1,4 @@
-﻿using HomeNetProtocol;
+﻿using ProfileServerProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -10,13 +10,13 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeNetProtocolTests.Tests
+namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
   /// PS02002 - Invalid Role Request - List Roles
   /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS02.md#ps02002---invalid-role-request---list-roles
   /// </summary>
-  public class HN02002 : ProtocolTest
+  public class PS02002 : ProtocolTest
   {
     public const string TestName = "PS02002";
     private static NLog.Logger log = NLog.LogManager.GetLogger("Test." + TestName);

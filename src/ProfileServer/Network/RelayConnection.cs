@@ -1,7 +1,7 @@
 ﻿using ProfileServer.Kernel;
 using ProfileServer.Utils;
-using HomeNetCrypto;
-using HomeNetProtocol;
+using ProfileServerCrypto;
+using ProfileServerProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -176,7 +176,7 @@ namespace ProfileServer.Network
       lockObject = new SemaphoreSlim(1);
       id = Guid.NewGuid();
       string logPrefix = string.Format("[{0}:{1}] ", id, ServiceName);
-      string logName = "HomeNet.Network.ClientList";
+      string logName = "ProfileServer.Network.ClientList";
       log = new PrefixLogger(logName, logPrefix);
 
       log.Trace("(Caller.Id:{0},Callee.Id:{1},ServiceName:'{2}')", Caller.Id.ToHex(), Callee.Id.ToHex(), ServiceName);

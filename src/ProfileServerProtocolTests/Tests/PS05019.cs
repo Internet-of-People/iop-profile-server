@@ -1,6 +1,6 @@
 ﻿using Google.Protobuf;
-using HomeNetCrypto;
-using HomeNetProtocol;
+using ProfileServerCrypto;
+using ProfileServerProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -13,13 +13,13 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace HomeNetProtocolTests.Tests
+namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
   /// PS05019 - Application Service Callee Disconnects Administrative Connection
   /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS05.md#ps05019---application-service-callee-disconnects-administrative-connection
   /// </summary>
-  public class HN05019 : ProtocolTest
+  public class PS05019 : ProtocolTest
   {
     public const string TestName = "PS05019";
     private static NLog.Logger log = NLog.LogManager.GetLogger("Test." + TestName);

@@ -1,4 +1,4 @@
-﻿using HomeNetProtocol;
+﻿using ProfileServerProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -10,13 +10,13 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeNetProtocolTests.Tests
+namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
   /// PS01004 - List Roles
   /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS01.md#ps01004---list-roles
   /// </summary>
-  public class HN01004 : ProtocolTest
+  public class PS01004 : ProtocolTest
   {
     public const string TestName = "PS01004";
     private static NLog.Logger log = NLog.LogManager.GetLogger("Test." + TestName);
@@ -64,49 +64,48 @@ namespace HomeNetProtocolTests.Tests
         bool statusOk = responseMessage.Response.Status == Status.Ok;
         bool primaryPortOk = false;
         bool srNeighborPortOk = false;
-        bool ndColleaguePortOk = false;
         bool clNonCustomerPortOk = false;
         bool clCustomerPortOk = false;
         bool clAppServicePortOk = false;
 
         bool error = false;
 
-        HashSet<uint> clientOnlyPorts = new HashSet<uint>();
-        HashSet<uint> serverMixedPorts = new HashSet<uint>();
+        HashSet<uint> encryptedPorts = new HashSet<uint>();
+        HashSet<uint> unencryptedPorts = new HashSet<uint>();
 
         foreach (ServerRole serverRole in responseMessage.Response.SingleResponse.ListRoles.Roles)
         {
           switch (serverRole.Role)
           {
             case ServerRoleType.Primary:
-              serverMixedPorts.Add(serverRole.Port);
-              primaryPortOk = serverRole.IsTcp && !serverRole.IsTls && !clientOnlyPorts.Contains(serverRole.Port);
-              log.Trace("Primary port is {0}OK: TCP is {1}, TLS is {2}, Port no. is {3}, client only port list: {4}", primaryPortOk ? "" : "NOT ", serverRole.IsTcp, serverRole.IsTls, serverRole.Port, string.Join(",", clientOnlyPorts));
+              unencryptedPorts.Add(serverRole.Port);
+              primaryPortOk = serverRole.IsTcp && !serverRole.IsTls && !encryptedPorts.Contains(serverRole.Port);
+              log.Trace("Primary port is {0}OK: TCP is {1}, TLS is {2}, Port no. is {3}, encrypted port list: {4}", primaryPortOk ? "" : "NOT ", serverRole.IsTcp, serverRole.IsTls, serverRole.Port, string.Join(",", encryptedPorts));
               break;
 
             case ServerRoleType.SrNeighbor:
-              serverMixedPorts.Add(serverRole.Port);
-              srNeighborPortOk = serverRole.IsTcp && serverRole.IsTls && !clientOnlyPorts.Contains(serverRole.Port);
-              log.Trace("Server Neighbor port is {0}OK: TCP is {1}, TLS is {2}, Port no. is {3}, client only port list: {4}", srNeighborPortOk ? "" : "NOT ", serverRole.IsTcp, serverRole.IsTls, serverRole.Port, string.Join(",", clientOnlyPorts));
+              encryptedPorts.Add(serverRole.Port);
+              srNeighborPortOk = serverRole.IsTcp && serverRole.IsTls && !unencryptedPorts.Contains(serverRole.Port);
+              log.Trace("Server Neighbor port is {0}OK: TCP is {1}, TLS is {2}, Port no. is {3}, unencrypted port list: {4}", srNeighborPortOk ? "" : "NOT ", serverRole.IsTcp, serverRole.IsTls, serverRole.Port, string.Join(",", unencryptedPorts));
               break;
 
             
             case ServerRoleType.ClNonCustomer:
-              clientOnlyPorts.Add(serverRole.Port);
-              clNonCustomerPortOk = serverRole.IsTcp && serverRole.IsTls && !serverMixedPorts.Contains(serverRole.Port);
-              log.Trace("Client Non-customer port is {0}OK: TCP is {1}, TLS is {2}, Port no. is {3}, server/mixed port list: {4}", clNonCustomerPortOk ? "" : "NOT ", serverRole.IsTcp, serverRole.IsTls, serverRole.Port, string.Join(",", serverMixedPorts));
+              encryptedPorts.Add(serverRole.Port);
+              clNonCustomerPortOk = serverRole.IsTcp && serverRole.IsTls && !unencryptedPorts.Contains(serverRole.Port);
+              log.Trace("Client Non-customer port is {0}OK: TCP is {1}, TLS is {2}, Port no. is {3}, unencrypted port list: {4}", clNonCustomerPortOk ? "" : "NOT ", serverRole.IsTcp, serverRole.IsTls, serverRole.Port, string.Join(",", unencryptedPorts));
               break;
 
             case ServerRoleType.ClCustomer:
-              clientOnlyPorts.Add(serverRole.Port);
-              clCustomerPortOk = serverRole.IsTcp && serverRole.IsTls && !serverMixedPorts.Contains(serverRole.Port);
-              log.Trace("Client Customer port is {0}OK: TCP is {1}, TLS is {2}, Port no. is {3}, server/mixed port list: {4}", clCustomerPortOk ? "" : "NOT ", serverRole.IsTcp, serverRole.IsTls, serverRole.Port, string.Join(",", serverMixedPorts));
+              encryptedPorts.Add(serverRole.Port);
+              clCustomerPortOk = serverRole.IsTcp && serverRole.IsTls && !unencryptedPorts.Contains(serverRole.Port);
+              log.Trace("Client Customer port is {0}OK: TCP is {1}, TLS is {2}, Port no. is {3}, unencrypted port list: {4}", clCustomerPortOk ? "" : "NOT ", serverRole.IsTcp, serverRole.IsTls, serverRole.Port, string.Join(",", unencryptedPorts));
               break;
 
             case ServerRoleType.ClAppService:
-              clientOnlyPorts.Add(serverRole.Port);
-              clAppServicePortOk = serverRole.IsTcp && serverRole.IsTls && !serverMixedPorts.Contains(serverRole.Port);
-              log.Trace("Client AppService port is {0}OK: TCP is {1}, TLS is {2}, Port no. is {3}, server/mixed port list: {4}", clAppServicePortOk ? "" : "NOT ", serverRole.IsTcp, serverRole.IsTls, serverRole.Port, string.Join(",", serverMixedPorts));
+              encryptedPorts.Add(serverRole.Port);
+              clAppServicePortOk = serverRole.IsTcp && serverRole.IsTls && !unencryptedPorts.Contains(serverRole.Port);
+              log.Trace("Client AppService port is {0}OK: TCP is {1}, TLS is {2}, Port no. is {3}, unencrypted port list: {4}", clAppServicePortOk ? "" : "NOT ", serverRole.IsTcp, serverRole.IsTls, serverRole.Port, string.Join(",", unencryptedPorts));
               break;
 
             default:
@@ -118,7 +117,6 @@ namespace HomeNetProtocolTests.Tests
 
         bool portsOk = primaryPortOk
           && srNeighborPortOk
-          && ndColleaguePortOk
           && clNonCustomerPortOk
           && clCustomerPortOk
           && clAppServicePortOk;

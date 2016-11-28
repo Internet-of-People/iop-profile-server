@@ -1,6 +1,6 @@
 ﻿using Google.Protobuf;
-using HomeNetCrypto;
-using HomeNetProtocol;
+using ProfileServerCrypto;
+using ProfileServerProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -13,13 +13,13 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace HomeNetProtocolTests.Tests
+namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
   /// PS05015 - Application Service Caller Uses Invalid Token
   /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS05.md#ps05015---application-service-caller-uses-invalid-token
   /// </summary>
-  public class HN05015 : ProtocolTest
+  public class PS05015 : ProtocolTest
   {
     public const string TestName = "PS05015";
     private static NLog.Logger log = NLog.LogManager.GetLogger("Test." + TestName);

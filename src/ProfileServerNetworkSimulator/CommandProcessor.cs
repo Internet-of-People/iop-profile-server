@@ -1,4 +1,4 @@
-﻿using HomeNetProtocol;
+﻿using ProfileServerProtocol;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace HomeNetSimulator
+namespace ProfileServerSimulator
 {
   /// <summary>
   /// Engine that executes the commands.
@@ -35,7 +35,6 @@ namespace HomeNetSimulator
 
     /// <summary>List of identity client instances mapped by their name.</summary>
     public Dictionary<string, IdentityClient> IdentityClients = new Dictionary<string, IdentityClient>(StringComparer.Ordinal);
-
 
     /// <summary>
     /// Initializes the object instance.
@@ -213,7 +212,7 @@ namespace HomeNetSimulator
 
                 if (error) break;
 
-                Task<bool> initTask = identityClient.InitializeHomeNode(profileServer);
+                Task<bool> initTask = identityClient.InitializeProfileHosting(profileServer);
                 if (initTask.Result) 
                 {
                   profileServer.AddIdentityClient(identityClient);
@@ -222,7 +221,7 @@ namespace HomeNetSimulator
                 }
                 else
                 {
-                  log.Error("Unable to establish a home node and initialize profile of identity '{0}' on server '{1}'.", name, profileServer.Name);
+                  log.Error("Unable to register profile hosting and initialize profile of identity '{0}' on server '{1}'.", name, profileServer.Name);
                   error = true;
                 }
               }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace HomeNetSimulator
+namespace ProfileServerSimulator
 {
   /// <summary>
   /// NLog wrapper class to enable a simple logging with a prefix to be put in front of each message.

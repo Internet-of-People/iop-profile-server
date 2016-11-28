@@ -1,4 +1,4 @@
-﻿using HomeNetProtocol;
+﻿using ProfileServerProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections.Generic;
@@ -9,13 +9,13 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeNetProtocolTests.Tests
+namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
   /// PS00003 - Disconnection of Inactive TCP Client from Primary Port - No Message
   /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS00.md#ps00003---disconnection-of-inactive-tcp-client-from-primary-port---no-message
   /// </summary>
-  public class HN00003 : ProtocolTest
+  public class PS00003 : ProtocolTest
   {
     public const string TestName = "PS00003";
     private static NLog.Logger log = NLog.LogManager.GetLogger("Test." + TestName);

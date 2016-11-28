@@ -1,5 +1,5 @@
 ﻿using ProfileServer.Utils;
-using HomeNetCrypto;
+using ProfileServerCrypto;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -25,7 +25,7 @@ namespace ProfileServer.Network
   /// </summary>
   public class ClientList
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("HomeNet.Network.ClientList");
+    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Network.ClientList");
 
     /// <summary>Lock object for synchronized access to client list structures.</summary>
     private object lockObject = new object();

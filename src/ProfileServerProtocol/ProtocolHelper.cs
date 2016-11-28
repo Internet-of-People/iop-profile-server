@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace HomeNetProtocol
+namespace ProfileServerProtocol
 {
   /// <summary>
   /// Helper functions and constants used for handling protocol messages across all parts of IoP protocol.

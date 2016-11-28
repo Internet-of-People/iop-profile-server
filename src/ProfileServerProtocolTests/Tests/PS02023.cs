@@ -1,5 +1,5 @@
 ﻿using Google.Protobuf;
-using HomeNetProtocol;
+using ProfileServerProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -11,13 +11,13 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeNetProtocolTests.Tests
+namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
   /// PS02023 - Profile Stats
   /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS02.md#ps02023---profile-stats
   /// </summary>
-  public class HN02023 : ProtocolTest
+  public class PS02023 : ProtocolTest
   {
     public const string TestName = "PS02023";
     private static NLog.Logger log = NLog.LogManager.GetLogger("Test." + TestName);

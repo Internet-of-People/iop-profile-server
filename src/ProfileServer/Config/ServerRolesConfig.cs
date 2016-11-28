@@ -11,7 +11,7 @@ namespace ProfileServer.Config
   /// </summary>
   public class ServerRolesConfig
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("HomeNet.Config.ServerRolesConfig");
+    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Config.ServerRolesConfig");
 
     /// <summary>Mapping of opened server service ports to configured role servers.</summary>
     public Dictionary<int, RoleServerConfiguration> RoleServers = new Dictionary<int, RoleServerConfiguration>();

@@ -1,4 +1,4 @@
-﻿using HomeNetProtocol;
+﻿using ProfileServerProtocol;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -14,7 +14,7 @@ namespace ProfileServer.Utils
   /// </summary>
   public static class RegexTypeValidator
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("HomeNet.Utils.RegexTypeValidator");
+    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Utils.RegexTypeValidator");
 
 
     /// <summary>List of characters that are allowed to be escaped in profile search regex or has special allowed meaning with backslash.</summary>
@@ -184,7 +184,7 @@ namespace ProfileServer.Utils
   /// </summary>
   public class RegexEval
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("HomeNet.Utils.RegexEval");
+    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Utils.RegexEval");
 
     /// <summary>Regular expression object.</summary>
     private Regex regex;

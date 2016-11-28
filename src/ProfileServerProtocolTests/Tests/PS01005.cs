@@ -1,4 +1,4 @@
-﻿using HomeNetProtocol;
+﻿using ProfileServerProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -10,13 +10,13 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeNetProtocolTests.Tests
+namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
   /// PS01005 - Home Node Request - Bad Role
   /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS01.md#ps01005---home-node-request---bad-role
   /// </summary>
-  public class HN01005 : ProtocolTest
+  public class PS01005 : ProtocolTest
   {
     public const string TestName = "PS01005";
     private static NLog.Logger log = NLog.LogManager.GetLogger("Test." + TestName);

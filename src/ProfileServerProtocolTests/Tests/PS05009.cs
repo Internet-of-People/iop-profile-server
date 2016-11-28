@@ -1,6 +1,6 @@
 ﻿using Google.Protobuf;
-using HomeNetCrypto;
-using HomeNetProtocol;
+using ProfileServerCrypto;
+using ProfileServerProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -13,13 +13,13 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace HomeNetProtocolTests.Tests
+namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
   /// PS05009 - Call Identity Application Service - Invalid Service Name
   /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS05.md#ps05009---call-identity-application-service---invalid-service-name
   /// </summary>
-  public class HN05009 : ProtocolTest
+  public class PS05009 : ProtocolTest
   {
     public const string TestName = "PS05009";
     private static NLog.Logger log = NLog.LogManager.GetLogger("Test." + TestName);

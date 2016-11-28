@@ -1,6 +1,6 @@
 ﻿using Google.Protobuf;
-using HomeNetCrypto;
-using HomeNetProtocol;
+using ProfileServerCrypto;
+using ProfileServerProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -12,13 +12,13 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeNetProtocolTests.Tests
+namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
   /// PS04014 - Check-In - Invalid Signature 2
   /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS04.md#ps04014---check-in---invalid-signature-2
   /// </summary>
-  public class HN04014 : ProtocolTest
+  public class PS04014 : ProtocolTest
   {
     public const string TestName = "PS04014";
     private static NLog.Logger log = NLog.LogManager.GetLogger("Test." + TestName);

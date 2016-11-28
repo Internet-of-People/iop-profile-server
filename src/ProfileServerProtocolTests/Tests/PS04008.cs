@@ -1,6 +1,6 @@
 ﻿using Google.Protobuf;
-using HomeNetCrypto;
-using HomeNetProtocol;
+using ProfileServerCrypto;
+using ProfileServerProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -12,13 +12,13 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeNetProtocolTests.Tests
+namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
   /// PS04008 - Verify Identity, Update Profile - Unauthorized
   /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS04.md#ps04008---verify-identity-update-profile---unauthorized
   /// </summary>
-  public class HN04008 : ProtocolTest
+  public class PS04008 : ProtocolTest
   {
     public const string TestName = "PS04008";
     private static NLog.Logger log = NLog.LogManager.GetLogger("Test." + TestName);

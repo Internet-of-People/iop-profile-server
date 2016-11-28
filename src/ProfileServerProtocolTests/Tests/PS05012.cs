@@ -1,6 +1,6 @@
 ﻿using Google.Protobuf;
-using HomeNetCrypto;
-using HomeNetProtocol;
+using ProfileServerCrypto;
+using ProfileServerProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -13,13 +13,13 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace HomeNetProtocolTests.Tests
+namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
   /// PS05012 - Caller Fails AppService Port Initialization - No Connection
   /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS05.md#ps05012---caller-fails-appservice-port-initialization---no-connection
   /// </summary>
-  public class HN05012 : ProtocolTest
+  public class PS05012 : ProtocolTest
   {
     public const string TestName = "PS05012";
     private static NLog.Logger log = NLog.LogManager.GetLogger("Test." + TestName);

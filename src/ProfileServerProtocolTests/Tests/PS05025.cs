@@ -1,6 +1,6 @@
 ﻿using Google.Protobuf;
-using HomeNetCrypto;
-using HomeNetProtocol;
+using ProfileServerCrypto;
+using ProfileServerProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -13,13 +13,13 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace HomeNetProtocolTests.Tests
+namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
   /// PS05025 - Application Service Callee Uses Same Connection Twice 2
   /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS05.md#ps05025---application-service-callee-uses-same-connection-twice-2
   /// </summary>
-  public class HN05025 : ProtocolTest
+  public class PS05025 : ProtocolTest
   {
     public const string TestName = "PS05025";
     private static NLog.Logger log = NLog.LogManager.GetLogger("Test." + TestName);

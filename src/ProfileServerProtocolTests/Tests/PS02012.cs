@@ -1,5 +1,5 @@
 ﻿using Google.Protobuf;
-using HomeNetProtocol;
+using ProfileServerProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -11,13 +11,13 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeNetProtocolTests.Tests
+namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
   /// PS02012 - Verify Identity - Bad Conversation Status
   /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS02.md#ps02012---verify-identity---bad-conversation-status
   /// </summary>
-  public class HN02012 : ProtocolTest
+  public class PS02012 : ProtocolTest
   {
     public const string TestName = "PS02012";
     private static NLog.Logger log = NLog.LogManager.GetLogger("Test." + TestName);

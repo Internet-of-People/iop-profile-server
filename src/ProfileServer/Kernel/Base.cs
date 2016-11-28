@@ -12,7 +12,7 @@ namespace ProfileServer.Kernel
   /// </summary>
   public static class Base
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("HomeNet.Kernel.Base");
+    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Kernel.Base");
 
     /// <summary>Component manager instance that is used for initialization and shutdown of the components.</summary>
     public static ComponentManager Components;

@@ -1,6 +1,6 @@
 ﻿using Google.Protobuf;
-using HomeNetCrypto;
-using HomeNetProtocol;
+using ProfileServerCrypto;
+using ProfileServerProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -12,13 +12,13 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeNetProtocolTests.Tests
+namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
   /// PS06001 - Profile Search - Simple Search 1
   /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS06.md#ps06001---profile-search---simple-search-1
   /// </summary>
-  public class HN06001 : ProtocolTest
+  public class PS06001 : ProtocolTest
   {
     public const string TestName = "PS06001";
     private static NLog.Logger log = NLog.LogManager.GetLogger("Test." + TestName);
@@ -90,12 +90,12 @@ namespace HomeNetProtocolTests.Tests
     /// <summary>Test identities profile image file names.</summary>
     public static List<string> ProfileImages = new List<string>()
     {
-      "images/HN06001.jpg",
-      "images/HN06001.jpg",
+      "images/PS06001.jpg",
+      "images/PS06001.jpg",
       null,
-      "images/HN06001.jpg",
+      "images/PS06001.jpg",
       null,
-      "images/HN06001.jpg",
+      "images/PS06001.jpg",
       null      
     };
 

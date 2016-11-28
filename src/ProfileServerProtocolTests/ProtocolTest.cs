@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace HomeNetProtocolTests
+namespace ProfileServerProtocolTests
 {
   /// <summary>Types of test arguments.</summary>
   public enum ProtocolTestArgumentType

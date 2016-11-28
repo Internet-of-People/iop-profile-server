@@ -6,7 +6,7 @@ using Chaos.NaCl;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace HomeNetCrypto
+namespace ProfileServerCrypto
 {
   /// <summary>
   /// Structure to hold node's public/private key pairs and extended private key in binary and hex formats.

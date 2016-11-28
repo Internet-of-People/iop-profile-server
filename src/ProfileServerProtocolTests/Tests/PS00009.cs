@@ -1,4 +1,4 @@
-﻿using HomeNetProtocol;
+﻿using ProfileServerProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections.Generic;
@@ -12,13 +12,13 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeNetProtocolTests.Tests
+namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
   /// PS00009 - Disconnection of Inactive TCP Client from Non-Customer Port - No TLS Handshake
   /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS00.md#ps00009---disconnection-of-inactive-tcp-client-from-non-customer-port---no-tls-handshake
   /// </summary>
-  public class HN00009 : ProtocolTest
+  public class PS00009 : ProtocolTest
   {
     public const string TestName = "PS00009";
     private static NLog.Logger log = NLog.LogManager.GetLogger("Test." + TestName);

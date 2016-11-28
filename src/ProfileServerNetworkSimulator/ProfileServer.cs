@@ -1,4 +1,4 @@
-﻿using HomeNetProtocol;
+﻿using ProfileServerProtocol;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace HomeNetSimulator
+namespace ProfileServerSimulator
 {
   /// <summary>
   /// Represents a single profile server. Provides abilities to start and stop a server process
@@ -23,13 +23,13 @@ namespace HomeNetSimulator
     public const int MaxHostedIdentities = 20000;
 
     /// <summary>Name of the configuration template file.</summary>
-    public const string ConfigFileTemplateName = "HomeNet-template.conf";
+    public const string ConfigFileTemplateName = "ProfileServer-template.conf";
 
     /// <summary>Name of the final configuration file.</summary>
-    public const string ConfigFileName = "HomeNet.conf";
+    public const string ConfigFileName = "ProfileServer.conf";
 
     /// <summary>Name of the final configuration file.</summary>
-    public const string ExecutableFileName = "HomeNet";
+    public const string ExecutableFileName = "ProfileServer";
 
     /// <summary>Configuration file</summary>
     public List<string> Configuration;
@@ -56,10 +56,7 @@ namespace HomeNetSimulator
     public int PrimaryInterfacePort;
 
     /// <summary>Port of profile server neighbor interface.</summary>
-    public int NodeNeighborInterfacePort;
-
-    /// <summary>Port of profile server colleague interface.</summary>
-    public int NodeColleagueInterfacePort;
+    public int ServerNeighborInterfacePort;
 
     /// <summary>Port of profile server non-customer interface.</summary>
     public int ClientNonCustomerInterfacePort;
@@ -82,13 +79,16 @@ namespace HomeNetSimulator
     /// <summary>List of hosted customer identities.</summary>
     public List<IdentityClient> HostedIdentities;
 
+    /// <summary>Associated LBN server.</summary>
+    public LbnServer LbnServer;
+
 
     /// <summary>
     /// Creates a new instance of a profile server.
     /// </summary>
     public ProfileServer(string Name, GpsLocation Location, int Port)
     {
-      log = new PrefixLogger("HomeNetSimulator.ProfileServer", Name);
+      log = new PrefixLogger("ProfileServerSimulator.ProfileServer", Name);
       log.Trace("(Name:'{0}',Location:{1},Port:{2})", Name, Location, Port);
 
       this.Name = Name;
@@ -98,11 +98,10 @@ namespace HomeNetSimulator
 
       LbnPort = BasePort;
       PrimaryInterfacePort = BasePort + 1;
-      NodeNeighborInterfacePort = BasePort + 2;
-      NodeColleagueInterfacePort = BasePort + 3;
-      ClientNonCustomerInterfacePort = BasePort + 4;
-      ClientCustomerInterfacePort = BasePort + 5;
-      ClientAppServiceInterfacePort = BasePort + 6;
+      ServerNeighborInterfacePort = BasePort + 2;
+      ClientNonCustomerInterfacePort = BasePort + 3;
+      ClientCustomerInterfacePort = BasePort + 4;
+      ClientAppServiceInterfacePort = BasePort + 5;
 
       AvailableIdentitySlots = MaxHostedIdentities;
       HostedIdentities = new List<IdentityClient>();
@@ -130,7 +129,12 @@ namespace HomeNetSimulator
         {
           string configTemplate = Path.Combine(CommandProcessor.ProfileServerBinariesDirectory, ConfigFileTemplateName);
           string configFinal = Path.Combine(InstanceDirectory, ConfigFileName);
-          res = InitializeConfig(configTemplate, configFinal);
+          if (InitializeConfig(configTemplate, configFinal))
+          {
+            LbnServer = new LbnServer(this);
+            res = LbnServer.Start();
+          }
+          else log.Error("Unable to initialize configuration file '{0}' for server '{1}'.", configFinal, Name);
         }
         else log.Error("Unable to copy files from directory '{0}' to '{1}'.", CommandProcessor.ProfileServerBinariesDirectory, InstanceDirectory);
       }
@@ -161,8 +165,7 @@ namespace HomeNetSimulator
         string config = File.ReadAllText(TemplateFile);
 
         config = config.Replace("$primary_interface_port", PrimaryInterfacePort.ToString());
-        config = config.Replace("$node_neighbor_interface_port", NodeNeighborInterfacePort.ToString());
-        config = config.Replace("$node_colleague_interface_port", NodeColleagueInterfacePort.ToString());
+        config = config.Replace("$server_neighbor_interface_port", ServerNeighborInterfacePort.ToString());
         config = config.Replace("$client_non_customer_interface_port", ClientNonCustomerInterfacePort.ToString());
         config = config.Replace("$client_customer_interface_port", ClientCustomerInterfacePort.ToString());
         config = config.Replace("$client_app_service_interface_port", ClientAppServiceInterfacePort.ToString());
@@ -187,6 +190,7 @@ namespace HomeNetSimulator
     {
       log.Trace("()");
 
+      LbnServer.Shutdown();
       Stop();
 
       log.Trace("(-)");
@@ -205,7 +209,7 @@ namespace HomeNetSimulator
       RunningProcess = RunProcess();
       if (RunningProcess != null)
       {
-        log.Trace("Waiting for node to start ...");
+        log.Trace("Waiting for profile server to start ...");
         if (ServerProcessInitializationCompleteEvent.WaitOne(20 * 1000))
         {
           res = true;

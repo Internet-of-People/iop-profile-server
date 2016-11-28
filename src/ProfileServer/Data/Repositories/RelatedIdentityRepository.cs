@@ -15,7 +15,7 @@ namespace ProfileServer.Data.Repositories
   /// </summary>
   public class RelatedIdentityRepository : GenericRepository<RelatedIdentity>
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("HomeNet.Data.Repositories.RelatedIdentityRepository");
+    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Data.Repositories.RelatedIdentityRepository");
 
 
     /// <summary>

@@ -1,6 +1,6 @@
 ﻿using Google.Protobuf;
-using HomeNetCrypto;
-using HomeNetProtocol;
+using ProfileServerCrypto;
+using ProfileServerProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -13,13 +13,13 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace HomeNetProtocolTests.Tests
+namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
   /// PS05017 - Application Service Second Client Late Join
   /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS05.md#ps05017---application-service-second-client-late-join
   /// </summary>
-  public class HN05017 : ProtocolTest
+  public class PS05017 : ProtocolTest
   {
     public const string TestName = "PS05017";
     private static NLog.Logger log = NLog.LogManager.GetLogger("Test." + TestName);

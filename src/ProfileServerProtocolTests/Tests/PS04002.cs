@@ -1,6 +1,6 @@
 ﻿using Google.Protobuf;
-using HomeNetCrypto;
-using HomeNetProtocol;
+using ProfileServerCrypto;
+using ProfileServerProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -12,13 +12,13 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeNetProtocolTests.Tests
+namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
   /// PS04002 - Check-In - Same Customer and Non-Customer Ports
   /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS04.md#ps04002---check-in---same-customer-and-non-customer-ports
   /// </summary>
-  public class HN04002 : ProtocolTest
+  public class PS04002 : ProtocolTest
   {
     public const string TestName = "PS04002";
     private static NLog.Logger log = NLog.LogManager.GetLogger("Test." + TestName);

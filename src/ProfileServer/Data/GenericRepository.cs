@@ -14,7 +14,7 @@ namespace ProfileServer.Data
   /// <typeparam name="TEntity">Entity type.</typeparam>
   public class GenericRepository<TEntity> where TEntity : class
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("HomeNet.Data.GenericRepository");
+    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Data.GenericRepository");
 
     /// <summary>Database context.</summary>
     internal Context context;

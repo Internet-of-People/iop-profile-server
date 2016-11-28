@@ -1,4 +1,4 @@
-﻿using HomeNetProtocol;
+﻿using ProfileServerProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections.Generic;
@@ -9,13 +9,13 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeNetProtocolTests.Tests
+namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
   /// PS00007 - Disconnection of Inactive TCP Client from Non-Customer Port - Incomplete Header
   /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS00.md#ps00007---disconnection-of-inactive-tcp-client-from-non-customer-port---incomplete-header
   /// </summary>
-  public class HN00007 : ProtocolTest
+  public class PS00007 : ProtocolTest
   {
     public const string TestName = "PS00007";
     private static NLog.Logger log = NLog.LogManager.GetLogger("Test." + TestName);

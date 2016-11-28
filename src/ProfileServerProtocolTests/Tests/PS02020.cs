@@ -1,6 +1,6 @@
 ﻿using Google.Protobuf;
-using HomeNetCrypto;
-using HomeNetProtocol;
+using ProfileServerCrypto;
+using ProfileServerProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -12,13 +12,13 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeNetProtocolTests.Tests
+namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
   /// PS02020 - Call Identity Application Service - Invalid Id
   /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS02.md#ps02020---call-identity-application-service---invalid-id
   /// </summary>
-  public class HN02020 : ProtocolTest
+  public class PS02020 : ProtocolTest
   {
     public const string TestName = "PS02020";
     private static NLog.Logger log = NLog.LogManager.GetLogger("Test." + TestName);

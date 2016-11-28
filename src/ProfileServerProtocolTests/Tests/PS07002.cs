@@ -1,6 +1,6 @@
 ﻿using Google.Protobuf;
-using HomeNetCrypto;
-using HomeNetProtocol;
+using ProfileServerCrypto;
+using ProfileServerProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -12,13 +12,13 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeNetProtocolTests.Tests
+namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
   /// PS07002 - Add/Remove/Get Related Identity - Invalid Requests
   /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS07.md#ps07002---addremoveget-related-identity---invalid-requests
   /// </summary>
-  public class HN07002 : ProtocolTest
+  public class PS07002 : ProtocolTest
   {
     public const string TestName = "PS07002";
     private static NLog.Logger log = NLog.LogManager.GetLogger("Test." + TestName);

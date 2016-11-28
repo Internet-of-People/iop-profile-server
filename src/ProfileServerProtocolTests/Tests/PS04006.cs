@@ -1,6 +1,6 @@
 ﻿using Google.Protobuf;
-using HomeNetCrypto;
-using HomeNetProtocol;
+using ProfileServerCrypto;
+using ProfileServerProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -12,13 +12,13 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeNetProtocolTests.Tests
+namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
   /// PS04006 - Home Node Agreement, Update Profile, Get Identity Information 
   /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS04.md#ps04006---home-node-agreement-update-profile-get-identity-information
   /// </summary>
-  public class HN04006 : ProtocolTest
+  public class PS04006 : ProtocolTest
   {
     public const string TestName = "PS04006";
     private static NLog.Logger log = NLog.LogManager.GetLogger("Test." + TestName);
@@ -102,7 +102,7 @@ namespace HomeNetProtocolTests.Tests
         bool getIdentityInfoOk = idOk && statusOk && isHostedOk && isOnlineOk && pubKeyOk && versionOk && nameOk && extraDataOk && locationOk;
 
 
-        byte[] imageData = File.ReadAllBytes(string.Format("images{0}HN04006.jpg", Path.DirectorySeparatorChar));
+        byte[] imageData = File.ReadAllBytes(string.Format("images{0}PS04006.jpg", Path.DirectorySeparatorChar));
         requestMessage = mb.CreateUpdateProfileRequest(null, "Test Identity Renamed", imageData, new GpsLocation(-1, -2), "a=b");
         await client.SendMessageAsync(requestMessage);
         responseMessage = await client.ReceiveMessageAsync();

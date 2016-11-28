@@ -1,6 +1,6 @@
 ﻿using Google.Protobuf;
-using HomeNetCrypto;
-using HomeNetProtocol;
+using ProfileServerCrypto;
+using ProfileServerProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -12,13 +12,13 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeNetProtocolTests.Tests
+namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
   /// PS07003 - Add Related Identity - Quota Exceeded
   /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS07.md#ps07003---add-related-identity---quota-exceeded
   /// </summary>
-  public class HN07003 : ProtocolTest
+  public class PS07003 : ProtocolTest
   {
     public const string TestName = "PS07003";
     private static NLog.Logger log = NLog.LogManager.GetLogger("Test." + TestName);

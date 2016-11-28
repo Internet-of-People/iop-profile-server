@@ -4,8 +4,8 @@ using ProfileServer.Data.Models;
 using ProfileServer.Data.Repositories;
 using ProfileServer.Kernel;
 using ProfileServer.Utils;
-using HomeNetCrypto;
-using HomeNetProtocol;
+using ProfileServerCrypto;
+using ProfileServerProtocol;
 using Iop.Profileserver;
 using Microsoft.EntityFrameworkCore.Storage;
 using System;
@@ -47,7 +47,7 @@ namespace ProfileServer.Network
     {
       roleServer = RoleServer;
       logPrefix = LogPrefix;
-      log = new PrefixLogger("HomeNet.Network.MessageProcessor", logPrefix);
+      log = new PrefixLogger("ProfileServer.Network.MessageProcessor", logPrefix);
       serverComponent = (Server)Base.ComponentDictionary["Network.Server"];
       clientList = serverComponent.GetClientList();
     }
@@ -63,7 +63,7 @@ namespace ProfileServer.Network
     public async Task<bool> ProcessMessageAsync(Client Client, Message IncomingMessage)
     {
       string prefix = string.Format("{0}[{1}] ", logPrefix, Client.RemoteEndPoint);
-      PrefixLogger log = new PrefixLogger("HomeNet.Network.MessageProcessor", prefix);
+      PrefixLogger log = new PrefixLogger("ProfileServer.Network.MessageProcessor", prefix);
 
       MessageBuilder messageBuilder = Client.MessageBuilder;
 

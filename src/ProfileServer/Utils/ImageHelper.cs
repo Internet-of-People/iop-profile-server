@@ -11,7 +11,7 @@ namespace ProfileServer.Utils
   /// </summary>
   public static class ImageHelper
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("HomeNet.Utils.ImageHelper");
+    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Utils.ImageHelper");
 
     /// <summary>
     /// Constructs a file name inside the image data folder from image GUID.

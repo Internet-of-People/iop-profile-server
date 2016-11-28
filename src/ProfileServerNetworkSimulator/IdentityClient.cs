@@ -1,5 +1,5 @@
-﻿using HomeNetCrypto;
-using HomeNetProtocol;
+﻿using ProfileServerCrypto;
+using ProfileServerProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -13,7 +13,7 @@ using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
-namespace HomeNetSimulator
+namespace ProfileServerSimulator
 {
   /// <summary>
   /// Represents a single identity in the network.
@@ -38,8 +38,8 @@ namespace HomeNetSimulator
     public byte[] Image;
 
 
-    /// <summary>Home node hosting the identity profile.</summary>
-    public ProfileServer HomeNode;
+    /// <summary>Profile server hosting the identity profile.</summary>
+    public ProfileServer ProfileServer;
 
     /// <summary>TCP client for communication with the server.</summary>
     public TcpClient Client;
@@ -56,13 +56,13 @@ namespace HomeNetSimulator
     /// <summary>Cryptographic Keys that represent the client's identity.</summary>
     public KeysEd25519 Keys;
 
-    /// <summary>Node's public key received when starting conversation.</summary>
-    public byte[] NodeKey;
+    /// <summary>Profile server's public key received when starting conversation.</summary>
+    public byte[] ProfileServerKey;
 
-    /// <summary>Challenge that the node sent to the client when starting conversation.</summary>
+    /// <summary>Challenge that the profile server sent to the client when starting conversation.</summary>
     public byte[] Challenge;
 
-    /// <summary>Challenge that the client sent to the node when starting conversation.</summary>
+    /// <summary>Challenge that the client sent to the profile server when starting conversation.</summary>
     public byte[] ClientChallenge;
 
 
@@ -76,7 +76,7 @@ namespace HomeNetSimulator
     /// <param name="ImageChance">An integer between 0 and 100 that specifies the chance of each instance to have a profile image set.</param>
     public IdentityClient(string Name, string Type, GpsLocation Location, string ImageMask, int ImageChance)
     {
-      log = new PrefixLogger("HomeNetSimulator.IdentityClient", Name);
+      log = new PrefixLogger("ProfileServerSimulator.IdentityClient", Name);
       log.Trace("(Name:'{0}',Type:'{1}',Location:{2},ImageMask:'{3}',ImageChance:{4})", Name, Type, Location, ImageMask, ImageChance);
 
       this.Name = Name;
@@ -135,23 +135,23 @@ namespace HomeNetSimulator
 
 
     /// <summary>
-    /// Establishes a home node agreement with a profile server and initializes a profile.
+    /// Establishes a hosting agreement with a profile server and initializes a profile.
     /// </summary>
-    /// <param name="Server">Profile server to use as a home node.</param>
+    /// <param name="Server">Profile server to host the identity.</param>
     /// <returns>true if the function succeeded, false otherwise.</returns>
-    public async Task<bool> InitializeHomeNode(ProfileServer Server)
+    public async Task<bool> InitializeProfileHosting(ProfileServer Server)
     {
       log.Trace("(Server.Name:'{0}')", Server.Name);
       bool res = false;
 
-      HomeNode = Server;
+      ProfileServer = Server;
       InitializeTcpClient();
 
       try
       {
         await ConnectAsync(Server.IpAddress, Server.ClientNonCustomerInterfacePort, true);
 
-        if (await EstablishHomeNodeAsync(Type))
+        if (await EstablishProfileHostingAsync(Type))
         {
           CloseTcpClient();
 
@@ -163,11 +163,11 @@ namespace HomeNetSimulator
             {
               res = true;
             }
-            else log.Error("Unable to initialize profile on home node server '{0}'.", Server.Name);
+            else log.Error("Unable to initialize profile on profile server '{0}'.", Server.Name);
           }
-          else log.Error("Unable to check-in to home node server '{0}'.", Server.Name);
+          else log.Error("Unable to check-in to profile server '{0}'.", Server.Name);
         }
-        else log.Error("Unable to establish home node with server '{0}'.", Server.Name);
+        else log.Error("Unable to establish profile hosting with server '{0}'.", Server.Name);
       }
       catch (Exception e)
       {
@@ -212,11 +212,11 @@ namespace HomeNetSimulator
     }
 
     /// <summary>
-    /// Establishes a home node for the client's identity with specific identity type using the already opened connection to the node.
+    /// Establishes a hosting agreement for the client's identity with specific identity type using the already opened connection to the profile server.
     /// </summary>
     /// <param name="IdentityType">Identity type of the new identity.</param>
     /// <returns>true if the function succeeds, false otherwise.</returns>
-    public async Task<bool> EstablishHomeNodeAsync(string IdentityType = null)
+    public async Task<bool> EstablishProfileHostingAsync(string IdentityType = null)
     {
       log.Trace("()");
 
@@ -248,7 +248,7 @@ namespace HomeNetSimulator
     /// <summary>
     /// Generates client's challenge and creates start conversation request with it.
     /// </summary>
-    /// <returns>StartConversationRequest message that is ready to be sent to the node.</returns>
+    /// <returns>StartConversationRequest message that is ready to be sent to the profile server.</returns>
     public Message CreateStartConversationRequest()
     {
       ClientChallenge = new byte[ProtocolHelper.ChallengeDataSize];
@@ -271,7 +271,7 @@ namespace HomeNetSimulator
 
       bool idOk = responseMessage.Id == requestMessage.Id;
       bool statusOk = responseMessage.Response.Status == Status.Ok;
-      bool challengeVerifyOk = VerifyNodeChallengeSignature(responseMessage);
+      bool challengeVerifyOk = VerifyProfileServerChallengeSignature(responseMessage);
 
       SemVer receivedVersion = new SemVer(responseMessage.Response.ConversationResponse.Start.Version);
       bool versionOk = receivedVersion.Equals(new SemVer(MessageBuilder.Version));
@@ -279,7 +279,7 @@ namespace HomeNetSimulator
       bool pubKeyLenOk = responseMessage.Response.ConversationResponse.Start.PublicKey.Length == 32;
       bool challengeOk = responseMessage.Response.ConversationResponse.Start.Challenge.Length == 32;
 
-      NodeKey = responseMessage.Response.ConversationResponse.Start.PublicKey.ToByteArray();
+      ProfileServerKey = responseMessage.Response.ConversationResponse.Start.PublicKey.ToByteArray();
       Challenge = responseMessage.Response.ConversationResponse.Start.Challenge.ToByteArray();
 
       bool res = idOk && statusOk && challengeVerifyOk && versionOk && pubKeyLenOk && challengeOk;
@@ -366,25 +366,25 @@ namespace HomeNetSimulator
 
 
     /// <summary>
-    /// Verifies whether the node successfully signed the correct start conversation challenge.
+    /// Verifies whether the profile server successfully signed the correct start conversation challenge.
     /// </summary>
-    /// <param name="StartConversationResponse">StartConversationResponse received from the node.</param>
+    /// <param name="StartConversationResponse">StartConversationResponse received from the profile server.</param>
     /// <returns>true if the signature is valid, false otherwise.</returns>
-    public bool VerifyNodeChallengeSignature(Message StartConversationResponse)
+    public bool VerifyProfileServerChallengeSignature(Message StartConversationResponse)
     {
       log.Trace("()");
 
       byte[] receivedChallenge = StartConversationResponse.Response.ConversationResponse.Start.ClientChallenge.ToByteArray();
-      byte[] nodePublicKey = StartConversationResponse.Response.ConversationResponse.Start.PublicKey.ToByteArray();
+      byte[] profileServerPublicKey = StartConversationResponse.Response.ConversationResponse.Start.PublicKey.ToByteArray();
       bool res = (StructuralComparisons.StructuralComparer.Compare(receivedChallenge, ClientChallenge) == 0)
-        && MessageBuilder.VerifySignedConversationResponseBodyPart(StartConversationResponse, receivedChallenge, nodePublicKey);
+        && MessageBuilder.VerifySignedConversationResponseBodyPart(StartConversationResponse, receivedChallenge, profileServerPublicKey);
 
       log.Trace("(-):{0}", res);
       return res;
     }
 
     /// <summary>
-    /// Initializes a new identity profile on the node.
+    /// Initializes a new identity profile on the profile server.
     /// </summary>
     /// <param name="Name">Name of the profile.</param>
     /// <param name="Image">Optionally, a profile image data.</param>
@@ -409,7 +409,7 @@ namespace HomeNetSimulator
     }
 
     /// <summary>
-    /// Performs a check-in process for the client's identity using the already opened connection to the node.
+    /// Performs a check-in process for the client's identity using the already opened connection to the profile server.
     /// </summary>
     /// <returns>true if the function succeeds, false otherwise.</returns>
     public async Task<bool> CheckInAsync()

@@ -5,13 +5,13 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace HomeNetSimulator
+namespace ProfileServerSimulator
 {
   /// <summary>
-  /// HomeNet Simulator simulates network of profile servers on a single machine.
+  /// ProfileServer Simulator simulates network of profile servers on a single machine.
   /// 
   /// 
-  /// Usage: HomeNetSimulator ScenarioFile
+  /// Usage: ProfileServerSimulator ScenarioFile
   ///   * ScenarioFile contains a description of the simulation to execute.
   ///   
   /// </summary>
@@ -29,7 +29,7 @@ namespace HomeNetSimulator
 
       if (args.Length != 1)
       {
-        log.Error("Usage: HomeNetSimulator <ScenarioFile>");
+        log.Error("Usage: ProfileServerSimulator <ScenarioFile>");
         log.Trace("(-)");
         return;
       }

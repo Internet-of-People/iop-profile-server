@@ -6,10 +6,10 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using HomeNetCrypto;
+using ProfileServerCrypto;
 using System.Collections;
 
-namespace HomeNetProtocol
+namespace ProfileServerProtocol
 {
   /// <summary>
   /// Allows easy construction of Location Based Network protocol requests and responses.

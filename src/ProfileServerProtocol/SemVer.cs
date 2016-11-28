@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace HomeNetProtocol
+namespace ProfileServerProtocol
 {
   /// <summary>
   /// Implements VersionType from the protocol definition.

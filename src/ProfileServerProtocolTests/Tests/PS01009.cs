@@ -1,5 +1,5 @@
-﻿using HomeNetCrypto;
-using HomeNetProtocol;
+﻿using ProfileServerCrypto;
+using ProfileServerProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -11,13 +11,13 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeNetProtocolTests.Tests
+namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
   /// PS01009 - Call Identity Application Service - Bad Role
   /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS01.md#ps01009---call-identity-application-service---bad-role
   /// </summary>
-  public class HN01009 : ProtocolTest
+  public class PS01009 : ProtocolTest
   {
     public const string TestName = "PS01009";
     private static NLog.Logger log = NLog.LogManager.GetLogger("Test." + TestName);

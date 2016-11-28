@@ -44,7 +44,7 @@ namespace ProfileServer.Data
   /// </summary>
   public class UnitOfWork : IDisposable
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("HomeNet.Data.UnitOfWork");
+    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Data.UnitOfWork");
 
     private Context context = null;
     /// <summary>Database context.</summary>

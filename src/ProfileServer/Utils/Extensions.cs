@@ -44,7 +44,7 @@ namespace ProfileServer.Utils
     /// <returns>Uppercase hex string representing the data.</returns>
     public static string ToHex(this byte[] Data)
     {
-      return HomeNetCrypto.Crypto.ToHex(Data);
+      return ProfileServerCrypto.Crypto.ToHex(Data);
     }
 
     /// <summary>
@@ -55,7 +55,7 @@ namespace ProfileServer.Utils
     /// <returns>Uppercase hex string representing the data.</returns>
     public static string ToHex(this byte[] Data, int Limit)
     {
-      return HomeNetCrypto.Crypto.ToHex(Data).SubstrMax(Limit);
+      return ProfileServerCrypto.Crypto.ToHex(Data).SubstrMax(Limit);
     }
 
     /// <summary>

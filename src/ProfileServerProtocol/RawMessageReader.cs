@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace HomeNetProtocol
+namespace ProfileServerProtocol
 {
   /// <summary>
   /// On the lowest socket level, the receiving part of the client can either be reading the message prefix header or the body.
@@ -47,7 +47,7 @@ namespace HomeNetProtocol
   /// </summary>
   public class RawMessageReader
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("HomeNetProtocol.RawMessageReader");
+    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocol.RawMessageReader");
 
     private Stream rawStream;
 

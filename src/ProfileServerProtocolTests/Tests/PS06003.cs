@@ -1,6 +1,6 @@
 ﻿using Google.Protobuf;
-using HomeNetCrypto;
-using HomeNetProtocol;
+using ProfileServerCrypto;
+using ProfileServerProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -13,13 +13,13 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeNetProtocolTests.Tests
+namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
   /// PS06003 - Profile Search - Mass Location Search
   /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS06.md#ps06003---profile-search---mass-location-search
   /// </summary>
-  public class HN06003 : ProtocolTest
+  public class PS06003 : ProtocolTest
   {
     public const string TestName = "PS06003";
     private static NLog.Logger log = NLog.LogManager.GetLogger("Test." + TestName);

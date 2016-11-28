@@ -13,7 +13,7 @@ namespace ProfileServer.Network
   /// </summary>
   public class Server : Component
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("HomeNet.Network.Server");
+    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Network.Server");
 
     /// <summary>Interval for role servers inactive client connection checks.</summary>
     private const int CheckInactiveClientConnectionsTimerInterval = 120000;

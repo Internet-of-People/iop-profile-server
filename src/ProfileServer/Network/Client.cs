@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Threading.Tasks;
-using HomeNetProtocol;
+using ProfileServerProtocol;
 using System.Net;
 using System.Runtime.InteropServices;
 using ProfileServer.Kernel;
@@ -14,7 +14,7 @@ using System.Threading;
 using ProfileServer.Utils;
 using ProfileServer.Data.Models;
 using Iop.Profileserver;
-using HomeNetCrypto;
+using ProfileServerCrypto;
 using System.Security.Authentication;
 
 namespace ProfileServer.Network
@@ -172,7 +172,7 @@ namespace ProfileServer.Network
 
       server = Server;
       string logPrefix = string.Format("[{0}<=>{1}|{2}] ", server.EndPoint, RemoteEndPoint, Id.ToHex());
-      string logName = "HomeNet.Network.Client";
+      string logName = "ProfileServer.Network.Client";
       this.log = new PrefixLogger(logName, logPrefix);
 
       log.Trace("(UseTls:{0},KeepAliveIntervalSeconds:{1})", UseTls, KeepAliveIntervalSeconds);

@@ -7,13 +7,13 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 
-namespace HomeNetProtocolTests.Tests
+namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
   /// PS00001 - Invalid Message Header
   /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS00.md#ps00001---invalid-message-header
   /// </summary>
-  public class HN00001 : ProtocolTest
+  public class PS00001 : ProtocolTest
   {
     public const string TestName = "PS00001";
     private static NLog.Logger log = NLog.LogManager.GetLogger("Test." + TestName);

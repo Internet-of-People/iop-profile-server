@@ -1,5 +1,5 @@
 ﻿using ProfileServer.Utils;
-using HomeNetProtocol;
+using ProfileServerProtocol;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -16,7 +16,7 @@ namespace ProfileServer.Data.Models
   /// </summary>
   public class BaseIdentity
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("HomeNet.Data.Models.BaseIdentity");
+    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Data.Models.BaseIdentity");
 
     /// <summary>Maximum number of identities that a profile server can host.</summary>
     public const int MaxHostedIdentities = 20000;
@@ -43,13 +43,13 @@ namespace ProfileServer.Data.Models
     public const int MaxPublicKeyLengthBytes = 128;
 
     /// <summary>Identity identifier is SHA256 hash of identity's public key.</summary>
-    /// <remarks>This is index - see HomeNet.Data.Context.OnModelCreating.</remarks>
+    /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
     [Required]
     [MaxLength(IdentifierLength)]
     public byte[] IdentityId { get; set; }
 
     /// <summary>Identifier of the home node or empty array if the identity is hosted by this node.</summary>
-    /// <remarks>This is index - see HomeNet.Data.Context.OnModelCreating.</remarks>
+    /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
     [MaxLength(IdentifierLength)]
     public byte[] HomeNodeId { get; set; }
 
@@ -67,34 +67,34 @@ namespace ProfileServer.Data.Models
     public byte[] Version { get; set; }
 
     /// <summary>User defined profile name.</summary>
-    /// <remarks>This is index - see HomeNet.Data.Context.OnModelCreating.</remarks>
+    /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
     [Required(AllowEmptyStrings = true)]
     [MaxLength(MaxProfileNameLengthBytes)]
     public string Name { get; set; }
 
     /// <summary>Profile type.</summary>
-    /// <remarks>This is index - see HomeNet.Data.Context.OnModelCreating.</remarks>
+    /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
     [Required]
     [MaxLength(MaxProfileTypeLengthBytes)]
     public string Type { get; set; }
 
 
     /// <summary>User's initial GPS location latitude.</summary>
-    /// <remarks>For precision definition see HomeNet.Data.Context.OnModelCreating.</remarks>
-    /// <remarks>This is index - see HomeNet.Data.Context.OnModelCreating.</remarks>
+    /// <remarks>For precision definition see ProfileServer.Data.Context.OnModelCreating.</remarks>
+    /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
     [Required]
     [Range(-90, 90)]
     public decimal InitialLocationLatitude { get; set; }
 
     /// <summary>User's initial GPS location longitude.</summary>
-    /// <remarks>For precision definition see HomeNet.Data.Context.OnModelCreating.</remarks>
-    /// <remarks>This is index - see HomeNet.Data.Context.OnModelCreating.</remarks>
+    /// <remarks>For precision definition see ProfileServer.Data.Context.OnModelCreating.</remarks>
+    /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
     [Required]
     [Range(-180, 180)]
     public decimal InitialLocationLongitude { get; set; }
 
-    /// <summary>User defined extra data that serve for satisfying search queries in HomeNet.</summary>
-    /// <remarks>This is index - see HomeNet.Data.Context.OnModelCreating.</remarks>
+    /// <summary>User defined extra data that serve for satisfying search queries in ProfileServer.</summary>
+    /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
     [MaxLength(200)]
     public string ExtraData { get; set; }
 
@@ -107,7 +107,7 @@ namespace ProfileServer.Data.Models
     /// In the HomeIdentityRepository, if ExpirationDate is null, the identity's contract 
     /// is valid. If it is not null, it has been cancelled.
     /// </summary>
-    /// <remarks>This is index - see HomeNet.Data.Context.OnModelCreating.</remarks>
+    /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
     public DateTime? ExpirationDate { get; set; }
 #warning TODO: clean up expired identities
 

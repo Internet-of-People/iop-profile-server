@@ -1,6 +1,6 @@
 ﻿using Google.Protobuf;
-using HomeNetCrypto;
-using HomeNetProtocol;
+using ProfileServerCrypto;
+using ProfileServerProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -12,13 +12,13 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeNetProtocolTests.Tests
+namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
   /// PS03006 - Remove Related Identity - Unauthorized
   /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS03.md#ps03006---remove-related-identity---unauthorized
   /// </summary>
-  public class HN03006 : ProtocolTest
+  public class PS03006 : ProtocolTest
   {
     public const string TestName = "PS03006";
     private static NLog.Logger log = NLog.LogManager.GetLogger("Test." + TestName);

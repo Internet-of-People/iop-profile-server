@@ -8,7 +8,7 @@ using ProfileServer.Utils;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using System.IO;
-using HomeNetProtocol;
+using ProfileServerProtocol;
 using Iop.Locnet;
 
 namespace ProfileServer.Network
@@ -22,7 +22,7 @@ namespace ProfileServer.Network
   /// </summary>
   public class LocationBasedNetwork : Component
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("HomeNet.Network.LocationBasedNetwork");
+    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Network.LocationBasedNetwork");
 
     /// <summary>Event that is set when LbnConnectionThread is not running.</summary>
     private ManualResetEvent lbnConnectionThreadFinished = new ManualResetEvent(true);

@@ -1,5 +1,5 @@
 ﻿using ProfileServer.Utils;
-using HomeNetCrypto;
+using ProfileServerCrypto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +26,7 @@ namespace ProfileServer.Network
     /// <summary>Initializes the class logger.</summary>
     public ApplicationServices(string LogPrefix)
     {
-      string logName = "HomeNet.Network.ApplicationServices";
+      string logName = "ProfileServer.Network.ApplicationServices";
       log = new PrefixLogger(logName, LogPrefix);
       log.Trace("()");
 

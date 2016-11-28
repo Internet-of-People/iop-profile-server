@@ -1,5 +1,5 @@
 ﻿using ProfileServer.Utils;
-using HomeNetProtocol;
+using ProfileServerProtocol;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -15,6 +15,6 @@ namespace ProfileServer.Data.Models
   /// </summary>
   public class NeighborIdentity : BaseIdentity
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("HomeNet.Data.Models.NeighborIdentity");
+    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Data.Models.NeighborIdentity");
   }
 }

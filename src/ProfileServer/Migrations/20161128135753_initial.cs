@@ -35,9 +35,9 @@ namespace ProfileServer.Migrations
                 columns: table => new
                 {
                     IdentityId = table.Column<byte[]>(maxLength: 32, nullable: false),
+                    HomeNodeId = table.Column<byte[]>(maxLength: 32, nullable: false),
                     ExpirationDate = table.Column<DateTime>(nullable: true),
                     ExtraData = table.Column<string>(maxLength: 200, nullable: true),
-                    HomeNodeId = table.Column<byte[]>(maxLength: 32, nullable: true),
                     InitialLocationLatitude = table.Column<decimal>(type: "decimal(9,6)", nullable: false),
                     InitialLocationLongitude = table.Column<decimal>(type: "decimal(9,6)", nullable: false),
                     Name = table.Column<string>(maxLength: 64, nullable: false),
@@ -49,7 +49,7 @@ namespace ProfileServer.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_NeighborhoodIdentities", x => x.IdentityId);
+                    table.PrimaryKey("PK_NeighborhoodIdentities", x => new { x.IdentityId, x.HomeNodeId });
                 });
 
             migrationBuilder.CreateTable(
@@ -138,12 +138,6 @@ namespace ProfileServer.Migrations
                 column: "HomeNodeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_NeighborhoodIdentities_IdentityId",
-                table: "NeighborhoodIdentities",
-                column: "IdentityId",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_NeighborhoodIdentities_Name",
                 table: "NeighborhoodIdentities",
                 column: "Name");
@@ -152,6 +146,12 @@ namespace ProfileServer.Migrations
                 name: "IX_NeighborhoodIdentities_Type",
                 table: "NeighborhoodIdentities",
                 column: "Type");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_NeighborhoodIdentities_IdentityId_HomeNodeId",
+                table: "NeighborhoodIdentities",
+                columns: new[] { "IdentityId", "HomeNodeId" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_NeighborhoodIdentities_InitialLocationLatitude_InitialLocationLongitude",

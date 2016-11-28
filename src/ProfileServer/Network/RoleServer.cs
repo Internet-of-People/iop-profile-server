@@ -170,7 +170,7 @@ namespace ProfileServer.Network
     public TcpRoleServer(IPEndPoint EndPoint, bool UseTls, ServerRole Roles)
     {
       logPrefix = string.Format("[{0}/tcp{1}] ", EndPoint.Port, UseTls ? "_tls" : "");
-      logName = "HomeNet.Network.RoleServer";
+      logName = "ProfileServer.Network.RoleServer";
       log = new PrefixLogger(logName, logPrefix);
 
       this.UseTls = UseTls;

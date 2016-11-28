@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace HomeNetProtocolTests
+namespace ProfileServerProtocolTests
 {
   /// <summary>
-  /// This project implements tests according to the IoP Message Protocol - HomeNet Node Tests specification,
+  /// This project implements tests according to the IoP Message Protocol - Profile Server Tests specification,
   /// which can be found at https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md
   /// 
   /// The tests are expected to be run using external scripts that will prepare the target software
@@ -31,14 +31,14 @@ namespace HomeNetProtocolTests
 
       if (args.Length < 1)
       {
-        log.Error("Usage: HomeNetProtocolTests <TestId> [test arguments ...]");
+        log.Error("Usage: ProfileServerProtocolTests <TestId> [test arguments ...]");
         log.Debug("(-):{0}", res);
         return res;
       }
 
       string testId = args[0];
 
-      Type testClass = Type.GetType("HomeNetProtocolTests.Tests." + testId);
+      Type testClass = Type.GetType("ProfileServerProtocolTests.Tests." + testId);
       if (testClass != null)
       {
         try

@@ -1,5 +1,5 @@
 ﻿using ProfileServer.Utils;
-using HomeNetProtocol;
+using ProfileServerProtocol;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -16,7 +16,7 @@ namespace ProfileServer.Data.Models
   /// </summary>
   public class RelatedIdentity
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("HomeNet.Data.Models.RelatedIdentity");
+    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Data.Models.RelatedIdentity");
 
     /// <summary>
     /// Maximum number of relations that an identity is allowed to have. This is protocol limit. 
@@ -39,17 +39,17 @@ namespace ProfileServer.Data.Models
 
 
     /// <summary>Identifier of the hosted identity.</summary>
-    /// <remarks>This is part of the key and index - see HomeNet.Data.Context.OnModelCreating.</remarks>
+    /// <remarks>This is part of the key and index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
     [MaxLength(BaseIdentity.IdentifierLength)]
     public byte[] IdentityId { get; set; }
 
     /// <summary>Identifier of the related identity.</summary>
-    /// <remarks>This is index - see HomeNet.Data.Context.OnModelCreating.</remarks>
+    /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
     [MaxLength(BaseIdentity.IdentifierLength)]
     public byte[] RelatedToIdentityId { get; set; }
 
     /// <summary>Identifier of the card application.</summary>
-    /// <remarks>This is part of the key and index - see HomeNet.Data.Context.OnModelCreating.</remarks>
+    /// <remarks>This is part of the key and index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
     [MaxLength(MaxApplicationIdLengthBytes)]
     public byte[] ApplicationId { get; set; }
 
@@ -63,17 +63,17 @@ namespace ProfileServer.Data.Models
 
 
     /// <summary>Type of the relationship card.</summary>
-    /// <remarks>This is index - see HomeNet.Data.Context.OnModelCreating.</remarks>
+    /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
     [Required]
     [MaxLength(MaxCardTypeLengthBytes)]
     public string Type { get; set; }
 
     /// <summary>Time from which the card is valid.</summary>
-    /// <remarks>This is index - see HomeNet.Data.Context.OnModelCreating.</remarks>
+    /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
     public DateTime ValidFrom { get; set; }
 
     /// <summary>Time after which the card is not valid.</summary>
-    /// <remarks>This is index - see HomeNet.Data.Context.OnModelCreating.</remarks>
+    /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
     public DateTime ValidTo { get; set; }
 
     /// <summary>Identifier of the home node or empty array if the identity is hosted by this node.</summary>

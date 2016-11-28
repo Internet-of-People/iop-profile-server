@@ -1,6 +1,6 @@
 ﻿using Google.Protobuf;
-using HomeNetCrypto;
-using HomeNetProtocol;
+using ProfileServerCrypto;
+using ProfileServerProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -12,13 +12,13 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeNetProtocolTests.Tests
+namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
   /// PS04007 - Update Profile - Invalid Initialization and Invalid Values
   /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS04.md#ps04007---update-profile---invalid-initialization-and-invalid-values
   /// </summary>
-  public class HN04007 : ProtocolTest
+  public class PS04007 : ProtocolTest
   {
     public const string TestName = "PS04007";
     private static NLog.Logger log = NLog.LogManager.GetLogger("Test." + TestName);
@@ -159,7 +159,7 @@ namespace HomeNetProtocolTests.Tests
         bool updateProfileOk8 = idOk && statusOk && detailsOk;
 
         
-        byte[] imageData = File.ReadAllBytes(string.Format("images{0}HN04007-too-big.jpg", Path.DirectorySeparatorChar));
+        byte[] imageData = File.ReadAllBytes(string.Format("images{0}PS04007-too-big.jpg", Path.DirectorySeparatorChar));
         requestMessage = mb.CreateUpdateProfileRequest(SemVer.V100, "Test Identity", imageData, new GpsLocation(1, 2), null);
         await client.SendMessageAsync(requestMessage);
         responseMessage = await client.ReceiveMessageAsync();
@@ -171,7 +171,7 @@ namespace HomeNetProtocolTests.Tests
         bool updateProfileOk9 = idOk && statusOk && detailsOk;
 
         
-        imageData = File.ReadAllBytes(string.Format("images{0}HN04007-not-image.jpg", Path.DirectorySeparatorChar));
+        imageData = File.ReadAllBytes(string.Format("images{0}PS04007-not-image.jpg", Path.DirectorySeparatorChar));
         requestMessage = mb.CreateUpdateProfileRequest(SemVer.V100, "Test Identity", imageData, new GpsLocation(1, 2), null);
         await client.SendMessageAsync(requestMessage);
         responseMessage = await client.ReceiveMessageAsync();

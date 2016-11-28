@@ -1,6 +1,6 @@
 ﻿using Google.Protobuf;
-using HomeNetCrypto;
-using HomeNetProtocol;
+using ProfileServerCrypto;
+using ProfileServerProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -12,13 +12,13 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeNetProtocolTests.Tests
+namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
   /// PS02016 - Get Identity Information - Unknown Identity
   /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS02.md#ps02016---get-identity-information---unknown-identity
   /// </summary>
-  public class HN02016 : ProtocolTest
+  public class PS02016 : ProtocolTest
   {
     public const string TestName = "PS02016";
     private static NLog.Logger log = NLog.LogManager.GetLogger("Test." + TestName);

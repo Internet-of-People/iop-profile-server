@@ -1,6 +1,6 @@
 ﻿using Google.Protobuf;
-using HomeNetCrypto;
-using HomeNetProtocol;
+using ProfileServerCrypto;
+using ProfileServerProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -13,13 +13,13 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace HomeNetProtocolTests.Tests
+namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
   /// PS05013 - Application Service Callee Disconnects After Initialization
   /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS05.md#ps05013---application-service-callee-disconnects-after-initialization
   /// </summary>
-  public class HN05013 : ProtocolTest
+  public class PS05013 : ProtocolTest
   {
     public const string TestName = "PS05013";
     private static NLog.Logger log = NLog.LogManager.GetLogger("Test." + TestName);

@@ -1,6 +1,6 @@
 ﻿using Google.Protobuf;
-using HomeNetCrypto;
-using HomeNetProtocol;
+using ProfileServerCrypto;
+using ProfileServerProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -12,13 +12,13 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeNetProtocolTests.Tests
+namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
   /// PS04010 - Cancel Home Node Agreement - Invalid New Home Node Id
   /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS04.md#ps04010---cancel-home-node-agreement---invalid-new-home-node-id
   /// </summary>
-  public class HN04010 : ProtocolTest
+  public class PS04010 : ProtocolTest
   {
     public const string TestName = "PS04010";
     private static NLog.Logger log = NLog.LogManager.GetLogger("Test." + TestName);

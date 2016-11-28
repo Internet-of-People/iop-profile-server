@@ -1,6 +1,6 @@
 ﻿using Google.Protobuf;
-using HomeNetCrypto;
-using HomeNetProtocol;
+using ProfileServerCrypto;
+using ProfileServerProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -13,13 +13,13 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace HomeNetProtocolTests.Tests
+namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
   /// PS05010 - Call Identity Application Service - Rejected
   /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS05.md#ps05010---call-identity-application-service---rejected
   /// </summary>
-  public class HN05010 : ProtocolTest
+  public class PS05010 : ProtocolTest
   {
     public const string TestName = "PS05010";
     private static NLog.Logger log = NLog.LogManager.GetLogger("Test." + TestName);

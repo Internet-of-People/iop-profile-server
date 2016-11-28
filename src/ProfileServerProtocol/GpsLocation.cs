@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace HomeNetProtocol
+namespace ProfileServerProtocol
 {
   /// <summary>
   /// GPS location information and implementation of conversions between different representations.

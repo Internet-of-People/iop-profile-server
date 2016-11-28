@@ -1,5 +1,5 @@
 ﻿using Google.Protobuf;
-using HomeNetProtocol;
+using ProfileServerProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -11,13 +11,13 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeNetProtocolTests.Tests
+namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
   /// PS02006 - Home Node Request - Bad Conversation Status
   /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS02.md#ps02006---home-node-request---bad-conversation-status
   /// </summary>
-  public class HN02006 : ProtocolTest
+  public class PS02006 : ProtocolTest
   {
     public const string TestName = "PS02006";
     private static NLog.Logger log = NLog.LogManager.GetLogger("Test." + TestName);

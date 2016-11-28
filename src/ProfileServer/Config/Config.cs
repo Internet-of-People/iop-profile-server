@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using HomeNetCrypto;
+using ProfileServerCrypto;
 using ProfileServer.Data.Models;
 using System.Security.Cryptography.X509Certificates;
 using System.Net;
@@ -56,10 +56,10 @@ namespace ProfileServer.Config
   /// </remarks>
   public class Config : Kernel.Component
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("HomeNet.Config.Config");
+    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Config.Config");
 
     /// <summary>Default name of the configuration file.</summary>
-    public const string ConfigFileName = "HomeNet.conf";
+    public const string ConfigFileName = "ProfileServer.conf";
 
     /// <summary>Specification of network interface, on which the node servers will operate.</summary>
     public IPAddress ServerInterface;
@@ -184,8 +184,7 @@ namespace ProfileServer.Config
         {
           { "server_interface",                        ConfigValueType.IpAddress      },
           { "primary_interface_port",                  ConfigValueType.Port           },
-          { "node_neighbor_interface_port",            ConfigValueType.Port           },
-          { "node_colleague_interface_port",           ConfigValueType.Port           },
+          { "server_neighbor_interface_port",          ConfigValueType.Port           },
           { "client_non_customer_interface_port",      ConfigValueType.Port           },
           { "client_customer_interface_port",          ConfigValueType.Port           },
           { "client_app_service_interface_port",       ConfigValueType.Port           },          
@@ -202,8 +201,7 @@ namespace ProfileServer.Config
         {
           serverInterface = (IPAddress)nameVal["server_interface"];
           int primaryInterfacePort = (int)nameVal["primary_interface_port"];
-          int nodeNeighborInterfacePort = (int)nameVal["node_neighbor_interface_port"];
-          int nodeColleagueInterfacePort = (int)nameVal["node_colleague_interface_port"];
+          int serverNeighborInterfacePort = (int)nameVal["server_neighbor_interface_port"];
           int clientNonCustomerInterfacePort = (int)nameVal["client_non_customer_interface_port"];
           int clientCustomerInterfacePort = (int)nameVal["client_customer_interface_port"];
           int clientAppServiceInterfacePort = (int)nameVal["client_app_service_interface_port"];
@@ -218,7 +216,7 @@ namespace ProfileServer.Config
 
           serverRoles = new ServerRolesConfig();
           error = !(serverRoles.AddRoleServer(primaryInterfacePort, ServerRole.PrimaryUnrelated)
-                 && serverRoles.AddRoleServer(nodeNeighborInterfacePort, ServerRole.ServerNeighbor)
+                 && serverRoles.AddRoleServer(serverNeighborInterfacePort, ServerRole.ServerNeighbor)
                  && serverRoles.AddRoleServer(clientNonCustomerInterfacePort, ServerRole.ClientNonCustomer)
                  && serverRoles.AddRoleServer(clientCustomerInterfacePort, ServerRole.ClientCustomer)
                  && serverRoles.AddRoleServer(clientAppServiceInterfacePort, ServerRole.ClientAppService));
