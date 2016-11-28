@@ -67,7 +67,7 @@ namespace HomeNet.Network
     public static Dictionary<ServerRole, bool> ServerRoleEncryption = new Dictionary<ServerRole, bool>()
     {
       { ServerRole.PrimaryUnrelated,  false },
-      { ServerRole.NodeNeighbor,      false },
+      { ServerRole.NodeNeighbor,      true  },
       { ServerRole.NodeColleague,     false },
       { ServerRole.ClientCustomer,    true  },
       { ServerRole.ClientNonCustomer, true  },

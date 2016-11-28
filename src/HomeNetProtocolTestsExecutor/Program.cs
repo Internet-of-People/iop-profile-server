@@ -295,7 +295,7 @@ namespace HomeNetProtocolTestsExecutor
             int maxTime = test.LongTime ? 10 * 60 * 1000 : 2 * 60 * 1000;
             if (testProcess.WaitForExit(maxTime))
             {
-              log.Trace("Sending enter to node.");
+              log.Trace("Sending ENTER to node.");
               string inputData = Environment.NewLine;
               using (StreamWriter sw = new StreamWriter(nodeProcess.StandardInput.BaseStream, Encoding.UTF8))
               {
@@ -404,7 +404,7 @@ namespace HomeNetProtocolTestsExecutor
       }
       catch (Exception e)
       {
-        log.Error("Exception occurred during starting: {0}\n", e.ToString());
+        log.Error("Exception occurred during starting: {0}", e.ToString());
         error = true;
       }
 
@@ -417,7 +417,7 @@ namespace HomeNetProtocolTestsExecutor
         }
         catch (Exception e)
         {
-          log.Error("Exception occurred after start: {0}\n", e.ToString());
+          log.Error("Exception occurred after start: {0}", e.ToString());
           error = true;
         }
       }
@@ -475,7 +475,7 @@ namespace HomeNetProtocolTestsExecutor
       }
       catch (Exception e)
       {
-        log.Error("Exception occurred when trying to kill process: {0}\n", e.ToString());
+        log.Error("Exception occurred when trying to kill process: {0}", e.ToString());
       }
       log.Info("(-)");
     }
@@ -524,7 +524,7 @@ namespace HomeNetProtocolTestsExecutor
       }
       catch (Exception e)
       {
-        log.Error("Exception occurred during starting: {0}\n", e.ToString());
+        log.Error("Exception occurred during starting: {0}", e.ToString());
         error = true;
       }
 
@@ -537,7 +537,7 @@ namespace HomeNetProtocolTestsExecutor
         }
         catch (Exception e)
         {
-          log.Error("Exception occurred after start: {0}\n", e.ToString());
+          log.Error("Exception occurred after start: {0}", e.ToString());
           error = true;
         }
       }
