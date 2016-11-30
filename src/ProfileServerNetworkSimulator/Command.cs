@@ -8,7 +8,7 @@ namespace ProfileServerSimulator
   /// <summary>
   /// All types of commands that are supported. Note that Unknown represents an invalid command.
   /// </summary>
-  public enum CommandType { Unknown, ProfileServer, StartServer, StopServer, Neighborhood, Neighbor, Identity, TestQuery, Delay }
+  public enum CommandType { Unknown, ProfileServer, StartServer, StopServer, Neighborhood, CancelNeighborhood, Neighbor, CancelNeighbor, Identity, TestQuery, Delay }
 
   /// <summary>
   /// Base class for all types for commands.
@@ -153,6 +153,32 @@ namespace ProfileServerSimulator
 
 
   /// <summary>
+  /// CancelNeighborhood command cancels a bidirectional neighborhood relationship between all servers selected by the command. 
+  /// </summary>
+  public class CommandCancelNeighborhood : Command
+  {
+    /// <summary>Names of the groups of servers.</summary>
+    public List<string> PsGroups;
+
+    /// <summary>Instance numbers of the first servers from the groups.</summary>
+    public List<int> PsIndexes;
+
+    /// <summary>Number of servers to take from the groups.</summary>
+    public List<int> PsCounts;
+
+    /// <summary>
+    /// Initializes the base command type.
+    /// </summary>
+    /// <param name="LineNumber">Line number of the command in the scenario file.</param>
+    /// <param name="OriginalCommand">Original scenario file line.</param>
+    public CommandCancelNeighborhood(int LineNumber, string OriginalCommand) :
+      base(CommandType.Neighborhood, LineNumber, OriginalCommand)
+    {
+    }
+  }
+
+
+  /// <summary>
   /// Neighbor command forms an unidirectional neighborhood relationship between a source server and one or more target servers.
   /// </summary>
   public class CommandNeighbor : Command
@@ -169,6 +195,29 @@ namespace ProfileServerSimulator
     /// <param name="LineNumber">Line number of the command in the scenario file.</param>
     /// <param name="OriginalCommand">Original scenario file line.</param>
     public CommandNeighbor(int LineNumber, string OriginalCommand) :
+      base(CommandType.Neighbor, LineNumber, OriginalCommand)
+    {
+    }
+  }
+
+
+  /// <summary>
+  /// CancelNeighbor command cancels an unidirectional neighborhood relationship between a source server and one or more target servers.
+  /// </summary>
+  public class CommandCancelNeighbor : Command
+  {
+    /// <summary>Name of the source server instance.</summary>
+    public string Source;
+
+    /// <summary>Names of target servers instances.</summary>
+    public List<string> Targets;
+
+    /// <summary>
+    /// Initializes the base command type.
+    /// </summary>
+    /// <param name="LineNumber">Line number of the command in the scenario file.</param>
+    /// <param name="OriginalCommand">Original scenario file line.</param>
+    public CommandCancelNeighbor(int LineNumber, string OriginalCommand) :
       base(CommandType.Neighbor, LineNumber, OriginalCommand)
     {
     }

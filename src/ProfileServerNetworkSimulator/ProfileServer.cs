@@ -83,6 +83,13 @@ namespace ProfileServerSimulator
     public LbnServer LbnServer;
 
 
+    /// <summary>Node profile in LBN.</summary>
+    public Iop.Locnet.NodeProfile NodeProfile;
+
+    /// <summary>Node location in LBN.</summary>
+    public Iop.Locnet.GpsLocation NodeLocation;
+
+
     /// <summary>
     /// Creates a new instance of a profile server.
     /// </summary>
@@ -105,6 +112,12 @@ namespace ProfileServerSimulator
 
       AvailableIdentitySlots = MaxHostedIdentities;
       HostedIdentities = new List<IdentityClient>();
+
+      NodeLocation = new Iop.Locnet.GpsLocation()
+      {
+        Latitude = Location.GetLocationTypeLatitude(),
+        Longitude = Location.GetLocationTypeLongitude()
+      };
 
       log.Trace("(-)");
     }

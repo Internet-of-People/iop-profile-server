@@ -222,11 +222,60 @@ namespace ProfileServerSimulator
           {
             if ((paramCount % 3) != 0)
             {
-              log.Error("StartServer requires 3*N parameters, but {0} parameters found on line {1}.", paramCount, LineNumber);
+              log.Error("Neighborhood requires 3*N parameters, but {0} parameters found on line {1}.", paramCount, LineNumber);
               break;
             }
 
             CommandNeighborhood command = new CommandNeighborhood(LineNumber, line)
+            {
+              PsGroups = new List<string>(),
+              PsIndexes = new List<int>(),
+              PsCounts = new List<int>()
+            };
+
+            for (int i = 0; i < paramCount; i += 3)
+            {
+              command.PsGroups.Add(Parts[p++]);
+              command.PsIndexes.Add(int.Parse(Parts[p++]));
+              command.PsCounts.Add(int.Parse(Parts[p++]));
+
+              int groupNo = (i / 3) + 1;
+
+              bool indexValid = (1 <= command.PsIndexes[i]) && (command.PsIndexes[i] <= 999);
+              if (!indexValid)
+              {
+                log.Error("PsIndex${0} '{1}' on line {2} is invalid. It must be an integer between 1 and 999.", groupNo, command.PsIndexes[i], LineNumber);
+                break;
+              }
+
+              bool countValid = (1 <= command.PsCounts[i]) && (command.PsCounts[i] <= 999);
+              if (!countValid)
+              {
+                log.Error("PsCount${0} '{1}' on line {2} is invalid. It must be an integer between 1 and 999.", groupNo, command.PsCounts[i], LineNumber);
+                break;
+              }
+
+              countValid = command.PsIndexes[i] + command.PsCounts[i] <= 999;
+              if (!countValid)
+              {
+                log.Error("Having PsIndex${0} '{1}', PsCount{0} '{2}' on line {3} is invalid. PsIndex$i + PsCount$i must not be greater than 999.", groupNo, command.PsIndexes[i], command.PsCounts[i], LineNumber);
+                break;
+              }
+            }
+
+            res = command;
+            break;
+          }
+
+        case CommandType.CancelNeighborhood:
+          {
+            if ((paramCount % 3) != 0)
+            {
+              log.Error("CancelNeighborhood requires 3*N parameters, but {0} parameters found on line {1}.", paramCount, LineNumber);
+              break;
+            }
+
+            CommandCancelNeighborhood command = new CommandCancelNeighborhood(LineNumber, line)
             {
               PsGroups = new List<string>(),
               PsIndexes = new List<int>(),
@@ -276,6 +325,27 @@ namespace ProfileServerSimulator
             }
 
             CommandNeighbor command = new CommandNeighbor(LineNumber, line)
+            {
+              Source = Parts[p++],
+              Targets = new List<string>()
+            };
+
+            for (int i = 0; i < paramCount; i++)
+              command.Targets.Add(Parts[p++]);
+
+            res = command;
+            break;
+          }
+
+        case CommandType.CancelNeighbor:
+          {
+            if (paramCount < 2)
+            {
+              log.Error("CancelNeighbor requires 2 or more parameters, but {0} parameters found on line {1}.", paramCount, LineNumber);
+              break;
+            }
+
+            CommandCancelNeighbor command = new CommandCancelNeighbor(LineNumber, line)
             {
               Source = Parts[p++],
               Targets = new List<string>()

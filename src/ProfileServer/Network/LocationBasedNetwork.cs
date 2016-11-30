@@ -166,7 +166,7 @@ namespace ProfileServer.Network
         }
         catch
         {
-          log.Error("Unable to connect to LBN server '{0}', waiting 10 seconds and then retrying.", Base.Configuration.LbnEndPoint);
+          log.Warn("Unable to connect to LBN server '{0}', waiting 10 seconds and then retrying.", Base.Configuration.LbnEndPoint);
         }
 
         if (!res)

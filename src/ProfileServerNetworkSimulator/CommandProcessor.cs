@@ -230,6 +230,98 @@ namespace ProfileServerSimulator
               break;
             }
 
+          case CommandType.Neighborhood:
+            {
+              CommandNeighborhood cmd = (CommandNeighborhood)command;
+
+              List<ProfileServer> neighborhoodList = new List<ProfileServer>();
+              for (int i = 0; i < cmd.PsGroups.Count; i++)
+              {
+                string psGroup = cmd.PsGroups[i];
+                int psCount = cmd.PsCounts[i];
+                int psIndex = cmd.PsIndexes[i];
+                for (int j = 1; j < psCount; j++)
+                {
+                  string name = GetInstanceName(psGroup, psIndex + j);
+
+                  ProfileServer profileServer;
+                  if (ProfileServers.TryGetValue(name, out profileServer))
+                  {
+                    neighborhoodList.Add(profileServer);
+                  }
+                  else
+                  {
+                    log.Error("  * Profile server instance '{0}' does not exist.", name);
+                    error = true;
+                    break;
+                  }
+                }
+              }
+
+              if (!error)
+              {
+                foreach (ProfileServer ps in neighborhoodList)
+                {
+                  if (!ps.LbnServer.AddNeighborhood(neighborhoodList))
+                  {
+                    log.Error("  * Unable to add neighbors to server '{0}'.", ps.Name);
+                    error = true;
+                    break;
+                  }
+                }
+
+                if (!error)
+                  log.Info("  * Neighborhood of {0} profile servers has been established.", neighborhoodList.Count);
+              }
+              break;
+            }
+
+          case CommandType.CancelNeighborhood:
+            {
+              CommandCancelNeighborhood cmd = (CommandCancelNeighborhood)command;
+
+              List<ProfileServer> neighborhoodList = new List<ProfileServer>();
+              for (int i = 0; i < cmd.PsGroups.Count; i++)
+              {
+                string psGroup = cmd.PsGroups[i];
+                int psCount = cmd.PsCounts[i];
+                int psIndex = cmd.PsIndexes[i];
+                for (int j = 1; j < psCount; j++)
+                {
+                  string name = GetInstanceName(psGroup, psIndex + j);
+
+                  ProfileServer profileServer;
+                  if (ProfileServers.TryGetValue(name, out profileServer))
+                  {
+                    neighborhoodList.Add(profileServer);
+                  }
+                  else
+                  {
+                    log.Error("  * Profile server instance '{0}' does not exist.", name);
+                    error = true;
+                    break;
+                  }
+                }
+              }
+
+              if (!error)
+              {
+                foreach (ProfileServer ps in neighborhoodList)
+                {
+                  if (!ps.LbnServer.CancelNeighborhood(neighborhoodList))
+                  {
+                    log.Error("  * Unable to add neighbors to server '{0}'.", ps.Name);
+                    error = true;
+                    break;
+                  }
+                }
+
+                if (!error)
+                  log.Info("  * Neighbor relations among {0} profile servers have been cancelled.", neighborhoodList.Count);
+              }
+              break;
+            }
+
           case CommandType.Delay:
             {
               CommandDelay cmd = (CommandDelay)command;

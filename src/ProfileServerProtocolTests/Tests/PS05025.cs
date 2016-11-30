@@ -148,13 +148,20 @@ namespace ProfileServerProtocolTests.Tests
         log.Trace("Step 3");
         Message nodeRequestMessage = await clientCallee.ReceiveMessageAsync();
 
+        // What we received now can actually be either notification about caller1 or caller2, we do not know. 
+        // So we have to check, which one is it before we proceed.
         byte[] receivedPubKey = nodeRequestMessage.Request.ConversationRequest.IncomingCallNotification.CallerPublicKey.ToByteArray();
-        bool pubKeyOk = StructuralComparisons.StructuralComparer.Compare(receivedPubKey, pubKeyCaller1) == 0;
+        bool isCaller1 = StructuralComparisons.StructuralComparer.Compare(receivedPubKey, pubKeyCaller1) == 0;
+        bool isCaller2 = StructuralComparisons.StructuralComparer.Compare(receivedPubKey, pubKeyCaller2) == 0;
+        bool pubKeyOk = isCaller1 || isCaller2;
         bool serviceNameOk = nodeRequestMessage.Request.ConversationRequest.IncomingCallNotification.ServiceName == serviceName;
 
         bool incomingCallNotificationOk1 = pubKeyOk && serviceNameOk;
 
-        byte[] calleeToken1 = nodeRequestMessage.Request.ConversationRequest.IncomingCallNotification.CalleeToken.ToByteArray();
+        byte[] calleeToken1 = null;
+        byte[] calleeToken2 = null;
+        if (isCaller1) calleeToken1 = nodeRequestMessage.Request.ConversationRequest.IncomingCallNotification.CalleeToken.ToByteArray();
+        else calleeToken2 = nodeRequestMessage.Request.ConversationRequest.IncomingCallNotification.CalleeToken.ToByteArray();
 
         Message nodeResponseMessage = mbCallee.CreateIncomingCallNotificationResponse(nodeRequestMessage);
         await clientCallee.SendMessageAsync(nodeResponseMessage);
@@ -163,13 +170,16 @@ namespace ProfileServerProtocolTests.Tests
 
         nodeRequestMessage = await clientCallee.ReceiveMessageAsync();
 
+        // This time, it has to be the other caller
         receivedPubKey = nodeRequestMessage.Request.ConversationRequest.IncomingCallNotification.CallerPublicKey.ToByteArray();
-        pubKeyOk = StructuralComparisons.StructuralComparer.Compare(receivedPubKey, pubKeyCaller2) == 0;
+        if (isCaller1) pubKeyOk = StructuralComparisons.StructuralComparer.Compare(receivedPubKey, pubKeyCaller2) == 0;
+        else pubKeyOk = StructuralComparisons.StructuralComparer.Compare(receivedPubKey, pubKeyCaller1) == 0;
         serviceNameOk = nodeRequestMessage.Request.ConversationRequest.IncomingCallNotification.ServiceName == serviceName;
 
         bool incomingCallNotificationOk2 = pubKeyOk && serviceNameOk;
 
-        byte[] calleeToken2 = nodeRequestMessage.Request.ConversationRequest.IncomingCallNotification.CalleeToken.ToByteArray();
+        if (isCaller1) calleeToken2 = nodeRequestMessage.Request.ConversationRequest.IncomingCallNotification.CalleeToken.ToByteArray();
+        else calleeToken1 = nodeRequestMessage.Request.ConversationRequest.IncomingCallNotification.CalleeToken.ToByteArray();
 
         nodeResponseMessage = mbCallee.CreateIncomingCallNotificationResponse(nodeRequestMessage);
         await clientCallee.SendMessageAsync(nodeResponseMessage);

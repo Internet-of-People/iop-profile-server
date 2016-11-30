@@ -344,6 +344,7 @@ namespace ProfileServerProtocolTestsExecutor
             {
               log.Error("Test process did not finish on time, killing it now.");
               KillProcess(testProcess);
+              noresult++;
               break;
             }
           }

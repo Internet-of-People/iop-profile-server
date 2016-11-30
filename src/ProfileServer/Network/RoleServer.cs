@@ -399,7 +399,7 @@ namespace ProfileServer.Network
 
 
     /// <summary>
-    /// Asynchronous read and processing function for each client that connects to the TCP server.
+    /// Handler for each client that connects to the TCP server.
     /// </summary>
     /// <param name="Client">Client that is connected to TCP server.</param>
     /// <remarks>The client is being handled in the processing loop until the connection to it 
@@ -407,10 +407,7 @@ namespace ProfileServer.Network
     /// which includes reading the message length prefix followed by the entire message.</remarks>
     private async void ClientHandlerAsync(Client Client)
     {
-      this.log.Info("(Client.RemoteEndPoint:{0})", Client.RemoteEndPoint);
-
-      string prefix = string.Format("{0}[{1}] ", this.logPrefix, Client.RemoteEndPoint);
-      PrefixLogger log = new PrefixLogger(this.logName, prefix);
+      log.Info("(Client.RemoteEndPoint:{0})", Client.RemoteEndPoint);
 
       clientList.AddNetworkPeer(Client);
       log.Debug("Client ID set to {0}.", Client.Id.ToHex());

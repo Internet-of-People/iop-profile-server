@@ -17,12 +17,13 @@ namespace ProfileServer.Network
   {
     /// <summary>
     /// The caller initiated the call by sending CallIdentityApplicationServiceRequest
-    /// and the node sent IncomingCallNotificationRequest to the callee.
+    /// and the profile server sent IncomingCallNotificationRequest to the callee.
+    /// The profile server is waiting for IncomingCallNotificationResponse.
     /// </summary>
     WaitingForCalleeResponse,
 
     /// <summary>
-    /// The callee replied to IncomingCallNotificationRequest and accepted the call.
+    /// The callee replied to IncomingCallNotificationRequest with IncomingCallNotificationResponse and thus accepted the call.
     /// The caller was informed in response to its CallIdentityApplicationServiceRequest that the callee accepted the call.
     /// Both parties are now expected to call to clAppService port and send their initial messages.
     /// We are now waiting for the first client to connect and send its initialization message.
@@ -484,6 +485,69 @@ namespace ProfileServer.Network
 
       switch (status)
       {
+        case RelayConnectionStatus.WaitingForCalleeResponse:
+          {
+            if (!isCaller)
+            {
+              // We have received a message from callee, but we did not receive its IncomingCallNotificationResponse.
+              // This may be OK if this message has been sent by callee and it just not has been processed before 
+              // the callee connected to clAppService port and sent us the initialization message.
+              // In this case we will try to wait a couple of seconds and see if we receive IncomingCallNotificationResponse.
+              // If yes, we continue as if we processed the message in the right order.
+              // In all other cases, this is a fatal error and we have to destroy the relay.
+              lockObject.Release();
+
+              bool statusChanged = false;
+              log.Warn("Callee sent initialization message before we received IncomingCallNotificationResponse. We will wait to see if it arrives soon.");
+              for (int i = 0; i < 5; i++)
+              {
+                log.Warn("Attempt #{0}, waiting 1 second.", i + 1);
+                await Task.Delay(1000);
+
+                await lockObject.WaitAsync();
+
+                log.Warn("Attempt #{0}, checking relay status.", i + 1);
+                if (status != RelayConnectionStatus.WaitingForCalleeResponse)
+                {
+                  log.Warn("Attempt #{0}, relay status changed to {1}.", i + 1, status);
+                  statusChanged = true;
+                }
+
+                lockObject.Release();
+
+                if (statusChanged) break;
+              }
+
+              await lockObject.WaitAsync();
+              if (statusChanged)
+              {
+                // Status of relay has change, which means either it has been destroyed already, or the IncomingCallNotificationResponse 
+                // message we were waiting for arrived. In any case, we call this method recursively, but it can not happen that we would end up here again.
+                lockObject.Release();
+
+                log.Trace("Calling ProcessIncomingMessage recursively.");
+                res = await ProcessIncomingMessage(Client, RequestMessage, Token);
+
+                await lockObject.WaitAsync();
+              }
+              else
+              {
+                log.Trace("Message received from caller and relay status is WaitingForCalleeResponse and IncomingCallNotificationResponse did not arrive, closing connection to client, destroying relay.");
+                res = Client.MessageBuilder.CreateErrorNotFoundResponse(RequestMessage);
+                Client.ForceDisconnect = true;
+                destroyRelay = true;
+              }
+            }
+            else
+            {
+              log.Trace("Message received from caller and relay status is WaitingForCalleeResponse, closing connection to client, destroying relay.");
+              res = Client.MessageBuilder.CreateErrorNotFoundResponse(RequestMessage);
+              Client.ForceDisconnect = true;
+              destroyRelay = true;
+            }
+            break;
+          }
+
         case RelayConnectionStatus.WaitingForFirstInitMessage:
           {
             log.Debug("Received an initialization message from the first client ID '{0}' on relay '{1}', waiting for the second client.", Client.Id.ToHex(), id);
@@ -600,7 +664,7 @@ namespace ProfileServer.Network
             Client.ForceDisconnect = true;
             break;
           }
-
+          
         default:
           log.Trace("Relay status is '{0}', closing connection to client, destroying relay.", status);
           res = Client.MessageBuilder.CreateErrorNotFoundResponse(RequestMessage);
@@ -616,7 +680,7 @@ namespace ProfileServer.Network
         Server serverComponent = (Server)Base.ComponentDictionary["Network.Server"];
         ClientList clientList = serverComponent.GetClientList();
         await clientList.DestroyNetworkRelay(this);
-        if (this != Client.Relay)
+        if ((this != Client.Relay) && (Client.Relay != null))
           await clientList.DestroyNetworkRelay(Client.Relay);
       }
 

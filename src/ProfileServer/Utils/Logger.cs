@@ -1,6 +1,7 @@
 ﻿using NLog;
 using System;
 using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 
 namespace ProfileServer.Utils
 {
