@@ -606,7 +606,7 @@ namespace ProfileServerSimulator
       foreach (ProfileServer ps in removedNeighbors)
       {
         NeighbourhoodChange change = new NeighbourhoodChange();
-        change.RemovedNodeId = ProtocolHelper.ByteArrayToByteString(ps.NodeProfile.NodeId);
+        change.RemovedNodeId = ps.NodeProfile.NodeId;
         changes.Add(change);
       }
 
