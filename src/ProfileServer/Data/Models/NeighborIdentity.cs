@@ -13,7 +13,7 @@ namespace ProfileServer.Data.Models
   /// <summary>
   /// Database representation of IoP Identity profile that is hosted in the node's neighborhood.
   /// </summary>
-  public class NeighborIdentity : BaseIdentity
+  public class NeighborIdentity : IdentityBase
   {
     private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Data.Models.NeighborIdentity");
   }

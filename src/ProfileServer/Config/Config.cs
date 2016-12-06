@@ -8,6 +8,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Net;
 using System.IO;
 using ProfileServer.Network;
+using ProfileServer.Utils;
 
 namespace ProfileServer.Config
 {
@@ -16,14 +17,21 @@ namespace ProfileServer.Config
   /// </summary>
   public enum ConfigValueType
   {
+    /// <summary>Boolean switch "on" or "off".</summary>
+    OnOffSwitch,
+
     /// <summary>String value that can not be empty.</summary>
     StringNonEmpty,
+
     /// <summary>String value that can be empty.</summary>
     StringEmpty,
+
     /// <summary>Integer value.</summary>
     Int,
+
     /// <summary>TCP/UDP port number - i.e. integer in range 0-65535.</summary>
     Port,
+
     /// <summary>IPv4 or IPv6 address or string "any".</summary>
     IpAddress
   }
@@ -73,6 +81,9 @@ namespace ProfileServer.Config
     /// <summary>Path to the directory where images are stored.</summary>
     public string ImageDataFolder;
 
+    /// <summary>Path to the directory where temporary files are stored.</summary>
+    public string TempDataFolder;
+
     /// <summary>Maximal total number of identities hosted by this node.</summary>
     public int MaxHostedIdentities;
 
@@ -87,6 +98,23 @@ namespace ProfileServer.Config
 
     /// <summary>Cryptographic keys of the node that can be used for signing messages and verifying signatures.</summary>
     public KeysEd25519 Keys;
+
+    /// <summary>Time in seconds between the last update of a shared profile received from a neighbor server up to the point when 
+    /// the profile server is allowed to delete the profile if it has not been refreshed.</summary>
+    public int NeighborProfileExpirationTimeSeconds;
+
+    /// <summary>Time in seconds between the last refresh request sent by the profile server to its Follower server.</summary>
+    public int FollowerRefreshTimeSeconds;
+
+    /// <summary>Test mode allows the server to violate protocol as some of the limitations are not enforced.</summary>
+    public bool TestModeEnabled;
+
+    /// <summary>Maximum number of neighbors that the profile server is going to accept.</summary>
+    public int MaxNeighborhoodSize;
+
+    /// <summary>Maximum number of follower servers the profile server is willing to share its database with.</summary>
+    public int MaxFollowerServersCount;
+
 
     public override bool Init()
     {
@@ -166,22 +194,29 @@ namespace ProfileServer.Config
       bool error = false;
       if ((Lines != null) && (Lines.Length > 0))
       {
+        bool testModeEnabled = false;
         string tcpServerTlsCertificateFileName = null;
         X509Certificate tcpServerTlsCertificate = null;
         ServerRolesConfig serverRoles = null;
         IPAddress serverInterface = null;
         string imageDataFolder = null;
+        string tempDataFolder = null;
         int maxHostedIdentities = 0;
         int maxIdentityRelations = 0;
         int neighborhoodInitializationParallelism = 0;
         int lbnPort = 0;
         IPEndPoint lbnEndPoint = null;
+        int neighborProfileExpirationTimeSeconds = 0;
+        int followerRefreshTimeSeconds = 0;
+        int maxNeighborhoodSize = 0;
+        int maxFollowerServersCount = 0;
 
         Dictionary<string, object> nameVal = new Dictionary<string, object>(StringComparer.Ordinal);
 
         // Definition of all supported values in configuration file together with their types.
         Dictionary<string, ConfigValueType> namesDefinition = new Dictionary<string, ConfigValueType>(StringComparer.Ordinal)
         {
+          { "test_mode",                               ConfigValueType.OnOffSwitch    },
           { "server_interface",                        ConfigValueType.IpAddress      },
           { "primary_interface_port",                  ConfigValueType.Port           },
           { "server_neighbor_interface_port",          ConfigValueType.Port           },
@@ -190,15 +225,21 @@ namespace ProfileServer.Config
           { "client_app_service_interface_port",       ConfigValueType.Port           },          
           { "tls_server_certificate",                  ConfigValueType.StringNonEmpty },
           { "image_data_folder",                       ConfigValueType.StringNonEmpty },
+          { "tmp_data_folder",                         ConfigValueType.StringNonEmpty },
           { "max_hosted_identities",                   ConfigValueType.Int            },
           { "max_identity_relations",                  ConfigValueType.Int            },
           { "neighborhood_initialization_parallelism", ConfigValueType.Int            },
           { "lbn_port",                                ConfigValueType.Port           },
+          { "neighbor_profile_expiration_time",        ConfigValueType.Int            },
+          { "max_neighborhood_size",                   ConfigValueType.Int            },
+          { "max_follower_servers_count",              ConfigValueType.Int            },
+          { "follower_refresh_time",                   ConfigValueType.Int            },
         };
 
         error = !LinesToNameValueDictionary(Lines, namesDefinition, nameVal);
         if (!error)
         {
+          testModeEnabled = (bool)nameVal["test_mode"];
           serverInterface = (IPAddress)nameVal["server_interface"];
           int primaryInterfacePort = (int)nameVal["primary_interface_port"];
           int serverNeighborInterfacePort = (int)nameVal["server_neighbor_interface_port"];
@@ -208,14 +249,22 @@ namespace ProfileServer.Config
 
           tcpServerTlsCertificateFileName = (string)nameVal["tls_server_certificate"];
           imageDataFolder = (string)nameVal["image_data_folder"];
+          tempDataFolder = (string)nameVal["tmp_data_folder"];
           maxHostedIdentities = (int)nameVal["max_hosted_identities"];
           maxIdentityRelations = (int)nameVal["max_identity_relations"];
           neighborhoodInitializationParallelism = (int)nameVal["neighborhood_initialization_parallelism"];
 
           lbnPort = (int)nameVal["lbn_port"];
 
+          neighborProfileExpirationTimeSeconds = (int)nameVal["neighbor_profile_expiration_time"];
+          followerRefreshTimeSeconds = (int)nameVal["follower_refresh_time"];
+
+          maxNeighborhoodSize = (int)nameVal["max_neighborhood_size"];
+          maxFollowerServersCount = (int)nameVal["max_follower_servers_count"];
+
+
           serverRoles = new ServerRolesConfig();
-          error = !(serverRoles.AddRoleServer(primaryInterfacePort, ServerRole.PrimaryUnrelated)
+          error = !(serverRoles.AddRoleServer(primaryInterfacePort, ServerRole.Primary)
                  && serverRoles.AddRoleServer(serverNeighborInterfacePort, ServerRole.ServerNeighbor)
                  && serverRoles.AddRoleServer(clientNonCustomerInterfacePort, ServerRole.ClientNonCustomer)
                  && serverRoles.AddRoleServer(clientCustomerInterfacePort, ServerRole.ClientCustomer)
@@ -225,7 +274,7 @@ namespace ProfileServer.Config
         if (!error)
         {
           string finalTlsCertFileName;
-          if (FindFile(tcpServerTlsCertificateFileName, out finalTlsCertFileName))
+          if (FileHelper.FindFile(tcpServerTlsCertificateFileName, out finalTlsCertFileName))
           {
             tcpServerTlsCertificateFileName = finalTlsCertFileName;
           }
@@ -265,9 +314,30 @@ namespace ProfileServer.Config
 
         if (!error)
         {
-          if ((maxHostedIdentities <= 0) || (maxHostedIdentities > BaseIdentity.MaxHostedIdentities))
+          try
           {
-            log.Error("max_hosted_identities must be an integer between 1 and {0}.", BaseIdentity.MaxHostedIdentities);
+            if (Directory.Exists(tempDataFolder))
+            {
+              if (!FileHelper.CleanDirectory(tempDataFolder))
+              {
+                log.Error("Unable to remove all files and folders from temporary directory '{0}'.", tempDataFolder);
+                error = true;
+              }
+            }
+            else Directory.CreateDirectory(tempDataFolder);
+          }
+          catch (Exception e)
+          {
+            log.Error("Exception occurred while initializing image data folder '{0}': {1}", imageDataFolder, e.ToString());
+            error = true;
+          }
+        }
+
+        if (!error)
+        {
+          if ((maxHostedIdentities <= 0) || (maxHostedIdentities > IdentityBase.MaxHostedIdentities))
+          {
+            log.Error("max_hosted_identities must be an integer between 1 and {0}.", IdentityBase.MaxHostedIdentities);
             error = true;
           }
         }
@@ -306,17 +376,60 @@ namespace ProfileServer.Config
             lbnEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), lbnPort);
         }
 
+        if (!error)
+        {
+          if (!testModeEnabled && (neighborProfileExpirationTimeSeconds < Neighbor.MinNeighborhoodExpirationTimeSeconds))
+          {
+            log.Error("neighbor_profile_expiration_time must be an integer number greater or equal to {0}.", Neighbor.MinNeighborhoodExpirationTimeSeconds);
+            error = true;
+          }
+        }
+
+        if (!error)
+        {
+          bool followerRefreshTimeSecondsValid = (0 < followerRefreshTimeSeconds) && (followerRefreshTimeSeconds < Neighbor.MinNeighborhoodExpirationTimeSeconds);
+          if (!testModeEnabled && followerRefreshTimeSecondsValid)
+          {
+            log.Error("follower_refresh_time must be an integer number between 1 and {0}.", Neighbor.MinNeighborhoodExpirationTimeSeconds - 1);
+            error = true;
+          }
+        }
+
+        if (!error)
+        {
+          if (!testModeEnabled && (maxNeighborhoodSize < Neighbor.MinMaxNeighborhoodSize))
+          {
+            log.Error("max_neighborhood_size must be an integer number greater or equal to {0}.", Neighbor.MinMaxNeighborhoodSize);
+            error = true;
+          }
+        }
+
+        if (!error)
+        {
+          if (!testModeEnabled && (maxFollowerServersCount < maxNeighborhoodSize))
+          {
+            log.Error("max_follower_servers_count must be an integer greater or equal to max_neighborhood_size.");
+            error = true;
+          }
+        }
+
         // Finally, if everything is OK, change the actual configuration.
         if (!error)
         {
+          TestModeEnabled = testModeEnabled;
           ServerInterface = serverInterface;
           ServerRoles = serverRoles;
           TcpServerTlsCertificate = tcpServerTlsCertificate;
           ImageDataFolder = imageDataFolder;
+          TempDataFolder = tempDataFolder;
           MaxHostedIdentities = maxHostedIdentities;
           MaxIdenityRelations = maxIdentityRelations;
           NeighborhoodInitializationParallelism = neighborhoodInitializationParallelism;
           LbnEndPoint = lbnEndPoint;
+          NeighborProfileExpirationTimeSeconds = neighborProfileExpirationTimeSeconds;
+          FollowerRefreshTimeSeconds = followerRefreshTimeSeconds;
+          MaxNeighborhoodSize = maxNeighborhoodSize;
+          MaxFollowerServersCount = maxFollowerServersCount;
 
           log.Info("New configuration loaded successfully.");
         }
@@ -329,41 +442,6 @@ namespace ProfileServer.Config
       return res;
     }
 
-
-    /// <summary>
-    /// Tries to find a file using its name or path.
-    /// </summary>
-    /// <param name="FileName">Name of the file or relative or full path to the file.</param>
-    /// <param name="ExistingFileName">String to receive the name of an existing file if the function succeeds.</param>
-    /// <returns>true if the file is found, false otherwise.</returns>
-    public bool FindFile(string FileName, out string ExistingFileName)
-    {
-      log.Trace("(FileName:'{0}')", FileName);
-
-      bool res = false;
-      ExistingFileName = null;
-      if (File.Exists(FileName))
-      {
-        ExistingFileName = FileName;
-        res = true;
-      }
-      else 
-      {
-        string path = System.Reflection.Assembly.GetEntryAssembly().Location;
-        path = Path.GetDirectoryName(path);
-        path = Path.Combine(path, FileName);
-        log.Trace("Checking path '{0}'.", path);
-        if (File.Exists(path))
-        {
-          ExistingFileName = path;
-          res = true;
-        }
-      }
-
-      if (res) log.Trace("(-):{0},ExistingFileName='{1}'", res, ExistingFileName);
-      else log.Trace("(-):{0}", res);
-      return res;
-    }
 
     /// <summary>
     /// Converts an array of configuration lines to a dictionary name-value structure,
@@ -470,6 +548,18 @@ namespace ProfileServer.Config
                 error = false;
               }
               else log.Error("Value for name '{0}' on line {1} can not be empty.", name, lineNumber);
+
+              break;
+            }
+
+          case ConfigValueType.OnOffSwitch:
+            {
+              if ((value == "on") || (value == "off"))
+              {
+                NameVal.Add(name, value == "on");
+                error = false;
+              }
+              else log.Error("Value for name '{0}' on line {1} can only be either 'on' or 'off'.", name, lineNumber);
 
               break;
             }

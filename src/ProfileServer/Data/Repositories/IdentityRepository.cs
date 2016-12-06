@@ -13,9 +13,9 @@ namespace ProfileServer.Data.Repositories
 {
   /// <summary>
   /// Generic repository for identities, which is the base for HomeIdentityReposity for identities hosted on this node 
-  /// and NeighborhoodIdentityRepository for identities hosted in this node's neighborhood.
+  /// and NeighborIdentityRepository for identities hosted in this node's neighborhood.
   /// </summary>
-  public class IdentityRepository<T> : GenericRepository<T> where T:BaseIdentity
+  public class IdentityRepository<T> : GenericRepository<T> where T:IdentityBase
   {
     private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Data.Repositories.IdentityRepository");
 
@@ -52,7 +52,7 @@ namespace ProfileServer.Data.Repositories
 
       IQueryable<T> query = dbSet;
 
-      // If we are querying HomeIdentityRepository we need to make sure only active identities are counted in.
+      // If we are querying HostedIdentityRepository we need to make sure only active identities are counted in.
       bool homeRepo = this is HostedIdentityRepository;
       if (homeRepo)
         query = query.Where(i => i.ExpirationDate == null);
@@ -88,8 +88,8 @@ namespace ProfileServer.Data.Repositories
       if (ResultOffset > 0) query = query.Skip((int)ResultOffset).Take((int)MaxResults);
       else query = query.Take((int)MaxResults);
 
-      // Execute query.
-      List<T> res = await query.ToListAsync();
+      // Execute query with well defined ordering.
+      List<T> res = await query.OrderBy(i => i.IdentityId).ToListAsync();
 
       log.Trace("(-):*.Count={0}", res.Count);
       return res;
@@ -101,7 +101,7 @@ namespace ProfileServer.Data.Repositories
     /// </summary>
     /// <param name="WildcardFilter">Wildcard filter.</param>
     /// <returns>Filter expression for the database query.</returns>
-    public static Expression<Func<Q, bool>> GetNameFilterExpression<Q>(string WildcardFilter) where Q : BaseIdentity
+    public static Expression<Func<Q, bool>> GetNameFilterExpression<Q>(string WildcardFilter) where Q : IdentityBase
     {
       log.Trace("(WildcardFilter:'{0}')", WildcardFilter);
       string wildcardFilter = WildcardFilter.ToLowerInvariant();
@@ -140,7 +140,7 @@ namespace ProfileServer.Data.Repositories
     /// </summary>
     /// <param name="WildcardFilter">Type filter.</param>
     /// <returns>Filter expression for the database query.</returns>
-    public static Expression<Func<Q, bool>> GetTypeFilterExpression<Q>(string WildcardFilter) where Q : BaseIdentity
+    public static Expression<Func<Q, bool>> GetTypeFilterExpression<Q>(string WildcardFilter) where Q : IdentityBase
     {
       log.Trace("(WildcardFilter:'{0}')", WildcardFilter);
       string wildcardFilter = WildcardFilter.ToLowerInvariant();
@@ -181,7 +181,7 @@ namespace ProfileServer.Data.Repositories
     /// <param name="LocationFilter">GPS location of the target area centre.</param>
     /// <param name="Radius">Target area radius in metres.</param>
     /// <returns>Filter expression for the database query.</returns>
-    public static Expression<Func<Q, bool>> GetLocationFilterExpression<Q>(GpsLocation LocationFilter, uint Radius) where Q : BaseIdentity
+    public static Expression<Func<Q, bool>> GetLocationFilterExpression<Q>(GpsLocation LocationFilter, uint Radius) where Q : IdentityBase
     {
       log.Trace("(LocationFilter:'{0:US}',Radius:{1})", LocationFilter, Radius);
       Expression<Func<Q, bool>> res = null;

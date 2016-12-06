@@ -14,9 +14,9 @@ namespace ProfileServer.Data.Models
   /// Database representation of IoP Identity profile. This is base class for HomeIdentity and NeighborIdentity classes
   /// and must not be used on its own.
   /// </summary>
-  public class BaseIdentity
+  public abstract class IdentityBase
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Data.Models.BaseIdentity");
+    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Data.Models.IdentityBase");
 
     /// <summary>Maximum number of identities that a profile server can host.</summary>
     public const int MaxHostedIdentities = 20000;
@@ -48,10 +48,10 @@ namespace ProfileServer.Data.Models
     [MaxLength(IdentifierLength)]
     public byte[] IdentityId { get; set; }
 
-    /// <summary>Identifier of the home node or empty array if the identity is hosted by this node.</summary>
+    /// <summary>Identifier of the server that hosts the identity profile, or empty array if the identity is hosted by this profile server.</summary>
     /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
     [MaxLength(IdentifierLength)]
-    public byte[] HomeNodeId { get; set; }
+    public byte[] HostingServerId { get; set; }
 
     /// <summary>Cryptographic public key that represents the identity.</summary>
     [Required]
@@ -100,16 +100,26 @@ namespace ProfileServer.Data.Models
 
     /// <summary>
     /// Expiration date after which this whole record can be deleted.
-    /// This is used in case of the node clients when they change their home node 
-    /// and the node holds the redirection information. The redirect is maintained 
-    /// only until the expiration date.
     /// 
-    /// In the HomeIdentityRepository, if ExpirationDate is null, the identity's contract 
-    /// is valid. If it is not null, it has been cancelled.
+    /// <para>
+    /// In the HostedIdentityRepository, this is used when the profile server clients change their profile server
+    /// and the server holds the redirection information to their new hosting server. The redirect is maintained 
+    /// only until the expiration date.
+    /// </para>
+    /// 
+    /// <para>
+    /// In the HostedIdentityRepository, if ExpirationDate is null, the identity's contract is valid. 
+    /// If it is not null, it has been cancelled.
+    /// </para>
+    /// 
+    /// <para>
+    /// In the NeighborIdentityRepository, ExpirationDate is not used. Instead Neighbor.LastRefreshTime is used 
+    /// to track when the identities shared by a neighbor should expire.
+    /// </para>
     /// </summary>
     /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
     public DateTime? ExpirationDate { get; set; }
-#warning TODO: clean up expired identities
+#warning TODO: Implement clean up of expired identities for HostedIdentity.
 
 
 

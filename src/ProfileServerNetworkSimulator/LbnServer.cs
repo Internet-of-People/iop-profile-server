@@ -17,37 +17,31 @@ namespace ProfileServerSimulator
   /// </summary>
   public class LbnServer
   {
-    private static PrefixLogger log;
+    private PrefixLogger log;
 
     /// <summary>Interface IP address to listen on.</summary>
-    public IPAddress IpAddress;
+    private IPAddress ipAddress;
 
     /// <summary>TCP port to listen on.</summary>
-    public int Port;
+    private int port;
 
     /// <summary>Associated profile server.</summary>
-    public ProfileServer ProfileServer;
+    private ProfileServer profileServer;
 
     /// <summary>Lock object to protect access to Neighbors.</summary>
-    public object NeighborsLock = new object();
+    private object neighborsLock = new object();
 
     /// <summary>List of profile servers that are neighbors of ProfileServer.</summary>
-    public Dictionary<string, ProfileServer> Neighbors = new Dictionary<string, ProfileServer>(StringComparer.Ordinal);
+    private Dictionary<string, ProfileServer> neighbors = new Dictionary<string, ProfileServer>(StringComparer.Ordinal);
 
     /// <summary>TCP server that provides information about the neighborhood via LocNet protocol.</summary>
-    public TcpListener Listener;
+    private TcpListener listener;
 
     /// <summary>If profile server is connected, this is its connection.</summary>
-    public TcpClient ConnectedProfileServer;
+    private TcpClient connectedProfileServer;
 
     /// <summary>If profile server is connected, this is its message builder.</summary>
-    public MessageBuilderLocNet ConnectedProfileServerMessageBuilder;
-
-    /// <summary>If profile server is connected, this is its node profile.</summary>
-    public NodeProfile ConnectedProfileServerNodeProfile;
-
-    /// <summary>If profile server is connected, this is its location.</summary>
-    public Iop.Locnet.GpsLocation ConnectedProfileServerLocation;
+    private MessageBuilderLocNet connectedProfileServerMessageBuilder;
 
     /// <summary>Event that is set when acceptThread is not running.</summary>
     private ManualResetEvent acceptThreadFinished = new ManualResetEvent(true);
@@ -56,13 +50,13 @@ namespace ProfileServerSimulator
     private Thread acceptThread;
 
     /// <summary>True if the shutdown was initiated, false otherwise.</summary>
-    public bool IsShutdown = false;
+    private bool isShutdown = false;
 
     /// <summary>Shutdown event is set once the shutdown was initiated.</summary>
-    public ManualResetEvent ShutdownEvent = new ManualResetEvent(false);
+    private ManualResetEvent shutdownEvent = new ManualResetEvent(false);
 
     /// <summary>Cancellation token source for asynchronous tasks that is being triggered when the shutdown is initiated.</summary>
-    public CancellationTokenSource ShutdownCancellationTokenSource = new CancellationTokenSource();
+    private CancellationTokenSource shutdownCancellationTokenSource = new CancellationTokenSource();
 
     /// <summary>Lock object for writing to client streams. This is simulation only, we do not expect more than one client.</summary>
     private SemaphoreSlim StreamWriteLock = new SemaphoreSlim(1);
@@ -73,16 +67,16 @@ namespace ProfileServerSimulator
     /// <param name="ProfileServer">Associated profile server.</param>
     public LbnServer(ProfileServer ProfileServer)
     {
-      log = new PrefixLogger("ProfileServerSimulator.LbnServer", ProfileServer.Name);
+      log = new PrefixLogger("ProfileServerSimulator.LbnServer", "[" + ProfileServer.Name + "] ");
       log.Trace("()");
 
-      this.ProfileServer = ProfileServer;
-      IpAddress = ProfileServer.IpAddress;
-      Port = ProfileServer.LbnPort;
+      this.profileServer = ProfileServer;
+      ipAddress = ProfileServer.IpAddress;
+      port = ProfileServer.LbnPort;
 
-      Listener = new TcpListener(IpAddress, Port);
-      Listener.Server.LingerState = new LingerOption(true, 0);
-      Listener.Server.NoDelay = true;
+      listener = new TcpListener(ipAddress, port);
+      listener.Server.LingerState = new LingerOption(true, 0);
+      listener.Server.NoDelay = true;
 
       log.Trace("(-)");
     }
@@ -98,8 +92,8 @@ namespace ProfileServerSimulator
       bool res = false;
       try
       {
-        Listener.Server.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-        Listener.Start();
+        listener.Server.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+        listener.Start();
         res = true;
       }
       catch (Exception e)
@@ -129,9 +123,9 @@ namespace ProfileServerSimulator
       bool res = false;
       try
       {
-        if (Listener != null)
+        if (listener != null)
         {
-          Listener.Stop();
+          listener.Stop();
           res = true;
         }
       }
@@ -152,9 +146,9 @@ namespace ProfileServerSimulator
     {
       log.Trace("()");
 
-      IsShutdown = true;
-      ShutdownEvent.Set();
-      ShutdownCancellationTokenSource.Cancel();
+      isShutdown = true;
+      shutdownEvent.Set();
+      shutdownCancellationTokenSource.Cancel();
 
       Stop();
 
@@ -170,23 +164,23 @@ namespace ProfileServerSimulator
     /// </summary>
     public void AcceptThread()
     {
-      log.Info("()");
+      log.Trace("()");
 
       acceptThreadFinished.Reset();
 
       AutoResetEvent acceptTaskEvent = new AutoResetEvent(false);
 
-      while (!IsShutdown)
+      while (!isShutdown)
       {
-        log.Info("Waiting for new client.");
-        Task<TcpClient> acceptTask = Listener.AcceptTcpClientAsync();
+        log.Debug("Waiting for new client.");
+        Task<TcpClient> acceptTask = listener.AcceptTcpClientAsync();
         acceptTask.ContinueWith(t => acceptTaskEvent.Set());
 
-        WaitHandle[] handles = new WaitHandle[] { acceptTaskEvent, ShutdownEvent };
+        WaitHandle[] handles = new WaitHandle[] { acceptTaskEvent, shutdownEvent };
         int index = WaitHandle.WaitAny(handles);
-        if (handles[index] == ShutdownEvent)
+        if (handles[index] == shutdownEvent)
         {
-          log.Info("Shutdown detected.");
+          log.Debug("Shutdown detected.");
           break;
         }
 
@@ -194,7 +188,7 @@ namespace ProfileServerSimulator
         {
           // acceptTask is finished here, asking for Result won't block.
           TcpClient client = acceptTask.Result;
-          log.Info("New client '{0}' accepted.", client.Client.RemoteEndPoint);
+          log.Debug("New client '{0}' accepted.", client.Client.RemoteEndPoint);
           ClientHandlerAsync(client);
         }
         catch (Exception e)
@@ -205,7 +199,7 @@ namespace ProfileServerSimulator
 
       acceptThreadFinished.Set();
 
-      log.Info("(-)");
+      log.Trace("(-)");
     }
 
 
@@ -215,16 +209,16 @@ namespace ProfileServerSimulator
     /// <param name="Client">Client that is connected to TCP server.</param>
     private async void ClientHandlerAsync(TcpClient Client)
     {
-      log.Info("(Client.Client.RemoteEndPoint:{0})", Client.Client.RemoteEndPoint);
+      log.Debug("(Client.Client.RemoteEndPoint:{0})", Client.Client.RemoteEndPoint);
 
-      ConnectedProfileServer = Client;
-      ConnectedProfileServerMessageBuilder = new MessageBuilderLocNet(0, new List<SemVer>() { SemVer.V100 });
+      connectedProfileServer = Client;
+      connectedProfileServerMessageBuilder = new MessageBuilderLocNet(0, new List<SemVer>() { SemVer.V100 });
 
-      await ReceiveMessageLoop(Client, ConnectedProfileServerMessageBuilder);
+      await ReceiveMessageLoop(Client, connectedProfileServerMessageBuilder);
 
       Client.Dispose();
 
-      log.Info("(-)");
+      log.Debug("(-)");
     }
 
 
@@ -242,10 +236,10 @@ namespace ProfileServerSimulator
       {
         NetworkStream stream = Client.GetStream();
         RawMessageReader messageReader = new RawMessageReader(stream);
-        while (!IsShutdown)
+        while (!isShutdown)
         {
-          RawMessageResult rawMessage = await messageReader.ReceiveMessage(ShutdownCancellationTokenSource.Token);
-          bool disconnect = rawMessage.Disconnect;
+          RawMessageResult rawMessage = await messageReader.ReceiveMessage(shutdownCancellationTokenSource.Token);
+          bool disconnect = rawMessage.Data != null;
           bool protocolViolation = rawMessage.ProtocolViolation;
           if (rawMessage.Data != null)
           {
@@ -286,6 +280,7 @@ namespace ProfileServerSimulator
       try
       {
         res = MessageWithHeader.Parser.ParseFrom(Data).Body;
+        log.Trace("Received message: {0}", res.ToString());
       }
       catch (Exception e)
       {
@@ -324,8 +319,7 @@ namespace ProfileServerSimulator
       log.Debug("()");
       try
       {
-        string msgStr = IncomingMessage.ToString();
-        log.Trace("Received message type is {0}, message ID is {1}:\n{2}", IncomingMessage.MessageTypeCase, IncomingMessage.Id, msgStr);
+        log.Trace("Received message type is {0}, message ID is {1}.", IncomingMessage.MessageTypeCase, IncomingMessage.Id);
         switch (IncomingMessage.MessageTypeCase)
         {
           case Message.MessageTypeOneofCase.Request:
@@ -343,17 +337,15 @@ namespace ProfileServerSimulator
                     switch (request.LocalService.LocalServiceRequestTypeCase)
                     {
                       case LocalServiceRequest.LocalServiceRequestTypeOneofCase.RegisterService:
-                        // We simulate this by doing nothing, just send successful reply.
-                        responseMessage = MessageBuilder.CreateRegisterServiceResponse(IncomingMessage);
+                        responseMessage = ProcessMessageRegisterServiceRequest(Client, MessageBuilder, IncomingMessage);
                         break;
 
                       case LocalServiceRequest.LocalServiceRequestTypeOneofCase.DeregisterService:
-                        responseMessage = MessageBuilder.CreateRegisterServiceResponse(IncomingMessage);
-                        // We simulate this by doing nothing, just send successful reply.
+                        responseMessage = ProcessMessageDeregisterServiceRequest(Client, MessageBuilder, IncomingMessage);
                         break;
 
                       case LocalServiceRequest.LocalServiceRequestTypeOneofCase.GetNeighbourNodes:
-                        responseMessage = await ProcessMessageGetNeighbourNodesByDistanceLocalRequestAsync(Client, MessageBuilder, IncomingMessage);
+                        responseMessage = ProcessMessageGetNeighbourNodesByDistanceLocalRequest(Client, MessageBuilder, IncomingMessage);
                         break;
 
                       default:
@@ -451,7 +443,8 @@ namespace ProfileServerSimulator
       if (res)
       {
         // If the message was sent successfully to the target, we close the connection only in case of protocol violation error.
-        res = Message.Response.Status != Status.ErrorProtocolViolation;
+        if (Message.MessageTypeCase == Message.MessageTypeOneofCase.Response)
+          res = Message.Response.Status != Status.ErrorProtocolViolation;
       }
 
       log.Trace("(-):{0}", res);
@@ -472,7 +465,7 @@ namespace ProfileServerSimulator
       bool res = false;
 
       string msgStr = Message.ToString();
-      log.Trace("Sending response to client:\n{0}", msgStr);
+      log.Trace("Sending message:\n{0}", msgStr);
       byte[] responseBytes = ProtocolHelper.GetMessageBytes(Message);
 
       await StreamWriteLock.WaitAsync();
@@ -509,17 +502,21 @@ namespace ProfileServerSimulator
     /// <param name="MessageBuilder">Client's message builder.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public async Task<Message> ProcessMessageGetNeighbourNodesByDistanceLocalRequestAsync(TcpClient Client, MessageBuilderLocNet MessageBuilder, Message RequestMessage)
+    public Message ProcessMessageGetNeighbourNodesByDistanceLocalRequest(TcpClient Client, MessageBuilderLocNet MessageBuilder, Message RequestMessage)
     {
       log.Trace("()");
 
       Message res = null;
 
       GetNeighbourNodesByDistanceLocalRequest getNeighbourNodesByDistanceLocalRequest = RequestMessage.Request.LocalService.GetNeighbourNodes;
+      List<NodeInfo> neighborList = new List<NodeInfo>();
+      foreach (ProfileServer ps in neighbors.Values)
+      {
+        NodeInfo ni = ps.GetNodeInfo();
+        neighborList.Add(ni);
+      }
 
-      res = MessageBuilder.CreateErrorInternalResponse(RequestMessage);
-      await Task.Delay(1);
-
+      res = MessageBuilder.CreateGetNeighbourNodesByDistanceLocalResponse(RequestMessage, neighborList);
 
       log.Trace("(-):*.Response.Status={0}", res.Response.Status);
       return res;
@@ -535,39 +532,58 @@ namespace ProfileServerSimulator
     {
       log.Trace("(NeighborhoodList.Count:{0})", NeighborhoodList.Count);
 
-      List<ProfileServer> newNeighbors = new List<ProfileServer>();
+      List<NeighbourhoodChange> changes = new List<NeighbourhoodChange>();
       bool res = false;
-      lock (NeighborsLock)
+      lock (neighborsLock)
       {
         foreach (ProfileServer ps in NeighborhoodList)
         {
           // Do not add your own profile server.
-          if (ps.Name == ProfileServer.Name) continue;
+          if (ps.Name == profileServer.Name) continue;
 
           // Ignore neighbors that we already have in the list.
-          if (Neighbors.ContainsKey(ps.Name)) continue;
+          if (neighbors.ContainsKey(ps.Name)) continue;
 
-          Neighbors.Add(ps.Name, ps);
-          log.Trace("Profile server '{0}' added to the neighborhood of server '{1}'.", ps.Name, ProfileServer.Name);
+          if (ps.IsInitialized())
+          {
+            neighbors.Add(ps.Name, ps);
+            log.Debug("Profile server '{0}' added to the neighborhood of server '{1}'.", ps.Name, profileServer.Name);
 
-          newNeighbors.Add(ps);
+            // This neighbor server already runs, so we know its profile 
+            // we can inform our profile server about it.
+            NeighbourhoodChange change = new NeighbourhoodChange();
+            change.AddedNodeInfo = ps.GetNodeInfo();
+            changes.Add(change);
+          }
+          else
+          {
+            // This neighbor server does not run yet, so we do not have its profile.
+            // We will install an event to be triggered when this server starts.
+            log.Debug("Profile server '{0}' is not initialized yet, installing notification for server '{1}'.", ps.Name, profileServer.Name);
+            ps.InstallInitializationNeighborhoodNotification(profileServer);
+          }
         }
       }
 
-      List<NeighbourhoodChange> changes = new List<NeighbourhoodChange>();
-      foreach (ProfileServer ps in newNeighbors)
+      if (connectedProfileServer != null)
       {
-        NeighbourhoodChange change = new NeighbourhoodChange();
-        change.AddedNodeInfo = new NodeInfo()
+        // If our profile server is running already, adding servers to its neighborhood 
+        // ends with sending update notification to the profile server.
+        if (changes.Count > 0)
         {
-          Profile = ps.NodeProfile,
-          Location = ps.NodeLocation
-        };
-        changes.Add(change);
+          log.Debug("Sending '{0}' neighborhood changes to profile server '{1}'.", changes.Count, profileServer.Name);
+          Message message = connectedProfileServerMessageBuilder.CreateNeighbourhoodChangedNotificationRequest(changes);
+          res = SendMessageAsync(connectedProfileServer, message).Result;
+        }
+        else log.Debug("No neighborhood changes to send to profile server '{0}'.", profileServer.Name);
       }
-
-      Message message = ConnectedProfileServerMessageBuilder.CreateNeighbourhoodChangedNotificationRequest(changes);
-      res = SendMessageAsync(ConnectedProfileServer, message).Result;
+      else
+      {
+        // Our profile server is not started/connected yet, which means we just modified its neighborhood,
+        // and the information about its neighborhood will be send to it once it sends us GetNeighbourNodesByDistanceLocalRequest.
+        log.Debug("Profile server '{0}' is not connected, can't send changes.", profileServer.Name);
+        res = true;
+      }
 
       log.Trace("(-):{0}", res);
       return res;
@@ -575,7 +591,7 @@ namespace ProfileServerSimulator
 
 
     /// <summary>
-    /// Cancels neighbor connections to the profile server.
+    /// Removes servers from the profile server's neighborhood.
     /// </summary>
     /// <param name="NeighborhoodList">List of servers to cancel neighbor connection with..</param>
     /// <returns>true if the function succeeds, false otherwise.</returns>
@@ -583,37 +599,103 @@ namespace ProfileServerSimulator
     {
       log.Trace("(NeighborhoodList.Count:{0})", NeighborhoodList.Count);
 
-      List<ProfileServer> removedNeighbors = new List<ProfileServer>();
+      List<NeighbourhoodChange> changes = new List<NeighbourhoodChange>();
       bool res = false;
-      lock (NeighborsLock)
+      lock (neighborsLock)
       {
         foreach (ProfileServer ps in NeighborhoodList)
         {
           // Do not process your own profile server.
-          if (ps.Name == ProfileServer.Name) continue;
+          if (ps.Name == profileServer.Name) continue;
 
-          // Ignore servers that are not in the neighborhood.
-          if (!Neighbors.ContainsKey(ps.Name)) continue;
+          if (ps.IsInitialized())
+          {
+            // Ignore servers that are not in the neighborhood.
+            if (!neighbors.ContainsKey(ps.Name)) continue;
 
-          Neighbors.Remove(ps.Name);
-          log.Trace("Profile server '{0}' removed from the neighborhood of server '{1}'.", ps.Name, ProfileServer.Name);
+            neighbors.Remove(ps.Name);
+            log.Trace("Profile server '{0}' removed from the neighborhood of server '{1}'.", ps.Name, profileServer.Name);
 
-          removedNeighbors.Add(ps);
+            // This neighbor server already runs, so we know its profile 
+            // we can inform our profile server about it.
+            NeighbourhoodChange change = new NeighbourhoodChange();
+            change.RemovedNodeId = ps.GetNetworkId();
+            changes.Add(change);
+          }
+          else
+          {
+            // This neighbor server does not run yet, so we do not have its profile.
+            // We will uninstall a possibly installed event.
+            log.Debug("Profile server '{0}' is not initialized yet, uninstalling notification for server '{1}'.", ps.Name, profileServer.Name);
+            ps.UninstallInitializationNeighborhoodNotification(profileServer);
+          }
         }
       }
 
-      List<NeighbourhoodChange> changes = new List<NeighbourhoodChange>();
-      foreach (ProfileServer ps in removedNeighbors)
+      if (connectedProfileServer != null)
       {
-        NeighbourhoodChange change = new NeighbourhoodChange();
-        change.RemovedNodeId = ps.NodeProfile.NodeId;
-        changes.Add(change);
+        // If our profile server is running already, removing servers to its neighborhood 
+        // ends with sending update notification to the profile server.
+        if (changes.Count > 0)
+        {
+          log.Debug("Sending '{0}' neighborhood changes to profile server '{1}'.", changes.Count, profileServer.Name);
+          Message message = connectedProfileServerMessageBuilder.CreateNeighbourhoodChangedNotificationRequest(changes);
+          res = SendMessageAsync(connectedProfileServer, message).Result;
+        }
+        else log.Debug("No neighborhood changes to send to profile server '{0}'.", profileServer.Name);
+      }
+      else
+      {
+        // Our profile server is not started/connected yet, which means we just modify its neighborhood,
+        // and the information about its neighborhood will be send to it once it sends us GetNeighbourNodesByDistanceLocalRequest.
+        log.Debug("Profile server '{0}' is not connected, can't send changes.", profileServer.Name);
+        res = true;
       }
 
-      Message message = ConnectedProfileServerMessageBuilder.CreateNeighbourhoodChangedNotificationRequest(changes);
-      res = SendMessageAsync(ConnectedProfileServer, message).Result;
-
       log.Trace("(-):{0}", res);
+      return res;
+    }
+
+
+    /// <summary>
+    /// Processes RegisterServiceRequest message from client.
+    /// <para>Obtains information about the profile server's NodeProfile.</para>
+    /// </summary>
+    /// <param name="Client">TCP client that sent the request.</param>
+    /// <param name="MessageBuilder">Client's message builder.</param>
+    /// <param name="RequestMessage">Full request message.</param>
+    /// <returns>Response message to be sent to the client.</returns>
+    public Message ProcessMessageRegisterServiceRequest(TcpClient Client, MessageBuilderLocNet MessageBuilder, Message RequestMessage)
+    {
+      log.Trace("()");
+
+      Message res = MessageBuilder.CreateRegisterServiceResponse(RequestMessage);
+
+      RegisterServiceRequest registerServiceRequest = RequestMessage.Request.LocalService.RegisterService;
+      profileServer.SetNodeProfile(registerServiceRequest.NodeProfile);
+
+      log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+      return res;
+    }
+
+    /// <summary>
+    /// Processes DeregisterServiceRequest message from client.
+    /// <para>Removes information about the profile server's NodeProfile.</para>
+    /// </summary>
+    /// <param name="Client">TCP client that sent the request.</param>
+    /// <param name="MessageBuilder">Client's message builder.</param>
+    /// <param name="RequestMessage">Full request message.</param>
+    /// <returns>Response message to be sent to the client.</returns>
+    public Message ProcessMessageDeregisterServiceRequest(TcpClient Client, MessageBuilderLocNet MessageBuilder, Message RequestMessage)
+    {
+      log.Trace("()");
+
+      Message res = MessageBuilder.CreateDeregisterServiceResponse(RequestMessage);
+
+      DeregisterServiceRequest deregisterServiceRequest = RequestMessage.Request.LocalService.DeregisterService;
+      profileServer.RemoveNodeProfile();
+
+      log.Trace("(-):*.Response.Status={0}", res.Response.Status);
       return res;
     }
 

@@ -16,7 +16,7 @@ namespace ProfileServerProtocol
     public const int HeaderSize = 5;
 
     /// <summary>Maximal size of the message.</summary>
-    public const int MaxSize = 1 * 1024 * 1024;
+    public const int MaxMessageSize = 1 * 1024 * 1024;
 
     /// <summary>Size in bytes of an authentication challenge data.</summary>
     public const int ChallengeDataSize = 32;

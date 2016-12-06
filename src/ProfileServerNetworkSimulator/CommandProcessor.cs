@@ -15,26 +15,29 @@ namespace ProfileServerSimulator
   {
     private static NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
 
-    /// <summary>Directory that contains files of running server instances.</summary>
-    public const string InstanceDirectory = "instances";
+    /// <summary>Directory of the assembly.</summary>
+    public static string BaseDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
 
-    /// <summary>Directory that contains original binaries.</summary>
-    public const string BinariesDirectory = "bin";
+    /// <summary>Full path to the directory that contains files of running server instances.</summary>
+    public static string InstanceDirectory = Path.Combine(BaseDirectory, "instances");
 
-    /// <summary>Directory that contains images.</summary>
-    public const string ImagesDirectory = "images";
+    /// <summary>Full path to the directory that contains original binaries.</summary>
+    public static string BinariesDirectory = Path.Combine(BaseDirectory, "bin");
 
-    /// <summary>Directory that contains original profile server files within binary directory.</summary>
+    /// <summary>Full path to the directory that contains images.</summary>
+    public static string ImagesDirectory = Path.Combine(BaseDirectory, "images");
+
+    /// <summary>Full path to the directory that contains original profile server files within binary directory.</summary>
     public static string ProfileServerBinariesDirectory = Path.Combine(BinariesDirectory, "ProfileServer");
 
     /// <summary>List of commands to execute.</summary>
-    public List<Command> Commands;
+    private List<Command> commands;
 
     /// <summary>List of profile server instances mapped by their name.</summary>
-    public Dictionary<string, ProfileServer> ProfileServers = new Dictionary<string, ProfileServer>(StringComparer.Ordinal);
+    private Dictionary<string, ProfileServer> profileServers = new Dictionary<string, ProfileServer>(StringComparer.Ordinal);
 
     /// <summary>List of identity client instances mapped by their name.</summary>
-    public Dictionary<string, IdentityClient> IdentityClients = new Dictionary<string, IdentityClient>(StringComparer.Ordinal);
+    private Dictionary<string, IdentityClient> identityClients = new Dictionary<string, IdentityClient>(StringComparer.Ordinal);
 
     /// <summary>
     /// Initializes the object instance.
@@ -44,7 +47,7 @@ namespace ProfileServerSimulator
     {
       log.Trace("()");
 
-      this.Commands = Commands;
+      this.commands = Commands;
 
       log.Trace("(-)");
     }
@@ -56,12 +59,12 @@ namespace ProfileServerSimulator
     {
       log.Trace("()");
 
-      foreach (IdentityClient identity in IdentityClients.Values)
+      foreach (IdentityClient identity in identityClients.Values)
       {
         identity.Shutdown();
       }
 
-      foreach (ProfileServer server in ProfileServers.Values)
+      foreach (ProfileServer server in profileServers.Values)
       {
         server.Shutdown();
       }
@@ -80,7 +83,7 @@ namespace ProfileServerSimulator
 
       int index = 1;
       bool error = false;
-      foreach (Command command in Commands)
+      foreach (Command command in commands)
       {
         log.Info("Executing #{0:0000}@l{1}: {2}", index, command.LineNumber, command.OriginalCommand);
         index++;
@@ -95,26 +98,36 @@ namespace ProfileServerSimulator
                 string name = GetInstanceName(cmd.GroupName, i);
                 GpsLocation location = Helpers.GenerateRandomGpsLocation(cmd.Latitude, cmd.Longitude, cmd.Radius);
                 ProfileServer profileServer = new ProfileServer(name, location, cmd.BasePort);
-                ProfileServers.Add(name, profileServer);
+                if (profileServer.Initialize())
+                {
+                  profileServers.Add(name, profileServer);
+                }
+                else
+                {
+                  log.Error("  * Initialization of profile server '{0}' failed.", profileServer.Name);
+                  error = true;
+                  break;
+                }
               }
 
-              log.Info("  * {0} profile servers created.", cmd.Count);
+              if (!error) log.Info("  * {0} profile servers created.", cmd.Count);
               break;
             }
 
           case CommandType.StartServer:
             {
               CommandStartServer cmd = (CommandStartServer)command;
-              for (int i = 1; i <= cmd.PsCount; i++)
+              for (int i = 0; i < cmd.PsCount; i++)
               {
                 string name = GetInstanceName(cmd.PsGroup, cmd.PsIndex + i);
                 ProfileServer profileServer;
-                if (ProfileServers.TryGetValue(name, out profileServer))
+                if (profileServers.TryGetValue(name, out profileServer))
                 {
                   if (!profileServer.Start())
                   {
                     log.Error("  * Unable to start server instance '{0}'.", name);
                     error = true;
+                    break;
                   }
                 }
                 else
@@ -132,11 +145,11 @@ namespace ProfileServerSimulator
           case CommandType.StopServer:
             {
               CommandStopServer cmd = (CommandStopServer)command;
-              for (int i = 1; i <= cmd.PsCount; i++)
+              for (int i = 0; i < cmd.PsCount; i++)
               {
                 string name = GetInstanceName(cmd.PsGroup, cmd.PsIndex + i);
                 ProfileServer profileServer;
-                if (ProfileServers.TryGetValue(name, out profileServer))
+                if (profileServers.TryGetValue(name, out profileServer))
                 {
                   if (!profileServer.Stop())
                   {
@@ -162,11 +175,11 @@ namespace ProfileServerSimulator
 
               List<ProfileServer> availableServers = new List<ProfileServer>();
               int availableSlots = 0;
-              for (int i = 1; i <= cmd.PsCount; i++)
+              for (int i = 0; i < cmd.PsCount; i++)
               {
                 string name = GetInstanceName(cmd.PsGroup, cmd.PsIndex + i);
                 ProfileServer profileServer;
-                if (ProfileServers.TryGetValue(name, out profileServer))
+                if (profileServers.TryGetValue(name, out profileServer))
                 {
                   availableServers.Add(profileServer);
                   availableSlots += profileServer.AvailableIdentitySlots;
@@ -190,7 +203,7 @@ namespace ProfileServerSimulator
               }
 
 
-              for (int i = 1; i <= cmd.Count; i++)
+              for (int i = 0; i < cmd.Count; i++)
               {
                 string name = GetInstanceName(cmd.PsGroup, cmd.PsIndex + i);
 
@@ -240,12 +253,12 @@ namespace ProfileServerSimulator
                 string psGroup = cmd.PsGroups[i];
                 int psCount = cmd.PsCounts[i];
                 int psIndex = cmd.PsIndexes[i];
-                for (int j = 1; j < psCount; j++)
+                for (int j = 0; j < psCount; j++)
                 {
                   string name = GetInstanceName(psGroup, psIndex + j);
 
                   ProfileServer profileServer;
-                  if (ProfileServers.TryGetValue(name, out profileServer))
+                  if (profileServers.TryGetValue(name, out profileServer))
                   {
                     neighborhoodList.Add(profileServer);
                   }
@@ -286,12 +299,12 @@ namespace ProfileServerSimulator
                 string psGroup = cmd.PsGroups[i];
                 int psCount = cmd.PsCounts[i];
                 int psIndex = cmd.PsIndexes[i];
-                for (int j = 1; j < psCount; j++)
+                for (int j = 0; j < psCount; j++)
                 {
                   string name = GetInstanceName(psGroup, psIndex + j);
 
                   ProfileServer profileServer;
-                  if (ProfileServers.TryGetValue(name, out profileServer))
+                  if (profileServers.TryGetValue(name, out profileServer))
                   {
                     neighborhoodList.Add(profileServer);
                   }
@@ -321,6 +334,106 @@ namespace ProfileServerSimulator
               }
               break;
             }
+
+          case CommandType.Neighbor:
+            {
+              CommandNeighbor cmd = (CommandNeighbor)command;
+
+              ProfileServer profileServer;
+              if (profileServers.TryGetValue(cmd.Source, out profileServer))
+              {
+                List<ProfileServer> neighborhoodList = new List<ProfileServer>();
+                for (int i = 0; i < cmd.Targets.Count; i++)
+                {
+                  string name = cmd.Targets[i];
+                  ProfileServer target;
+                  if (profileServers.TryGetValue(name, out target))
+                  {
+                    neighborhoodList.Add(profileServer);
+                  }
+                  else
+                  {
+                    log.Error("  * Profile server instance '{0}' does not exist.", name);
+                    error = true;
+                    break;
+                  }
+                }
+
+
+                if (!error)
+                {
+                  if (profileServer.LbnServer.AddNeighborhood(neighborhoodList))
+                  {
+                    log.Info("  * {0} servers have been added to the neighborhood of server '{1}'.", neighborhoodList.Count, profileServer.Name);
+                  }
+                  else
+                  {
+                    log.Error("  * Unable to add neighbors to server '{0}'.", profileServer.Name);
+                    error = true;
+                    break;
+                  }
+                }
+              }
+              else
+              {
+                log.Error("  * Profile server instance '{0}' does not exist.", cmd.Source);
+                error = true;
+                break;
+              }
+
+              break;
+            }
+
+          case CommandType.CancelNeighbor:
+            {
+              CommandCancelNeighbor cmd = (CommandCancelNeighbor)command;
+
+              ProfileServer profileServer;
+              if (profileServers.TryGetValue(cmd.Source, out profileServer))
+              {
+                List<ProfileServer> neighborhoodList = new List<ProfileServer>();
+                for (int i = 0; i < cmd.Targets.Count; i++)
+                {
+                  string name = cmd.Targets[i];
+                  ProfileServer target;
+                  if (profileServers.TryGetValue(name, out target))
+                  {
+                    neighborhoodList.Add(profileServer);
+                  }
+                  else
+                  {
+                    log.Error("  * Profile server instance '{0}' does not exist.", name);
+                    error = true;
+                    break;
+                  }
+                }
+
+
+                if (!error)
+                {
+                  if (profileServer.LbnServer.CancelNeighborhood(neighborhoodList))
+                  {
+                    log.Info("  * {0} servers have been removed from the neighborhood of server '{1}'.", neighborhoodList.Count, profileServer.Name);
+                  }
+                  else
+                  {
+                    log.Error("  * Unable to remove neighbors from neighborhood of server '{0}'.", profileServer.Name);
+                    error = true;
+                    break;
+                  }
+                }
+              }
+              else
+              {
+                log.Error("  * Profile server instance '{0}' does not exist.", cmd.Source);
+                error = true;
+                break;
+              }
+
+              break;
+            }
+
+
 
           case CommandType.Delay:
             {

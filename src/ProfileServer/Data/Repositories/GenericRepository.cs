@@ -83,7 +83,7 @@ namespace ProfileServer.Data
     /// </summary>
     /// <param name="filter">Specifies matching criteria, can be null to count all entities.</param>
     /// <returns>Number of entities that match the criteria.</returns>
-    public virtual int Count(Expression<Func<TEntity, bool>> filter)
+    public virtual int Count(Expression<Func<TEntity, bool>> filter = null)
     {
       IQueryable<TEntity> query = dbSet;
       int result = filter != null ? query.Count(filter) : query.Count();
@@ -95,7 +95,7 @@ namespace ProfileServer.Data
     /// </summary>
     /// <param name="filter">Specifies matching criteria, can be null to count all entities.</param>
     /// <returns>Number of entities that match the criteria.</returns>
-    public virtual async Task<int> CountAsync(Expression<Func<TEntity, bool>> filter)
+    public virtual async Task<int> CountAsync(Expression<Func<TEntity, bool>> filter = null)
     {
       IQueryable<TEntity> query = dbSet;
       int result = await (filter != null ? query.CountAsync(filter) : query.CountAsync());

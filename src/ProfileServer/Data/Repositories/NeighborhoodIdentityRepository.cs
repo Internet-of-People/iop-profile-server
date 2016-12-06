@@ -13,13 +13,13 @@ namespace ProfileServer.Data.Repositories
   /// <summary>
   /// Repository for identities hosted within this node's neighborhood.
   /// </summary>
-  public class NeighborhoodIdentityRepository : IdentityRepository<NeighborIdentity>
+  public class NeighborIdentityRepository : IdentityRepository<NeighborIdentity>
   {
     /// <summary>
     /// Creates instance of the repository.
     /// </summary>
     /// <param name="context">Database context.</param>
-    public NeighborhoodIdentityRepository(Context context)
+    public NeighborIdentityRepository(Context context)
       : base(context)
     {
     }

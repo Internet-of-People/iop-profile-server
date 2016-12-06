@@ -40,12 +40,12 @@ namespace ProfileServer.Data.Models
 
     /// <summary>Identifier of the hosted identity.</summary>
     /// <remarks>This is part of the key and index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
-    [MaxLength(BaseIdentity.IdentifierLength)]
+    [MaxLength(IdentityBase.IdentifierLength)]
     public byte[] IdentityId { get; set; }
 
     /// <summary>Identifier of the related identity.</summary>
     /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
-    [MaxLength(BaseIdentity.IdentifierLength)]
+    [MaxLength(IdentityBase.IdentifierLength)]
     public byte[] RelatedToIdentityId { get; set; }
 
     /// <summary>Identifier of the card application.</summary>
@@ -77,11 +77,11 @@ namespace ProfileServer.Data.Models
     public DateTime ValidTo { get; set; }
 
     /// <summary>Identifier of the home node or empty array if the identity is hosted by this node.</summary>
-    [MaxLength(BaseIdentity.MaxPublicKeyLengthBytes)]
+    [MaxLength(IdentityBase.MaxPublicKeyLengthBytes)]
     public byte[] IssuerPublicKey { get; set; }
 
     /// <summary>Identifier of the home node or empty array if the identity is hosted by this node.</summary>
-    [MaxLength(BaseIdentity.MaxPublicKeyLengthBytes)]
+    [MaxLength(IdentityBase.MaxPublicKeyLengthBytes)]
     public byte[] RecipientPublicKey { get; set; }
 
     /// <summary>Signature of CardId value using private key of the issuer of the card.</summary>

@@ -27,15 +27,12 @@ namespace ProfileServerProtocol
     /// <summary>Actual message being read if the reading process was successful.</summary>
     public byte[] Data = null;
     
-    /// <summary>Indication of whether the connection has been or should be terminated.</summary>
-    public bool Disconnect = false;
-
     /// <summary>Indication of whether a protocol violation error has been detected and we should inform the other side about it.</summary>
     public bool ProtocolViolation = false;
 
     public override string ToString()
     {
-      return string.Format("RawMessage.Length={0},Disconnect={1},ProtocolViolation={2}", Data != null ? Data.Length.ToString() : "n/a", Disconnect, ProtocolViolation);
+      return string.Format("RawMessage.Length={0},ProtocolViolation={1}", Data != null ? Data.Length.ToString() : "n/a", ProtocolViolation);
     }
   }
 
@@ -49,24 +46,39 @@ namespace ProfileServerProtocol
   {
     private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocol.RawMessageReader");
 
+    /// <summary>Network connection stream.</summary>
     private Stream rawStream;
 
+    /// <summary>Buffer for message header.</summary>
     private byte[] messageHeaderBuffer = new byte[ProtocolHelper.HeaderSize];
+    
+    /// <summary>Buffer for whole message.</summary>
     private byte[] messageBuffer = null;
 
+    /// <summary>Status of the message reader.</summary>
     private ReaderStatus readerStatus = ReaderStatus.ReadingHeader;
 
+    /// <summary>Size of the message the reader expects to read.</summary>
     private uint messageSize = 0;
+
+    /// <summary>Number of header bytes read from the stream.</summary>
     private int messageHeaderBytesRead = 0;
+
+    /// <summary>Number of bytes read from the message body.</summary>
     private int messageBytesRead = 0;
 
+
+    /// <summary>
+    /// Initializes message reader using a network stream.
+    /// </summary>
+    /// <param name="RawStream">Stream of the connection to read from.</param>
     public RawMessageReader(Stream RawStream)
     {
-      log.Info("()");
+      log.Trace("()");
 
       rawStream = RawStream;
 
-      log.Info("(-)");
+      log.Trace("(-)");
     }
 
 
@@ -77,10 +89,11 @@ namespace ProfileServerProtocol
     {
       log.Trace("()");
 
+      bool disconnect = false;
       RawMessageResult res = new RawMessageResult();
       try
       {
-        while ((res.Data == null) && !res.Disconnect)
+        while ((res.Data == null) && !disconnect)
         {
           Task<int> readTask = null;
           int remain = 0;
@@ -126,7 +139,7 @@ namespace ProfileServerProtocol
                       if (messageHeaderBuffer[0] == 0x0D)
                       {
                         uint hdr = ProtocolHelper.GetValueLittleEndian(messageHeaderBuffer, 1);
-                        if (hdr + ProtocolHelper.HeaderSize <= ProtocolHelper.MaxSize)
+                        if (hdr + ProtocolHelper.HeaderSize <= ProtocolHelper.MaxMessageSize)
                         {
                           messageSize = hdr;
                           readerStatus = ReaderStatus.ReadingBody;
@@ -166,28 +179,27 @@ namespace ProfileServerProtocol
 
                 default:
                   log.Error("Invalid message reader status {0}.", readerStatus);
-                  res.Disconnect = true;
+                  disconnect = true;
                   break;
               }
 
               if (res.ProtocolViolation)
-                res.Disconnect = true;
+                disconnect = true;
             }
             else
             {
               log.Info("Connection has been closed.");
-              res.Disconnect = true;
+              disconnect = true;
             }
           }
-          else res.Disconnect = true;
+          else disconnect = true;
         }
       }
       catch (Exception e)
       {
-        if ((e is ObjectDisposedException) || (e is IOException)) log.Info("Connection to client has been terminated.");
+        if ((e is ObjectDisposedException) || (e is IOException)) log.Debug("Connection to client has been terminated.");
+        else if (e is TaskCanceledException) log.Debug("Shutdown detected.");
         else log.Error("Exception occurred: {0}", e.ToString());
-
-        res.Disconnect = true;
       }
 
       log.Trace("(-):{0}", res);

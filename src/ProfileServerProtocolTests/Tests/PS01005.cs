@@ -60,7 +60,7 @@ namespace ProfileServerProtocolTests.Tests
 
         bool idOk = responseMessage.Id == requestMessage.Id;
         bool statusOk = responseMessage.Response.Status == Status.Ok;
-        bool verifyChallengeOk = client.VerifyNodeChallengeSignature(responseMessage);
+        bool verifyChallengeOk = client.VerifyServerChallengeSignature(responseMessage);
         bool startConversationOk = idOk && statusOk && verifyChallengeOk;
 
         requestMessage = mb.CreateRegisterHostingRequest(null);

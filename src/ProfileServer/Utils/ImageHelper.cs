@@ -20,19 +20,43 @@ namespace ProfileServer.Utils
     /// <returns>File name with path for the image. The path can be relative or absolute depending on Configuration.ImageDataFolder settings.</returns>
     public static string GetImageFileName(Guid ImageGuid)
     {
-      log.Trace("(ImageGuid:'{0}')", ImageGuid);
+      return GetImageFileName(ImageGuid, Kernel.Base.Configuration.ImageDataFolder);
+    }
+
+
+    /// <summary>
+    /// Constructs a file name inside the temporary data folder from image GUID.
+    /// </summary>
+    /// <param name="ImageGuid">Image GUID.</param>
+    /// <returns>File name with path for the image. The path can be relative or absolute depending on Configuration.TempDataFolder settings.</returns>
+    public static string GetTempImageFileName(Guid ImageGuid)
+    {
+      return GetImageFileName(ImageGuid, Kernel.Base.Configuration.TempDataFolder);
+    }
+
+
+    /// <summary>
+    /// Constructs a file name inside the image data folder from image GUID.
+    /// </summary>
+    /// <param name="ImageGuid">Image GUID.</param>
+    /// <param name="Folder">Root images folder in which the image directory structure is to be created and the image stored.</param>
+    /// <returns>File name with path for the image.</returns>
+    public static string GetImageFileName(Guid ImageGuid, string Folder)
+    {
+      log.Trace("(ImageGuid:'{0}',Folder:'{1}')", ImageGuid, Folder);
 
       string fileName = ImageGuid.ToString();
-      string imageFolder = Kernel.Base.Configuration.ImageDataFolder;
       byte[] guidBytes = ImageGuid.ToByteArray();
       string firstLevel = string.Format("{0:X2}", guidBytes[0]);
       string secondLevel = string.Format("{0:X2}", guidBytes[1]);
 
-      string res = string.Format("{0}{1}{2:X2}{1}{3:X2}{1}{4}", imageFolder, Path.DirectorySeparatorChar, guidBytes[0], guidBytes[1], ImageGuid.ToString());
+      string res = string.Format("{0}{1}{2:X2}{1}{3:X2}{1}{4}", Folder, Path.DirectorySeparatorChar, guidBytes[0], guidBytes[1], ImageGuid.ToString());
 
       log.Trace("(-):'{0}'", res != null ? res : "null");
       return res;
     }
+
+
 
 
     /// <summary>
@@ -50,7 +74,7 @@ namespace ProfileServer.Utils
       {
         try
         {
-          res = await FileAsync.ReadAllBytesAsync(fileName);
+          res = await FileHelper.ReadAllBytesAsync(fileName);
         }
         catch (Exception e)
         {
@@ -70,17 +94,42 @@ namespace ProfileServer.Utils
     /// <returns>true if the function succeeds, false otherwise.</returns>
     public static async Task<bool> SaveImageDataAsync(Guid ImageGuid, byte[] Data)
     {
-      log.Trace("(ImageGuid:'{0}',Data.Length:{1})", ImageGuid, Data != null ? Data.Length.ToString() : "n/a");
+      string fileName = GetImageFileName(ImageGuid);
+      return await SaveImageDataAsync(fileName, Data);
+    }
+
+
+    /// <summary>
+    /// Saves image data to temporary data folder file.
+    /// </summary>
+    /// <param name="ImageGuid">Image GUID.</param>
+    /// <param name="Data">Binary image data to save.</param>
+    /// <returns>true if the function succeeds, false otherwise.</returns>
+    public static async Task<bool> SaveTempImageDataAsync(Guid ImageGuid, byte[] Data)
+    {
+      string fileName = GetTempImageFileName(ImageGuid);
+      return await SaveImageDataAsync(fileName, Data);
+    }
+
+
+    /// <summary>
+    /// Saves image data to image data folder file.
+    /// </summary>
+    /// <param name="FileName">Name of the file to save the image data to.</param>
+    /// <param name="Data">Binary image data to save.</param>
+    /// <returns>true if the function succeeds, false otherwise.</returns>
+    public static async Task<bool> SaveImageDataAsync(string FileName, byte[] Data)
+    {
+      log.Trace("(FileName:'{0}',Data.Length:{1})", FileName, Data != null ? Data.Length.ToString() : "n/a");
 
       bool res = false;
       if ((Data != null) && (Data.Length > 0))
       {
         try
         {
-          string fileName = GetImageFileName(ImageGuid);
-          string path = Path.GetDirectoryName(fileName);
+          string path = Path.GetDirectoryName(FileName);
           Directory.CreateDirectory(path);
-          await FileAsync.WriteAllBytesAsync(fileName, Data);
+          await FileHelper.WriteAllBytesAsync(FileName, Data);
           res = true;
         }
         catch (Exception e)
@@ -94,22 +143,45 @@ namespace ProfileServer.Utils
     }
 
 
+
     /// <summary>
-    /// Deletes an image file.
+    /// Deletes an image file from image folder.
     /// </summary>
     /// <param name="ImageGuid">Image GUID.</param>
     /// <returns>true if the function succeeds, false otherwise.</returns>
     public static bool DeleteImageFile(Guid ImageGuid)
     {
-      log.Trace("(ImageGuid:'{0}')", ImageGuid);
+      string fileName = GetImageFileName(ImageGuid);
+      return DeleteImageFile(fileName);
+    }
+
+    /// <summary>
+    /// Deletes an image file from temporary folder.
+    /// </summary>
+    /// <param name="ImageGuid">Image GUID.</param>
+    /// <returns>true if the function succeeds, false otherwise.</returns>
+    public static bool DeleteTempImageFile(Guid ImageGuid)
+    {
+      string fileName = GetTempImageFileName(ImageGuid);
+      return DeleteImageFile(fileName);
+    }
+
+
+    /// <summary>
+    /// Deletes an image file.
+    /// </summary>
+    /// <param name="FileName">Image file name.</param>
+    /// <returns>true if the function succeeds, false otherwise.</returns>
+    public static bool DeleteImageFile(string FileName)
+    {
+      log.Trace("(FileName:'{0}')", FileName);
 
       bool res = false;
       try
       {
-        string fileName = GetImageFileName(ImageGuid);
-        if (!string.IsNullOrEmpty(fileName))
+        if (!string.IsNullOrEmpty(FileName))
         {
-          File.Delete(fileName);
+          File.Delete(FileName);
           res = true;
         }
       }
@@ -122,6 +194,36 @@ namespace ProfileServer.Utils
       return res;
     }
 
+
+    /// <summary>
+    /// Moves an image file from temporary folder to images folder.
+    /// </summary>
+    /// <param name="ImageGuid">Image GUID.</param>
+    /// <returns>true if the function succeeds, false otherwise.</returns>
+    public static bool MoveImageFileFromTemp(Guid ImageGuid)
+    {
+      log.Trace("(ImageGuid:'{0}')", ImageGuid);
+
+      string tempFileName = GetTempImageFileName(ImageGuid);
+      string imagesFileName = GetImageFileName(ImageGuid);
+
+      bool res = false;
+      try
+      {
+        string path = Path.GetDirectoryName(imagesFileName);
+        Directory.CreateDirectory(path);
+        if (File.Exists(imagesFileName)) File.Delete(imagesFileName);
+        File.Move(tempFileName, imagesFileName);
+        res = true;
+      }
+      catch (Exception e)
+      {
+        log.Error("Exception occurred: {0}.", e.ToString());
+      }
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
 
 
     /// <summary>

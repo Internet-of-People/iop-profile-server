@@ -20,50 +20,52 @@ namespace ProfileServerSimulator
   /// </summary>
   public class IdentityClient
   {
-    private static PrefixLogger log;
+    private PrefixLogger log;
 
     /// <summary>Identity name.</summary>
-    public string Name;
+    private string name;
+    /// <summary>Identity name.</summary>
+    public string Name { get { return name; } }
 
     /// <summary>Identity Type.</summary>
-    public string Type;
+    private string type;
 
     /// <summary>Initial GPS location.</summary>
-    public GpsLocation Location;
+    private GpsLocation location;
 
     /// <summary>Profile image file name or null if the identity has no profile image.</summary>
-    public string ImageFileName;
+    private string imageFileName;
 
     /// <summary>Profile image data or null if the identity has no profile image.</summary>
-    public byte[] Image;
+    private byte[] image;
 
 
     /// <summary>Profile server hosting the identity profile.</summary>
-    public ProfileServer ProfileServer;
+    private ProfileServer profileServer;
 
     /// <summary>TCP client for communication with the server.</summary>
-    public TcpClient Client;
+    private TcpClient client;
 
     /// <summary>
     /// Normal or TLS stream for sending and receiving data over TCP client. 
     /// In case of the TLS stream, the underlaying stream is going to be closed automatically.
     /// </summary>
-    public Stream Stream;
+    private Stream stream;
 
     /// <summary>Message builder for easy creation of protocol message.</summary>
-    public MessageBuilder MessageBuilder;
+    private MessageBuilder messageBuilder;
 
     /// <summary>Cryptographic Keys that represent the client's identity.</summary>
-    public KeysEd25519 Keys;
+    private KeysEd25519 keys;
 
     /// <summary>Profile server's public key received when starting conversation.</summary>
-    public byte[] ProfileServerKey;
+    private byte[] profileServerKey;
 
     /// <summary>Challenge that the profile server sent to the client when starting conversation.</summary>
-    public byte[] Challenge;
+    private byte[] challenge;
 
     /// <summary>Challenge that the client sent to the profile server when starting conversation.</summary>
-    public byte[] ClientChallenge;
+    private byte[] clientChallenge;
 
 
     /// <summary>
@@ -76,23 +78,23 @@ namespace ProfileServerSimulator
     /// <param name="ImageChance">An integer between 0 and 100 that specifies the chance of each instance to have a profile image set.</param>
     public IdentityClient(string Name, string Type, GpsLocation Location, string ImageMask, int ImageChance)
     {
-      log = new PrefixLogger("ProfileServerSimulator.IdentityClient", Name);
+      log = new PrefixLogger("ProfileServerSimulator.IdentityClient", "[" + Name + "] ");
       log.Trace("(Name:'{0}',Type:'{1}',Location:{2},ImageMask:'{3}',ImageChance:{4})", Name, Type, Location, ImageMask, ImageChance);
 
-      this.Name = Name;
-      this.Type = Type;
-      this.Location = Location;
+      this.name = Name;
+      this.type = Type;
+      this.location = Location;
 
       bool hasImage = Helpers.Rng.NextDouble() < (double)ImageChance / 100;
       if (hasImage)
       {
-        ImageFileName = GetImageFileByMask(ImageMask);
-        Image = ImageFileName != null ? File.ReadAllBytes(ImageFileName) : null;
+        imageFileName = GetImageFileByMask(ImageMask);
+        image = imageFileName != null ? File.ReadAllBytes(imageFileName) : null;
       }
 
 
-      Keys = Ed25519.GenerateKeys();
-      MessageBuilder = new MessageBuilder(0, new List<SemVer>() { SemVer.V100 }, Keys);
+      keys = Ed25519.GenerateKeys();
+      messageBuilder = new MessageBuilder(0, new List<SemVer>() { SemVer.V100 }, keys);
 
       log.Trace("(-)");
     }
@@ -116,7 +118,7 @@ namespace ProfileServerSimulator
     /// </summary>
     /// <param name="Mask">File name mask in images folder.</param>
     /// <returns>Profile image file name.</returns>
-    public static string GetImageFileByMask(string Mask)
+    public string GetImageFileByMask(string Mask)
     {
       log.Trace("(Mask:'{0}')", Mask);
 
@@ -144,14 +146,14 @@ namespace ProfileServerSimulator
       log.Trace("(Server.Name:'{0}')", Server.Name);
       bool res = false;
 
-      ProfileServer = Server;
+      profileServer = Server;
       InitializeTcpClient();
 
       try
       {
         await ConnectAsync(Server.IpAddress, Server.ClientNonCustomerInterfacePort, true);
 
-        if (await EstablishProfileHostingAsync(Type))
+        if (await EstablishProfileHostingAsync(type))
         {
           CloseTcpClient();
 
@@ -159,7 +161,7 @@ namespace ProfileServerSimulator
           await ConnectAsync(Server.IpAddress, Server.ClientCustomerInterfacePort, true);
           if (await CheckInAsync())
           {
-            if (await InitializeProfileAsync(Name, Image, Location, null))
+            if (await InitializeProfileAsync(name, image, location, null))
             {
               res = true;
             }
@@ -190,10 +192,10 @@ namespace ProfileServerSimulator
 
       CloseTcpClient();
 
-      Client = new TcpClient();
-      Client.NoDelay = true;
-      Client.LingerState = new LingerOption(true, 0);
-      MessageBuilder.ResetId();
+      client = new TcpClient();
+      client.NoDelay = true;
+      client.LingerState = new LingerOption(true, 0);
+      messageBuilder.ResetId();
 
       log.Trace("(-)");
     }
@@ -205,8 +207,8 @@ namespace ProfileServerSimulator
     {
       log.Trace("()");
 
-      if (Stream != null) Stream.Dispose();
-      if (Client != null) Client.Dispose();
+      if (stream != null) stream.Dispose();
+      if (client != null) client.Dispose();
 
       log.Trace("(-)");
     }
@@ -229,7 +231,7 @@ namespace ProfileServerSimulator
         contract.IdentityType = IdentityType;
       }
 
-      Message requestMessage = MessageBuilder.CreateRegisterHostingRequest(contract);
+      Message requestMessage = messageBuilder.CreateRegisterHostingRequest(contract);
       await SendMessageAsync(requestMessage);
       Message responseMessage = await ReceiveMessageAsync();
 
@@ -251,9 +253,9 @@ namespace ProfileServerSimulator
     /// <returns>StartConversationRequest message that is ready to be sent to the profile server.</returns>
     public Message CreateStartConversationRequest()
     {
-      ClientChallenge = new byte[ProtocolHelper.ChallengeDataSize];
-      Crypto.Rng.GetBytes(ClientChallenge);
-      Message res = MessageBuilder.CreateStartConversationRequest(ClientChallenge);
+      clientChallenge = new byte[ProtocolHelper.ChallengeDataSize];
+      Crypto.Rng.GetBytes(clientChallenge);
+      Message res = messageBuilder.CreateStartConversationRequest(clientChallenge);
       return res;
     }
 
@@ -274,13 +276,13 @@ namespace ProfileServerSimulator
       bool challengeVerifyOk = VerifyProfileServerChallengeSignature(responseMessage);
 
       SemVer receivedVersion = new SemVer(responseMessage.Response.ConversationResponse.Start.Version);
-      bool versionOk = receivedVersion.Equals(new SemVer(MessageBuilder.Version));
+      bool versionOk = receivedVersion.Equals(new SemVer(messageBuilder.Version));
 
       bool pubKeyLenOk = responseMessage.Response.ConversationResponse.Start.PublicKey.Length == 32;
       bool challengeOk = responseMessage.Response.ConversationResponse.Start.Challenge.Length == 32;
 
-      ProfileServerKey = responseMessage.Response.ConversationResponse.Start.PublicKey.ToByteArray();
-      Challenge = responseMessage.Response.ConversationResponse.Start.Challenge.ToByteArray();
+      profileServerKey = responseMessage.Response.ConversationResponse.Start.PublicKey.ToByteArray();
+      challenge = responseMessage.Response.ConversationResponse.Start.Challenge.ToByteArray();
 
       bool res = idOk && statusOk && challengeVerifyOk && versionOk && pubKeyLenOk && challengeOk;
 
@@ -299,7 +301,7 @@ namespace ProfileServerSimulator
       log.Trace("()\n{0}", dataStr.Substring(0, Math.Min(dataStr.Length, 512)));
 
       byte[] rawData = ProtocolHelper.GetMessageBytes(Data);
-      await Stream.WriteAsync(rawData, 0, rawData.Length);
+      await stream.WriteAsync(rawData, 0, rawData.Length);
 
       log.Trace("(-)");
     }
@@ -323,7 +325,7 @@ namespace ProfileServerSimulator
       log.Trace("Reading message header.");
       while (!done && (headerBytesRead < header.Length))
       {
-        int readAmount = await Stream.ReadAsync(header, headerBytesRead, remain);
+        int readAmount = await stream.ReadAsync(header, headerBytesRead, remain);
         if (readAmount == 0)
         {
           log.Trace("Connection to server closed while reading the header.");
@@ -345,7 +347,7 @@ namespace ProfileServerSimulator
       int messageBytesRead = 0;
       while (!done && (messageBytesRead < messageSize))
       {
-        int readAmount = await Stream.ReadAsync(messageBytes, ProtocolHelper.HeaderSize + messageBytesRead, remain);
+        int readAmount = await stream.ReadAsync(messageBytes, ProtocolHelper.HeaderSize + messageBytesRead, remain);
         if (readAmount == 0)
         {
           log.Trace("Connection to server closed while reading the body.");
@@ -376,8 +378,8 @@ namespace ProfileServerSimulator
 
       byte[] receivedChallenge = StartConversationResponse.Response.ConversationResponse.Start.ClientChallenge.ToByteArray();
       byte[] profileServerPublicKey = StartConversationResponse.Response.ConversationResponse.Start.PublicKey.ToByteArray();
-      bool res = (StructuralComparisons.StructuralComparer.Compare(receivedChallenge, ClientChallenge) == 0)
-        && MessageBuilder.VerifySignedConversationResponseBodyPart(StartConversationResponse, receivedChallenge, profileServerPublicKey);
+      bool res = (StructuralComparisons.StructuralComparer.Compare(receivedChallenge, clientChallenge) == 0)
+        && messageBuilder.VerifySignedConversationResponseBodyPart(StartConversationResponse, receivedChallenge, profileServerPublicKey);
 
       log.Trace("(-):{0}", res);
       return res;
@@ -395,7 +397,7 @@ namespace ProfileServerSimulator
     {
       log.Trace("()");
 
-      Message requestMessage = MessageBuilder.CreateUpdateProfileRequest(SemVer.V100, Name, Image, Location, ExtraData);
+      Message requestMessage = messageBuilder.CreateUpdateProfileRequest(SemVer.V100, Name, Image, Location, ExtraData);
       await SendMessageAsync(requestMessage);
       Message responseMessage = await ReceiveMessageAsync();
 
@@ -418,7 +420,7 @@ namespace ProfileServerSimulator
 
       bool startConversationOk = await StartConversationAsync();
 
-      Message requestMessage = MessageBuilder.CreateCheckInRequest(Challenge);
+      Message requestMessage = messageBuilder.CreateCheckInRequest(challenge);
       await SendMessageAsync(requestMessage);
       Message responseMessage = await ReceiveMessageAsync();
 
@@ -443,14 +445,14 @@ namespace ProfileServerSimulator
     {
       log.Trace("(Address:'{0}',Port:{1},UseTls:{2})", Address, Port, UseTls);
 
-      await Client.ConnectAsync(Address, Port);
+      await client.ConnectAsync(Address, Port);
 
-      Stream = Client.GetStream();
+      stream = client.GetStream();
       if (UseTls)
       {
-        SslStream sslStream = new SslStream(Stream, false, PeerCertificateValidationCallback);
+        SslStream sslStream = new SslStream(stream, false, PeerCertificateValidationCallback);
         await sslStream.AuthenticateAsClientAsync("", null, SslProtocols.Tls12, false);
-        Stream = sslStream;
+        stream = sslStream;
       }
 
       log.Trace("(-)");

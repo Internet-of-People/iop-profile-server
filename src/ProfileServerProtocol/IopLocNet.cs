@@ -76,65 +76,64 @@ namespace Iop.Locnet {
             "eXBlIlsKJ05laWdoYm91cmhvb2RDaGFuZ2VkTm90aWZpY2F0aW9uUmVxdWVz",
             "dBIwCgdjaGFuZ2VzGAEgAygLMh8uaW9wLmxvY25ldC5OZWlnaGJvdXJob29k",
             "Q2hhbmdlIioKKE5laWdoYm91cmhvb2RDaGFuZ2VkTm90aWZpY2F0aW9uUmVz",
-            "cG9uc2Ui6wMKEVJlbW90ZU5vZGVSZXF1ZXN0EjoKD2FjY2VwdENvbGxlYWd1",
+            "cG9uc2Ui2QMKEVJlbW90ZU5vZGVSZXF1ZXN0EjoKD2FjY2VwdENvbGxlYWd1",
             "ZRgBIAEoCzIfLmlvcC5sb2NuZXQuQnVpbGROZXR3b3JrUmVxdWVzdEgAEjkK",
             "DnJlbmV3Q29sbGVhZ3VlGAIgASgLMh8uaW9wLmxvY25ldC5CdWlsZE5ldHdv",
             "cmtSZXF1ZXN0SAASOgoPYWNjZXB0TmVpZ2hib3VyGAMgASgLMh8uaW9wLmxv",
             "Y25ldC5CdWlsZE5ldHdvcmtSZXF1ZXN0SAASOQoOcmVuZXdOZWlnaGJvdXIY",
-            "BCABKAsyHy5pb3AubG9jbmV0LkJ1aWxkTmV0d29ya1JlcXVlc3RIABJJChVn",
-            "ZXRDb2xsZWFndWVOb2RlQ291bnQYBSABKAsyKC5pb3AubG9jbmV0LkdldENv",
-            "bGxlYWd1ZU5vZGVDb3VudFJlcXVlc3RIABI7Cg5nZXRSYW5kb21Ob2RlcxgG",
-            "IAEoCzIhLmlvcC5sb2NuZXQuR2V0UmFuZG9tTm9kZXNSZXF1ZXN0SAASRwoP",
-            "Z2V0Q2xvc2VzdE5vZGVzGAcgASgLMiwuaW9wLmxvY25ldC5HZXRDbG9zZXN0",
-            "Tm9kZXNCeURpc3RhbmNlUmVxdWVzdEgAQhcKFVJlbW90ZU5vZGVSZXF1ZXN0",
-            "VHlwZSL0AwoSUmVtb3RlTm9kZVJlc3BvbnNlEjsKD2FjY2VwdENvbGxlYWd1",
-            "ZRgBIAEoCzIgLmlvcC5sb2NuZXQuQnVpbGROZXR3b3JrUmVzcG9uc2VIABI6",
-            "Cg5yZW5ld0NvbGxlYWd1ZRgCIAEoCzIgLmlvcC5sb2NuZXQuQnVpbGROZXR3",
-            "b3JrUmVzcG9uc2VIABI7Cg9hY2NlcHROZWlnaGJvdXIYAyABKAsyIC5pb3Au",
-            "bG9jbmV0LkJ1aWxkTmV0d29ya1Jlc3BvbnNlSAASOgoOcmVuZXdOZWlnaGJv",
-            "dXIYBCABKAsyIC5pb3AubG9jbmV0LkJ1aWxkTmV0d29ya1Jlc3BvbnNlSAAS",
-            "SgoVZ2V0Q29sbGVhZ3VlTm9kZUNvdW50GAUgASgLMikuaW9wLmxvY25ldC5H",
-            "ZXRDb2xsZWFndWVOb2RlQ291bnRSZXNwb25zZUgAEjwKDmdldFJhbmRvbU5v",
-            "ZGVzGAYgASgLMiIuaW9wLmxvY25ldC5HZXRSYW5kb21Ob2Rlc1Jlc3BvbnNl",
-            "SAASSAoPZ2V0Q2xvc2VzdE5vZGVzGAcgASgLMi0uaW9wLmxvY25ldC5HZXRD",
-            "bG9zZXN0Tm9kZXNCeURpc3RhbmNlUmVzcG9uc2VIAEIYChZSZW1vdGVOb2Rl",
-            "UmVzcG9uc2VUeXBlIj0KE0J1aWxkTmV0d29ya1JlcXVlc3QSJgoIbm9kZUlu",
-            "Zm8YASABKAsyFC5pb3AubG9jbmV0Lk5vZGVJbmZvIigKFEJ1aWxkTmV0d29y",
-            "a1Jlc3BvbnNlEhAKCGFjY2VwdGVkGAEgASgIIh4KHEdldENvbGxlYWd1ZU5v",
-            "ZGVDb3VudFJlcXVlc3QiMgodR2V0Q29sbGVhZ3VlTm9kZUNvdW50UmVzcG9u",
-            "c2USEQoJbm9kZUNvdW50GAEgASgNIkgKFUdldFJhbmRvbU5vZGVzUmVxdWVz",
-            "dBIUCgxtYXhOb2RlQ291bnQYASABKA0SGQoRaW5jbHVkZU5laWdoYm91cnMY",
-            "AiABKAgiPQoWR2V0UmFuZG9tTm9kZXNSZXNwb25zZRIjCgVub2RlcxgBIAMo",
-            "CzIULmlvcC5sb2NuZXQuTm9kZUluZm8ikwEKIEdldENsb3Nlc3ROb2Rlc0J5",
-            "RGlzdGFuY2VSZXF1ZXN0EikKCGxvY2F0aW9uGAEgASgLMhcuaW9wLmxvY25l",
-            "dC5HcHNMb2NhdGlvbhITCgttYXhSYWRpdXNLbRgCIAEoAhIUCgxtYXhOb2Rl",
-            "Q291bnQYAyABKA0SGQoRaW5jbHVkZU5laWdoYm91cnMYBCABKAgiSAohR2V0",
-            "Q2xvc2VzdE5vZGVzQnlEaXN0YW5jZVJlc3BvbnNlEiMKBW5vZGVzGAEgAygL",
-            "MhQuaW9wLmxvY25ldC5Ob2RlSW5mbyL3AQoNQ2xpZW50UmVxdWVzdBI1Cgtn",
-            "ZXRTZXJ2aWNlcxgBIAEoCzIeLmlvcC5sb2NuZXQuR2V0U2VydmljZXNSZXF1",
-            "ZXN0SAASUQoRZ2V0TmVpZ2hib3VyTm9kZXMYAiABKAsyNC5pb3AubG9jbmV0",
-            "LkdldE5laWdoYm91ck5vZGVzQnlEaXN0YW5jZUNsaWVudFJlcXVlc3RIABJH",
-            "Cg9nZXRDbG9zZXN0Tm9kZXMYAyABKAsyLC5pb3AubG9jbmV0LkdldENsb3Nl",
-            "c3ROb2Rlc0J5RGlzdGFuY2VSZXF1ZXN0SABCEwoRQ2xpZW50UmVxdWVzdFR5",
-            "cGUi9gEKDkNsaWVudFJlc3BvbnNlEjYKC2dldFNlcnZpY2VzGAEgASgLMh8u",
-            "aW9wLmxvY25ldC5HZXRTZXJ2aWNlc1Jlc3BvbnNlSAASTAoRZ2V0TmVpZ2hi",
-            "b3VyTm9kZXMYAiABKAsyLy5pb3AubG9jbmV0LkdldE5laWdoYm91ck5vZGVz",
-            "QnlEaXN0YW5jZVJlc3BvbnNlSAASSAoPZ2V0Q2xvc2VzdE5vZGVzGAMgASgL",
-            "Mi0uaW9wLmxvY25ldC5HZXRDbG9zZXN0Tm9kZXNCeURpc3RhbmNlUmVzcG9u",
-            "c2VIAEIUChJDbGllbnRSZXNwb25zZVR5cGUiFAoSR2V0U2VydmljZXNSZXF1",
-            "ZXN0ImgKDlNlcnZpY2VQcm9maWxlEiwKC3NlcnZpY2VUeXBlGAEgASgOMhcu",
-            "aW9wLmxvY25ldC5TZXJ2aWNlVHlwZRIoCgdwcm9maWxlGAIgASgLMhcuaW9w",
-            "LmxvY25ldC5Ob2RlUHJvZmlsZSJDChNHZXRTZXJ2aWNlc1Jlc3BvbnNlEiwK",
-            "CHNlcnZpY2VzGAEgAygLMhouaW9wLmxvY25ldC5TZXJ2aWNlUHJvZmlsZSIq",
-            "CihHZXROZWlnaGJvdXJOb2Rlc0J5RGlzdGFuY2VDbGllbnRSZXF1ZXN0KsIB",
-            "CgZTdGF0dXMSDQoJU1RBVFVTX09LEAASHAoYRVJST1JfUFJPVE9DT0xfVklP",
-            "TEFUSU9OEAESFQoRRVJST1JfVU5TVVBQT1JURUQQAhIWChJFUlJPUl9VTkFV",
-            "VEhPUklaRUQQBRISCg5FUlJPUl9CQURfUk9MRRAGEhIKDkVSUk9SX0lOVEVS",
-            "TkFMEAgSGwoXRVJST1JfSU5WQUxJRF9TSUdOQVRVUkUQNBIXChNFUlJPUl9J",
-            "TlZBTElEX1ZBTFVFEDYqlgEKC1NlcnZpY2VUeXBlEhAKDFVuc3RydWN0dXJl",
-            "ZBAAEgsKB0NvbnRlbnQQARILCgdMYXRlbmN5EAISDAoITG9jYXRpb24QAxIJ",
-            "CgVUb2tlbhAKEgsKB1Byb2ZpbGUQCxINCglQcm94aW1pdHkQDBIJCgVSZWxh",
-            "eRANEg4KClJlcHV0YXRpb24QDhILCgdNaW50aW5nEA9iBnByb3RvMw=="));
+            "BCABKAsyHy5pb3AubG9jbmV0LkJ1aWxkTmV0d29ya1JlcXVlc3RIABI3Cgxn",
+            "ZXROb2RlQ291bnQYBSABKAsyHy5pb3AubG9jbmV0LkdldE5vZGVDb3VudFJl",
+            "cXVlc3RIABI7Cg5nZXRSYW5kb21Ob2RlcxgGIAEoCzIhLmlvcC5sb2NuZXQu",
+            "R2V0UmFuZG9tTm9kZXNSZXF1ZXN0SAASRwoPZ2V0Q2xvc2VzdE5vZGVzGAcg",
+            "ASgLMiwuaW9wLmxvY25ldC5HZXRDbG9zZXN0Tm9kZXNCeURpc3RhbmNlUmVx",
+            "dWVzdEgAQhcKFVJlbW90ZU5vZGVSZXF1ZXN0VHlwZSLiAwoSUmVtb3RlTm9k",
+            "ZVJlc3BvbnNlEjsKD2FjY2VwdENvbGxlYWd1ZRgBIAEoCzIgLmlvcC5sb2Nu",
+            "ZXQuQnVpbGROZXR3b3JrUmVzcG9uc2VIABI6Cg5yZW5ld0NvbGxlYWd1ZRgC",
+            "IAEoCzIgLmlvcC5sb2NuZXQuQnVpbGROZXR3b3JrUmVzcG9uc2VIABI7Cg9h",
+            "Y2NlcHROZWlnaGJvdXIYAyABKAsyIC5pb3AubG9jbmV0LkJ1aWxkTmV0d29y",
+            "a1Jlc3BvbnNlSAASOgoOcmVuZXdOZWlnaGJvdXIYBCABKAsyIC5pb3AubG9j",
+            "bmV0LkJ1aWxkTmV0d29ya1Jlc3BvbnNlSAASOAoMZ2V0Tm9kZUNvdW50GAUg",
+            "ASgLMiAuaW9wLmxvY25ldC5HZXROb2RlQ291bnRSZXNwb25zZUgAEjwKDmdl",
+            "dFJhbmRvbU5vZGVzGAYgASgLMiIuaW9wLmxvY25ldC5HZXRSYW5kb21Ob2Rl",
+            "c1Jlc3BvbnNlSAASSAoPZ2V0Q2xvc2VzdE5vZGVzGAcgASgLMi0uaW9wLmxv",
+            "Y25ldC5HZXRDbG9zZXN0Tm9kZXNCeURpc3RhbmNlUmVzcG9uc2VIAEIYChZS",
+            "ZW1vdGVOb2RlUmVzcG9uc2VUeXBlIj0KE0J1aWxkTmV0d29ya1JlcXVlc3QS",
+            "JgoIbm9kZUluZm8YASABKAsyFC5pb3AubG9jbmV0Lk5vZGVJbmZvIigKFEJ1",
+            "aWxkTmV0d29ya1Jlc3BvbnNlEhAKCGFjY2VwdGVkGAEgASgIIhUKE0dldE5v",
+            "ZGVDb3VudFJlcXVlc3QiKQoUR2V0Tm9kZUNvdW50UmVzcG9uc2USEQoJbm9k",
+            "ZUNvdW50GAEgASgNIkgKFUdldFJhbmRvbU5vZGVzUmVxdWVzdBIUCgxtYXhO",
+            "b2RlQ291bnQYASABKA0SGQoRaW5jbHVkZU5laWdoYm91cnMYAiABKAgiPQoW",
+            "R2V0UmFuZG9tTm9kZXNSZXNwb25zZRIjCgVub2RlcxgBIAMoCzIULmlvcC5s",
+            "b2NuZXQuTm9kZUluZm8ikwEKIEdldENsb3Nlc3ROb2Rlc0J5RGlzdGFuY2VS",
+            "ZXF1ZXN0EikKCGxvY2F0aW9uGAEgASgLMhcuaW9wLmxvY25ldC5HcHNMb2Nh",
+            "dGlvbhITCgttYXhSYWRpdXNLbRgCIAEoAhIUCgxtYXhOb2RlQ291bnQYAyAB",
+            "KA0SGQoRaW5jbHVkZU5laWdoYm91cnMYBCABKAgiSAohR2V0Q2xvc2VzdE5v",
+            "ZGVzQnlEaXN0YW5jZVJlc3BvbnNlEiMKBW5vZGVzGAEgAygLMhQuaW9wLmxv",
+            "Y25ldC5Ob2RlSW5mbyL3AQoNQ2xpZW50UmVxdWVzdBI1CgtnZXRTZXJ2aWNl",
+            "cxgBIAEoCzIeLmlvcC5sb2NuZXQuR2V0U2VydmljZXNSZXF1ZXN0SAASUQoR",
+            "Z2V0TmVpZ2hib3VyTm9kZXMYAiABKAsyNC5pb3AubG9jbmV0LkdldE5laWdo",
+            "Ym91ck5vZGVzQnlEaXN0YW5jZUNsaWVudFJlcXVlc3RIABJHCg9nZXRDbG9z",
+            "ZXN0Tm9kZXMYAyABKAsyLC5pb3AubG9jbmV0LkdldENsb3Nlc3ROb2Rlc0J5",
+            "RGlzdGFuY2VSZXF1ZXN0SABCEwoRQ2xpZW50UmVxdWVzdFR5cGUi9gEKDkNs",
+            "aWVudFJlc3BvbnNlEjYKC2dldFNlcnZpY2VzGAEgASgLMh8uaW9wLmxvY25l",
+            "dC5HZXRTZXJ2aWNlc1Jlc3BvbnNlSAASTAoRZ2V0TmVpZ2hib3VyTm9kZXMY",
+            "AiABKAsyLy5pb3AubG9jbmV0LkdldE5laWdoYm91ck5vZGVzQnlEaXN0YW5j",
+            "ZVJlc3BvbnNlSAASSAoPZ2V0Q2xvc2VzdE5vZGVzGAMgASgLMi0uaW9wLmxv",
+            "Y25ldC5HZXRDbG9zZXN0Tm9kZXNCeURpc3RhbmNlUmVzcG9uc2VIAEIUChJD",
+            "bGllbnRSZXNwb25zZVR5cGUiFAoSR2V0U2VydmljZXNSZXF1ZXN0ImgKDlNl",
+            "cnZpY2VQcm9maWxlEiwKC3NlcnZpY2VUeXBlGAEgASgOMhcuaW9wLmxvY25l",
+            "dC5TZXJ2aWNlVHlwZRIoCgdwcm9maWxlGAIgASgLMhcuaW9wLmxvY25ldC5O",
+            "b2RlUHJvZmlsZSJDChNHZXRTZXJ2aWNlc1Jlc3BvbnNlEiwKCHNlcnZpY2Vz",
+            "GAEgAygLMhouaW9wLmxvY25ldC5TZXJ2aWNlUHJvZmlsZSIqCihHZXROZWln",
+            "aGJvdXJOb2Rlc0J5RGlzdGFuY2VDbGllbnRSZXF1ZXN0KsIBCgZTdGF0dXMS",
+            "DQoJU1RBVFVTX09LEAASHAoYRVJST1JfUFJPVE9DT0xfVklPTEFUSU9OEAES",
+            "FQoRRVJST1JfVU5TVVBQT1JURUQQAhIWChJFUlJPUl9VTkFVVEhPUklaRUQQ",
+            "BRISCg5FUlJPUl9CQURfUk9MRRAGEhIKDkVSUk9SX0lOVEVSTkFMEAgSGwoX",
+            "RVJST1JfSU5WQUxJRF9TSUdOQVRVUkUQNBIXChNFUlJPUl9JTlZBTElEX1ZB",
+            "TFVFEDYqlgEKC1NlcnZpY2VUeXBlEhAKDFVuc3RydWN0dXJlZBAAEgsKB0Nv",
+            "bnRlbnQQARILCgdMYXRlbmN5EAISDAoITG9jYXRpb24QAxIJCgVUb2tlbhAK",
+            "EgsKB1Byb2ZpbGUQCxINCglQcm94aW1pdHkQDBIJCgVSZWxheRANEg4KClJl",
+            "cHV0YXRpb24QDhILCgdNaW50aW5nEA9iBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Iop.Locnet.Status), typeof(global::Iop.Locnet.ServiceType), }, new pbr::GeneratedClrTypeInfo[] {
@@ -158,12 +157,12 @@ namespace Iop.Locnet {
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.NeighbourhoodChange), global::Iop.Locnet.NeighbourhoodChange.Parser, new[]{ "AddedNodeInfo", "UpdatedNodeInfo", "RemovedNodeId" }, new[]{ "ChangeType" }, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.NeighbourhoodChangedNotificationRequest), global::Iop.Locnet.NeighbourhoodChangedNotificationRequest.Parser, new[]{ "Changes" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.NeighbourhoodChangedNotificationResponse), global::Iop.Locnet.NeighbourhoodChangedNotificationResponse.Parser, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.RemoteNodeRequest), global::Iop.Locnet.RemoteNodeRequest.Parser, new[]{ "AcceptColleague", "RenewColleague", "AcceptNeighbour", "RenewNeighbour", "GetColleagueNodeCount", "GetRandomNodes", "GetClosestNodes" }, new[]{ "RemoteNodeRequestType" }, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.RemoteNodeResponse), global::Iop.Locnet.RemoteNodeResponse.Parser, new[]{ "AcceptColleague", "RenewColleague", "AcceptNeighbour", "RenewNeighbour", "GetColleagueNodeCount", "GetRandomNodes", "GetClosestNodes" }, new[]{ "RemoteNodeResponseType" }, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.RemoteNodeRequest), global::Iop.Locnet.RemoteNodeRequest.Parser, new[]{ "AcceptColleague", "RenewColleague", "AcceptNeighbour", "RenewNeighbour", "GetNodeCount", "GetRandomNodes", "GetClosestNodes" }, new[]{ "RemoteNodeRequestType" }, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.RemoteNodeResponse), global::Iop.Locnet.RemoteNodeResponse.Parser, new[]{ "AcceptColleague", "RenewColleague", "AcceptNeighbour", "RenewNeighbour", "GetNodeCount", "GetRandomNodes", "GetClosestNodes" }, new[]{ "RemoteNodeResponseType" }, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.BuildNetworkRequest), global::Iop.Locnet.BuildNetworkRequest.Parser, new[]{ "NodeInfo" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.BuildNetworkResponse), global::Iop.Locnet.BuildNetworkResponse.Parser, new[]{ "Accepted" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.GetColleagueNodeCountRequest), global::Iop.Locnet.GetColleagueNodeCountRequest.Parser, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.GetColleagueNodeCountResponse), global::Iop.Locnet.GetColleagueNodeCountResponse.Parser, new[]{ "NodeCount" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.GetNodeCountRequest), global::Iop.Locnet.GetNodeCountRequest.Parser, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.GetNodeCountResponse), global::Iop.Locnet.GetNodeCountResponse.Parser, new[]{ "NodeCount" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.GetRandomNodesRequest), global::Iop.Locnet.GetRandomNodesRequest.Parser, new[]{ "MaxNodeCount", "IncludeNeighbours" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.GetRandomNodesResponse), global::Iop.Locnet.GetRandomNodesResponse.Parser, new[]{ "Nodes" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.GetClosestNodesByDistanceRequest), global::Iop.Locnet.GetClosestNodesByDistanceRequest.Parser, new[]{ "Location", "MaxRadiusKm", "MaxNodeCount", "IncludeNeighbours" }, null, null, null),
@@ -3629,8 +3628,8 @@ namespace Iop.Locnet {
         case RemoteNodeRequestTypeOneofCase.RenewNeighbour:
           RenewNeighbour = other.RenewNeighbour.Clone();
           break;
-        case RemoteNodeRequestTypeOneofCase.GetColleagueNodeCount:
-          GetColleagueNodeCount = other.GetColleagueNodeCount.Clone();
+        case RemoteNodeRequestTypeOneofCase.GetNodeCount:
+          GetNodeCount = other.GetNodeCount.Clone();
           break;
         case RemoteNodeRequestTypeOneofCase.GetRandomNodes:
           GetRandomNodes = other.GetRandomNodes.Clone();
@@ -3691,14 +3690,14 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "getColleagueNodeCount" field.</summary>
-    public const int GetColleagueNodeCountFieldNumber = 5;
+    /// <summary>Field number for the "getNodeCount" field.</summary>
+    public const int GetNodeCountFieldNumber = 5;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Iop.Locnet.GetColleagueNodeCountRequest GetColleagueNodeCount {
-      get { return remoteNodeRequestTypeCase_ == RemoteNodeRequestTypeOneofCase.GetColleagueNodeCount ? (global::Iop.Locnet.GetColleagueNodeCountRequest) remoteNodeRequestType_ : null; }
+    public global::Iop.Locnet.GetNodeCountRequest GetNodeCount {
+      get { return remoteNodeRequestTypeCase_ == RemoteNodeRequestTypeOneofCase.GetNodeCount ? (global::Iop.Locnet.GetNodeCountRequest) remoteNodeRequestType_ : null; }
       set {
         remoteNodeRequestType_ = value;
-        remoteNodeRequestTypeCase_ = value == null ? RemoteNodeRequestTypeOneofCase.None : RemoteNodeRequestTypeOneofCase.GetColleagueNodeCount;
+        remoteNodeRequestTypeCase_ = value == null ? RemoteNodeRequestTypeOneofCase.None : RemoteNodeRequestTypeOneofCase.GetNodeCount;
       }
     }
 
@@ -3732,7 +3731,7 @@ namespace Iop.Locnet {
       RenewColleague = 2,
       AcceptNeighbour = 3,
       RenewNeighbour = 4,
-      GetColleagueNodeCount = 5,
+      GetNodeCount = 5,
       GetRandomNodes = 6,
       GetClosestNodes = 7,
     }
@@ -3765,7 +3764,7 @@ namespace Iop.Locnet {
       if (!object.Equals(RenewColleague, other.RenewColleague)) return false;
       if (!object.Equals(AcceptNeighbour, other.AcceptNeighbour)) return false;
       if (!object.Equals(RenewNeighbour, other.RenewNeighbour)) return false;
-      if (!object.Equals(GetColleagueNodeCount, other.GetColleagueNodeCount)) return false;
+      if (!object.Equals(GetNodeCount, other.GetNodeCount)) return false;
       if (!object.Equals(GetRandomNodes, other.GetRandomNodes)) return false;
       if (!object.Equals(GetClosestNodes, other.GetClosestNodes)) return false;
       if (RemoteNodeRequestTypeCase != other.RemoteNodeRequestTypeCase) return false;
@@ -3779,7 +3778,7 @@ namespace Iop.Locnet {
       if (remoteNodeRequestTypeCase_ == RemoteNodeRequestTypeOneofCase.RenewColleague) hash ^= RenewColleague.GetHashCode();
       if (remoteNodeRequestTypeCase_ == RemoteNodeRequestTypeOneofCase.AcceptNeighbour) hash ^= AcceptNeighbour.GetHashCode();
       if (remoteNodeRequestTypeCase_ == RemoteNodeRequestTypeOneofCase.RenewNeighbour) hash ^= RenewNeighbour.GetHashCode();
-      if (remoteNodeRequestTypeCase_ == RemoteNodeRequestTypeOneofCase.GetColleagueNodeCount) hash ^= GetColleagueNodeCount.GetHashCode();
+      if (remoteNodeRequestTypeCase_ == RemoteNodeRequestTypeOneofCase.GetNodeCount) hash ^= GetNodeCount.GetHashCode();
       if (remoteNodeRequestTypeCase_ == RemoteNodeRequestTypeOneofCase.GetRandomNodes) hash ^= GetRandomNodes.GetHashCode();
       if (remoteNodeRequestTypeCase_ == RemoteNodeRequestTypeOneofCase.GetClosestNodes) hash ^= GetClosestNodes.GetHashCode();
       hash ^= (int) remoteNodeRequestTypeCase_;
@@ -3809,9 +3808,9 @@ namespace Iop.Locnet {
         output.WriteRawTag(34);
         output.WriteMessage(RenewNeighbour);
       }
-      if (remoteNodeRequestTypeCase_ == RemoteNodeRequestTypeOneofCase.GetColleagueNodeCount) {
+      if (remoteNodeRequestTypeCase_ == RemoteNodeRequestTypeOneofCase.GetNodeCount) {
         output.WriteRawTag(42);
-        output.WriteMessage(GetColleagueNodeCount);
+        output.WriteMessage(GetNodeCount);
       }
       if (remoteNodeRequestTypeCase_ == RemoteNodeRequestTypeOneofCase.GetRandomNodes) {
         output.WriteRawTag(50);
@@ -3838,8 +3837,8 @@ namespace Iop.Locnet {
       if (remoteNodeRequestTypeCase_ == RemoteNodeRequestTypeOneofCase.RenewNeighbour) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(RenewNeighbour);
       }
-      if (remoteNodeRequestTypeCase_ == RemoteNodeRequestTypeOneofCase.GetColleagueNodeCount) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(GetColleagueNodeCount);
+      if (remoteNodeRequestTypeCase_ == RemoteNodeRequestTypeOneofCase.GetNodeCount) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(GetNodeCount);
       }
       if (remoteNodeRequestTypeCase_ == RemoteNodeRequestTypeOneofCase.GetRandomNodes) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(GetRandomNodes);
@@ -3868,8 +3867,8 @@ namespace Iop.Locnet {
         case RemoteNodeRequestTypeOneofCase.RenewNeighbour:
           RenewNeighbour = other.RenewNeighbour;
           break;
-        case RemoteNodeRequestTypeOneofCase.GetColleagueNodeCount:
-          GetColleagueNodeCount = other.GetColleagueNodeCount;
+        case RemoteNodeRequestTypeOneofCase.GetNodeCount:
+          GetNodeCount = other.GetNodeCount;
           break;
         case RemoteNodeRequestTypeOneofCase.GetRandomNodes:
           GetRandomNodes = other.GetRandomNodes;
@@ -3926,12 +3925,12 @@ namespace Iop.Locnet {
             break;
           }
           case 42: {
-            global::Iop.Locnet.GetColleagueNodeCountRequest subBuilder = new global::Iop.Locnet.GetColleagueNodeCountRequest();
-            if (remoteNodeRequestTypeCase_ == RemoteNodeRequestTypeOneofCase.GetColleagueNodeCount) {
-              subBuilder.MergeFrom(GetColleagueNodeCount);
+            global::Iop.Locnet.GetNodeCountRequest subBuilder = new global::Iop.Locnet.GetNodeCountRequest();
+            if (remoteNodeRequestTypeCase_ == RemoteNodeRequestTypeOneofCase.GetNodeCount) {
+              subBuilder.MergeFrom(GetNodeCount);
             }
             input.ReadMessage(subBuilder);
-            GetColleagueNodeCount = subBuilder;
+            GetNodeCount = subBuilder;
             break;
           }
           case 50: {
@@ -3995,8 +3994,8 @@ namespace Iop.Locnet {
         case RemoteNodeResponseTypeOneofCase.RenewNeighbour:
           RenewNeighbour = other.RenewNeighbour.Clone();
           break;
-        case RemoteNodeResponseTypeOneofCase.GetColleagueNodeCount:
-          GetColleagueNodeCount = other.GetColleagueNodeCount.Clone();
+        case RemoteNodeResponseTypeOneofCase.GetNodeCount:
+          GetNodeCount = other.GetNodeCount.Clone();
           break;
         case RemoteNodeResponseTypeOneofCase.GetRandomNodes:
           GetRandomNodes = other.GetRandomNodes.Clone();
@@ -4057,14 +4056,14 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "getColleagueNodeCount" field.</summary>
-    public const int GetColleagueNodeCountFieldNumber = 5;
+    /// <summary>Field number for the "getNodeCount" field.</summary>
+    public const int GetNodeCountFieldNumber = 5;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Iop.Locnet.GetColleagueNodeCountResponse GetColleagueNodeCount {
-      get { return remoteNodeResponseTypeCase_ == RemoteNodeResponseTypeOneofCase.GetColleagueNodeCount ? (global::Iop.Locnet.GetColleagueNodeCountResponse) remoteNodeResponseType_ : null; }
+    public global::Iop.Locnet.GetNodeCountResponse GetNodeCount {
+      get { return remoteNodeResponseTypeCase_ == RemoteNodeResponseTypeOneofCase.GetNodeCount ? (global::Iop.Locnet.GetNodeCountResponse) remoteNodeResponseType_ : null; }
       set {
         remoteNodeResponseType_ = value;
-        remoteNodeResponseTypeCase_ = value == null ? RemoteNodeResponseTypeOneofCase.None : RemoteNodeResponseTypeOneofCase.GetColleagueNodeCount;
+        remoteNodeResponseTypeCase_ = value == null ? RemoteNodeResponseTypeOneofCase.None : RemoteNodeResponseTypeOneofCase.GetNodeCount;
       }
     }
 
@@ -4098,7 +4097,7 @@ namespace Iop.Locnet {
       RenewColleague = 2,
       AcceptNeighbour = 3,
       RenewNeighbour = 4,
-      GetColleagueNodeCount = 5,
+      GetNodeCount = 5,
       GetRandomNodes = 6,
       GetClosestNodes = 7,
     }
@@ -4131,7 +4130,7 @@ namespace Iop.Locnet {
       if (!object.Equals(RenewColleague, other.RenewColleague)) return false;
       if (!object.Equals(AcceptNeighbour, other.AcceptNeighbour)) return false;
       if (!object.Equals(RenewNeighbour, other.RenewNeighbour)) return false;
-      if (!object.Equals(GetColleagueNodeCount, other.GetColleagueNodeCount)) return false;
+      if (!object.Equals(GetNodeCount, other.GetNodeCount)) return false;
       if (!object.Equals(GetRandomNodes, other.GetRandomNodes)) return false;
       if (!object.Equals(GetClosestNodes, other.GetClosestNodes)) return false;
       if (RemoteNodeResponseTypeCase != other.RemoteNodeResponseTypeCase) return false;
@@ -4145,7 +4144,7 @@ namespace Iop.Locnet {
       if (remoteNodeResponseTypeCase_ == RemoteNodeResponseTypeOneofCase.RenewColleague) hash ^= RenewColleague.GetHashCode();
       if (remoteNodeResponseTypeCase_ == RemoteNodeResponseTypeOneofCase.AcceptNeighbour) hash ^= AcceptNeighbour.GetHashCode();
       if (remoteNodeResponseTypeCase_ == RemoteNodeResponseTypeOneofCase.RenewNeighbour) hash ^= RenewNeighbour.GetHashCode();
-      if (remoteNodeResponseTypeCase_ == RemoteNodeResponseTypeOneofCase.GetColleagueNodeCount) hash ^= GetColleagueNodeCount.GetHashCode();
+      if (remoteNodeResponseTypeCase_ == RemoteNodeResponseTypeOneofCase.GetNodeCount) hash ^= GetNodeCount.GetHashCode();
       if (remoteNodeResponseTypeCase_ == RemoteNodeResponseTypeOneofCase.GetRandomNodes) hash ^= GetRandomNodes.GetHashCode();
       if (remoteNodeResponseTypeCase_ == RemoteNodeResponseTypeOneofCase.GetClosestNodes) hash ^= GetClosestNodes.GetHashCode();
       hash ^= (int) remoteNodeResponseTypeCase_;
@@ -4175,9 +4174,9 @@ namespace Iop.Locnet {
         output.WriteRawTag(34);
         output.WriteMessage(RenewNeighbour);
       }
-      if (remoteNodeResponseTypeCase_ == RemoteNodeResponseTypeOneofCase.GetColleagueNodeCount) {
+      if (remoteNodeResponseTypeCase_ == RemoteNodeResponseTypeOneofCase.GetNodeCount) {
         output.WriteRawTag(42);
-        output.WriteMessage(GetColleagueNodeCount);
+        output.WriteMessage(GetNodeCount);
       }
       if (remoteNodeResponseTypeCase_ == RemoteNodeResponseTypeOneofCase.GetRandomNodes) {
         output.WriteRawTag(50);
@@ -4204,8 +4203,8 @@ namespace Iop.Locnet {
       if (remoteNodeResponseTypeCase_ == RemoteNodeResponseTypeOneofCase.RenewNeighbour) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(RenewNeighbour);
       }
-      if (remoteNodeResponseTypeCase_ == RemoteNodeResponseTypeOneofCase.GetColleagueNodeCount) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(GetColleagueNodeCount);
+      if (remoteNodeResponseTypeCase_ == RemoteNodeResponseTypeOneofCase.GetNodeCount) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(GetNodeCount);
       }
       if (remoteNodeResponseTypeCase_ == RemoteNodeResponseTypeOneofCase.GetRandomNodes) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(GetRandomNodes);
@@ -4234,8 +4233,8 @@ namespace Iop.Locnet {
         case RemoteNodeResponseTypeOneofCase.RenewNeighbour:
           RenewNeighbour = other.RenewNeighbour;
           break;
-        case RemoteNodeResponseTypeOneofCase.GetColleagueNodeCount:
-          GetColleagueNodeCount = other.GetColleagueNodeCount;
+        case RemoteNodeResponseTypeOneofCase.GetNodeCount:
+          GetNodeCount = other.GetNodeCount;
           break;
         case RemoteNodeResponseTypeOneofCase.GetRandomNodes:
           GetRandomNodes = other.GetRandomNodes;
@@ -4292,12 +4291,12 @@ namespace Iop.Locnet {
             break;
           }
           case 42: {
-            global::Iop.Locnet.GetColleagueNodeCountResponse subBuilder = new global::Iop.Locnet.GetColleagueNodeCountResponse();
-            if (remoteNodeResponseTypeCase_ == RemoteNodeResponseTypeOneofCase.GetColleagueNodeCount) {
-              subBuilder.MergeFrom(GetColleagueNodeCount);
+            global::Iop.Locnet.GetNodeCountResponse subBuilder = new global::Iop.Locnet.GetNodeCountResponse();
+            if (remoteNodeResponseTypeCase_ == RemoteNodeResponseTypeOneofCase.GetNodeCount) {
+              subBuilder.MergeFrom(GetNodeCount);
             }
             input.ReadMessage(subBuilder);
-            GetColleagueNodeCount = subBuilder;
+            GetNodeCount = subBuilder;
             break;
           }
           case 50: {
@@ -4564,10 +4563,10 @@ namespace Iop.Locnet {
 
   }
 
-  public sealed partial class GetColleagueNodeCountRequest : pb::IMessage<GetColleagueNodeCountRequest> {
-    private static readonly pb::MessageParser<GetColleagueNodeCountRequest> _parser = new pb::MessageParser<GetColleagueNodeCountRequest>(() => new GetColleagueNodeCountRequest());
+  public sealed partial class GetNodeCountRequest : pb::IMessage<GetNodeCountRequest> {
+    private static readonly pb::MessageParser<GetNodeCountRequest> _parser = new pb::MessageParser<GetNodeCountRequest>(() => new GetNodeCountRequest());
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pb::MessageParser<GetColleagueNodeCountRequest> Parser { get { return _parser; } }
+    public static pb::MessageParser<GetNodeCountRequest> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
@@ -4580,28 +4579,28 @@ namespace Iop.Locnet {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public GetColleagueNodeCountRequest() {
+    public GetNodeCountRequest() {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public GetColleagueNodeCountRequest(GetColleagueNodeCountRequest other) : this() {
+    public GetNodeCountRequest(GetNodeCountRequest other) : this() {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public GetColleagueNodeCountRequest Clone() {
-      return new GetColleagueNodeCountRequest(this);
+    public GetNodeCountRequest Clone() {
+      return new GetNodeCountRequest(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
-      return Equals(other as GetColleagueNodeCountRequest);
+      return Equals(other as GetNodeCountRequest);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(GetColleagueNodeCountRequest other) {
+    public bool Equals(GetNodeCountRequest other) {
       if (ReferenceEquals(other, null)) {
         return false;
       }
@@ -4633,7 +4632,7 @@ namespace Iop.Locnet {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(GetColleagueNodeCountRequest other) {
+    public void MergeFrom(GetNodeCountRequest other) {
       if (other == null) {
         return;
       }
@@ -4653,10 +4652,10 @@ namespace Iop.Locnet {
 
   }
 
-  public sealed partial class GetColleagueNodeCountResponse : pb::IMessage<GetColleagueNodeCountResponse> {
-    private static readonly pb::MessageParser<GetColleagueNodeCountResponse> _parser = new pb::MessageParser<GetColleagueNodeCountResponse>(() => new GetColleagueNodeCountResponse());
+  public sealed partial class GetNodeCountResponse : pb::IMessage<GetNodeCountResponse> {
+    private static readonly pb::MessageParser<GetNodeCountResponse> _parser = new pb::MessageParser<GetNodeCountResponse>(() => new GetNodeCountResponse());
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pb::MessageParser<GetColleagueNodeCountResponse> Parser { get { return _parser; } }
+    public static pb::MessageParser<GetNodeCountResponse> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
@@ -4669,20 +4668,20 @@ namespace Iop.Locnet {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public GetColleagueNodeCountResponse() {
+    public GetNodeCountResponse() {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public GetColleagueNodeCountResponse(GetColleagueNodeCountResponse other) : this() {
+    public GetNodeCountResponse(GetNodeCountResponse other) : this() {
       nodeCount_ = other.nodeCount_;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public GetColleagueNodeCountResponse Clone() {
-      return new GetColleagueNodeCountResponse(this);
+    public GetNodeCountResponse Clone() {
+      return new GetNodeCountResponse(this);
     }
 
     /// <summary>Field number for the "nodeCount" field.</summary>
@@ -4698,11 +4697,11 @@ namespace Iop.Locnet {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
-      return Equals(other as GetColleagueNodeCountResponse);
+      return Equals(other as GetNodeCountResponse);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(GetColleagueNodeCountResponse other) {
+    public bool Equals(GetNodeCountResponse other) {
       if (ReferenceEquals(other, null)) {
         return false;
       }
@@ -4743,7 +4742,7 @@ namespace Iop.Locnet {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(GetColleagueNodeCountResponse other) {
+    public void MergeFrom(GetNodeCountResponse other) {
       if (other == null) {
         return;
       }

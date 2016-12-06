@@ -40,7 +40,7 @@ namespace ProfileServer.Network
 
 
     /// <summary>List of network peers and clients across all role servers.</summary>
-    private ClientList clientList;
+    private IncomingClientList clientList;
 
 
 
@@ -53,7 +53,7 @@ namespace ProfileServer.Network
 
       try
       {
-        clientList = new ClientList();
+        clientList = new IncomingClientList();
 
         checkInactiveClientConnectionsTimer = new Timer(CheckInactiveClientConnectionsTimerCallback, null, CheckInactiveClientConnectionsTimerInterval, CheckInactiveClientConnectionsTimerInterval);
 
@@ -70,7 +70,7 @@ namespace ProfileServer.Network
           }
           else
           {
-            log.Fatal("UDP servers are not implemented.");
+            log.Fatal("UDP servers are not supported.");
             error = true;
             break;
           }
@@ -133,12 +133,12 @@ namespace ProfileServer.Network
       if ((serversMaintenanceThread != null) && !serversMaintenanceThreadFinished.WaitOne(10000))
         log.Error("Servers maintenance thread did not terminated in 10 seconds.");
 
-      List<Client> clients = clientList.GetNetworkClientList();
+      List<IncomingClient> clients = clientList.GetNetworkClientList();
       try
       {
         log.Info("Closing {0} existing client connections of role servers.", clients.Count);
-        foreach (Client client in clients)
-          client.CloseConnection().Wait();
+        foreach (IncomingClient client in clients)
+          client.CloseConnection();
       }
       catch
       {
@@ -219,8 +219,8 @@ namespace ProfileServer.Network
       {
         foreach (TcpRoleServer server in servers)
         {
-          List<Client> clients = clientList.GetNetworkClientList();
-          foreach (Client client in clients)
+          List<IncomingClient> clients = clientList.GetNetworkClientList();
+          foreach (IncomingClient client in clients)
           {
             ulong id = 0;
             try
@@ -234,7 +234,7 @@ namespace ProfileServer.Network
                 // If we dispose the client this will terminate the read loop in TcpRoleServer.ClientHandlerAsync,
                 // which will then remove the client from the list, so we do not need to care about that.
                 log.Debug("Client ID 0x{0:X16} did not send any requests before {1} and is now considered as inactive. Closing client's connection.", id, client.NextKeepAliveTime.ToString("yyyy-MM-dd HH:mm:ss"));
-                client.CloseConnection().Wait();
+                client.CloseConnection();
               }
             }
             catch (Exception e)
@@ -270,11 +270,11 @@ namespace ProfileServer.Network
     /// Obtains the client list.
     /// </summary>
     /// <returns>List of all server's clients.</returns>
-    public ClientList GetClientList()
+    public IncomingClientList GetClientList()
     {
       log.Trace("()");
 
-      ClientList res = clientList;
+      IncomingClientList res = clientList;
 
       log.Trace("(-)");
       return res;

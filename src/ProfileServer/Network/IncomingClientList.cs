@@ -11,21 +11,21 @@ using System.Threading.Tasks;
 namespace ProfileServer.Network
 {
   /// <summary>
-  /// Represents a single item in ClientList collections.
+  /// Represents a single item in IncomingClientList collections.
   /// </summary>
   public class PeerListItem
   {
     /// <summary>Network client object.</summary>
-    public Client Client;  
+    public IncomingClient Client;  
   }
 
   /// <summary>
   /// Implements structures for managment of a server's network peers and clients.
   /// This includes context information of client to client calls over the node server relay.
   /// </summary>
-  public class ClientList
+  public class IncomingClientList
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Network.ClientList");
+    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Network.IncomingClientList");
 
     /// <summary>Lock object for synchronized access to client list structures.</summary>
     private object lockObject = new object();
@@ -62,11 +62,11 @@ namespace ProfileServer.Network
     /// Creates a copy of list of all network clients (peers) that are connected to the server.
     /// </summary>
     /// <returns>List of network clients.</returns>
-    public List<Client> GetNetworkClientList()
+    public List<IncomingClient> GetNetworkClientList()
     {
       log.Trace("()");
 
-      List<Client> res = new List<Client>();
+      List<IncomingClient> res = new List<IncomingClient>();
 
       lock (lockObject)
       {
@@ -100,7 +100,7 @@ namespace ProfileServer.Network
     /// Assigns ID to a new network client and safely adds it to the peersByInternalId list.
     /// </summary>
     /// <param name="Client">Network client to add.</param>
-    public void AddNetworkPeer(Client Client)
+    public void AddNetworkPeer(IncomingClient Client)
     {
       log.Trace("()");
 
@@ -123,7 +123,7 @@ namespace ProfileServer.Network
     /// <param name="Client">Network client to add.</param>
     /// <returns>true if the function succeeds, false otherwise. The function may fail only 
     /// if there is an asynchrony in internal peer lists, which should never happen.</returns>
-    public bool AddNetworkPeerWithIdentity(Client Client)
+    public bool AddNetworkPeerWithIdentity(IncomingClient Client)
     {
       log.Trace("(Client.Id:{0})", Client.Id.ToHex());
 
@@ -166,7 +166,7 @@ namespace ProfileServer.Network
     /// <param name="Client">Checked-in node's client to add.</param>
     /// <returns>true if the function succeeds, false otherwise. The function may fail only 
     /// if there is an asynchrony in internal peer lists, which should never happen.</returns>
-    public async Task<bool> AddCheckedInClient(Client Client)
+    public async Task<bool> AddCheckedInClient(IncomingClient Client)
     {
       log.Trace("(Client.Id:{0})", Client.Id.ToHex());
 
@@ -200,7 +200,7 @@ namespace ProfileServer.Network
       if (res && (clientToCheckOut != null))
       {
         log.Info("Identity ID '{0}' has been checked-in already via network peer internal ID {1} and will now be disconnected.", identityId.ToHex(), clientToCheckOut.Client.Id.ToHex());
-        await clientToCheckOut.Client.CloseConnection();
+        await clientToCheckOut.Client.CloseConnectionAsync();
       }
 
       if (!res)
@@ -215,7 +215,7 @@ namespace ProfileServer.Network
     /// Safely removes network client (peer) from all lists.
     /// </summary>
     /// <param name="Client">Network client to remove.</param>
-    public void RemoveNetworkPeer(Client Client)
+    public void RemoveNetworkPeer(IncomingClient Client)
     {
       log.Trace("(Client.Id:{0})", Client.Id.ToHex());
 
@@ -282,11 +282,11 @@ namespace ProfileServer.Network
     /// </summary>
     /// <param name="IdentityId">Identifier of the identity to search for.</param>
     /// <returns>Client object of the requested online identity, or null if the identity is not online.</returns>
-    public Client GetCheckedInClient(byte[] IdentityId)
+    public IncomingClient GetCheckedInClient(byte[] IdentityId)
     {
       log.Trace("(IdentityId:'{0}')", IdentityId.ToHex());
 
-      Client res = null;
+      IncomingClient res = null;
       PeerListItem peer;
       lock (lockObject)
       {
@@ -323,7 +323,7 @@ namespace ProfileServer.Network
     /// <param name="ServiceName">Name of the application service to use.</param>
     /// <param name="RequestMessage">CallIdentityApplicationServiceRequest message that the caller send in order to initiate the call.</param>
     /// <returns>New relay connection object if the function succeeds, or null otherwise.</returns>
-    public RelayConnection CreateNetworkRelay(Client Caller, Client Callee, string ServiceName, Message RequestMessage)
+    public RelayConnection CreateNetworkRelay(IncomingClient Caller, IncomingClient Callee, string ServiceName, Message RequestMessage)
     {
       log.Trace("(Caller.Id:{0},Callee.Id:{1},ServiceName:'{2}')", Caller.Id.ToHex(), Callee.Id.ToHex(), ServiceName);
 

@@ -181,6 +181,29 @@ namespace ProfileServerProtocol
     }
 
 
+    /// <summary>
+    /// Creates and initializes the LocalService part of the request.
+    /// </summary>
+    /// <returns>Request with initialized LocalService part.</returns>
+    public Message CreateLocalServiceRequest()
+    {
+      Message res = CreateRequest();
+      res.Request.LocalService = new LocalServiceRequest();
+      return res;
+    }
+
+    /// <summary>
+    /// Creates a new response for a specific request with initialized LocalService part and STATUS_OK status code.
+    /// </summary>
+    /// <param name="Request">Request message for which the response is created.</param>
+    /// <returns>Response with initialized LocalService part.</returns>
+    public Message CreateLocalServiceOkResponse(Message Request)
+    {
+      Message res = CreateOkResponse(Request);
+      res.Response.LocalService = new LocalServiceResponse();
+      return res;
+    }
+
 
     /// <summary>
     /// Creates a new RegisterServiceRequest message.
@@ -194,7 +217,7 @@ namespace ProfileServerProtocol
       registerServiceRequest.ServiceType = ServiceType;
       registerServiceRequest.NodeProfile = NodeProfile;
 
-      Message res = CreateRequest();
+      Message res = CreateLocalServiceRequest();
       res.Request.LocalService.RegisterService = registerServiceRequest;
 
       return res;
@@ -210,7 +233,7 @@ namespace ProfileServerProtocol
     {
       RegisterServiceResponse registerServiceResponse = new RegisterServiceResponse();
 
-      Message res = CreateOkResponse(Request);
+      Message res = CreateLocalServiceOkResponse(Request);
       res.Response.LocalService.RegisterService = registerServiceResponse;
 
       return res;
@@ -227,7 +250,7 @@ namespace ProfileServerProtocol
       DeregisterServiceRequest deregisterServiceRequest = new DeregisterServiceRequest();
       deregisterServiceRequest.ServiceType = ServiceType;
 
-      Message res = CreateRequest();
+      Message res = CreateLocalServiceRequest();
       res.Request.LocalService.DeregisterService = deregisterServiceRequest;
 
       return res;
@@ -243,7 +266,7 @@ namespace ProfileServerProtocol
     {
       DeregisterServiceResponse deregisterServiceResponse = new DeregisterServiceResponse();
 
-      Message res = CreateOkResponse(Request);
+      Message res = CreateLocalServiceOkResponse(Request);
       res.Response.LocalService.DeregisterService = deregisterServiceResponse;
 
       return res;
@@ -255,12 +278,12 @@ namespace ProfileServerProtocol
     /// </summary>
     /// <param name="KeepAlive">If set to true, the LBN server will send neighborhood updates over the open connection.</param>
     /// <returns>GetNeighbourNodesByDistanceLocalRequest message that is ready to be sent.</returns>
-    public Message CreateGetNeighbourNodesByDistanceLocalRequest(bool KeepAlive)
+    public Message CreateGetNeighbourNodesByDistanceLocalRequest(bool KeepAlive = true)
     {
       GetNeighbourNodesByDistanceLocalRequest getNeighbourNodesByDistanceLocalRequest = new GetNeighbourNodesByDistanceLocalRequest();
       getNeighbourNodesByDistanceLocalRequest.KeepAliveAndSendUpdates = KeepAlive;
 
-      Message res = CreateRequest();
+      Message res = CreateLocalServiceRequest();
       res.Request.LocalService.GetNeighbourNodes = getNeighbourNodesByDistanceLocalRequest;
 
       return res;
@@ -278,7 +301,7 @@ namespace ProfileServerProtocol
       GetNeighbourNodesByDistanceResponse getNeighbourNodesByDistanceResponse = new GetNeighbourNodesByDistanceResponse();
       getNeighbourNodesByDistanceResponse.Nodes.AddRange(Nodes);
 
-      Message res = CreateOkResponse(Request);
+      Message res = CreateLocalServiceOkResponse(Request);
       res.Response.LocalService.GetNeighbourNodes = getNeighbourNodesByDistanceResponse;
 
       return res;
@@ -295,7 +318,7 @@ namespace ProfileServerProtocol
       NeighbourhoodChangedNotificationRequest neighbourhoodChangedNotificationRequest = new NeighbourhoodChangedNotificationRequest();
       neighbourhoodChangedNotificationRequest.Changes.AddRange(Changes);
 
-      Message res = CreateRequest();
+      Message res = CreateLocalServiceRequest();
       res.Request.LocalService.NeighbourhoodChanged = neighbourhoodChangedNotificationRequest;
 
       return res;
@@ -311,7 +334,7 @@ namespace ProfileServerProtocol
     {
       NeighbourhoodChangedNotificationResponse neighbourhoodChangedNotificationResponse = new NeighbourhoodChangedNotificationResponse();
 
-      Message res = CreateOkResponse(Request);
+      Message res = CreateLocalServiceOkResponse(Request);
       res.Response.LocalService.NeighbourhoodUpdated = neighbourhoodChangedNotificationResponse;
 
       return res;
