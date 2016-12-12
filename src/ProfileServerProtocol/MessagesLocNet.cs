@@ -73,6 +73,7 @@ namespace ProfileServerProtocol
       Message res = new Message();
       res.Id = (uint)newId;
       res.Request = new Request();
+      res.Request.Version = version;
 
       return res;
     }

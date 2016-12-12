@@ -12,7 +12,7 @@ namespace ProfileServer.Kernel
   /// </summary>
   public class ComponentShutdown
   {
-    private static NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
+    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Kernel.ComponentShutdown");
 
     /// <summary>Component-defined shutdown flag. This can be used to complement the global shutdown flag.</summary>
     public volatile bool IsShutdown = false;

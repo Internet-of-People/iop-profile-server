@@ -32,7 +32,7 @@ namespace ProfileServer.Data.Models
     /// <summary>IP address of the profile server.</summary>
     /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
     [Required]
-    public IPAddress IpAddress { get; set; }
+    public string IpAddress { get; set; }
 
     /// <summary>TCP port of the profile server's primary interface.</summary>
     /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
@@ -54,6 +54,5 @@ namespace ProfileServer.Data.Models
     /// </summary>
     /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
     public DateTime? LastRefreshTime { get; set; }
-#warning TODO: Implement follower server refreshing.
   }
 }

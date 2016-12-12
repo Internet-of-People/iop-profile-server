@@ -50,7 +50,8 @@ namespace ProfileServer.Data.Repositories
       // in which we query a certain number of records, then possibly filter out some of them with more precise location filter and extraData filter.
       // Then if we do not have enough results, we load more.
 
-      IQueryable<T> query = dbSet;
+      byte[] invalidVersion = SemVer.Invalid.ToByteArray();
+      IQueryable<T> query = dbSet.Where(i => i.Version != invalidVersion);
 
       // If we are querying HostedIdentityRepository we need to make sure only active identities are counted in.
       bool homeRepo = this is HostedIdentityRepository;

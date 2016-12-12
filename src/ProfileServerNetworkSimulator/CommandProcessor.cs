@@ -1,4 +1,6 @@
-﻿using ProfileServerProtocol;
+﻿using Google.Protobuf;
+using Iop.Profileserver;
+using ProfileServerProtocol;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -6,14 +8,14 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ProfileServerSimulator
+namespace ProfileServerNetworkSimulator
 {
   /// <summary>
   /// Engine that executes the commands.
   /// </summary>
   public class CommandProcessor
   {
-    private static NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
+    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerNetworkSimulator.CommandProcessor");
 
     /// <summary>Directory of the assembly.</summary>
     public static string BaseDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
@@ -60,14 +62,10 @@ namespace ProfileServerSimulator
       log.Trace("()");
 
       foreach (IdentityClient identity in identityClients.Values)
-      {
         identity.Shutdown();
-      }
 
       foreach (ProfileServer server in profileServers.Values)
-      {
         server.Shutdown();
-      }
 
       log.Trace("(-)");
     }
@@ -75,11 +73,18 @@ namespace ProfileServerSimulator
     /// <summary>
     /// Executes all commands.
     /// </summary>
-    public void Execute()
+    /// <returns>true if the function succeeds and all the commands are executed successfully, false otherwise.</returns>
+    public bool Execute()
     {
       log.Trace("()");
 
-      ClearHistory();
+      bool res = false;
+      if (!ClearHistory())
+      {
+        log.Error("Unable to clear history, please make sure the access to the instance folder is not blocked by other process.");
+        log.Trace("(-):{0}", res);
+        return res;
+      }
 
       int index = 1;
       bool error = false;
@@ -97,7 +102,8 @@ namespace ProfileServerSimulator
               {
                 string name = GetInstanceName(cmd.GroupName, i);
                 GpsLocation location = Helpers.GenerateRandomGpsLocation(cmd.Latitude, cmd.Longitude, cmd.Radius);
-                ProfileServer profileServer = new ProfileServer(name, location, cmd.BasePort);
+                int basePort = cmd.BasePort + 20 * (i - 1);
+                ProfileServer profileServer = new ProfileServer(name, location, basePort);
                 if (profileServer.Initialize())
                 {
                   profileServers.Add(name, profileServer);
@@ -203,9 +209,9 @@ namespace ProfileServerSimulator
               }
 
 
-              for (int i = 0; i < cmd.Count; i++)
+              for (int i = 1; i <= cmd.Count; i++)
               {
-                string name = GetInstanceName(cmd.PsGroup, cmd.PsIndex + i);
+                string name = GetIdentityName(cmd.Name, i);
 
                 int serverIndex = Helpers.Rng.Next(availableServers.Count);
                 ProfileServer profileServer = availableServers[serverIndex];
@@ -215,6 +221,7 @@ namespace ProfileServerSimulator
                 try
                 {
                   identityClient = new IdentityClient(name, cmd.IdentityType, location, cmd.ImageMask, cmd.ImageChance);
+                  identityClients.Add(name, identityClient);
                 }
                 catch
                 {
@@ -222,8 +229,6 @@ namespace ProfileServerSimulator
                   error = true;
                   break;
                 }
-
-                if (error) break;
 
                 Task<bool> initTask = identityClient.InitializeProfileHosting(profileServer);
                 if (initTask.Result) 
@@ -236,10 +241,51 @@ namespace ProfileServerSimulator
                 {
                   log.Error("Unable to register profile hosting and initialize profile of identity '{0}' on server '{1}'.", name, profileServer.Name);
                   error = true;
+                  break;
                 }
               }
 
               if (!error) log.Info("  * {0} identities created and initialized on {1} servers.", cmd.Count, cmd.PsCount);
+              break;
+            }
+
+          case CommandType.CancelIdentity:
+            {
+              CommandCancelIdentity cmd = (CommandCancelIdentity)command;
+
+              List<IdentityClient> clients = new List<IdentityClient>();
+              for (int i = 0; i < cmd.Count; i++)
+              {
+                string name = GetIdentityName(cmd.Name, cmd.Index + i);
+                IdentityClient identityClient;
+                if (identityClients.TryGetValue(name, out identityClient))
+                {
+                  clients.Add(identityClient);
+                }
+                else
+                {
+                  log.Error("  * Identity name '{0}' does not exist.", name);
+                  error = true;
+                  break;
+                }
+              }
+
+              if (error) break;
+
+
+              foreach (IdentityClient client in clients)
+              {
+                Task<bool> cancelTask = client.CancelProfileHosting();
+                if (!cancelTask.Result)
+                {
+                  log.Error("Unable to cancel profile hosting agreement of identity '{0}' on server '{1}'.", client.Name, client.ProfileServer.Name);
+                  error = true;
+                }
+
+              }
+
+              if (!error) log.Info("  * {0} identities cancelled their hosting agreement.", clients.Count);
+
               break;
             }
 
@@ -349,7 +395,7 @@ namespace ProfileServerSimulator
                   ProfileServer target;
                   if (profileServers.TryGetValue(name, out target))
                   {
-                    neighborhoodList.Add(profileServer);
+                    neighborhoodList.Add(target);
                   }
                   else
                   {
@@ -434,6 +480,74 @@ namespace ProfileServerSimulator
             }
 
 
+          case CommandType.TestQuery:
+            {
+              CommandTestQuery cmd = (CommandTestQuery)command;
+
+              List<ProfileServer> targetServers = new List<ProfileServer>();
+              for (int i = 0; i < cmd.PsCount; i++)
+              {
+                string name = GetInstanceName(cmd.PsGroup, cmd.PsIndex + i);
+                ProfileServer profileServer;
+                if (profileServers.TryGetValue(name, out profileServer))
+                {
+                  targetServers.Add(profileServer);
+                }
+                else
+                {
+                  log.Error("  * Profile server instance '{0}' does not exist.", name);
+                  error = true;
+                  break;
+                }
+
+              }
+
+              IdentityClient client = null;
+              try
+              {
+                client = new IdentityClient("Query Client", "Query Client", new GpsLocation(0, 0), null, 0);
+
+                int maxResults = cmd.IncludeImages ? 1000 : 10000;
+                string nameFilter = cmd.NameFilter != "**" ? cmd.NameFilter : null;
+                string typeFilter = cmd.TypeFilter != "**" ? cmd.TypeFilter : null;
+                GpsLocation queryLocation = cmd.Latitude != GpsLocation.NoLocation.Latitude ? new GpsLocation(cmd.Latitude, cmd.Longitude) : null;
+                foreach (ProfileServer targetServer in targetServers)
+                {
+                  client.InitializeTcpClient();
+                  Task<List<IdentityNetworkProfileInformation>> searchTask = client.SearchQueryAsync(targetServer, nameFilter, typeFilter, queryLocation, cmd.Radius, false, cmd.IncludeImages);
+                  List<IdentityNetworkProfileInformation> searchResults = searchTask.Result;
+                  if (searchResults != null)
+                  {
+                    List<IdentityNetworkProfileInformation> expectedSearchResults = targetServer.GetExpectedSearchResults(nameFilter, typeFilter, queryLocation, cmd.Radius, false, cmd.IncludeImages);
+
+                    if (!CompareSearchResults(searchResults, expectedSearchResults, maxResults))
+                    {
+                      log.Error("  * Real search results are different from the expected results on server instance '{0}'.", targetServer.Name);
+                      error = true;
+                      break;
+                    }
+                  }
+                  else 
+                  {
+                    log.Error("  * Unable to perform search on server instance '{0}'.", targetServer.Name);
+                    error = true;
+                    break;
+                  }
+                }
+              }
+              catch (Exception e)
+              {
+                log.Error("Exception occurred: {0}", e.ToString());
+                error = true;
+                break;
+              }
+
+              if (!error) log.Info("  * Results of search queries on {0} servers match expected results.", targetServers.Count);
+
+              break;
+            }
+
+
 
           case CommandType.Delay:
             {
@@ -452,22 +566,36 @@ namespace ProfileServerSimulator
         if (error) break;
       }
 
-      log.Trace("(-)");
+      res = !error;
+
+      log.Trace("(-):{0}", res);
+      return res;
     }
 
     /// <summary>
     /// Removes data from previous run.
     /// </summary>
-    public void ClearHistory()
+    /// <returns>true if the function succeeds, false otherwise.</returns>
+    public bool ClearHistory()
     {
       log.Trace("()");
 
-      if (Directory.Exists(InstanceDirectory))
-        Directory.Delete(InstanceDirectory, true);
+      bool res = false;
+      try
+      {
+        if (Directory.Exists(InstanceDirectory))
+          Directory.Delete(InstanceDirectory, true);
 
-      Directory.CreateDirectory(InstanceDirectory);
+        Directory.CreateDirectory(InstanceDirectory);
+        res = true;
+      }
+      catch (Exception e)
+      {
+        log.Error("Exception occurred while trying to delete and recreated '{0}': {1}", InstanceDirectory, e.ToString());
+      }
 
-      log.Trace("(-)");
+      log.Trace("(-):{0}", res);
+      return res;
     }
 
     /// <summary>
@@ -491,6 +619,159 @@ namespace ProfileServerSimulator
     public string GetIdentityName(string GroupName, int IdentityNumber)
     {
       return string.Format("{0}{1:00000}", GroupName, IdentityNumber);
+    }
+
+
+    /// <summary>
+    /// Checks log files of server instances to see if there are any errors.
+    /// </summary>
+    public void CheckLogs()
+    {
+      log.Trace("()");
+
+      bool error = false;
+      foreach (ProfileServer server in profileServers.Values)
+      {        
+        string logDir;
+        List<string> fileNames;
+        List<int> errorCount;
+        if (server.CheckLogs(out logDir, out fileNames, out errorCount))
+        {
+          if (logDir.ToLowerInvariant().StartsWith(InstanceDirectory.ToLowerInvariant() + Path.DirectorySeparatorChar))
+            logDir = Path.Combine("instances", logDir.Substring(InstanceDirectory.Length + 1));
+
+          int instanceErrorCount = 0;
+          for (int i = 0; i < errorCount.Count; i++)
+            instanceErrorCount += errorCount[i];
+
+          if (instanceErrorCount > 0)
+          {
+            error = true;
+
+            if (fileNames.Count == 1)
+            {
+              log.Info("  * {0} errors found in instance {1} log file '{2}'.", errorCount[0], server.Name, Path.Combine(logDir, fileNames[0]));
+            }
+            else
+            {
+              log.Info("  * {0} errors found in log files of instance {1}, log directory '{2}':", instanceErrorCount, server.Name, logDir);
+              for (int i = 0; i < fileNames.Count; i++)
+              {
+                if (errorCount[i] > 0)
+                  log.Info("    * {0}: {1} errors.", fileNames[i], errorCount[i]);
+              }
+            }
+          }
+        }
+        else
+        {
+          log.Error("  * Failed to analyze logs of instance {0}.", server.Name);
+          error = true;
+        }
+      }
+
+      if (!error) log.Info("  * No errors found in logs.");
+
+      log.Trace("(-)");
+    }
+
+
+    /// <summary>
+    /// Compares results of a test search query against the expected results.
+    /// </summary>
+    /// <param name="RealSearchResults">Search results obtained by real client from a profile server.</param>
+    /// <param name="ExpectedSearchResults">Results calculated from the global knowledge.</param>
+    /// <param name="MaxTotalResults">Limit to total number of results. If <paramref name="ExpectedSearchResults"/> is lower than this value, 
+    /// the result sets must be exactly the same, otherwise <paramref name="ExpectedSearchResults"/> must be a superset of <paramref name="RealSeachResults"/>
+    /// and the number of real results must be equal to this value..</param>
+    /// <returns>true if real results match expected results, false otherwise.</returns>
+    public bool CompareSearchResults(List<IdentityNetworkProfileInformation> RealSearchResults, List<IdentityNetworkProfileInformation> ExpectedSearchResults, int MaxTotalResults)
+    {
+      log.Trace("(RealSearchResults.Count:{0},ExpectedSearchResults.Count:{1},MaxTotalResults:{2})", RealSearchResults.Count, ExpectedSearchResults.Count, MaxTotalResults);
+
+      bool res = false;
+
+      if (ExpectedSearchResults.Count <= MaxTotalResults)
+      {
+        // If number of all existing results (i.e. expected results) is no more than maximal possible number of results 
+        // the client could get, the real set of results and the expected set of results must be exactly the same.
+        res = RealSearchResults.Count == ExpectedSearchResults.Count;
+      }
+      else
+      {
+        // If the number of expected result is greater than the maximal number of results the client could get (MaxTotalResults)
+        // the number of real results must be equal to MaxTotalResults and it must be a subset of expected results set.
+        res = RealSearchResults.Count == MaxTotalResults;
+      }
+
+      if (res)
+      {
+        HashSet<int> expectedRecordIndexes = new HashSet<int>();
+        for (int i = 0; i < RealSearchResults.Count; i++)
+        {
+          IdentityNetworkProfileInformation info = RealSearchResults[i];
+
+          bool match = false;
+          for (int j = 0; j < ExpectedSearchResults.Count; j++)
+          {
+            // The record can not be used twice.
+            if (expectedRecordIndexes.Contains(j)) continue;
+
+            IdentityNetworkProfileInformation expectedRecord = ExpectedSearchResults[j];
+            byte[] infoBinary = info.ToByteArray();
+            byte[] expectedRecordBinary = expectedRecord.ToByteArray();
+            bool itemMatch = StructuralEqualityComparer<byte[]>.Default.Equals(infoBinary, expectedRecordBinary);
+            /*
+            byte[] infoPubKey = info.IdentityPublicKey.ToByteArray();
+            byte[] expectedPubKey = expectedRecord.IdentityPublicKey.ToByteArray();
+            bool pubKeyMatch = StructuralEqualityComparer<byte[]>.Default.Equals(infoPubKey, expectedPubKey);
+
+            if (!pubKeyMatch) continue;
+
+            bool matchExtraData = info.ExtraData == expectedRecord.ExtraData;
+
+            byte[] infoHostingId = info.HostingServerNetworkId.ToByteArray();
+            byte[] expectedHostingId = expectedRecord.HostingServerNetworkId.ToByteArray();
+            bool hostingIdMatch = StructuralEqualityComparer<byte[]>.Default.Equals(infoHostingId, expectedHostingId);
+
+            bool isHostedMatch = info.IsHosted == expectedRecord.IsHosted;
+            bool isOnlineMatch = info.IsOnline == expectedRecord.IsOnline;
+            bool latitudeMatch = info.Latitude == expectedRecord.Latitude;
+            bool longitudeMatch = info.Longitude == expectedRecord.Longitude;
+            bool nameMatch = info.Name == expectedRecord.Name;
+
+            byte[] infoImage = info.ThumbnailImage.ToByteArray();
+            byte[] expectedImage = expectedRecord.ThumbnailImage.ToByteArray();
+            bool imageMatch = StructuralEqualityComparer<byte[]>.Default.Equals(infoImage, expectedImage);
+
+            bool typeMatch = info.Type == expectedRecord.Type;
+
+            byte[] infoVersion = info.Version.ToByteArray();
+            byte[] expectedVersion = expectedRecord.Version.ToByteArray();
+            bool versionMatch = StructuralEqualityComparer<byte[]>.Default.Equals(infoVersion, expectedVersion);
+
+            // Real search result is found among the expected results, if everything matches.
+            bool itemMatch = pubKeyMatch && matchExtraData && hostingIdMatch && isHostedMatch && isOnlineMatch && latitudeMatch && longitudeMatch && nameMatch && imageMatch && typeMatch && versionMatch;
+            */
+            if (itemMatch)
+            {
+              expectedRecordIndexes.Add(j);
+              match = true;
+              break;
+            }
+          }
+
+          // If a single record is not found, results are not as expected.
+          if (!match)
+          {
+            res = false;
+            break;
+          }
+        }
+      }
+
+      log.Trace("(-):{0}", res);
+      return res;
     }
   }
 }

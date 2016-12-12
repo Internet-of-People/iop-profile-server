@@ -9,7 +9,7 @@ using ProfileServer.Utils;
 namespace ProfileServer.Network
 {
   /// <summary>
-  /// Network server component is responsible managing the node's TCP servers.
+  /// Network server component is responsible managing the profile's TCP servers.
   /// </summary>
   public class Server : Component
   {
@@ -43,6 +43,11 @@ namespace ProfileServer.Network
     private IncomingClientList clientList;
 
 
+    /// <summary>Profile server's network identifier.</summary>
+    private byte[] serverId;
+    /// <summary>Profile server's network identifier.</summary>
+    public byte[] ServerId { get { return serverId; } }
+
 
     public override bool Init()
     {
@@ -53,6 +58,7 @@ namespace ProfileServer.Network
 
       try
       {
+        serverId = ProfileServerCrypto.Crypto.Sha256(Base.Configuration.Keys.PublicKey);
         clientList = new IncomingClientList();
 
         checkInactiveClientConnectionsTimer = new Timer(CheckInactiveClientConnectionsTimerCallback, null, CheckInactiveClientConnectionsTimerInterval, CheckInactiveClientConnectionsTimerInterval);

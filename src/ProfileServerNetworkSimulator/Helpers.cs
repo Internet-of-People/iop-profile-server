@@ -6,16 +6,16 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ProfileServerSimulator
+namespace ProfileServerNetworkSimulator
 {
   /// <summary>
   /// Implementation of various helper routines.
   /// </summary>
   public static class Helpers
   {
-    private static NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
+    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerNetworkSimulator.Helpers");
 
-    
+
     /// <summary>Random number generator.</summary>
     public static Random Rng = new Random();
 
@@ -102,7 +102,7 @@ namespace ProfileServerSimulator
     /// <returns>true if the function succeeds, false otherwise.</returns>
     public static bool KillProcess(Process Process)
     {
-      log.Info("()");
+      log.Debug("()");
 
       bool res = false;
       try
@@ -115,7 +115,7 @@ namespace ProfileServerSimulator
         log.Error("Exception occurred when trying to kill process: {0}", e.ToString());
       }
 
-      log.Info("(-):{0}", res);
+      log.Debug("(-):{0}", res);
       return res;
     }
   }

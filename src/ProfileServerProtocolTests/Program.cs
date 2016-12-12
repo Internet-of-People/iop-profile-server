@@ -17,7 +17,7 @@ namespace ProfileServerProtocolTests
   /// </summary>
   public class Program
   {
-    private static NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
+    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocolTests.Program");
 
     /// <summary>
     /// Runs the specific test with the given arguments.

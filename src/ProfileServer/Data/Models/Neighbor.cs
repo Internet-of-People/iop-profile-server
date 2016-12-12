@@ -40,7 +40,7 @@ namespace ProfileServer.Data.Models
     /// <summary>IP address of the profile server.</summary>
     /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
     [Required]
-    public IPAddress IpAddress { get; set; }
+    public string IpAddress { get; set; }
 
     /// <summary>TCP port of the profile server's primary interface.</summary>
     /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
@@ -64,8 +64,14 @@ namespace ProfileServer.Data.Models
     [Range(-180, 180)]
     public decimal LocationLongitude { get; set; }
 
-    /// <summary>Time of the last refresh message received from the neighbor.</summary>
+    /// <summary>
+    /// Time of the last refresh message received from the neighbor.
+    /// <para>
+    /// A null value means that the profile server did not finish the initialization process with the neighbor.
+    /// Once the initialization process is completed this field is initialized.
+    /// </para>
+    /// </summary>
+    /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
     public DateTime? LastRefreshTime { get; set; }
-#warning TODO: Implement clean up of expired identities based on LastRefreshTime.
   }
 }

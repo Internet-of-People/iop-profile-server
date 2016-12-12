@@ -15,6 +15,7 @@ using ProfileServer.Data;
 using System.Linq;
 using ProfileServer.Data.Models;
 using Microsoft.EntityFrameworkCore.Storage;
+using ProfileServerCrypto;
 
 namespace ProfileServer.Network
 {
@@ -87,8 +88,6 @@ namespace ProfileServer.Network
 
       ShutdownSignaling.SignalShutdown();
 
-      DeregisterPrimaryServerRole().Wait();
-
       CloseClient();
 
       if ((lbnConnectionThread != null) && !lbnConnectionThreadFinished.WaitOne(10000))
@@ -118,33 +117,47 @@ namespace ProfileServer.Network
     /// </summary>
     private async void LbnConnectionThread()
     {
+      LogDiagnosticContext.Start();
+
       log.Info("()");
 
       lbnConnectionThreadFinished.Reset();
 
-      while (!ShutdownSignaling.IsShutdown)
+      try
       {
-        // Connect to LBN server.
-        if (await Connect())
+        while (!ShutdownSignaling.IsShutdown)
         {
-          // Announce our primary server interface to LBN.
-          if (await RegisterPrimaryServerRole())
+          // Connect to LBN server.
+          if (await Connect())
           {
-            // Ask LBN server about initial set of neighborhood nodes.
-            if (await GetNeighborhoodInformation())
+            // Announce our primary server interface to LBN.
+            if (await RegisterPrimaryServerRole())
             {
-              // Receive and process updates.
-              await ReceiveMessageLoop();
+              // Ask LBN server about initial set of neighborhood nodes.
+              if (await GetNeighborhoodInformation())
+              {
+                // Receive and process updates.
+                await ReceiveMessageLoop();
+              }
+
+              await DeregisterPrimaryServerRole();
             }
           }
         }
       }
+      catch (Exception e)
+      {
+        log.Error("Exception occurred (and rethrowing): {0}", e.ToString());
+        await Task.Delay(5000);
+        throw e;
+      }
 
       CloseClient();
-
       lbnConnectionThreadFinished.Set();
 
       log.Info("(-)");
+
+      LogDiagnosticContext.Stop();
     }
 
 
@@ -170,6 +183,7 @@ namespace ProfileServer.Network
       {
         try
         {
+          log.Trace("Connecting to LBN server '{0}'.", Base.Configuration.LbnEndPoint);
           await client.ConnectAsync(Base.Configuration.LbnEndPoint.Address, Base.Configuration.LbnEndPoint.Port);
           stream = client.GetStream();
           res = true;
@@ -204,19 +218,21 @@ namespace ProfileServer.Network
     {
       log.Info("()");
 
-      bool res = true;
+      bool res = false;
 
       Contact contact = new Contact();
       IpAddress contactIpAddress = new IpAddress();
-      byte[] ipBytes = Base.Configuration.ServerInterface.GetAddressBytes();
+      IPAddress serverIpAddress = Base.Configuration.ServerInterface;
+      byte[] ipBytes = serverIpAddress.GetAddressBytes();
       contactIpAddress.Host = ProtocolHelper.ByteArrayToByteString(ipBytes);
       contactIpAddress.Port = (uint)Base.Configuration.ServerRoles.GetRolePort(ServerRole.Primary);
       if (Base.Configuration.ServerInterface.AddressFamily == AddressFamily.InterNetwork) contact.Ipv4 = contactIpAddress;
       else contact.Ipv6 = contactIpAddress;
 
+      byte[] networkId = Crypto.Sha256(Base.Configuration.Keys.PublicKey);
       NodeProfile nodeProfile = new NodeProfile()
       {
-        NodeId = ProtocolHelper.ByteArrayToByteString(Base.Configuration.Keys.PublicKey),
+        NodeId = ProtocolHelper.ByteArrayToByteString(networkId),
         Contact = contact
       };
 
@@ -224,7 +240,7 @@ namespace ProfileServer.Network
       if (await SendMessageAsync(request))
       {
         RawMessageReader messageReader = new RawMessageReader(stream);
-        RawMessageResult rawMessage = await messageReader.ReceiveMessage(ShutdownSignaling.ShutdownCancellationTokenSource.Token);
+        RawMessageResult rawMessage = await messageReader.ReceiveMessageAsync(ShutdownSignaling.ShutdownCancellationTokenSource.Token);
         if (rawMessage.Data != null)
         {
           Message response = CreateMessageFromRawData(rawMessage.Data);
@@ -258,13 +274,13 @@ namespace ProfileServer.Network
     {
       log.Info("()");
 
-      bool res = true;
+      bool res = false;
 
       Message request = messageBuilder.CreateDeregisterServiceRequest(ServiceType.Profile);
       if (await SendMessageAsync(request))
       {
         RawMessageReader messageReader = new RawMessageReader(stream);
-        RawMessageResult rawMessage = await messageReader.ReceiveMessage(ShutdownSignaling.ShutdownCancellationTokenSource.Token);
+        RawMessageResult rawMessage = await messageReader.ReceiveMessageAsync(ShutdownSignaling.ShutdownCancellationTokenSource.Token);
         if (rawMessage.Data != null)
         {
           Message response = CreateMessageFromRawData(rawMessage.Data);
@@ -281,9 +297,9 @@ namespace ProfileServer.Network
           }
           else log.Error("Invalid message received from LBN server.");
         }
-        else log.Error("Connection to LBN server has been terminated.");
+        else log.Debug("Connection to LBN server has been terminated.");
       }
-      else log.Error("Unable to send register server request to LBN server.");
+      else log.Debug("Unable to send deregister server request to LBN server.");
 
       log.Info("(-):{0}", res);
       return res;
@@ -306,7 +322,7 @@ namespace ProfileServer.Network
         bool responseOk = false;
         Message response = null;
         RawMessageReader messageReader = new RawMessageReader(stream);
-        RawMessageResult rawMessage = await messageReader.ReceiveMessage(ShutdownSignaling.ShutdownCancellationTokenSource.Token);
+        RawMessageResult rawMessage = await messageReader.ReceiveMessageAsync(ShutdownSignaling.ShutdownCancellationTokenSource.Token);
         if (rawMessage.Data != null)
         {
           response = CreateMessageFromRawData(rawMessage.Data);
@@ -328,7 +344,7 @@ namespace ProfileServer.Network
         if (responseOk)
           res = await ProcessMessageGetNeighbourNodesByDistanceResponseAsync(response);
       }
-      else log.Error("Unable to send register server request to LBN server.");
+      else log.Error("Unable to send GetNeighbourNodesByDistanceLocalRequest to LBN server.");
 
       log.Info("(-):{0}", res);
       return res;
@@ -347,8 +363,8 @@ namespace ProfileServer.Network
         RawMessageReader messageReader = new RawMessageReader(stream);
         while (!ShutdownSignaling.IsShutdown)
         {
-          RawMessageResult rawMessage = await messageReader.ReceiveMessage(ShutdownSignaling.ShutdownCancellationTokenSource.Token);
-          bool disconnect = rawMessage.Data != null;
+          RawMessageResult rawMessage = await messageReader.ReceiveMessageAsync(ShutdownSignaling.ShutdownCancellationTokenSource.Token);
+          bool disconnect = rawMessage.Data == null;
           bool protocolViolation = rawMessage.ProtocolViolation;
           if (rawMessage.Data != null)
           {
@@ -390,7 +406,7 @@ namespace ProfileServer.Network
       {
         res = MessageWithHeader.Parser.ParseFrom(Data).Body;
         string msgStr = res.ToString();
-        log.Trace("Received message: {0}", msgStr.SubstrMax(512));
+        log.Trace("Received message:\n{0}", msgStr.SubstrMax(512));
       }
       catch (Exception e)
       {
@@ -462,9 +478,18 @@ namespace ProfileServer.Network
         }
         else log.Info("Connection to the client has been terminated.");
       }
-      catch (IOException)
+      catch (Exception e)
       {
-        log.Info("Connection to the client has been terminated.");
+        if ((e is IOException) || (e is ObjectDisposedException))
+        {
+          log.Info("Connection to the client has been terminated.");
+        }
+        else
+        {
+          log.Error("Exception occurred (and rethrowing): {0}", e.ToString());
+          await Task.Delay(5000);
+          throw e;
+        }
       }
       finally
       {
@@ -622,6 +647,7 @@ namespace ProfileServer.Network
                 transaction.Commit();
               }
               success = true;
+              res = true;
             }
             catch (Exception e)
             {
@@ -664,7 +690,7 @@ namespace ProfileServer.Network
       /// <summary>If a change was made to the database and we require it to be saved, this is set to true.</summary>
       public bool SaveDb;
       
-      /// <summary>If a new neighbor action was added to the database and we want to signal action processor, this is set to true.</summary>
+      /// <summary>If a new neighborhood action was added to the database and we want to signal action processor, this is set to true.</summary>
       public bool SignalActionProcessor;
 
       /// <summary>Size of the neighborhood including newly added servers, if any.</summary>
@@ -685,7 +711,7 @@ namespace ProfileServer.Network
     /// <remarks>The caller is responsible for calling this function within a database transaction with NeighborLock and NeighborhoodActionLock locks.</remarks>
     public async Task<AddOrChangeNeighborResult> AddOrChangeNeighbor(UnitOfWork UnitOfWork, byte[] ServerId, IPAddress IpAddress, int Port, int Latitude, int Longitude, int NeighborhoodSize)
     {
-      log.Trace("(ServerId:'{0}',IpAddress:{1},Port:{2},Latitude:{3},Longitude:{4},ExistingNeighbor:{5})", ServerId, IpAddress, Port, Latitude, Longitude);
+      log.Trace("(ServerId:'{0}',IpAddress:{1},Port:{2},Latitude:{3},Longitude:{4})", ServerId.ToHex(), IpAddress, Port, Latitude, Longitude);
 
       AddOrChangeNeighborResult res = new AddOrChangeNeighborResult();
       res.NeighborhoodSize = NeighborhoodSize;
@@ -728,27 +754,32 @@ namespace ProfileServer.Network
           // We have not reached the maximal size of the neighborhood yet, the server can be added.
           log.Trace("New neighbor ID '{0}' detected, IP address {1}, port {2}, latitude {3}, longitude {4}.", ServerId.ToHex(), IpAddress, Port, Latitude, Longitude);
 
+          // Add neighbor to the database of neighbors.
+          // The neighbor is not initialized (LastRefreshTime is not set), so we will not allow it to send us
+          // any updates. First, we need to contact it and start the neighborhood initialization process.
           Neighbor neighbor = new Neighbor()
           {
             Id = ServerId,
-            IpAddress = IpAddress,
+            IpAddress = IpAddress.ToString(),
             PrimaryPort = Port,
             SrNeighborPort = null,
             LocationLatitude = Latitude,
             LocationLongitude = Longitude,
             LastRefreshTime = null
           };
-          UnitOfWork.NeighborRepository.Insert(existingNeighbor);
+          UnitOfWork.NeighborRepository.Insert(neighbor);
           res.NeighborhoodSize++;
 
-          // This action will cause our profile server to contact the new neighbor server and ask it to share its profile database.
+          // This action will cause our profile server to contact the new neighbor server and ask it to share its profile database,
+          // i.e. the neighborhood initialization process will be started.
           NeighborhoodAction action = new NeighborhoodAction()
           {
             ServerId = ServerId,
             Timestamp = DateTime.UtcNow,
             Type = NeighborhoodActionType.AddNeighbor,
+            ExecuteAfter = DateTime.UtcNow,
             TargetIdentityId = null,
-            AdditionalData = null
+            AdditionalData = null,            
           };
           UnitOfWork.NeighborhoodActionRepository.Insert(action);
 
@@ -762,10 +793,11 @@ namespace ProfileServer.Network
         // This is a neighbor we already know about. Just check that its information is up to date and if not, update it.
         bool needUpdate = false;
 
-        if (!existingNeighbor.IpAddress.Equals(IpAddress))
+        string ipAddress = IpAddress.ToString();
+        if (existingNeighbor.IpAddress != ipAddress)
         {
-          log.Trace("Existing neighbor ID '{0}' changed its IP address from {1} to {2}.", ServerId.ToHex(), existingNeighbor.IpAddress, IpAddress);
-          existingNeighbor.IpAddress = IpAddress;
+          log.Trace("Existing neighbor ID '{0}' changed its IP address from {1} to {2}.", ServerId.ToHex(), existingNeighbor.IpAddress, ipAddress);
+          existingNeighbor.IpAddress = ipAddress;
           needUpdate = true;
         }
 
@@ -806,7 +838,7 @@ namespace ProfileServer.Network
 
     /// <summary>
     /// Processes NeighbourhoodChangedNotificationRequest message from LBN server.
-    /// <para>Adds corresponding neighbor action to the database.</para>
+    /// <para>Adds corresponding neighborhood action to the database.</para>
     /// </summary>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
@@ -879,11 +911,10 @@ namespace ProfileServer.Network
                     Neighbor existingNeighbor = (await unitOfWork.NeighborRepository.GetAsync(n => n.Id == serverId)).FirstOrDefault();
                     if (existingNeighbor == null)
                     {
-                      log.Trace("Deleting neighbor ID '{0}' from the database.", serverId.ToHex());
-                      unitOfWork.NeighborRepository.Delete(existingNeighbor);
+                      log.Trace("Creating neighborhood action to deleting neighbor ID '{0}' from the database.", serverId.ToHex());
 
                       // This action will cause our profile server to erase all profiles of the neighbor that has been removed.
-                      // As a time consuming process, we leave this to a action processor rather than doing it now.
+                      // As this is a time consuming process, we leave this to a action processor rather than doing it now.
                       NeighborhoodAction action = new NeighborhoodAction()
                       {
                         ServerId = serverId,

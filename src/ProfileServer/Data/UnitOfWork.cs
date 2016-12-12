@@ -307,7 +307,7 @@ namespace ProfileServer.Data
       log.Trace("(Lock:{0})", Lock);
 
       Lock.Lock.Wait();
-      IDbContextTransaction result = Context.Database.BeginTransaction();
+      IDbContextTransaction result = Context.Database.BeginTransaction(IsolationLevel.Serializable);
 
       log.Trace("(-)");
       return result;
@@ -327,7 +327,7 @@ namespace ProfileServer.Data
       log.Trace("(Lock:{0})", Lock);
 
       await Lock.Lock.WaitAsync();
-      IDbContextTransaction result = await Context.Database.BeginTransactionAsync();
+      IDbContextTransaction result = await Context.Database.BeginTransactionAsync(IsolationLevel.Serializable);
 
       log.Trace("(-)");
       return result;
@@ -349,7 +349,7 @@ namespace ProfileServer.Data
       for (int i = 0; i < Locks.Length; i++)
         Locks[i].Lock.Wait();
 
-      IDbContextTransaction result = Context.Database.BeginTransaction();
+      IDbContextTransaction result = Context.Database.BeginTransaction(IsolationLevel.Serializable);
 
       log.Trace("(-)");
       return result;
@@ -371,7 +371,7 @@ namespace ProfileServer.Data
       for (int i = 0; i < Locks.Length; i++)
         await Locks[i].Lock.WaitAsync();
 
-      IDbContextTransaction result = await Context.Database.BeginTransactionAsync();
+      IDbContextTransaction result = await Context.Database.BeginTransactionAsync(IsolationLevel.Serializable);
 
       log.Trace("(-)");
       return result;
@@ -477,7 +477,7 @@ namespace ProfileServer.Data
     {
       log.Trace("(Locks:[{0}])", string.Join<DatabaseLock>(",", Locks));
 
-      for (int i = Locks.Length - 1; i >= 0; i++)
+      for (int i = Locks.Length - 1; i >= 0; i--)
         Locks[i].Lock.Release();
 
       log.Trace("(-)");

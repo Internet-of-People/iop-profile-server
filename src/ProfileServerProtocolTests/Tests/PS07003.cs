@@ -68,7 +68,7 @@ namespace ProfileServerProtocolTests.Tests
 
         // Establish home node agreement for primary client.
         await client.ConnectAsync(ServerIp, (int)rolePorts[ServerRoleType.ClNonCustomer], true);
-        bool establishHomeNodeOk = await client.EstablishHomeNodeAsync("Primary");
+        bool establishHomeNodeOk = await client.EstablishHostingAsync("Primary");
         client.CloseConnection();
 
         // Check in primary client.

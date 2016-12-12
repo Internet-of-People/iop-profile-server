@@ -9,6 +9,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
+using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
@@ -61,12 +62,14 @@ namespace ProfileServer.Network
     /// Initiates the instance of the TCP client using information about the targer peer it is going to connect to.
     /// </summary>
     /// <param name="RemoteEndPoint">End point of the target peer the client is going to connect to.</param>
+    /// <param name="UseTls">true if TLS should be used, false otherwise.</param>
     /// <param name="IdBase">Number to start message identifier series with.</param>
-    public ClientBase(IPEndPoint RemoteEndPoint, uint IdBase = 0)
+    public ClientBase(IPEndPoint RemoteEndPoint, bool UseTls, uint IdBase = 0)
     {
+      useTls = UseTls;
       remoteEndPoint = (IPEndPoint)RemoteEndPoint;
       messageBuilder = new MessageBuilder(IdBase, new List<SemVer>() { SemVer.V100 }, Base.Configuration.Keys);
-
+      tcpClient = new TcpClient();
     }
 
     /// <summary>
@@ -92,6 +95,40 @@ namespace ProfileServer.Network
     }
 
 
+
+    /// <summary>
+    /// Connects to a specific IP address and port and initializes stream.
+    /// If TLS is used, client authentication is done as well.
+    /// </summary>
+    /// <returns>true if the connection was established succcessfully, false otherwise.</returns>
+    public async Task<bool> ConnectAsync()
+    {
+      log.Trace("()");
+
+      bool res = false;
+      try
+      {
+        await TcpClient.ConnectAsync(RemoteEndPoint.Address, RemoteEndPoint.Port);
+        stream = TcpClient.GetStream();
+        if (UseTls)
+        {
+          SslStream sslStream = new SslStream(stream, false, PeerCertificateValidationCallback);
+          await sslStream.AuthenticateAsClientAsync("", null, SslProtocols.Tls12, false);
+          stream = sslStream;
+        }
+        res = true;
+      }
+      catch (Exception e)
+      {
+        log.Debug("Unable to connect to {0}, error exception: {1}", RemoteEndPoint, e.ToString());
+      }
+
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+
     /// <summary>
     /// Constructs ProtoBuf message from raw data read from the network stream.
     /// </summary>
@@ -106,7 +143,7 @@ namespace ProfileServer.Network
       {
         res = MessageWithHeader.Parser.ParseFrom(Data).Body;
         string msgStr = res.ToString();
-        log.Trace("Received message: {0}", msgStr.SubstrMax(512));
+        log.Trace("Received message:\n{0}", msgStr.SubstrMax(512));
       }
       catch (Exception e)
       {
@@ -133,7 +170,8 @@ namespace ProfileServer.Network
       if (res)
       {
         // If the message was sent successfully to the target, we close the connection only in case of protocol violation error.
-        res = Message.Response.Status != Status.ErrorProtocolViolation;
+        if (Message.MessageTypeCase == Message.MessageTypeOneofCase.Response)
+          res = Message.Response.Status != Status.ErrorProtocolViolation;
       }
 
       log.Trace("(-):{0}", res);

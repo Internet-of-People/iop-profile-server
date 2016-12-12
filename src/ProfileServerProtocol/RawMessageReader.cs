@@ -85,7 +85,7 @@ namespace ProfileServerProtocol
     /// <summary>
     /// Reads a message from the stream.
     /// </summary>
-    public async Task<RawMessageResult> ReceiveMessage(CancellationToken CancelToken)
+    public async Task<RawMessageResult> ReceiveMessageAsync(CancellationToken CancelToken)
     {
       log.Trace("()");
 
@@ -188,7 +188,7 @@ namespace ProfileServerProtocol
             }
             else
             {
-              log.Info("Connection has been closed.");
+              log.Debug("Connection has been closed.");
               disconnect = true;
             }
           }

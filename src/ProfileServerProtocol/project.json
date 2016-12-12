@@ -5,7 +5,7 @@
     "Google.Protobuf": "3.1.0",
     "ProfileServerCrypto": "1.0.0-*",
     "NETStandard.Library": "1.6.1",
-    "NLog": "4.4.0-betaV15"
+    "NLog": "5.0.0-beta03"
   },
 
   "frameworks": {

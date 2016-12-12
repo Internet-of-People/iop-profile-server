@@ -20,36 +20,42 @@ namespace ProfileServer.Data.Models
     /// LBN server informed the profile server about a new server in its neighborhood.
     /// The profile server contacts the neighbor and ask it to share its profile database.
     /// </summary>
-    AddNeighbor,
+    AddNeighbor = 1,
 
     /// <summary>
     /// LBN server informed the profile server about a server leaving its neighborhood.
     /// The profile server removes the profiles hosted on the neighbor server from its database.
     /// </summary>
-    RemoveNeighbor,
+    RemoveNeighbor = 2,
 
     /// <summary>
     /// New identity registered and initialized its profile on the profile server.
     /// The profile server has to inform its followers about the change.
     /// </summary>
-    AddProfile,
+    AddProfile = 10,
 
     /// <summary>
     /// The profile server wants to refresh profiles on the follower server in order to prevent their expiration.
     /// </summary>
-    RefreshProfiles,
+    RefreshProfiles = 11,
 
     /// <summary>
     /// Existing identity changed its profile on the profile server.
     /// The profile server has to inform its followers about the change.
     /// </summary>
-    ChangeProfile,
+    ChangeProfile = 12,
 
     /// <summary>
     /// Existing identity cancelled its hosting agreement with the profile server.
     /// The profile server has to inform its followers about the change.
     /// </summary>
-    RemoveProfile
+    RemoveProfile = 13,
+
+    /// <summary>
+    /// Purpose of this action is to block other profile actions that would be sending updates to followers 
+    /// before the neighborhood initialization process is finished.
+    /// </summary>
+    InitializationProcessInProgress = 14
   }
 
 
@@ -91,11 +97,24 @@ namespace ProfileServer.Data.Models
     public NeighborhoodActionType Type { get; set; }
 
     /// <summary>Network identifier of the identity which profile is related to the action.</summary>
-    /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
+    /// <remarks>
+    /// This is index - see ProfileServer.Data.Context.OnModelCreating.
+    /// This property is optional - see ProfileServer.Data.Context.OnModelCreating.
+    /// </remarks>    /// 
     [MaxLength(IdentityBase.IdentifierLength)]
     public byte[] TargetIdentityId { get; set; }
 
     /// <summary>Description of the action as a JSON encoded string.</summary>
     public string AdditionalData { get; set; }
+
+    /// <summary>
+    /// Returns true if the action is one of the profile actions, which means its target server 
+    /// is the profile server's follower.
+    /// </summary>
+    /// <returns>true if the action is one of the profile actions, false otherwise.</returns>
+    public bool IsProfileAction()
+    {
+      return Type >= NeighborhoodActionType.AddProfile;
+    }
   }
 }

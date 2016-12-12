@@ -11,7 +11,7 @@ namespace ProfileServer.Kernel
   /// </summary>
   public class ComponentManager
   {
-    private static NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
+    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Kernel.ComponentManager");
 
     /// <summary>Possible system states from the component life point of view.</summary>
     public enum SystemStateType

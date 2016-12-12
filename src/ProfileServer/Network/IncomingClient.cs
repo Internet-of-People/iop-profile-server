@@ -190,8 +190,8 @@ namespace ProfileServer.Network
         RawMessageReader messageReader = new RawMessageReader(Stream);
         while (!server.ShutdownSignaling.IsShutdown)
         {
-          RawMessageResult rawMessage = await messageReader.ReceiveMessage(server.ShutdownSignaling.ShutdownCancellationTokenSource.Token);
-          bool disconnect = rawMessage.Data != null;
+          RawMessageResult rawMessage = await messageReader.ReceiveMessageAsync(server.ShutdownSignaling.ShutdownCancellationTokenSource.Token);
+          bool disconnect = rawMessage.Data == null;
           bool protocolViolation = rawMessage.ProtocolViolation;
           if (rawMessage.Data != null)
           {
@@ -476,21 +476,44 @@ namespace ProfileServer.Network
       bool success = false;
       using (UnitOfWork unitOfWork = new UnitOfWork())
       {
-        DatabaseLock lockObject = UnitOfWork.FollowerLock;
-        using (IDbContextTransaction transaction = await unitOfWork.BeginTransactionWithLockAsync(lockObject))
+        DatabaseLock[] lockObjects = new DatabaseLock[] { UnitOfWork.FollowerLock, UnitOfWork.NeighborhoodActionLock };
+        using (IDbContextTransaction transaction = await unitOfWork.BeginTransactionWithLockAsync(lockObjects))
         {
           try
           {
+            bool saveDb = false;
+
+            // Delete the follower itself.
             Follower existingFollower = (await unitOfWork.FollowerRepository.GetAsync(f => f.Id == followerId)).FirstOrDefault();
             if (existingFollower != null)
             {
               unitOfWork.FollowerRepository.Delete(existingFollower);
-              await unitOfWork.SaveThrowAsync();
-              transaction.Commit();
-              success = true;
-              res = true;
+              log.Debug("Follower ID '{0}' will be removed from the database.", followerId.ToHex());
+              saveDb = true;
             }
             else log.Error("Follower ID '{0}' not found.", followerId.ToHex());
+
+            // Delete all its neighborhood actions.
+            List<NeighborhoodAction> actions = (await unitOfWork.NeighborhoodActionRepository.GetAsync(a => a.ServerId == followerId)).ToList();
+            foreach (NeighborhoodAction action in actions)
+            {
+              if (action.IsProfileAction())
+              {
+                log.Debug("Action ID {0}, type {1}, serverId '{2}' will be removed from the database.", action.Id, action.Type, followerId.ToHex());
+                unitOfWork.NeighborhoodActionRepository.Delete(action);
+                saveDb = true;
+              }
+            }
+
+
+            if (saveDb)
+            { 
+              await unitOfWork.SaveThrowAsync();
+              transaction.Commit();
+            }
+
+            success = true;
+            res = true;
           }
           catch (Exception e)
           {
@@ -503,7 +526,7 @@ namespace ProfileServer.Network
             unitOfWork.SafeTransactionRollback(transaction);
           }
 
-          unitOfWork.ReleaseLock(lockObject);
+          unitOfWork.ReleaseLock(lockObjects);
         }
       }
 
@@ -535,7 +558,7 @@ namespace ProfileServer.Network
 
       if (Disposing)
       {
-        base.Dispose();
+        base.Dispose(Disposing);
 
         lock (profileSearchResultCacheLock)
         {

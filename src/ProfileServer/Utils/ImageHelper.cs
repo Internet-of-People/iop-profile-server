@@ -47,10 +47,10 @@ namespace ProfileServer.Utils
 
       string fileName = ImageGuid.ToString();
       byte[] guidBytes = ImageGuid.ToByteArray();
-      string firstLevel = string.Format("{0:X2}", guidBytes[0]);
-      string secondLevel = string.Format("{0:X2}", guidBytes[1]);
+      string firstLevel = string.Format("{0:X2}", guidBytes[3]);
+      string secondLevel = string.Format("{0:X2}", guidBytes[2]);
 
-      string res = string.Format("{0}{1}{2:X2}{1}{3:X2}{1}{4}", Folder, Path.DirectorySeparatorChar, guidBytes[0], guidBytes[1], ImageGuid.ToString());
+      string res = string.Format("{0}{1}{2}{1}{3}{1}{4}", Folder, Path.DirectorySeparatorChar, firstLevel, secondLevel, ImageGuid.ToString());
 
       log.Trace("(-):'{0}'", res != null ? res : "null");
       return res;
@@ -268,7 +268,9 @@ namespace ProfileServer.Utils
 
       log.Fatal("TODO UNIMPLEMENTED");
 
-      ThumbnailImage = ProfileImage;
+      int size = Math.Min(ProfileImage.Length, Data.Models.IdentityBase.MaxThumbnailImageLengthBytes);
+      ThumbnailImage = new byte[size];
+      Array.Copy(ProfileImage, ThumbnailImage, ThumbnailImage.Length);
 
       log.Trace("(-):{0})", ThumbnailImage.Length);
     }

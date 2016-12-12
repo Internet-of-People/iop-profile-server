@@ -77,7 +77,6 @@ namespace ProfileServer.Data
       modelBuilder.Entity<NeighborIdentity>().HasIndex(i => new { i.Type });
       modelBuilder.Entity<NeighborIdentity>().HasIndex(i => new { i.InitialLocationLatitude, i.InitialLocationLongitude });
       modelBuilder.Entity<NeighborIdentity>().HasIndex(i => new { i.ExtraData });
-      modelBuilder.Entity<NeighborIdentity>().HasIndex(i => new { i.ExpirationDate });
       modelBuilder.Entity<NeighborIdentity>().HasIndex(i => new { i.InitialLocationLatitude, i.InitialLocationLongitude, i.Type, i.Name });
 
       modelBuilder.Entity<NeighborIdentity>().Property(i => i.InitialLocationLatitude).HasColumnType("decimal(9,6)").IsRequired(true);
@@ -95,7 +94,8 @@ namespace ProfileServer.Data
       modelBuilder.Entity<Neighbor>().HasKey(i => i.Id);
       modelBuilder.Entity<Neighbor>().HasIndex(i => new { i.Id }).IsUnique();
       modelBuilder.Entity<Neighbor>().HasIndex(i => new { i.IpAddress, i.PrimaryPort });
-      
+      modelBuilder.Entity<Neighbor>().HasIndex(i => new { i.LastRefreshTime });
+
 
       modelBuilder.Entity<Neighbor>().Property(i => i.LocationLatitude).HasColumnType("decimal(9,6)").IsRequired(true);
       modelBuilder.Entity<Neighbor>().Property(i => i.LocationLongitude).HasColumnType("decimal(9,6)").IsRequired(true);
@@ -115,6 +115,7 @@ namespace ProfileServer.Data
       modelBuilder.Entity<NeighborhoodAction>().HasIndex(i => new { i.Type });
       modelBuilder.Entity<NeighborhoodAction>().HasIndex(i => new { i.TargetIdentityId });
       modelBuilder.Entity<NeighborhoodAction>().HasIndex(i => new { i.ServerId, i.Type, i.TargetIdentityId });
+      modelBuilder.Entity<NeighborhoodAction>().Property(e => e.TargetIdentityId).IsRequired(false);
     }
   }
 }

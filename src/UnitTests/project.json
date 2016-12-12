@@ -6,7 +6,8 @@
     "dotnet-test-xunit": "2.2.0-preview2-build1029",
     "ProfileServer": "1.0.0-*",
     "ProfileServerCrypto": "1.0.0-*",
-    "ProfileServerProtocol": "1.0.0-*"
+    "ProfileServerProtocol": "1.0.0-*",
+    "NLog": "5.0.0-beta03"
   },
   "frameworks": {
     "netcoreapp1.1": {

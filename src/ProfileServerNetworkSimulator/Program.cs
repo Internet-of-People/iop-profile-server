@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ProfileServerSimulator
+namespace ProfileServerNetworkSimulator
 {
   /// <summary>
   /// ProfileServer Simulator simulates network of profile servers on a single machine.
@@ -17,7 +17,7 @@ namespace ProfileServerSimulator
   /// </summary>
   public class Program
   {
-    private static NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
+    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerNetworkSimulator.Program");
 
     /// <summary>
     /// Main program routine.
@@ -49,8 +49,16 @@ namespace ProfileServerSimulator
       }
 
       CommandProcessor processor = new CommandProcessor(commands);
-      processor.Execute();
+      bool success = processor.Execute();
+
+      log.Info("\nAll done, shutting down ...");
       processor.Shutdown();
+
+      if (success)
+      {
+        log.Info("\nAnalyzing log files ...");
+        processor.CheckLogs();
+      }
 
       log.Trace("(-)");
 

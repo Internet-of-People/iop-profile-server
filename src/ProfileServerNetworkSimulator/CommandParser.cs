@@ -6,14 +6,14 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ProfileServerSimulator
+namespace ProfileServerNetworkSimulator
 {
   /// <summary>
   /// Parser of commands given in a scenario. 
   /// </summary>
   public static class CommandParser
   {
-    private static NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
+    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerNetworkSimulator.CommandParser");
 
     /// <summary>Maximal radius in metres.</summary>
     public const int MaxRadius = 20000000;
@@ -84,9 +84,14 @@ namespace ProfileServerSimulator
         catch (Exception e)
         {
           log.Error("Exception occurred while parsing line number {0}: {1}", lineNumber, e.ToString());
+          error = true;
         }
       }
-      else log.Error("Scenario file is empty.");
+      else
+      {
+        log.Error("Scenario file is empty.");
+        error = true;
+      }
 
       List<Command> res = null;
       if (!error)
@@ -187,6 +192,46 @@ namespace ProfileServerSimulator
             }
 
             CommandStartServer command = new CommandStartServer(LineNumber, line)
+            {
+              PsGroup = Parts[p++],
+              PsIndex = int.Parse(Parts[p++]),
+              PsCount = int.Parse(Parts[p++])
+            };
+
+            bool psIndexValid = (1 <= command.PsIndex) && (command.PsIndex <= 999);
+            if (!psIndexValid)
+            {
+              log.Error("PsIndex '{0}' on line {1} is invalid. It must be an integer between 1 and 999.", command.PsIndex, LineNumber);
+              break;
+            }
+
+            bool psCountValid = (1 <= command.PsCount) && (command.PsCount <= 999);
+            if (!psCountValid)
+            {
+              log.Error("PsCount '{0}' on line {1} is invalid. It must be an integer between 1 and 999.", command.PsCount, LineNumber);
+              break;
+            }
+
+            psCountValid = command.PsIndex + command.PsCount <= 999;
+            if (!psCountValid)
+            {
+              log.Error("Having PsIndex '{0}', PsCount '{1}' on line {2} is invalid. PsIndex + PsCount must not be greater than 999.", command.PsIndex, command.PsCount, LineNumber);
+              break;
+            }
+
+            res = command;
+            break;
+          }
+
+        case CommandType.StopServer:
+          {
+            if (paramCount != 3)
+            {
+              log.Error("StopServer requires 3 parameters, but {0} parameters found on line {1}.", paramCount, LineNumber);
+              break;
+            }
+
+            CommandStopServer command = new CommandStopServer(LineNumber, line)
             {
               PsGroup = Parts[p++],
               PsIndex = int.Parse(Parts[p++]),
@@ -330,7 +375,7 @@ namespace ProfileServerSimulator
               Targets = new List<string>()
             };
 
-            for (int i = 0; i < paramCount; i++)
+            for (int i = 0; i < paramCount - 1; i++)
               command.Targets.Add(Parts[p++]);
 
             res = command;
@@ -351,7 +396,7 @@ namespace ProfileServerSimulator
               Targets = new List<string>()
             };
 
-            for (int i = 0; i < paramCount; i++)
+            for (int i = 0; i < paramCount - 1; i++)
               command.Targets.Add(Parts[p++]);
 
             res = command;
@@ -442,6 +487,46 @@ namespace ProfileServerSimulator
             if (!countValid)
             {
               log.Error("Having PsCount '{0}', Count '{1}' on line {2} is invalid. Count / PsCount must not be greater than 20000.", command.PsCount, command.Count, LineNumber);
+              break;
+            }
+
+            res = command;
+            break;
+          }
+
+        case CommandType.CancelIdentity:
+          {
+            if (paramCount != 3)
+            {
+              log.Error("CancelIdentity requires 3 parameters, but {0} parameters found on line {1}.", paramCount, LineNumber);
+              break;
+            }
+
+            CommandCancelIdentity command = new CommandCancelIdentity(LineNumber, line)
+            {
+              Name = Parts[p++],
+              Index = int.Parse(Parts[p++]),
+              Count = int.Parse(Parts[p++])
+            };
+
+            bool indexValid = (1 <= command.Index) && (command.Index <= 99999);
+            if (!indexValid)
+            {
+              log.Error("Index '{0}' on line {1} is invalid. It must be an integer between 1 and 99999.", command.Index, LineNumber);
+              break;
+            }
+
+            bool countValid = (1 <= command.Count) && (command.Count <= 99999);
+            if (!countValid)
+            {
+              log.Error("Count '{0}' on line {1} is invalid. It must be an integer between 1 and 99999.", command.Count, LineNumber);
+              break;
+            }
+
+            countValid = command.Index + command.Count <= 99999;
+            if (!countValid)
+            {
+              log.Error("Having Index '{0}', Count '{1}' on line {2} is invalid. Index + Count must not be greater than 99999.", command.Index, command.Count, LineNumber);
               break;
             }
 

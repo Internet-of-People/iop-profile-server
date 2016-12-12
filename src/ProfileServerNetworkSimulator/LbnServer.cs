@@ -9,7 +9,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ProfileServerSimulator
+namespace ProfileServerNetworkSimulator
 {
   /// <summary>
   /// Simulator of LBN server. With each profile server we spawn a LBN server 
@@ -92,6 +92,7 @@ namespace ProfileServerSimulator
       bool res = false;
       try
       {
+        log.Trace("Listening on '{0}:{1}'.", ipAddress, port);
         listener.Server.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
         listener.Start();
         res = true;
@@ -209,6 +210,8 @@ namespace ProfileServerSimulator
     /// <param name="Client">Client that is connected to TCP server.</param>
     private async void ClientHandlerAsync(TcpClient Client)
     {
+      LogDiagnosticContext.Start();
+
       log.Debug("(Client.Client.RemoteEndPoint:{0})", Client.Client.RemoteEndPoint);
 
       connectedProfileServer = Client;
@@ -219,6 +222,8 @@ namespace ProfileServerSimulator
       Client.Dispose();
 
       log.Debug("(-)");
+
+      LogDiagnosticContext.Stop();
     }
 
 
@@ -238,8 +243,8 @@ namespace ProfileServerSimulator
         RawMessageReader messageReader = new RawMessageReader(stream);
         while (!isShutdown)
         {
-          RawMessageResult rawMessage = await messageReader.ReceiveMessage(shutdownCancellationTokenSource.Token);
-          bool disconnect = rawMessage.Data != null;
+          RawMessageResult rawMessage = await messageReader.ReceiveMessageAsync(shutdownCancellationTokenSource.Token);
+          bool disconnect = rawMessage.Data == null;
           bool protocolViolation = rawMessage.ProtocolViolation;
           if (rawMessage.Data != null)
           {
@@ -280,7 +285,7 @@ namespace ProfileServerSimulator
       try
       {
         res = MessageWithHeader.Parser.ParseFrom(Data).Body;
-        log.Trace("Received message: {0}", res.ToString());
+        log.Trace("Received message:\n{0}", res.ToString());
       }
       catch (Exception e)
       {
@@ -378,7 +383,7 @@ namespace ProfileServerSimulator
           case Message.MessageTypeOneofCase.Response:
             {
               Response response = IncomingMessage.Response;
-              log.Trace("Response status is {0}, details are '{1}', response type is {0}.", response.Status, response.Details, response.ResponseTypeCase);
+              log.Trace("Response status is {0}, details are '{1}', response type is {2}.", response.Status, response.Details, response.ResponseTypeCase);
 
               switch (response.ResponseTypeCase)
               {
@@ -542,7 +547,11 @@ namespace ProfileServerSimulator
           if (ps.Name == profileServer.Name) continue;
 
           // Ignore neighbors that we already have in the list.
-          if (neighbors.ContainsKey(ps.Name)) continue;
+          if (neighbors.ContainsKey(ps.Name))
+          {
+            log.Debug("Profile server '{0}' already has '{1}' as its neighbor.", profileServer.Name, ps.Name);
+            continue;
+          }
 
           if (ps.IsInitialized())
           {
@@ -646,7 +655,7 @@ namespace ProfileServerSimulator
       }
       else
       {
-        // Our profile server is not started/connected yet, which means we just modify its neighborhood,
+        // Our profile server is not started/connected yet, which means we just modified its neighborhood,
         // and the information about its neighborhood will be send to it once it sends us GetNeighbourNodesByDistanceLocalRequest.
         log.Debug("Profile server '{0}' is not connected, can't send changes.", profileServer.Name);
         res = true;
@@ -699,5 +708,20 @@ namespace ProfileServerSimulator
       return res;
     }
 
+    /// <summary>
+    /// Returns list of related profile server's neighbors.
+    /// </summary>
+    /// <returns>List of related profile server's neigbhors.</returns>
+    public List<ProfileServer> GetNeighbors()
+    {
+      List<ProfileServer> res = null;
+
+      lock (neighborsLock)
+      {
+        res = neighbors.Values.ToList();
+      }
+
+      return res;
+    }
   }
 }

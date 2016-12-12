@@ -81,7 +81,7 @@ namespace ProfileServerProtocolTests.Tests
 
         // Establish home node for identity 1.
         await clientCallee.ConnectAsync(ServerIp, (int)rolePorts[ServerRoleType.ClNonCustomer], true);
-        bool establishHomeNodeOk = await clientCallee.EstablishHomeNodeAsync();
+        bool establishHomeNodeOk = await clientCallee.EstablishHostingAsync();
 
         clientCallee.CloseConnection();
 

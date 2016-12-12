@@ -170,7 +170,7 @@ namespace ProfileServer.Network
     public TcpRoleServer(IPEndPoint EndPoint, bool UseTls, ServerRole Roles)
     {
       logPrefix = string.Format("[{0}/tcp{1}] ", EndPoint.Port, UseTls ? "_tls" : "");
-      logName = "ProfileServer.Network.RoleServer";
+      logName = "ProfileServer.Network.TcpRoleServer";
       log = new PrefixLogger(logName, logPrefix);
 
       this.UseTls = UseTls;
@@ -300,6 +300,8 @@ namespace ProfileServer.Network
     /// </summary>
     private void AcceptThread()
     {
+      LogDiagnosticContext.Start();
+
       log.Trace("()");
 
       acceptThreadFinished.Reset();
@@ -340,6 +342,8 @@ namespace ProfileServer.Network
       acceptThreadFinished.Set();
 
       log.Trace("(-)");
+
+      LogDiagnosticContext.Stop();
     }
 
 
@@ -407,6 +411,8 @@ namespace ProfileServer.Network
     /// which includes reading the message length prefix followed by the entire message.</remarks>
     private async void ClientHandlerAsync(IncomingClient Client)
     {
+      LogDiagnosticContext.Start();
+
       log.Info("(Client.RemoteEndPoint:{0})", Client.RemoteEndPoint);
 
       clientList.AddNetworkPeer(Client);
@@ -420,6 +426,8 @@ namespace ProfileServer.Network
       Client.Dispose();
 
       log.Info("(-)");
+
+      LogDiagnosticContext.Stop();
     }
   }
 }

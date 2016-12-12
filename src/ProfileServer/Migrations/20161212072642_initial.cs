@@ -9,13 +9,28 @@ namespace ProfileServer.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "Followers",
+                columns: table => new
+                {
+                    Id = table.Column<byte[]>(maxLength: 32, nullable: false),
+                    IpAddress = table.Column<string>(nullable: false),
+                    LastRefreshTime = table.Column<DateTime>(nullable: true),
+                    PrimaryPort = table.Column<int>(nullable: false),
+                    SrNeighborPort = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Followers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Identities",
                 columns: table => new
                 {
                     IdentityId = table.Column<byte[]>(maxLength: 32, nullable: false),
                     ExpirationDate = table.Column<DateTime>(nullable: true),
-                    ExtraData = table.Column<string>(maxLength: 200, nullable: true),
-                    HomeNodeId = table.Column<byte[]>(maxLength: 32, nullable: true),
+                    ExtraData = table.Column<string>(maxLength: 200, nullable: false),
+                    HostingServerId = table.Column<byte[]>(maxLength: 32, nullable: true),
                     InitialLocationLatitude = table.Column<decimal>(type: "decimal(9,6)", nullable: false),
                     InitialLocationLongitude = table.Column<decimal>(type: "decimal(9,6)", nullable: false),
                     Name = table.Column<string>(maxLength: 64, nullable: false),
@@ -31,13 +46,48 @@ namespace ProfileServer.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Neighbors",
+                columns: table => new
+                {
+                    Id = table.Column<byte[]>(maxLength: 32, nullable: false),
+                    IpAddress = table.Column<string>(nullable: false),
+                    LastRefreshTime = table.Column<DateTime>(nullable: true),
+                    LocationLatitude = table.Column<decimal>(type: "decimal(9,6)", nullable: false),
+                    LocationLongitude = table.Column<decimal>(type: "decimal(9,6)", nullable: false),
+                    PrimaryPort = table.Column<int>(nullable: false),
+                    SrNeighborPort = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Neighbors", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "NeighborhoodActions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    AdditionalData = table.Column<string>(nullable: true),
+                    ExecuteAfter = table.Column<DateTime>(nullable: true),
+                    ServerId = table.Column<byte[]>(maxLength: 32, nullable: false),
+                    TargetIdentityId = table.Column<byte[]>(maxLength: 32, nullable: true),
+                    Timestamp = table.Column<DateTime>(nullable: false),
+                    Type = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_NeighborhoodActions", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "NeighborhoodIdentities",
                 columns: table => new
                 {
                     IdentityId = table.Column<byte[]>(maxLength: 32, nullable: false),
-                    HomeNodeId = table.Column<byte[]>(maxLength: 32, nullable: false),
+                    HostingServerId = table.Column<byte[]>(maxLength: 32, nullable: false),
                     ExpirationDate = table.Column<DateTime>(nullable: true),
-                    ExtraData = table.Column<string>(maxLength: 200, nullable: true),
+                    ExtraData = table.Column<string>(maxLength: 200, nullable: false),
                     InitialLocationLatitude = table.Column<decimal>(type: "decimal(9,6)", nullable: false),
                     InitialLocationLongitude = table.Column<decimal>(type: "decimal(9,6)", nullable: false),
                     Name = table.Column<string>(maxLength: 64, nullable: false),
@@ -49,7 +99,7 @@ namespace ProfileServer.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_NeighborhoodIdentities", x => new { x.IdentityId, x.HomeNodeId });
+                    table.PrimaryKey("PK_NeighborhoodIdentities", x => new { x.IdentityId, x.HostingServerId });
                 });
 
             migrationBuilder.CreateTable(
@@ -58,13 +108,13 @@ namespace ProfileServer.Migrations
                 {
                     IdentityId = table.Column<byte[]>(maxLength: 32, nullable: false),
                     ApplicationId = table.Column<byte[]>(maxLength: 32, nullable: false),
-                    CardId = table.Column<byte[]>(maxLength: 32, nullable: true),
-                    CardVersion = table.Column<byte[]>(maxLength: 3, nullable: true),
-                    IssuerPublicKey = table.Column<byte[]>(maxLength: 128, nullable: true),
-                    IssuerSignature = table.Column<byte[]>(maxLength: 100, nullable: true),
-                    RecipientPublicKey = table.Column<byte[]>(maxLength: 128, nullable: true),
-                    RecipientSignature = table.Column<byte[]>(maxLength: 100, nullable: true),
-                    RelatedToIdentityId = table.Column<byte[]>(maxLength: 32, nullable: true),
+                    CardId = table.Column<byte[]>(maxLength: 32, nullable: false),
+                    CardVersion = table.Column<byte[]>(maxLength: 3, nullable: false),
+                    IssuerPublicKey = table.Column<byte[]>(maxLength: 128, nullable: false),
+                    IssuerSignature = table.Column<byte[]>(maxLength: 100, nullable: false),
+                    RecipientPublicKey = table.Column<byte[]>(maxLength: 128, nullable: false),
+                    RecipientSignature = table.Column<byte[]>(maxLength: 100, nullable: false),
+                    RelatedToIdentityId = table.Column<byte[]>(maxLength: 32, nullable: false),
                     Type = table.Column<string>(maxLength: 64, nullable: false),
                     ValidFrom = table.Column<DateTime>(nullable: false),
                     ValidTo = table.Column<DateTime>(nullable: false)
@@ -85,6 +135,22 @@ namespace ProfileServer.Migrations
                 {
                     table.PrimaryKey("PK_Settings", x => x.Name);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Followers_Id",
+                table: "Followers",
+                column: "Id",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Followers_LastRefreshTime",
+                table: "Followers",
+                column: "LastRefreshTime");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Followers_IpAddress_PrimaryPort",
+                table: "Followers",
+                columns: new[] { "IpAddress", "PrimaryPort" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Identities_ExpirationDate",
@@ -123,6 +189,58 @@ namespace ProfileServer.Migrations
                 columns: new[] { "ExpirationDate", "InitialLocationLatitude", "InitialLocationLongitude", "Type", "Name" });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Neighbors_Id",
+                table: "Neighbors",
+                column: "Id",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Neighbors_LastRefreshTime",
+                table: "Neighbors",
+                column: "LastRefreshTime");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Neighbors_IpAddress_PrimaryPort",
+                table: "Neighbors",
+                columns: new[] { "IpAddress", "PrimaryPort" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_NeighborhoodActions_ExecuteAfter",
+                table: "NeighborhoodActions",
+                column: "ExecuteAfter");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_NeighborhoodActions_Id",
+                table: "NeighborhoodActions",
+                column: "Id",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_NeighborhoodActions_ServerId",
+                table: "NeighborhoodActions",
+                column: "ServerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_NeighborhoodActions_TargetIdentityId",
+                table: "NeighborhoodActions",
+                column: "TargetIdentityId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_NeighborhoodActions_Timestamp",
+                table: "NeighborhoodActions",
+                column: "Timestamp");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_NeighborhoodActions_Type",
+                table: "NeighborhoodActions",
+                column: "Type");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_NeighborhoodActions_ServerId_Type_TargetIdentityId",
+                table: "NeighborhoodActions",
+                columns: new[] { "ServerId", "Type", "TargetIdentityId" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_NeighborhoodIdentities_ExpirationDate",
                 table: "NeighborhoodIdentities",
                 column: "ExpirationDate");
@@ -133,9 +251,9 @@ namespace ProfileServer.Migrations
                 column: "ExtraData");
 
             migrationBuilder.CreateIndex(
-                name: "IX_NeighborhoodIdentities_HomeNodeId",
+                name: "IX_NeighborhoodIdentities_HostingServerId",
                 table: "NeighborhoodIdentities",
-                column: "HomeNodeId");
+                column: "HostingServerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_NeighborhoodIdentities_Name",
@@ -148,9 +266,9 @@ namespace ProfileServer.Migrations
                 column: "Type");
 
             migrationBuilder.CreateIndex(
-                name: "IX_NeighborhoodIdentities_IdentityId_HomeNodeId",
+                name: "IX_NeighborhoodIdentities_IdentityId_HostingServerId",
                 table: "NeighborhoodIdentities",
-                columns: new[] { "IdentityId", "HomeNodeId" },
+                columns: new[] { "IdentityId", "HostingServerId" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -193,7 +311,16 @@ namespace ProfileServer.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "Followers");
+
+            migrationBuilder.DropTable(
                 name: "Identities");
+
+            migrationBuilder.DropTable(
+                name: "Neighbors");
+
+            migrationBuilder.DropTable(
+                name: "NeighborhoodActions");
 
             migrationBuilder.DropTable(
                 name: "NeighborhoodIdentities");

@@ -219,6 +219,8 @@ namespace ProfileServer.Network
     /// <param name="state">Status of the relay when the timer was installed.</param>
     private async void TimeoutCallback(object State)
     {
+      LogDiagnosticContext.Start();
+
       RelayConnectionStatus previousStatus = (RelayConnectionStatus)State;
       log.Trace("(State:{0})", previousStatus);
 
@@ -253,7 +255,7 @@ namespace ProfileServer.Network
             }
 
           case RelayConnectionStatus.WaitingForSecondInitMessage:
-            { 
+            {
               // One client is waiting for the other one to join, but the other client failed to join on time.
               // We send ERROR_NOT_FOUND to the waiting client and close its connection.
               log.Debug("{0} failed to join the relay on time, closing relay.", callee != null ? "Caller" : "Callee");
@@ -290,6 +292,8 @@ namespace ProfileServer.Network
       }
 
       log.Trace("(-)");
+
+      LogDiagnosticContext.Stop();
     }
 
 
@@ -924,7 +928,7 @@ namespace ProfileServer.Network
 
 
     /// <summary>
-    /// Checks if the the relay has been destroyed already and if changes its status to Destroyed.
+    /// Checks if the the relay has been destroyed already and changes its status to Destroyed.
     /// </summary>
     /// <returns>true if the relay has been destroyed already, false otherwise.</returns>
     public async Task<bool> TestAndSetDestroyed()

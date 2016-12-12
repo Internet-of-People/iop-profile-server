@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
-
+using ProfileServerProtocol;
 
 namespace ProfileServer.Data.Repositories
 {
@@ -30,7 +30,8 @@ namespace ProfileServer.Data.Repositories
     /// <returns>List of statistics of hosted profile types.</returns>
     public async Task<List<ProfileStatsItem>> GetProfileStatsAsync()
     {
-      return await context.Identities.Where(i => i.ExpirationDate == null).GroupBy(i => i.Type)
+      byte[] invalidVersion = SemVer.Invalid.ToByteArray();
+      return await context.Identities.Where(i => (i.ExpirationDate == null) && (i.Version != invalidVersion)).GroupBy(i => i.Type)
         .Select(g => new ProfileStatsItem { IdentityType = g.Key, Count = (uint)g.Count() }).ToListAsync();
     }
   }

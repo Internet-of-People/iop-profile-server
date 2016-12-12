@@ -13,7 +13,7 @@ using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
-namespace ProfileServerSimulator
+namespace ProfileServerNetworkSimulator
 {
   /// <summary>
   /// Represents a single identity in the network.
@@ -37,11 +37,21 @@ namespace ProfileServerSimulator
     private string imageFileName;
 
     /// <summary>Profile image data or null if the identity has no profile image.</summary>
-    private byte[] image;
+    private byte[] profileImage;
 
+    /// <summary>Thumbnail image data or null if the identity has no thumbnail image.</summary>
+    private byte[] thumbnailImage;
+
+    /// <summary>Profile extra data information.</summary>
+    private string extraData;
+
+    /// <summary>Profile version.</summary>
+    private SemVer version;
 
     /// <summary>Profile server hosting the identity profile.</summary>
     private ProfileServer profileServer;
+    /// <summary>Profile server hosting the identity profile.</summary>
+    public ProfileServer ProfileServer { get { return profileServer; } }
 
     /// <summary>TCP client for communication with the server.</summary>
     private TcpClient client;
@@ -58,6 +68,9 @@ namespace ProfileServerSimulator
     /// <summary>Cryptographic Keys that represent the client's identity.</summary>
     private KeysEd25519 keys;
 
+    /// <summary>Network identifier of the client's identity.</summary>
+    private byte[] identityId;
+
     /// <summary>Profile server's public key received when starting conversation.</summary>
     private byte[] profileServerKey;
 
@@ -66,6 +79,12 @@ namespace ProfileServerSimulator
 
     /// <summary>Challenge that the client sent to the profile server when starting conversation.</summary>
     private byte[] clientChallenge;
+
+    /// <summary>true if the client initialized its profile on the profile server, false otherwise.</summary>
+    private bool profileInitialized;
+
+    /// <summary>true if the client has an active hosting agreement with the profile server, false otherwise.</summary>
+    private bool hostingActive;
 
 
     /// <summary>
@@ -81,20 +100,25 @@ namespace ProfileServerSimulator
       log = new PrefixLogger("ProfileServerSimulator.IdentityClient", "[" + Name + "] ");
       log.Trace("(Name:'{0}',Type:'{1}',Location:{2},ImageMask:'{3}',ImageChance:{4})", Name, Type, Location, ImageMask, ImageChance);
 
-      this.name = Name;
-      this.type = Type;
-      this.location = Location;
+      name = Name;
+      type = Type;
+      location = Location;
+      extraData = null;
 
       bool hasImage = Helpers.Rng.NextDouble() < (double)ImageChance / 100;
       if (hasImage)
       {
         imageFileName = GetImageFileByMask(ImageMask);
-        image = imageFileName != null ? File.ReadAllBytes(imageFileName) : null;
+        profileImage = imageFileName != null ? File.ReadAllBytes(imageFileName) : null;
       }
 
-
+      version = SemVer.V100;
       keys = Ed25519.GenerateKeys();
+      identityId = Crypto.Sha256(keys.PublicKey);
       messageBuilder = new MessageBuilder(0, new List<SemVer>() { SemVer.V100 }, keys);
+
+      profileInitialized = false;
+      hostingActive = false;
 
       log.Trace("(-)");
     }
@@ -155,15 +179,28 @@ namespace ProfileServerSimulator
 
         if (await EstablishProfileHostingAsync(type))
         {
+          hostingActive = true;
           CloseTcpClient();
 
           InitializeTcpClient();
           await ConnectAsync(Server.IpAddress, Server.ClientCustomerInterfacePort, true);
           if (await CheckInAsync())
           {
-            if (await InitializeProfileAsync(name, image, location, null))
+            if (await InitializeProfileAsync(name, profileImage, location, null))
             {
-              res = true;
+              profileInitialized = true;
+              if (profileImage != null)
+              {
+                if (await GetProfileThumbnailImage())
+                {
+                  res = true;
+                }
+                else log.Error("Unable to obtain identity's thumbnail image from profile server '{0}'.", Server.Name);
+              }
+              else
+              {
+                res = true;
+              }
             }
             else log.Error("Unable to initialize profile on profile server '{0}'.", Server.Name);
           }
@@ -182,6 +219,42 @@ namespace ProfileServerSimulator
       return res;
     }
 
+
+    /// <summary>
+    /// Cancels a hosting agreement with hosting profile server.
+    /// </summary>
+    /// <returns>true if the function succeeded, false otherwise.</returns>
+    public async Task<bool> CancelProfileHosting()
+    {
+      log.Trace("()");
+      bool res = false;
+
+      InitializeTcpClient();
+
+      try
+      {
+        await ConnectAsync(profileServer.IpAddress, profileServer.ClientCustomerInterfacePort, true);
+        if (await CheckInAsync())
+        {
+          if (await CancelHostingAgreementAsync())
+          {
+            hostingActive = false;
+            res = true;
+          }
+          else log.Error("Unable to cancel hosting agreement on profile server '{0}'.", profileServer.Name);
+        }
+        else log.Error("Unable to check-in to profile server '{0}'.", profileServer.Name);
+      }
+      catch (Exception e)
+      {
+        log.Error("Exception occurred: {0}", e.ToString());
+      }
+
+      CloseTcpClient();
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
 
     /// <summary>
     /// Initializes TCP client to be ready to connect to the server.
@@ -411,6 +484,29 @@ namespace ProfileServerSimulator
     }
 
     /// <summary>
+    /// Obtains its own thumbnail picture from the profile server.
+    /// </summary>
+    /// <returns>true if the function succeeds, false otherwise.</returns>
+    public async Task<bool> GetProfileThumbnailImage()
+    {
+      log.Trace("()");
+
+      Message requestMessage = messageBuilder.CreateGetIdentityInformationRequest(identityId, false, true, false);
+      await SendMessageAsync(requestMessage);
+      Message responseMessage = await ReceiveMessageAsync();
+
+      bool idOk = responseMessage.Id == requestMessage.Id;
+      bool statusOk = responseMessage.Response.Status == Status.Ok;
+      thumbnailImage = responseMessage.Response.SingleResponse.GetIdentityInformation.ThumbnailImage.ToByteArray();
+      if (thumbnailImage.Length == 0) thumbnailImage = null;
+
+      bool res = idOk && statusOk && (thumbnailImage != null);
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+    /// <summary>
     /// Performs a check-in process for the client's identity using the already opened connection to the profile server.
     /// </summary>
     /// <returns>true if the function succeeds, false otherwise.</returns>
@@ -458,6 +554,219 @@ namespace ProfileServerSimulator
       log.Trace("(-)");
     }
 
+    /// <summary>
+    /// Cancels a agreement with the profile server, to which there already is an opened connection.
+    /// </summary>
+    /// <returns>true if the function succeeds, false otherwise.</returns>
+    public async Task<bool> CancelHostingAgreementAsync()
+    {
+      log.Trace("()");
+
+      Message requestMessage = messageBuilder.CreateCancelHostingAgreementRequest(null);
+      await SendMessageAsync(requestMessage);
+      Message responseMessage = await ReceiveMessageAsync();
+
+      bool idOk = responseMessage.Id == requestMessage.Id;
+      bool statusOk = responseMessage.Response.Status == Status.Ok;
+
+      bool res = idOk && statusOk;
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+
+
+    /// <summary>
+    /// Connects to a profile server and performs a search query on it and downloads all possible results.
+    /// </summary>
+    /// <param name="Server">Profile server to query.</param>
+    /// <param name="NameFilter">Name filter of the search query, or null if name filtering is not required.</param>
+    /// <param name="TypeFilter">Type filter of the search query, or null if type filtering is not required.</param>
+    /// <param name="LocationFilter">Location filter of the search query, or null if location filtering is not required.</param>
+    /// <param name="Radius">If <paramref name="LocationFilter"/> is not null, this is the radius of the target area.</param>
+    /// <param name="IncludeHostedOnly">If set to true, the search results should only include profiles hosted on the queried profile server.</param>
+    /// <param name="IncludeImages">If set to true, the search results should include images.</param>
+    /// <returns>List of results or null if the function fails.</returns>
+    public async Task<List<IdentityNetworkProfileInformation>> SearchQueryAsync(ProfileServer Server, string NameFilter, string TypeFilter, GpsLocation LocationFilter, int Radius, bool IncludeHostedOnly, bool IncludeImages)
+    {
+      log.Trace("()");
+
+      List<IdentityNetworkProfileInformation> res = null;
+      try
+      {
+        await ConnectAsync(Server.IpAddress, Server.ClientNonCustomerInterfacePort, true);
+        if (await StartConversationAsync())
+        {
+          uint maxResults = (uint)(IncludeImages ? 1000 : 10000);
+          uint maxResponseResults = (uint)(IncludeImages ? 100 : 1000);
+          Message requestMessage = messageBuilder.CreateProfileSearchRequest(TypeFilter, NameFilter, null, LocationFilter, (uint)Radius, maxResponseResults, maxResults, IncludeHostedOnly, IncludeImages);
+          await SendMessageAsync(requestMessage);
+          Message responseMessage = await ReceiveMessageAsync();
+
+          bool idOk = responseMessage.Id == requestMessage.Id;
+          bool statusOk = responseMessage.Response.Status == Status.Ok;
+
+          bool searchRequestOk = idOk && statusOk;
+          if (searchRequestOk)
+          {
+            int totalResultCount = (int)responseMessage.Response.ConversationResponse.ProfileSearch.TotalRecordCount;
+
+            List<IdentityNetworkProfileInformation> results = responseMessage.Response.ConversationResponse.ProfileSearch.Profiles.ToList();
+            while (results.Count < totalResultCount)
+            {
+              int remaining = Math.Min((int)maxResponseResults, totalResultCount - results.Count);
+              requestMessage = messageBuilder.CreateProfileSearchPartRequest((uint)results.Count, (uint)remaining);
+              await SendMessageAsync(requestMessage);
+              responseMessage = await ReceiveMessageAsync();
+
+              idOk = responseMessage.Id == requestMessage.Id;
+              statusOk = responseMessage.Response.Status == Status.Ok;
+
+              searchRequestOk = idOk && statusOk;
+              if (!searchRequestOk) break;
+
+              results.AddRange(responseMessage.Response.ConversationResponse.ProfileSearch.Profiles.ToList());
+            }
+
+            res = results;
+          }
+        }
+      }
+      catch (Exception e)
+      {
+        log.Error("Exception occurred: {0}", e.ToString());
+      }
+
+      if (res != null) log.Trace("(-):*.Count={0}", res.Count);
+      else log.Trace("(-):null");
+      return res;
+    }
+
+
+    /// <summary>
+    /// Checks whether the client's identity matches specific search query.
+    /// </summary>
+    /// <param name="NameFilter">Name filter of the search query, or null if name filtering is not required.</param>
+    /// <param name="TypeFilter">Type filter of the search query, or null if type filtering is not required.</param>
+    /// <param name="LocationFilter">Location filter of the search query, or null if location filtering is not required.</param>
+    /// <param name="Radius">If <paramref name="LocationFilter"/> is not null, this is the radius in metres of the target area.</param>
+    /// <returns>true if the identity matches the query, false otherwise.</returns>
+    public bool MatchesSearchQuery(string NameFilter, string TypeFilter, GpsLocation LocationFilter, int Radius)
+    {
+      log.Trace("(NameFilter:'{0}',TypeFilter:'{1}',LocationFilter:'{2}',Radius:{3})", NameFilter, TypeFilter, LocationFilter, Radius);
+
+      bool res = false;
+      // Do not include if the profile is unintialized or hosting cancelled.
+      if (profileInitialized && hostingActive)
+      {
+        bool matchType = false;
+        bool useTypeFilter = !string.IsNullOrEmpty(TypeFilter) && (TypeFilter != "*") && (TypeFilter != "**");
+        if (useTypeFilter)
+        {
+          string value = type.ToLowerInvariant();
+          string filterValue = TypeFilter.ToLowerInvariant();
+          matchType = value == filterValue;
+
+          bool valueStartsWith = TypeFilter.EndsWith("*");
+          bool valueEndsWith = TypeFilter.StartsWith("*");
+          bool valueContains = valueStartsWith && valueEndsWith;
+
+          if (valueContains)
+          {
+            filterValue = filterValue.Substring(1, filterValue.Length - 2);
+            matchType = value.Contains(filterValue);
+          }
+          else if (valueStartsWith)
+          {
+            filterValue = filterValue.Substring(0, filterValue.Length - 1);
+            matchType = value.StartsWith(filterValue);
+          }
+          else if (valueEndsWith)
+          {
+            filterValue = filterValue.Substring(1);
+            matchType = value.EndsWith(filterValue);
+          }
+        }
+        else matchType = true;
+
+        bool matchName = false;
+        bool useNameFilter = !string.IsNullOrEmpty(NameFilter) && (NameFilter != "*") && (NameFilter != "**");
+        if (useNameFilter)
+        {
+          string value = name.ToLowerInvariant();
+          string filterValue = NameFilter.ToLowerInvariant();
+          matchName = value == filterValue;
+
+          bool valueStartsWith = NameFilter.EndsWith("*");
+          bool valueEndsWith = NameFilter.StartsWith("*");
+          bool valueContains = valueStartsWith && valueEndsWith;
+
+          if (valueContains)
+          {
+            filterValue = filterValue.Substring(1, filterValue.Length - 2);
+            matchName = value.Contains(filterValue);
+          }
+          else if (valueStartsWith)
+          {
+            filterValue = filterValue.Substring(0, filterValue.Length - 1);
+            matchName = value.StartsWith(filterValue);
+          }
+          else if (valueEndsWith)
+          {
+            filterValue = filterValue.Substring(1);
+            matchName = value.EndsWith(filterValue);
+          }
+        }
+        else matchName = true;
+
+        if (matchType && matchName)
+        {
+          bool matchLocation = false;
+          if (LocationFilter != null)
+          {
+            double distance = GpsLocation.DistanceBetween(LocationFilter, location);
+            matchLocation = distance <= (double)Radius;
+          }
+          else matchLocation = true;
+
+          res = matchLocation;
+        }
+      }
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+
+    /// <summary>
+    /// Returns network profile information about the client's identity.
+    /// </summary>
+    /// <param name="IncludeThumbnailImage">If true, the returned profile information will include thumbnail image.</param>
+    /// <returns>network profile information about the client's identity.</returns>
+    public IdentityNetworkProfileInformation GetIdentityNetworkProfileInformation(bool IncludeThumbnailImage)
+    {
+      log.Trace("(IncludeThumbnailImage:{0})", IncludeThumbnailImage);
+
+      IdentityNetworkProfileInformation res = new IdentityNetworkProfileInformation()
+      {
+        IdentityPublicKey = ProtocolHelper.ByteArrayToByteString(keys.PublicKey),
+        IsHosted = false,
+        IsOnline = false,
+        Latitude = location.GetLocationTypeLatitude(),
+        Longitude = location.GetLocationTypeLongitude(),
+        Name = name != null ? name : "",
+        Type = type != null ? type : "",
+        Version = version.ToByteString(),
+        ExtraData = extraData != null ? extraData : ""
+      };
+
+      if (IncludeThumbnailImage && (thumbnailImage != null)) res.ThumbnailImage = ProtocolHelper.ByteArrayToByteString(thumbnailImage);
+      else res.ThumbnailImage = ProtocolHelper.ByteArrayToByteString(new byte[0]);
+
+      log.Trace("(-)");
+      return res;
+    }
 
     /// <summary>
     /// Callback routine that validates server TLS certificate.

@@ -99,9 +99,9 @@ namespace ProfileServer.Config
     /// <summary>Cryptographic keys of the node that can be used for signing messages and verifying signatures.</summary>
     public KeysEd25519 Keys;
 
-    /// <summary>Time in seconds between the last update of a shared profile received from a neighbor server up to the point when 
-    /// the profile server is allowed to delete the profile if it has not been refreshed.</summary>
-    public int NeighborProfileExpirationTimeSeconds;
+    /// <summary>Time in seconds between the last update of shared profiles received from a neighbor server up to the point when 
+    /// the profile server is allowed to delete the profiles if they were not refreshed.</summary>
+    public int NeighborProfilesExpirationTimeSeconds;
 
     /// <summary>Time in seconds between the last refresh request sent by the profile server to its Follower server.</summary>
     public int FollowerRefreshTimeSeconds;
@@ -206,7 +206,7 @@ namespace ProfileServer.Config
         int neighborhoodInitializationParallelism = 0;
         int lbnPort = 0;
         IPEndPoint lbnEndPoint = null;
-        int neighborProfileExpirationTimeSeconds = 0;
+        int neighborProfilesExpirationTimeSeconds = 0;
         int followerRefreshTimeSeconds = 0;
         int maxNeighborhoodSize = 0;
         int maxFollowerServersCount = 0;
@@ -230,7 +230,7 @@ namespace ProfileServer.Config
           { "max_identity_relations",                  ConfigValueType.Int            },
           { "neighborhood_initialization_parallelism", ConfigValueType.Int            },
           { "lbn_port",                                ConfigValueType.Port           },
-          { "neighbor_profile_expiration_time",        ConfigValueType.Int            },
+          { "neighbor_profiles_expiration_time",       ConfigValueType.Int            },
           { "max_neighborhood_size",                   ConfigValueType.Int            },
           { "max_follower_servers_count",              ConfigValueType.Int            },
           { "follower_refresh_time",                   ConfigValueType.Int            },
@@ -256,7 +256,7 @@ namespace ProfileServer.Config
 
           lbnPort = (int)nameVal["lbn_port"];
 
-          neighborProfileExpirationTimeSeconds = (int)nameVal["neighbor_profile_expiration_time"];
+          neighborProfilesExpirationTimeSeconds = (int)nameVal["neighbor_profiles_expiration_time"];
           followerRefreshTimeSeconds = (int)nameVal["follower_refresh_time"];
 
           maxNeighborhoodSize = (int)nameVal["max_neighborhood_size"];
@@ -269,6 +269,15 @@ namespace ProfileServer.Config
                  && serverRoles.AddRoleServer(clientNonCustomerInterfacePort, ServerRole.ClientNonCustomer)
                  && serverRoles.AddRoleServer(clientCustomerInterfacePort, ServerRole.ClientCustomer)
                  && serverRoles.AddRoleServer(clientAppServiceInterfacePort, ServerRole.ClientAppService));
+        }
+
+        if (!error)
+        {
+          if (!testModeEnabled && serverInterface.IsReservedOrLocal())
+          {
+            log.Error("server_interface must be an IP address of external, publicly accessible interface.");
+            error = true;
+          }
         }
 
         if (!error)
@@ -378,9 +387,9 @@ namespace ProfileServer.Config
 
         if (!error)
         {
-          if (!testModeEnabled && (neighborProfileExpirationTimeSeconds < Neighbor.MinNeighborhoodExpirationTimeSeconds))
+          if (!testModeEnabled && (neighborProfilesExpirationTimeSeconds < Neighbor.MinNeighborhoodExpirationTimeSeconds))
           {
-            log.Error("neighbor_profile_expiration_time must be an integer number greater or equal to {0}.", Neighbor.MinNeighborhoodExpirationTimeSeconds);
+            log.Error("neighbor_profiles_expiration_time must be an integer number greater or equal to {0}.", Neighbor.MinNeighborhoodExpirationTimeSeconds);
             error = true;
           }
         }
@@ -388,7 +397,7 @@ namespace ProfileServer.Config
         if (!error)
         {
           bool followerRefreshTimeSecondsValid = (0 < followerRefreshTimeSeconds) && (followerRefreshTimeSeconds < Neighbor.MinNeighborhoodExpirationTimeSeconds);
-          if (!testModeEnabled && followerRefreshTimeSecondsValid)
+          if (!testModeEnabled && !followerRefreshTimeSecondsValid)
           {
             log.Error("follower_refresh_time must be an integer number between 1 and {0}.", Neighbor.MinNeighborhoodExpirationTimeSeconds - 1);
             error = true;
@@ -426,7 +435,7 @@ namespace ProfileServer.Config
           MaxIdenityRelations = maxIdentityRelations;
           NeighborhoodInitializationParallelism = neighborhoodInitializationParallelism;
           LbnEndPoint = lbnEndPoint;
-          NeighborProfileExpirationTimeSeconds = neighborProfileExpirationTimeSeconds;
+          NeighborProfilesExpirationTimeSeconds = neighborProfilesExpirationTimeSeconds;
           FollowerRefreshTimeSeconds = followerRefreshTimeSeconds;
           MaxNeighborhoodSize = maxNeighborhoodSize;
           MaxFollowerServersCount = maxFollowerServersCount;
@@ -529,7 +538,7 @@ namespace ProfileServer.Config
           case ConfigValueType.IpAddress:
             {
               IPAddress val = IPAddress.Any;
-              if ((value.ToLowerInvariant() == "any") || IPAddress.TryParse(value, out val))
+              if (IPAddress.TryParse(value, out val))
               {
                 NameVal.Add(name, val);
                 error = false;
@@ -647,7 +656,10 @@ namespace ProfileServer.Config
       }
 
       if (res)
+      {
         log.Debug("Server public key hex is '{0}'.", Keys.PublicKeyHex);
+        log.Debug("Server network ID is '{0}'.", Crypto.Sha256(Keys.PublicKey).ToHex());
+      }
 
       log.Trace("(-):{0}", res);
       return res;

@@ -55,7 +55,7 @@ namespace ProfileServerProtocolTests.Tests
 
         // Step 1
         await client.ConnectAsync(ServerIp, ClNonCustomerPort, true);
-        bool establishHomeNodeOk = await client.EstablishHomeNodeAsync();
+        bool establishHomeNodeOk = await client.EstablishHostingAsync();
 
         // Step 1 Acceptance
         bool step1Ok = establishHomeNodeOk;

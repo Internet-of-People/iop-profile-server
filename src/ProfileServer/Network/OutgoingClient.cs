@@ -9,7 +9,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Security;
 using System.Net.Sockets;
+using System.Security.Authentication;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -28,7 +30,7 @@ namespace ProfileServer.Network
     /// <summary>Server's network ID.</summary>
     private byte[] serverId;
     /// <summary>Server's network ID.</summary>
-    public byte[] ServerId { get { return serverKey; } }
+    public byte[] ServerId { get { return serverId; } }
 
     /// <summary>Challenge that the server sent to the client when starting conversation.</summary>
     private byte[] serverChallenge;
@@ -59,9 +61,10 @@ namespace ProfileServer.Network
     /// Creates the instance for a new outgoing TCP client.
     /// </summary>
     /// <param name="RemoteEndPoint">Target IP address and port this client will be connected to.</param>
+    /// <param name="UseTls">true if TLS should be used for this TCP client, false otherwise.</param>
     /// <param name="ShutdownCancellationToken">Cancellation token of the parent component.</param>
-    public OutgoingClient(IPEndPoint RemoteEndPoint, CancellationToken ShutdownCancellationToken):
-      base(RemoteEndPoint)
+    public OutgoingClient(IPEndPoint RemoteEndPoint, bool UseTls, CancellationToken ShutdownCancellationToken):
+      base(RemoteEndPoint, UseTls)
     {
       string logPrefix = string.Format("[=>{0}] ", RemoteEndPoint);
       log = new PrefixLogger("ProfileServer.Network.OutgoingClient", logPrefix);
@@ -73,27 +76,6 @@ namespace ProfileServer.Network
       log.Trace("(-)");
     }
 
-    /// <summary>
-    /// Establishes a connection with the target end point.
-    /// </summary>
-    public async Task<bool> ConnectAsync()
-    {
-      log.Trace("()");
-
-      bool res = false;
-      try
-      {
-        await TcpClient.ConnectAsync(RemoteEndPoint.Address, RemoteEndPoint.Port);
-        res = true;
-      }
-      catch
-      {
-        log.Debug("Unable to connect to {0}.", RemoteEndPoint);
-      }
-
-      log.Trace("(-):{0}", res);
-      return res;
-    }
 
     /// <summary>
     /// Reads and parses protocol message from the network stream.
@@ -105,12 +87,11 @@ namespace ProfileServer.Network
 
       Message res = null;
 
-
       using (CancellationTokenSource readTimeoutTokenSource = new CancellationTokenSource(60000),
              timeoutShutdownTokenSource = CancellationTokenSource.CreateLinkedTokenSource(readTimeoutTokenSource.Token, shutdownCancellationToken))
       {
         RawMessageReader messageReader = new RawMessageReader(Stream);
-        RawMessageResult rawMessage = await messageReader.ReceiveMessage(timeoutShutdownTokenSource.Token);
+        RawMessageResult rawMessage = await messageReader.ReceiveMessageAsync(timeoutShutdownTokenSource.Token);
         if (rawMessage.Data != null)
         {
           res = CreateMessageFromRawData(rawMessage.Data);
@@ -124,8 +105,7 @@ namespace ProfileServer.Network
 
       ForceDisconnect = res == null;
 
-      if (res != null) log.Trace("(-):ForceDisconnect={0}\n{1}", ForceDisconnect, res.ToString().SubstrMax(512));
-      else log.Trace("(-):ForceDisconnect={0},null", ForceDisconnect);
+      log.Trace("(-):ForceDisconnect={0}", ForceDisconnect, res != null ? "Message" : "null");
       return res;
     }
 
@@ -170,7 +150,7 @@ namespace ProfileServer.Network
                   if (RequestMessage.Request.ConversationTypeCase == Request.ConversationTypeOneofCase.SingleRequest)
                   {
                     SingleRequest.RequestTypeOneofCase requestType = RequestMessage.Request.SingleRequest.RequestTypeCase;
-                    if (response.SingleResponse.ResponseTypeCase.ToString() != requestType.ToString())
+                    if (response.SingleResponse.ResponseTypeCase.ToString() == requestType.ToString())
                     {
                       res = true;
                     }
@@ -183,7 +163,7 @@ namespace ProfileServer.Network
                   if (RequestMessage.Request.ConversationTypeCase == Request.ConversationTypeOneofCase.ConversationRequest)
                   {
                     ConversationRequest.RequestTypeOneofCase requestType = RequestMessage.Request.ConversationRequest.RequestTypeCase;
-                    if (response.ConversationResponse.ResponseTypeCase.ToString() != requestType.ToString())
+                    if (response.ConversationResponse.ResponseTypeCase.ToString() == requestType.ToString())
                     {
                       res = true;
                     }
@@ -241,10 +221,10 @@ namespace ProfileServer.Network
         }
         catch
         {
-          log.Error("Received unexpected or invalid message.");
+          log.Warn("Received unexpected or invalid message.");
         }
       }
-      else log.Error("Received unexpected or invalid message.");
+      else log.Warn("Received unexpected or invalid message.");
 
       log.Trace("(-):{0}", res);
       return res;
@@ -265,8 +245,11 @@ namespace ProfileServer.Network
         Message requestMessage = MessageBuilder.CreateVerifyIdentityRequest(serverChallenge);
         await SendMessageAsync(requestMessage);
         Message responseMessage = await ReceiveMessageAsync();
-        if (!CheckResponseMessage(requestMessage, responseMessage))
-          log.Error("Received unexpected or invalid message.");
+        if (CheckResponseMessage(requestMessage, responseMessage))
+        {
+          res = true;
+        }
+        else log.Warn("Received unexpected or invalid message.");
       }
 
       log.Trace("(-):{0}", res);
@@ -318,7 +301,7 @@ namespace ProfileServer.Network
     /// <returns>true if the server ID matches the expected identifier, false otherwise.</returns>
     public bool MatchServerId(byte[] Id)
     {
-      log.Trace("()");
+      log.Trace("(Id:'{0}',serverId:'{1}')", Id.ToHex(), serverId.ToHex());
 
       bool res = StructuralEqualityComparer<byte[]>.Default.Equals(Id, serverId);
 
@@ -341,34 +324,18 @@ namespace ProfileServer.Network
       Message requestMessage = MessageBuilder.CreateStartNeighborhoodInitializationRequest(PrimaryPort, SrNeighborPort);
       await SendMessageAsync(requestMessage);
       Message responseMessage = await ReceiveMessageAsync();
-      if (!CheckResponseMessage(requestMessage, responseMessage))
-        log.Error("Received unexpected or invalid message.");
+      if (CheckResponseMessage(requestMessage, responseMessage))
+      {
+        res = true;
+      }
+      else log.Warn("Received unexpected or invalid message.");
 
       log.Trace("(-):{0}", res);
       return res;
     }
 
 
-    /// <summary>
-    /// Sends FinishNeighborhoodInitializationRequest to the server and reads a response.
-    /// </summary>
-    /// <returns>true if the function succeeds, false otherwise.</returns>
-    public async Task<bool> FinishNeighborhoodInitializationAsync()
-    {
-      log.Trace("()");
-
-      bool res = false;
-      Message requestMessage = MessageBuilder.CreateFinishNeighborhoodInitializationRequest();
-      await SendMessageAsync(requestMessage);
-      Message responseMessage = await ReceiveMessageAsync();
-      if (!CheckResponseMessage(requestMessage, responseMessage))
-        log.Error("Received unexpected or invalid message.");
-
-      log.Trace("(-):{0}", res);
-      return res;
-    }
-
-
+    
     /// <summary>
     /// Sends NeighborhoodSharedProfileUpdateRequest to the server and reads a response.
     /// </summary>
@@ -382,8 +349,11 @@ namespace ProfileServer.Network
       Message requestMessage = RequestMessage;
       await SendMessageAsync(requestMessage);
       Message responseMessage = await ReceiveMessageAsync();
-      if (!CheckResponseMessage(requestMessage, responseMessage))
-        log.Error("Received unexpected or invalid message.");
+      if (CheckResponseMessage(requestMessage, responseMessage))
+      {
+        res = true;
+      }
+      else log.Warn("Received unexpected or invalid message.");
 
       log.Trace("(-):{0}", res);
       return res;
@@ -406,7 +376,7 @@ namespace ProfileServer.Network
       {
         res = responseMessage.Response.SingleResponse.ListRoles;
       }
-      else log.Error("Received unexpected or invalid message.");
+      else log.Warn("Received unexpected or invalid message.");
 
       log.Trace("(-):{0}", res);
       return res;

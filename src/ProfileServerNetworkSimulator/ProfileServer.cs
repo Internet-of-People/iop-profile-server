@@ -1,4 +1,6 @@
-﻿using ProfileServerProtocol;
+﻿using Google.Protobuf;
+using Iop.Profileserver;
+using ProfileServerProtocol;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,7 +11,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ProfileServerSimulator
+namespace ProfileServerNetworkSimulator
 {
   /// <summary>
   /// Represents a single profile server. Provides abilities to start and stop a server process
@@ -109,6 +111,9 @@ namespace ProfileServerSimulator
     /// <summary>
     /// Creates a new instance of a profile server.
     /// </summary>
+    /// <param name="Name">Unique profile server instance name.</param>
+    /// <param name="Location">GPS location of this profile server instance.</param>
+    /// <param name="Port">Base TCP port that defines the range of ports that are going to be used by this profile server instance and its related servers.</param>
     public ProfileServer(string Name, GpsLocation Location, int Port)
     {
       log = new PrefixLogger("ProfileServerSimulator.ProfileServer", "[" + Name + "] ");
@@ -205,6 +210,7 @@ namespace ProfileServerSimulator
         config = config.Replace("$max_identity_relations", "100");
         config = config.Replace("$neighborhood_initialization_parallelism", "10");
         config = config.Replace("$lbn_port", lbnPort.ToString());
+        config = config.Replace("$neighbor_profiles_expiration_time", "86400");
         config = config.Replace("$max_neighborhood_size", "105");
         config = config.Replace("$max_follower_servers_count", "200");
         config = config.Replace("$follower_refresh_time", "43200");
@@ -263,9 +269,9 @@ namespace ProfileServerSimulator
     }
 
     /// <summary>
-    /// 
+    /// Stops profile server instance if it is running.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>true if the server was running and it was stopped, false otherwise.</returns>
     public bool Stop()
     {
       log.Trace("()");
@@ -300,11 +306,17 @@ namespace ProfileServerSimulator
           sw.Write(inputData);
         }
 
-        if (!runningProcess.WaitForExit(10 * 1000))
+        if (runningProcess.WaitForExit(10 * 1000))
+        {
+          res = true;
+        }
+        else
         {
           log.Error("Instance did not finish on time, killing it now.");
           res = Helpers.KillProcess(runningProcess);
         }
+
+        if (res) runningProcess = null;
       }
       catch (Exception e)
       {
@@ -329,10 +341,9 @@ namespace ProfileServerSimulator
       try
       {
         process = new Process();
-        //string fullFileName = Path.GetFullPath(Executable);
         process.StartInfo.FileName = Path.Combine(instanceDirectory, ExecutableFileName);
         process.StartInfo.UseShellExecute = false;
-        process.StartInfo.WorkingDirectory = instanceDirectory;// Path.GetDirectoryName(fullFileName);
+        process.StartInfo.WorkingDirectory = instanceDirectory;
         process.StartInfo.RedirectStandardInput = true;
         process.StartInfo.RedirectStandardOutput = true;
         process.StartInfo.RedirectStandardError = true;
@@ -563,5 +574,173 @@ namespace ProfileServerSimulator
 
       log.Trace("(-)");
     }
+
+    /// <summary>
+    /// Checks log files of profile server instance to see if there are any errors.
+    /// </summary>
+    /// <param name="LogDirectory">If the function succeeds, this is filled with the name of the log directory of the profile server instance.</param>
+    /// <param name="FileNames">If the function succeeds, this is filled with log file names.</param>
+    /// <param name="ErrorCount">If the function succeeds, this is filled with number of errors found in log files.</param>
+    /// <returns>true if the function succeeds, false otherwise.</returns>
+    public bool CheckLogs(out string LogDirectory, out List<string> FileNames, out List<int> ErrorCount)
+    {
+      log.Trace("()");
+
+      FileNames = null;
+      ErrorCount = null;
+      LogDirectory = null;
+
+      List<string> fileNames = new List<string>();
+      List<int> errorCount = new List<int>();
+      string logDirectory = Path.Combine(instanceDirectory, "Logs");
+      bool error = false;
+      try
+      {        
+        string[] files = Directory.GetFiles(logDirectory, "*.txt", SearchOption.TopDirectoryOnly);
+        foreach (string file in files)
+        {
+          int count = 0;
+          if (CheckLogFile(file, out count))
+          {
+            fileNames.Add(Path.GetFileName(file));
+            errorCount.Add(count);
+          }
+          else
+          {
+            error = true;
+            break;
+          }
+        }
+      }
+      catch (Exception e)
+      {
+        log.Error("Unable to analyze logs, exception occurred: {0}", e.ToString());
+      }
+
+      bool res = !error;
+      if (res)
+      {
+        FileNames = fileNames;
+        ErrorCount = errorCount;
+        LogDirectory = instanceDirectory;
+      }
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+
+    /// <summary>
+    /// Checks a signle log file of profile server instance to see if there are any errors.
+    /// </summary>
+    /// <param name="FileName">Name of the log file to check.</param>
+    /// <param name="ErrorCount">If the function succeeds, this is filled with number of errors found in the log file.</param>
+    /// <returns>true if the function succeeds, false otherwise.</returns>
+    public bool CheckLogFile(string FileName, out int ErrorCount)
+    {
+      log.Trace("(FileName:'{0}')", FileName);
+
+      bool res = false;
+      ErrorCount = 0;
+      try
+      {
+        int errors = 0;
+        string[] lines = File.ReadAllLines(FileName);
+        for (int i = 0; i < lines.Length; i++)
+        {
+          string line = lines[i];
+          if (line.Contains("] ERROR:"))
+            errors++;
+        }
+
+        ErrorCount = errors;
+        res = true;
+      }
+      catch (Exception e)
+      {
+        log.Error("Unable to analyze logs, exception occurred: {0}", e.ToString());
+      }
+
+      log.Trace("(-):{0},ErrorCount={1}", res, ErrorCount);
+      return res;
+    }
+
+
+    /// <summary>
+    /// Calculates expected search query results from the given profile server and its neighbors.
+    /// </summary>
+    /// <param name="NameFilter">Name filter of the search query, or null if name filtering is not required.</param>
+    /// <param name="TypeFilter">Type filter of the search query, or null if type filtering is not required.</param>
+    /// <param name="LocationFilter">Location filter of the search query, or null if location filtering is not required.</param>
+    /// <param name="Radius">If <paramref name="LocationFilter"/> is not null, this is the radius of the target area.</param>
+    /// <param name="IncludeHostedOnly">If set to true, the search results should only include profiles hosted on the queried profile server.</param>
+    /// <param name="IncludeImages">If set to true, the search results should include images.</param>
+    /// <returns>List of profiles that match the given criteria or null if the function fails.</returns>
+    public List<IdentityNetworkProfileInformation> GetExpectedSearchResults(string NameFilter, string TypeFilter, GpsLocation LocationFilter, int Radius, bool IncludeHostedOnly, bool IncludeImages)
+    {
+      log.Trace("(NameFilter:'{0}',TypeFilter:'{1}',LocationFilter:'{2}',Radius:{3},IncludeHostedOnly:{4},IncludeImages:{5})", NameFilter, TypeFilter, LocationFilter, Radius, IncludeHostedOnly, IncludeImages);
+
+      List<IdentityNetworkProfileInformation> res = new List<IdentityNetworkProfileInformation>();
+
+      List<IdentityNetworkProfileInformation> localResults = SearchQuery(NameFilter, TypeFilter, LocationFilter, Radius, IncludeImages);
+
+      foreach (IdentityNetworkProfileInformation localResult in localResults)
+      {
+        localResult.IsHosted = true;
+        localResult.IsOnline = false;
+      }
+
+      res.AddRange(localResults);
+
+      if (!IncludeHostedOnly)
+      {
+        List<ProfileServer> neighbors = LbnServer.GetNeighbors();
+        foreach (ProfileServer neighbor in neighbors)
+        {
+          ByteString neighborId = neighbor.GetNetworkId();
+          List<IdentityNetworkProfileInformation> neighborResults = neighbor.SearchQuery(NameFilter, TypeFilter, LocationFilter, Radius, IncludeImages);
+          foreach (IdentityNetworkProfileInformation neighborResult in neighborResults)
+          {
+            neighborResult.IsHosted = false;
+            neighborResult.HostingServerNetworkId = neighborId;
+          }
+
+          res.AddRange(neighborResults);
+        }
+      }
+
+      log.Trace("(-):*.Count={0}", res.Count);
+      return res;
+    }
+
+
+    /// <summary>
+    /// Performs a search query on the profile server's hosted identities.
+    /// </summary>
+    /// <param name="NameFilter">Name filter of the search query, or null if name filtering is not required.</param>
+    /// <param name="TypeFilter">Type filter of the search query, or null if type filtering is not required.</param>
+    /// <param name="LocationFilter">Location filter of the search query, or null if location filtering is not required.</param>
+    /// <param name="Radius">If <paramref name="LocationFilter"/> is not null, this is the radius of the target area.</param>
+    /// <param name="IncludeImages">If set to true, the search results should include images.</param>
+    /// <returns>List of hosted profiles that match the given criteria.</returns>
+    public List<IdentityNetworkProfileInformation> SearchQuery(string NameFilter, string TypeFilter, GpsLocation LocationFilter, int Radius, bool IncludeImages)
+    {
+      log.Trace("(NameFilter:'{0}',TypeFilter:'{1}',LocationFilter:'{2}',Radius:{3},IncludeImages:{4})", NameFilter, TypeFilter, LocationFilter, Radius, IncludeImages);
+
+      List<IdentityNetworkProfileInformation> res = new List<IdentityNetworkProfileInformation>();
+
+      foreach (IdentityClient client in hostedIdentities)
+      {
+        if (client.MatchesSearchQuery(NameFilter, TypeFilter, LocationFilter, Radius))
+        {
+          IdentityNetworkProfileInformation info = client.GetIdentityNetworkProfileInformation(IncludeImages);
+          res.Add(info);
+        }
+      }
+
+      log.Trace("(-):*.Count={0}", res.Count);
+      return res;
+    }
+
   }
 }

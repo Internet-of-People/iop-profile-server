@@ -252,7 +252,7 @@ namespace ProfileServerProtocolTests
     /// </summary>
     /// <param name="IdentityType">Identity type of the new identity.</param>
     /// <returns>true if the function succeeds, false otherwise.</returns>
-    public async Task<bool> EstablishHomeNodeAsync(string IdentityType = null)
+    public async Task<bool> EstablishHostingAsync(string IdentityType = null)
     {
       log.Trace("()");
 
@@ -474,6 +474,7 @@ namespace ProfileServerProtocolTests
     {
       log.Trace("()");
 
+      if (ServerKey == null) ServerKey = StartConversationResponse.Response.ConversationResponse.Start.PublicKey.ToByteArray();
       byte[] receivedChallenge = StartConversationResponse.Response.ConversationResponse.Start.ClientChallenge.ToByteArray();
       bool res = (StructuralComparisons.StructuralComparer.Compare(receivedChallenge, ClientChallenge) == 0) 
         && MessageBuilder.VerifySignedConversationResponseBodyPart(StartConversationResponse, receivedChallenge, ServerKey);

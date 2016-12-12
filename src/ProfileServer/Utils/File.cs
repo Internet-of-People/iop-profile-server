@@ -136,6 +136,8 @@ namespace ProfileServer.Utils
 
           foreach (DirectoryInfo dir in di.GetDirectories())
             dir.Delete(true);
+
+          res = true;
         }
         else log.Error("Directory '{0}' not found.", DirectoryName);
       }

@@ -95,6 +95,7 @@ namespace ProfileServer.Data.Models
 
     /// <summary>User defined extra data that serve for satisfying search queries in ProfileServer.</summary>
     /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
+    [Required(AllowEmptyStrings = true)]
     [MaxLength(200)]
     public string ExtraData { get; set; }
 
@@ -113,14 +114,12 @@ namespace ProfileServer.Data.Models
     /// </para>
     /// 
     /// <para>
-    /// In the NeighborIdentityRepository, ExpirationDate is not used. Instead Neighbor.LastRefreshTime is used 
+    /// In the NeighborIdentityRepository, ExpirationDate is not used. Instead, Neighbor.LastRefreshTime is used 
     /// to track when the identities shared by a neighbor should expire.
     /// </para>
     /// </summary>
-    /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
+    /// <remarks>This is index in HostedIdentityRepository - see ProfileServer.Data.Context.OnModelCreating.</remarks>
     public DateTime? ExpirationDate { get; set; }
-#warning TODO: Implement clean up of expired identities for HostedIdentity.
-
 
 
 

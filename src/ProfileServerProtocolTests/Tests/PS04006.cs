@@ -59,7 +59,7 @@ namespace ProfileServerProtocolTests.Tests
 
         // Step 1
         await client.ConnectAsync(ServerIp, ClNonCustomerPort, true);
-        bool establishHomeNodeOk = await client.EstablishHomeNodeAsync();
+        bool establishHomeNodeOk = await client.EstablishHostingAsync();
 
         // Step 1 Acceptance
         bool step1Ok = establishHomeNodeOk;
@@ -112,6 +112,7 @@ namespace ProfileServerProtocolTests.Tests
 
         bool updateProfileOk2 = idOk && statusOk;
 
+
         requestMessage = mb.CreateGetIdentityInformationRequest(testIdentityId, true, true, false);
         await client.SendMessageAsync(requestMessage);
         responseMessage = await client.ReceiveMessageAsync();
@@ -139,8 +140,51 @@ namespace ProfileServerProtocolTests.Tests
 
         bool getIdentityInfoOk2 = idOk && statusOk && isHostedOk && isOnlineOk && pubKeyOk && versionOk && nameOk && extraDataOk && locationOk && profileImageOk && thumbnailImageOk;
 
+
+
+        imageData = new byte[] { };
+        requestMessage = mb.CreateUpdateProfileRequest(null, null, imageData, null, null);
+        await client.SendMessageAsync(requestMessage);
+        responseMessage = await client.ReceiveMessageAsync();
+
+        idOk = responseMessage.Id == requestMessage.Id;
+        statusOk = responseMessage.Response.Status == Status.Ok;
+
+        bool updateProfileOk3 = idOk && statusOk;
+
+
+
+        requestMessage = mb.CreateGetIdentityInformationRequest(testIdentityId, true, true, false);
+        await client.SendMessageAsync(requestMessage);
+        responseMessage = await client.ReceiveMessageAsync();
+
+        idOk = responseMessage.Id == requestMessage.Id;
+        statusOk = responseMessage.Response.Status == Status.Ok;
+        isHostedOk = responseMessage.Response.SingleResponse.GetIdentityInformation.IsHosted;
+        isOnlineOk = responseMessage.Response.SingleResponse.GetIdentityInformation.IsOnline;
+
+        receivedPubKey = responseMessage.Response.SingleResponse.GetIdentityInformation.IdentityPublicKey.ToByteArray();
+        pubKeyOk = StructuralComparisons.StructuralComparer.Compare(testPubKey, receivedPubKey) == 0;
+        receivedVersion = new SemVer(responseMessage.Response.SingleResponse.GetIdentityInformation.Version);
+        versionOk = receivedVersion.Equals(SemVer.V100);
+
+        nameOk = responseMessage.Response.SingleResponse.GetIdentityInformation.Name == "Test Identity Renamed";
+        extraDataOk = responseMessage.Response.SingleResponse.GetIdentityInformation.ExtraData == "a=b";
+        locationOk = responseMessage.Response.SingleResponse.GetIdentityInformation.Latitude == -1
+          && responseMessage.Response.SingleResponse.GetIdentityInformation.Longitude == -2;
+
+
+        receivedProfileImage = responseMessage.Response.SingleResponse.GetIdentityInformation.ProfileImage.ToByteArray();
+        profileImageOk = receivedProfileImage.Length == 0;
+        receivedThumbnailImage = responseMessage.Response.SingleResponse.GetIdentityInformation.ThumbnailImage.ToByteArray();
+        thumbnailImageOk = receivedThumbnailImage.Length == 0;
+
+        bool getIdentityInfoOk3 = idOk && statusOk && isHostedOk && isOnlineOk && pubKeyOk && versionOk && nameOk && extraDataOk && locationOk && profileImageOk && thumbnailImageOk;
+
+
+
         // Step 2 Acceptance
-        bool step2Ok = checkInOk && updateProfileOk && getIdentityInfoOk && updateProfileOk2 && getIdentityInfoOk2;
+        bool step2Ok = checkInOk && updateProfileOk && getIdentityInfoOk && updateProfileOk2 && getIdentityInfoOk2 && updateProfileOk3 && getIdentityInfoOk3;
 
 
         Passed = step1Ok && step2Ok;

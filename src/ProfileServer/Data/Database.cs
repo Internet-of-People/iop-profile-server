@@ -25,8 +25,11 @@ namespace ProfileServer.Data
       bool res = false;
       try
       {
-        if (DeleteUninitializedFollowers())
-        { 
+        if (DeleteUninitializedNeighbors()
+          && DeleteUninitializedFollowers()
+          && DeleteInvalidNeighborIdentities()
+          && DeleteInvalidNeighborhoodActions())
+        {
           res = true;
           Initialized = true;
         }
@@ -59,6 +62,7 @@ namespace ProfileServer.Data
     /// <summary>
     /// Removes follower servers from database that failed to finish the neighborhood initialization process.
     /// </summary>
+    /// <returns>true if the function succeeds, false otherwise.</returns>
     private bool DeleteUninitializedFollowers()
     {
       log.Info("()");
@@ -79,7 +83,11 @@ namespace ProfileServer.Data
 
             res = unitOfWork.Save();
           }
-          else log.Debug("No uninitialized followers found.");
+          else
+          {
+            res = true;
+            log.Debug("No uninitialized followers found.");
+          }
         }
         catch (Exception e)
         {
@@ -92,5 +100,183 @@ namespace ProfileServer.Data
       log.Info("(-):{0}", res);
       return res;
     }
+
+
+    /// <summary>
+    /// Removes neighbor servers from database that we failed to finish the neighborhood initialization process with.
+    /// </summary>
+    /// <returns>true if the function succeeds, false otherwise.</returns>
+    private bool DeleteUninitializedNeighbors()
+    {
+      log.Info("()");
+
+      bool res = false;
+      using (UnitOfWork unitOfWork = new UnitOfWork())
+      {
+        DatabaseLock lockObject = UnitOfWork.NeighborLock;
+        unitOfWork.AcquireLock(lockObject);
+        try
+        {
+          List<Neighbor> neighbors = unitOfWork.NeighborRepository.Get(n => n.LastRefreshTime == null).ToList();
+          if (neighbors.Count > 0)
+          {
+            log.Debug("Removing {0} uninitialized neighbors.", neighbors.Count);
+            foreach (Neighbor neighbor in neighbors)
+              unitOfWork.NeighborRepository.Delete(neighbor);
+
+            res = unitOfWork.Save();
+          }
+          else
+          {
+            res = true;
+            log.Debug("No uninitialized neighbors found.");
+          }
+        }
+        catch (Exception e)
+        {
+          log.Error("Exception occurred: {0}", e.ToString());
+        }
+
+        unitOfWork.ReleaseLock(lockObject);
+      }
+
+      log.Info("(-):{0}", res);
+      return res;
+    }
+
+
+    /// <summary>
+    /// Finds neighbor identities for which there is no existing neighbor.
+    /// </summary>
+    /// <returns>true if the function succeeds, false otherwise.</returns>
+    private bool DeleteInvalidNeighborIdentities()
+    {
+      log.Info("()");
+
+      bool res = false;
+      List<Guid> imagesToDelete = new List<Guid>();
+      using (UnitOfWork unitOfWork = new UnitOfWork())
+      {
+        // Disable change tracking for faster multiple deletes.
+        unitOfWork.Context.ChangeTracker.AutoDetectChangesEnabled = false;
+
+        DatabaseLock[] lockObjects = new DatabaseLock[] { UnitOfWork.NeighborIdentityLock, UnitOfWork.NeighborLock };
+        unitOfWork.AcquireLock(lockObjects);
+        try
+        {
+          List<byte[]> neighborIds = unitOfWork.NeighborRepository.Get(null, null, true).Select(n => n.Id).ToList();
+          HashSet<byte[]> neighborIdsHashSet = new HashSet<byte[]>(neighborIds, StructuralEqualityComparer<byte[]>.Default); 
+          List<NeighborIdentity> identities = unitOfWork.NeighborIdentityRepository.Get(null, null, true).ToList();
+
+          List<NeighborIdentity> identitiesToDelete = new List<NeighborIdentity>();
+          foreach (NeighborIdentity identity in identities)
+          {
+            if (!neighborIdsHashSet.Contains(identity.IdentityId))
+              identitiesToDelete.Add(identity);
+          }
+
+          if (identitiesToDelete.Count > 0)
+          {
+            log.Debug("Removing {0} identities without existing neighbor server.", identitiesToDelete.Count);
+            foreach (NeighborIdentity identity in identitiesToDelete)
+            {
+              if (identity.ProfileImage != null) imagesToDelete.Add(identity.ProfileImage.Value);
+              if (identity.ThumbnailImage != null) imagesToDelete.Add(identity.ThumbnailImage.Value);
+
+              unitOfWork.NeighborIdentityRepository.Delete(identity);
+            }
+
+            res = unitOfWork.Save();
+          }
+          else
+          {
+            log.Debug("No identities without existing neighbor server found.");
+            res = true;
+          }
+        }
+        catch (Exception e)
+        {
+          log.Error("Exception occurred: {0}", e.ToString());
+        }
+
+        unitOfWork.ReleaseLock(lockObjects);
+      }
+
+      foreach (Guid guid in imagesToDelete)
+        if (!ImageHelper.DeleteImageFile(guid))
+          log.Warn("Unable to delete image file of image GUID '{0}'.", guid);
+
+      log.Info("(-):{0}", res);
+      return res;
+    }
+
+
+    /// <summary>
+    /// Removes neighborhood actions whose target servers do not exist in our database.
+    /// </summary>
+    /// <returns>true if the function succeeds, false otherwise.</returns>
+    private bool DeleteInvalidNeighborhoodActions()
+    {
+      log.Info("()");
+
+      bool res = false;
+      using (UnitOfWork unitOfWork = new UnitOfWork())
+      {
+        DatabaseLock[] lockObjects = new DatabaseLock[] { UnitOfWork.NeighborLock, UnitOfWork.FollowerLock, UnitOfWork.NeighborhoodActionLock };
+        unitOfWork.AcquireLock(lockObjects);
+        try
+        {
+          List<byte[]> neighborIds = unitOfWork.NeighborRepository.Get().Select(n => n.Id).ToList();
+          HashSet<byte[]> neighborIdsHashSet = new HashSet<byte[]>(neighborIds, StructuralEqualityComparer<byte[]>.Default);
+
+          List<byte[]> followerIds = unitOfWork.FollowerRepository.Get().Select(f => f.Id).ToList();
+          HashSet<byte[]> followerIdsHashSet = new HashSet<byte[]>(followerIds, StructuralEqualityComparer<byte[]>.Default);
+
+          List<NeighborhoodAction> actions = unitOfWork.NeighborhoodActionRepository.Get().ToList();
+          bool saveDb = false;
+          foreach (NeighborhoodAction action in actions)
+          {
+            bool actionValid = false;
+            if (action.IsProfileAction())
+            {
+              // Action's serverId should be our follower.
+              actionValid = followerIdsHashSet.Contains(action.ServerId);
+            }
+            else
+            {
+              // Action's serverId should be our neighbor.
+              actionValid = neighborIdsHashSet.Contains(action.ServerId);
+            }
+
+            if (!actionValid)
+            {
+              log.Debug("Removing invalid action ID {0}, type {1}, server ID '{2}'.", action.Id, action.Type, action.ServerId.ToHex());
+              unitOfWork.NeighborhoodActionRepository.Delete(action);
+              saveDb = true;
+            }
+          }
+
+          if (saveDb)
+          {
+            res = unitOfWork.Save();
+          }
+          else
+          {
+            log.Debug("No invalid neighborhood actions found.");
+            res = true;
+          }
+        }
+        catch (Exception e)
+        {
+          log.Error("Exception occurred: {0}", e.ToString());
+        }
+
+        unitOfWork.ReleaseLock(lockObjects);
+      }
+
+      log.Info("(-):{0}", res);
+      return res;
+    }
+
   }
 }

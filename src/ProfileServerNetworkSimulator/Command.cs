@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ProfileServerSimulator
+namespace ProfileServerNetworkSimulator
 {
   /// <summary>
   /// All types of commands that are supported. Note that Unknown represents an invalid command.
   /// </summary>
-  public enum CommandType { Unknown, ProfileServer, StartServer, StopServer, Neighborhood, CancelNeighborhood, Neighbor, CancelNeighbor, Identity, TestQuery, Delay }
+  public enum CommandType { Unknown, ProfileServer, StartServer, StopServer, Neighborhood, CancelNeighborhood, Neighbor, CancelNeighbor, Identity, CancelIdentity, TestQuery, Delay }
 
   /// <summary>
   /// Base class for all types for commands.
@@ -273,6 +273,33 @@ namespace ProfileServerSimulator
     {
     }
   }
+
+
+  /// <summary>
+  /// CancelIdentity command cancels hosting agreement of one or more identities with their profile servers. 
+  /// </summary>
+  public class CommandCancelIdentity : Command
+  {
+    /// <summary>Names of the groups of identities.</summary>
+    public string Name;
+
+    /// <summary>Index of the first identity from the group.</summary>
+    public int Index;
+
+    /// <summary>Number of identities to take from the group.</summary>
+    public int Count;
+
+    /// <summary>
+    /// Initializes the base command type.
+    /// </summary>
+    /// <param name="LineNumber">Line number of the command in the scenario file.</param>
+    /// <param name="OriginalCommand">Original scenario file line.</param>
+    public CommandCancelIdentity(int LineNumber, string OriginalCommand) :
+      base(CommandType.Neighborhood, LineNumber, OriginalCommand)
+    {
+    }
+  }
+
 
   /// <summary>
   /// TestQuery command performs one or more search queries against specific server.

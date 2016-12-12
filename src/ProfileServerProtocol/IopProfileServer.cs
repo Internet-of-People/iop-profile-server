@@ -6350,7 +6350,7 @@ namespace Iop.Profileserver {
   ///  A non-customer client verifies its public key by signing the challenge. This request is similar to CheckInRequest, 
   ///  but it is intended for non-customer clients. The client has to provide a signature in 'ConversationRequest.signature'.
   ///
-  ///  Roles: clNonCustomer
+  ///  Roles: clNonCustomer, srNeighbor
   ///
   ///  Conversation status: ConversationStarted
   /// </summary>
@@ -6734,7 +6734,7 @@ namespace Iop.Profileserver {
     public const int ImageFieldNumber = 10;
     private pb::ByteString image_ = pb::ByteString.Empty;
     /// <summary>
-    ///  Profile image in PNG or JPEG format, non-empty binary data, max 20,480 bytes long.
+    ///  Profile image in PNG or JPEG format, non-empty binary data, max 20,480 bytes long, or empty binary data if the image is about to be erased.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public pb::ByteString Image {
@@ -13811,8 +13811,10 @@ namespace Iop.Profileserver {
   ///  A response to NeighborhoodSharedProfileUpdateRequest.
   ///
   ///  Specific Error Responses:
-  ///    * ERROR_REJECTED - Profile server is no longer interested in receiving updates from the profile server. This should have the same effect as sending StopNeighborhoodUpdatesRequest.
-  ///    * ERROR_UNINITIALIZED - Neighborhood initialization process has not been done or finished yet.
+  ///    * ERROR_REJECTED - Neighborhood initialization process has not been done or finished yet, or profile server is no longer interested in receiving updates 
+  ///                       from the requesting profile server. This should have the same effect as if the profile server sent StopNeighborhoodUpdatesRequest to 
+  ///                       the requesting profile server. If the requesting profile server wants to share its database, it has to go through neighborhood 
+  ///                       initialization process from start.
   ///    * ERROR_INVALID_VALUE
   ///      * Response.details == "$index.$field" - All items up to 'NeighborhoodSharedProfileUpdateRequest.items[$index]' (exclusive) were processed correctly
   ///                                              and an error occurred while processing the item with zero-based index $index. Items with index greater 
@@ -13826,6 +13828,7 @@ namespace Iop.Profileserver {
   ///        * $field == "add.latitude" - `items[$index].add.latitude` is not a valid latitude value.
   ///        * $field == "add.longitude" - `items[$index].add.longitude` is not a valid longitude value.
   ///        * $field == "add.extraData" - `items[$index].add.extraData` is not a valid extraData value.
+  ///        * $field == "change.set*" - `items[$index].change.set*` are all false.
   ///        * $field == "change.identityNetworkId" - `items[$index].change.identityNetworkId` does not represent an existing identity.
   ///        * $field == "change.version" - `items[$index].change.version` is not a valid VersionType value.
   ///        * $field == "change.name" - `items[$index].change.name` is not a valid profile name.
@@ -14734,7 +14737,7 @@ namespace Iop.Profileserver {
     public const int ThumbnailImageFieldNumber = 9;
     private pb::ByteString thumbnailImage_ = pb::ByteString.Empty;
     /// <summary>
-    ///  Profile thumbnail image in PNG or JPEG format, non-empty binary data, max 5,120 bytes long.
+    ///  Profile thumbnail image in PNG or JPEG format, non-empty binary data, max 5,120 bytes long, or zero length binary data if the image is about to be deleted.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public pb::ByteString ThumbnailImage {

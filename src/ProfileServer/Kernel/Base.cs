@@ -44,6 +44,7 @@ namespace ProfileServer.Kernel
         { "Network.Server", new Network.Server() },
         { "Network.LocationBasedNetwork", new Network.LocationBasedNetwork() },
         { "Network.NeighborhoodActionProcessor", new Network.NeighborhoodActionProcessor() },
+        { "Network.ExpirationManager", new Network.ExpirationManager() },
       };
 
       // The component list specifies the order in which the components are going to be initialized.
@@ -54,6 +55,7 @@ namespace ProfileServer.Kernel
         ComponentDictionary["Network.Server"],
         ComponentDictionary["Network.LocationBasedNetwork"],
         ComponentDictionary["Network.NeighborhoodActionProcessor"],
+        ComponentDictionary["Network.ExpirationManager"],
       };
 
       res = Components.Init(componentList);
