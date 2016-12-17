@@ -48,6 +48,11 @@ namespace ProfileServer.Network
     /// <summary>LBN message builder for the TCP client.</summary>
     private MessageBuilderLocNet messageBuilder;
 
+    /// <summary>true if the component received current information about the server's neighborhood from the LBN server.</summary>
+    private bool lbnServerInitialized = false;
+    /// <summary>true if the component received current information about the server's neighborhood from the LBN server.</summary>
+    public bool LbnServerInitialized { get { return lbnServerInitialized; } }
+
     public override bool Init()
     {
       log.Info("()");
@@ -334,7 +339,7 @@ namespace ProfileServer.Network
               && (response.Response.ResponseTypeCase == Response.ResponseTypeOneofCase.LocalService)
               && (response.Response.LocalService.LocalServiceResponseTypeCase == LocalServiceResponse.LocalServiceResponseTypeOneofCase.GetNeighbourNodes);
 
-            if (!responseOk) log.Error("Deregistration failed, response status is {0}.", response.Response != null ? response.Response.Status.ToString() : "n/a");
+            if (!responseOk) log.Error("Obtaining neighborhood information failed, response status is {0}.", response.Response != null ? response.Response.Status.ToString() : "n/a");
           }
           else log.Error("Invalid message received from LBN server.");
         }
@@ -676,6 +681,12 @@ namespace ProfileServer.Network
         neighborhoodActionProcessor.Signal();
       }
 
+      if (res)
+      {
+        log.Debug("LBN component is now considered in sync with LBN server.");
+        lbnServerInitialized = true;
+      }
+
       log.Trace("(-):{0}", res);
       return res;
     }
@@ -745,7 +756,7 @@ namespace ProfileServer.Network
       }
 
       // Data processing.
-      Neighbor existingNeighbor = (await UnitOfWork.NeighborRepository.GetAsync(n => n.Id == ServerId)).FirstOrDefault();
+      Neighbor existingNeighbor = (await UnitOfWork.NeighborRepository.GetAsync(n => n.NeighborId == ServerId)).FirstOrDefault();
       if (existingNeighbor == null)
       {
         // New neighbor server.
@@ -759,12 +770,12 @@ namespace ProfileServer.Network
           // any updates. First, we need to contact it and start the neighborhood initialization process.
           Neighbor neighbor = new Neighbor()
           {
-            Id = ServerId,
+            NeighborId = ServerId,
             IpAddress = IpAddress.ToString(),
             PrimaryPort = Port,
             SrNeighborPort = null,
-            LocationLatitude = Latitude,
-            LocationLongitude = Longitude,
+            LocationLatitude = location.Latitude,
+            LocationLongitude = location.Longitude,
             LastRefreshTime = null
           };
           UnitOfWork.NeighborRepository.Insert(neighbor);
@@ -772,12 +783,15 @@ namespace ProfileServer.Network
 
           // This action will cause our profile server to contact the new neighbor server and ask it to share its profile database,
           // i.e. the neighborhood initialization process will be started.
+          // We set a random delay depending on the current size of the neighborhood, 
+          // so that a new server joining a neighborhood is not overwhelmed with requests.
+          int delay = RandomSource.Generator.Next(0, 2 * res.NeighborhoodSize);
           NeighborhoodAction action = new NeighborhoodAction()
           {
             ServerId = ServerId,
             Timestamp = DateTime.UtcNow,
             Type = NeighborhoodActionType.AddNeighbor,
-            ExecuteAfter = DateTime.UtcNow,
+            ExecuteAfter = DateTime.UtcNow.AddSeconds(delay),
             TargetIdentityId = null,
             AdditionalData = null,            
           };
@@ -791,14 +805,11 @@ namespace ProfileServer.Network
       else
       {
         // This is a neighbor we already know about. Just check that its information is up to date and if not, update it.
-        bool needUpdate = false;
-
         string ipAddress = IpAddress.ToString();
         if (existingNeighbor.IpAddress != ipAddress)
         {
           log.Trace("Existing neighbor ID '{0}' changed its IP address from {1} to {2}.", ServerId.ToHex(), existingNeighbor.IpAddress, ipAddress);
           existingNeighbor.IpAddress = ipAddress;
-          needUpdate = true;
         }
 
         if (existingNeighbor.PrimaryPort != Port)
@@ -807,28 +818,26 @@ namespace ProfileServer.Network
           log.Trace("Existing neighbor ID '{0}' changed its primary port from {1} to {2}, invalidating neighbors interface port as well.", ServerId.ToHex(), existingNeighbor.PrimaryPort, Port);
           existingNeighbor.PrimaryPort = Port;
           existingNeighbor.SrNeighborPort = null;
-          needUpdate = true;
         }
 
-        if (existingNeighbor.LocationLatitude != Latitude)
+        if (existingNeighbor.LocationLatitude != location.Latitude)
         {
-          log.Trace("Existing neighbor ID '{0}' changed its latitude from {1} to {2}.", ServerId.ToHex(), existingNeighbor.LocationLatitude, Latitude);
+          log.Trace("Existing neighbor ID '{0}' changed its latitude from {1} to {2}.", ServerId.ToHex(), existingNeighbor.LocationLatitude, location.Latitude);
           existingNeighbor.LocationLatitude = Latitude;
-          needUpdate = true;
         }
 
-        if (existingNeighbor.LocationLongitude != Longitude)
+        if (existingNeighbor.LocationLongitude != location.Longitude)
         {
-          log.Trace("Existing neighbor ID '{0}' changed its longitude from {1} to {2}.", ServerId.ToHex(), existingNeighbor.LocationLongitude, Longitude);
+          log.Trace("Existing neighbor ID '{0}' changed its longitude from {1} to {2}.", ServerId.ToHex(), existingNeighbor.LocationLongitude, location.Longitude);
           existingNeighbor.LocationLongitude = Longitude;
-          needUpdate = true;
         }
 
-        if (needUpdate)
-        {
-          UnitOfWork.NeighborRepository.Update(existingNeighbor);
-          res.SaveDb = true;
-        }
+        // We consider a fresh LBN info to be accurate, so we do not want to delete the neighbors received here
+        // and hence we update their refresh time..
+        existingNeighbor.LastRefreshTime = DateTime.UtcNow;
+
+        UnitOfWork.NeighborRepository.Update(existingNeighbor);
+        res.SaveDb = true;
       }
 
       log.Trace("(-):*.Error={0},*.SaveDb={1},*.SignalActionProcessor={2},*.NeighborhoodSize={3}", res.Error, res.SaveDb, res.SignalActionProcessor, res.NeighborhoodSize);
@@ -908,8 +917,8 @@ namespace ProfileServer.Network
                     }
 
                     // Data processing.
-                    Neighbor existingNeighbor = (await unitOfWork.NeighborRepository.GetAsync(n => n.Id == serverId)).FirstOrDefault();
-                    if (existingNeighbor == null)
+                    Neighbor existingNeighbor = (await unitOfWork.NeighborRepository.GetAsync(n => n.NeighborId == serverId)).FirstOrDefault();
+                    if (existingNeighbor != null)
                     {
                       log.Trace("Creating neighborhood action to deleting neighbor ID '{0}' from the database.", serverId.ToHex());
 

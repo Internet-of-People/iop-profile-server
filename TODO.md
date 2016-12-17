@@ -34,6 +34,7 @@ To mitigate this issue, we would need to introduce IP based limits on search que
 
 
 
+## Optimizations
 
 ### Updates Between Neighbors
 
@@ -60,12 +61,3 @@ delete all images in the images folder that are not referenced from the database
 
 
 
-## Tests
-
-### Neighborhood Functionality
-
-Profile server works in the network with other profile servers that are in its neighborhood, which is defined and announced to the profile server 
-by a LBN server that runs on the same machine. The following scenarios are related to the interconnection of neighbor profile servers and it is 
-necessary to define the expected behavior of the profile servers and test them:
-
- * Profile server is unable to connect to its neighbor primary interface.

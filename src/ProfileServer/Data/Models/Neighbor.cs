@@ -31,11 +31,16 @@ namespace ProfileServer.Data.Models
     /// <summary>Minimal allowed value for the limit of the size of the profile server's neighborhood.</summary>
     public const int MinMaxNeighborhoodSize = 105;
 
+    /// <summary>Unique primary key for the database.</summary>
+    /// <remarks>This is primary key - see ProfileServer.Data.Context.OnModelCreating.</remarks>
+    [Required]
+    public int DbId { get; set; }
+
     /// <summary>Network identifier of the profile server is SHA256 hash of identity's public key.</summary>
     /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
     [Required]
     [MaxLength(IdentityBase.IdentifierLength)]
-    public byte[] Id { get; set; }
+    public byte[] NeighborId { get; set; }
 
     /// <summary>IP address of the profile server.</summary>
     /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>

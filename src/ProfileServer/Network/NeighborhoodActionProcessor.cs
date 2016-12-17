@@ -1,5 +1,6 @@
 ﻿using Iop.Profileserver;
 using Microsoft.EntityFrameworkCore.Storage;
+using Newtonsoft.Json;
 using ProfileServer.Data;
 using ProfileServer.Data.Models;
 using ProfileServer.Kernel;
@@ -52,6 +53,13 @@ namespace ProfileServer.Network
 
     /// <summary>Profile server neighbors interface port.</summary>
     private uint srNeighborPort;
+
+
+    /// <summary>Lock to protect access to actionExecutorCounter.</summary>
+    private object actionExecutorLock = new object();
+
+    /// <summary>Number of action executions in progress.</summary>
+    private int actionExecutorCounter = 0;
 
 
     public override bool Init()
@@ -112,6 +120,33 @@ namespace ProfileServer.Network
 
       if ((actionListHandlerThread != null) && !actionListHandlerThreadFinished.WaitOne(10000))
         log.Error("Action list handler thread did not terminated in 10 seconds.");
+
+      bool done = false;
+      int counter = 0;
+      log.Trace("Waiting for action executors to finish.");
+      while (!done)
+      {
+        int actionCounter = 0;
+        lock (actionExecutorLock)
+        {
+          actionCounter = actionExecutorCounter;
+        }
+
+        done = actionCounter == 0;
+        if (!done)
+        {
+          log.Debug("Still {0} actions in progress.", actionCounter);
+
+          counter++;
+          if (counter >= 65)
+          {
+            log.Error("Waiting for action executors took too long, terminating.");
+            break;
+          }
+
+          Thread.Sleep(1000);
+        }
+      }
 
       log.Info("(-)");
     }
@@ -223,18 +258,36 @@ namespace ProfileServer.Network
 
       log.Trace("(Action.Id:{0})", Action.Id);
 
-      bool removeAction = await ExecuteActionAsync(Action);
-      if (removeAction)
+      bool shutdown = false;
+      lock (actionExecutorLock)
       {
-        // If the action was processed successfully, we remove it from the database.
-        // Otherwise its ExecuteAfter flag is set to the future and the action will 
-        // attempt to be processed again later.
-        // We signal the event to have the action queue checked, because this action 
-        // that just finished might have blocked another action in the queue.
-        if (await RemoveActionAsync(Action.Id)) Signal();
-        else log.Error("Failed to remove action ID {0} from the database.", Action.Id);
+        shutdown = ShutdownSignaling.IsShutdown;
+        if (!shutdown)
+          actionExecutorCounter++;
       }
-      else log.Warn("Processing of action ID {0} failed.", Action.Id);
+
+      if (!shutdown)
+      {
+        bool removeAction = await ExecuteActionAsync(Action);
+        if (removeAction)
+        {
+          // If the action was processed successfully, we remove it from the database.
+          // Otherwise its ExecuteAfter flag is set to the future and the action will 
+          // attempt to be processed again later.
+          // We signal the event to have the action queue checked, because this action 
+          // that just finished might have blocked another action in the queue.
+          if (await RemoveActionAsync(Action.Id)) Signal();
+          else log.Error("Failed to remove action ID {0} from the database.", Action.Id);
+        }
+        else log.Info("Processing of action ID {0} failed.", Action.Id);
+
+
+        lock (actionExecutorLock)
+        {
+          actionExecutorCounter--;
+        }
+      }
+      else log.Trace("Shutdown detected.");
 
       log.Trace("(-)");
 
@@ -368,6 +421,7 @@ namespace ProfileServer.Network
     /// Executes a neighborhood action.
     /// </summary>
     /// <param name="Action">Action to execute.</param>
+    /// <returns>true if the action should be removed, false otherwise.</returns>
     private async Task<bool> ExecuteActionAsync(NeighborhoodAction Action)
     {
       log.Trace("(Action.Id:{0},Action.Type:{1})", Action.Id, Action.Type);
@@ -377,19 +431,22 @@ namespace ProfileServer.Network
       switch (Action.Type)
       {
         case NeighborhoodActionType.AddNeighbor:
-          res = await NeighborhoodInitializationProcess(Action.ServerId, Action.ExecuteAfter.Value);
+          res = await NeighborhoodInitializationProcess(Action.ServerId, Action.ExecuteAfter.Value, Action.Id);
           break;
 
         case NeighborhoodActionType.RemoveNeighbor:
-          res = await NeighborhoodRemoveNeighbor(Action.ServerId);
+          res = await NeighborhoodRemoveNeighbor(Action.ServerId, Action.Id);
           break;
 
+        case NeighborhoodActionType.StopNeighborhoodUpdates:
+          res = await NeighborhoodRequestStopUpdates(Action.ServerId, Action.AdditionalData);
+          break;
 
         case NeighborhoodActionType.AddProfile:
         case NeighborhoodActionType.ChangeProfile:
         case NeighborhoodActionType.RemoveProfile:
         case NeighborhoodActionType.RefreshProfiles:
-          res = await NeighborhoodProfileUpdate(Action.ServerId, Action.TargetIdentityId, Action.Type, Action.AdditionalData);
+          res = await NeighborhoodProfileUpdate(Action.ServerId, Action.TargetIdentityId, Action.Type, Action.AdditionalData, Action.Id);
           break;
 
         case NeighborhoodActionType.InitializationProcessInProgress:
@@ -416,10 +473,10 @@ namespace ProfileServer.Network
     /// </summary>
     /// <param name="NeighborId">Network identifer of the neighbor server.</param>
     /// <param name="MustFinishBefore">Time before which the initialization process must be completed.</param>
-    /// <returns>true if the function succeeds, false otherwise.</returns>
-    private async Task<bool> NeighborhoodInitializationProcess(byte[] NeighborId, DateTime MustFinishBefore)
+    /// <returns>true if the neighborhood action responsible for executing this method should be removed, false otherwise.</returns>
+    private async Task<bool> NeighborhoodInitializationProcess(byte[] NeighborId, DateTime MustFinishBefore, int CurrentActionId)
     {
-      log.Trace("(NeighborId:'{0}',MustFinishBefore:{1})", NeighborId.ToHex(), MustFinishBefore.ToString("yyyy-MM-dd HH:mm:ss"));
+      log.Trace("(NeighborId:'{0}',MustFinishBefore:{1},CurrentActionId:{2})", NeighborId.ToHex(), MustFinishBefore.ToString("yyyy-MM-dd HH:mm:ss"), CurrentActionId);
 
       bool res = false;
 
@@ -430,6 +487,7 @@ namespace ProfileServer.Network
       DateTime safeDeadline = MustFinishBefore.AddSeconds(-90);
       log.Trace("Setting up safe deadline to {0}.", safeDeadline.ToString("yyyy-MM-dd HH:mm:ss"));
 
+      bool deleteNeighbor = false;
       IPEndPoint endPoint = await GetNeighborServerContact(NeighborId);
       if (endPoint != null)
       {
@@ -450,7 +508,7 @@ namespace ProfileServer.Network
                 {
                   if (DateTime.UtcNow > safeDeadline)
                   {
-                    log.Warn("Intialization process took too long, the safe deadline {0} has been reached.", safeDeadline.ToString("yyyy-MM-dd HH:mm:ss"));
+                    log.Warn("Intialization process took too long, the safe deadline {0} has been reached, will retry later.", safeDeadline.ToString("yyyy-MM-dd HH:mm:ss"));
                     error = true;
                     break;
                   }
@@ -479,56 +537,76 @@ namespace ProfileServer.Network
                             break;
 
                           default:
-                            log.Error("Invalid conversation request type '{0}' received.", conversationRequest.RequestTypeCase);
+                            log.Error("Invalid conversation request type '{0}' received, will retry later.", conversationRequest.RequestTypeCase);
                             error = true;
                             break;
                         }
                       }
                       else
                       {
-                        log.Warn("Invalid conversation type '{0}' received.", request.ConversationTypeCase);
+                        log.Warn("Invalid conversation type '{0}' received, will retry later.", request.ConversationTypeCase);
                         error = true;
                       }
                     }
                     else
                     {
-                      log.Warn("Invalid message type '{0}' received, expected Request.", requestMessage.MessageTypeCase);
+                      log.Warn("Invalid message type '{0}' received, expected Request, will retry later.", requestMessage.MessageTypeCase);
                       error = true;
                     }
 
                     // Send response to neighbor.
                     if (!await client.SendMessageAsync(responseMessage))
                     {
-                      log.Warn("Unable to send response to neighbor.");
+                      log.Warn("Unable to send response to neighbor, will retry later.");
                       error = true;
                       break;
                     }
                   }
                   else
                   {
-                    log.Warn("Connection has been terminated, initialization process has not been completed.");
+                    log.Warn("Connection has been terminated, initialization process has not been completed, will retry later.");
                     error = true;
                   }
                 }
 
                 res = !error;
               }
-              else 
+              else
               {
                 if (client.LastResponseStatus == Status.ErrorBusy)
                 {
                   // Target server is busy at the moment and does not want to talk to us about neighborhood initialization.
                   log.Debug("Neighbor ID '{0}' is busy now, let's try later.", NeighborId.ToHex());
                 }
-                else log.Warn("Starting the intialization process failed with neighbor ID '{0}'.", NeighborId.ToHex());
+                else log.Warn("Starting the intialization process failed with neighbor ID '{0}', will retry later.", NeighborId.ToHex());
               }
             }
-            else log.Warn("Server identity differs from expected ID '{0}'.", NeighborId.ToHex());
+            else
+            {
+              log.Warn("Server identity differs from expected ID '{0}', deleting this neighbor.", NeighborId.ToHex());
+              deleteNeighbor = true;
+            }
           }
-          else log.Warn("Unable to initiate conversation with neighbor ID '{0}' on address {1}.", NeighborId.ToHex(), endPoint);
+          else log.Warn("Unable to initiate conversation with neighbor ID '{0}' on address {1}, will retry later.", NeighborId.ToHex(), endPoint);
         }
       }
-      else log.Error("Unable to find neighbor ID '{0}' IP and port information.", NeighborId.ToHex());
+      else log.Warn("Unable to find neighbor ID '{0}' IP and port information, will retry later.", NeighborId.ToHex());
+
+      if (deleteNeighbor)
+      {
+        using (UnitOfWork unitOfWork = new UnitOfWork())
+        {
+          if (await unitOfWork.NeighborRepository.DeleteNeighbor(unitOfWork, NeighborId, CurrentActionId))
+          {
+            // Neighbor was deleted from the database, all its actions should be deleted 
+            // except for this one that is currently being executed.
+            // Nothing more to do here.
+            log.Info("Neighbor ID '{0}' has been deleted.", NeighborId.ToHex());
+            res = true;
+          }
+          else log.Error("Unable to delete neighbor ID '{0}' from database.", NeighborId.ToHex());
+        }
+      }
 
       log.Trace("(-):{0}", res);
       return res;
@@ -551,7 +629,7 @@ namespace ProfileServer.Network
         bool unlock = false;
         try
         {
-          Neighbor neighbor = (await unitOfWork.NeighborRepository.GetAsync(n => n.Id == NeighborId)).FirstOrDefault();
+          Neighbor neighbor = (await unitOfWork.NeighborRepository.GetAsync(n => n.NeighborId == NeighborId)).FirstOrDefault();
           if (neighbor != null)
           {
             IPAddress addr = IPAddress.Parse(neighbor.IpAddress);
@@ -575,7 +653,7 @@ namespace ProfileServer.Network
 
                 res = new IPEndPoint(addr, srNeighborPort);
               }
-              else log.Error("Unable to obtain srNeighbor port from primary port of neighbor ID '{0}'.", NeighborId.ToHex());
+              else log.Warn("Unable to obtain srNeighbor port from primary port of neighbor ID '{0}'.", NeighborId.ToHex());
             }
           }
           else log.Error("Unable to find neighbor ID '{0}' in the database.", NeighborId.ToHex());
@@ -609,7 +687,7 @@ namespace ProfileServer.Network
         bool unlock = false;
         try
         {
-          Follower follower = (await unitOfWork.FollowerRepository.GetAsync(f => f.Id == FollowerId)).FirstOrDefault();
+          Follower follower = (await unitOfWork.FollowerRepository.GetAsync(f => f.FollowerId == FollowerId)).FirstOrDefault();
           if (follower != null)
           {
             IPAddress addr = IPAddress.Parse(follower.IpAddress);
@@ -695,125 +773,132 @@ namespace ProfileServer.Network
     /// Neighbor can be removed either by message from LBN server, or due to its expiration.
     /// </summary>
     /// <param name="NeighborId">Network identifier of the former neighbor server.</param>
-    /// <returns>true if the function succeeds, false otherwise.</returns>
-    private async Task<bool> NeighborhoodRemoveNeighbor(byte[] NeighborId)
+    /// <param name="CurrentActionId">Identifier of the action being executed.</param>
+    /// <returns>true if the neighborhood action responsible for executing this method should be removed, false otherwise.</returns>
+    private async Task<bool> NeighborhoodRemoveNeighbor(byte[] NeighborId, int CurrentActionId)
     {
-      log.Trace("(NeighborId:'{0}')", NeighborId.ToHex());
+      log.Trace("(NeighborId:'{0}',CurrentActionId:{1})", NeighborId.ToHex(), CurrentActionId);
 
       bool res = false;
       List<Guid> imagesToDelete = new List<Guid>();
       using (UnitOfWork unitOfWork = new UnitOfWork())
       {
-        bool success = false;
+        Neighbor neighbor = (await unitOfWork.NeighborRepository.GetAsync(n => n.NeighborId == NeighborId, null, false)).FirstOrDefault();
+        string neighborInfo = JsonConvert.SerializeObject(neighbor);
 
-        // Disable change tracking for faster multiple deletes.
-        unitOfWork.Context.ChangeTracker.AutoDetectChangesEnabled = false;
+        // Delete neighbor completely.
+        res = await unitOfWork.NeighborRepository.DeleteNeighbor(unitOfWork, NeighborId, CurrentActionId);
 
-        // Delete neighbor from the list of neighbors.
-        DatabaseLock lockObject = UnitOfWork.NeighborLock;
+        // Add action that will contact the neighbor and ask it to stop sending updates.
+        // Note that the neighbor information will be deleted by the time this action 
+        // is executed and this is why we have to fill in AdditionalData.
+        NeighborhoodAction stopUpdatesAction = new NeighborhoodAction()
+        {
+          ServerId = NeighborId,
+          Type = NeighborhoodActionType.StopNeighborhoodUpdates,
+          TargetIdentityId = null,
+          ExecuteAfter = DateTime.UtcNow,
+          Timestamp = DateTime.UtcNow,
+          AdditionalData = neighborInfo
+        };
+
+        DatabaseLock lockObject = UnitOfWork.NeighborhoodActionLock;
         await unitOfWork.AcquireLockAsync(lockObject);
         try
         {
-          Neighbor neighbor = (await unitOfWork.NeighborRepository.GetAsync(n => n.Id == NeighborId)).FirstOrDefault();
-          if (neighbor != null)
-          {
-            unitOfWork.NeighborRepository.Delete(neighbor);
-            await unitOfWork.SaveThrowAsync();
-            success = true;
-            log.Debug("Neighbor ID '{0}' deleted from database.", NeighborId.ToHex());
-          }
-          else
-          {
-            log.Warn("Neighbor ID '{0}' not found.", NeighborId.ToHex());
-            // If the neighbor does not exist, we set success to true as the result of the operation is as we want it 
-            // and we gain nothing by trying to repeat the action later.
-            success = true;
-          }
+          unitOfWork.NeighborhoodActionRepository.Insert(stopUpdatesAction);
+
+          await unitOfWork.SaveThrowAsync();
         }
         catch (Exception e)
         {
           log.Error("Exception occurred: {0}", e.ToString());
         }
+
         unitOfWork.ReleaseLock(lockObject);
-
-        // Delete neighbor's profiles from the database.
-        if (success)
-        {
-          success = false;
-
-          lockObject = UnitOfWork.NeighborIdentityLock;
-          await unitOfWork.AcquireLockAsync(lockObject);
-          try
-          {
-            List<NeighborIdentity> identities = (await unitOfWork.NeighborIdentityRepository.GetAsync(i => i.HostingServerId == NeighborId)).ToList();
-            if (identities.Count > 0)
-            {
-              log.Debug("There are {0} identities of removed neighbor ID '{1}'.", identities.Count, NeighborId.ToHex());
-              foreach (NeighborIdentity identity in identities)
-              {
-                if (identity.ProfileImage != null) imagesToDelete.Add(identity.ProfileImage.Value);
-                if (identity.ThumbnailImage != null) imagesToDelete.Add(identity.ThumbnailImage.Value);
-
-                unitOfWork.NeighborIdentityRepository.Delete(identity);
-              }
-
-              await unitOfWork.SaveThrowAsync();
-              success = true;
-              log.Debug("{0} identities hosted on neighbor ID '{1}' deleted from database.", identities.Count, NeighborId.ToHex());
-            }
-            else
-            {
-              log.Trace("No profiles hosted on neighbor ID '{0}' found.", NeighborId.ToHex());
-              success = true;
-            }
-          }
-          catch (Exception e)
-          {
-            log.Error("Exception occurred: {0}", e.ToString());
-          }
-
-          unitOfWork.ReleaseLock(lockObject);
-        }
-
-        if (success)
-        {
-          success = false;
-          lockObject = UnitOfWork.NeighborhoodActionLock;
-          await unitOfWork.AcquireLockAsync(lockObject);
-          try
-          {
-            List<NeighborhoodAction> actions = unitOfWork.NeighborhoodActionRepository.Get(a => a.ServerId == NeighborId).ToList();
-            if (actions.Count > 0)
-            {
-              log.Debug("There are {0} neighborhood actions for removed neighbor ID '{1}'.", actions.Count, NeighborId.ToHex());
-              foreach (NeighborhoodAction action in actions)
-                unitOfWork.NeighborhoodActionRepository.Delete(action);
-
-              await unitOfWork.SaveThrowAsync();
-              success = true;
-              log.Debug("{0} neighborhood actions for neighbor ID '{1}' deleted from database.", actions.Count, NeighborId.ToHex());
-            }
-            else
-            {
-              log.Debug("No neighborhood actions for neighbor ID '{0}' found.", NeighborId.ToHex());
-              success = true;
-            }
-          }
-          catch (Exception e)
-          {
-            log.Error("Exception occurred: {0}", e.ToString());
-          }
-
-          unitOfWork.ReleaseLock(lockObject);
-        }
-
-        res = success;
       }
 
+      log.Trace("(-):{0}", res);
+      return res;
+    }
 
-      foreach (Guid guid in imagesToDelete)
-        if (!ImageHelper.DeleteImageFile(guid))
-          log.Warn("Unable to delete image file of image GUID '{0}'.", guid);
+
+
+    /// <summary>
+    /// Profile server removed neighbor server from its neighborhood and needs to contact it and ask it to stop sending updates.
+    /// </summary>
+    /// <param name="NeighborId">Network identifier of the former neighbor server.</param>
+    /// <param name="NeighborInfo">Serialized neighbor information.</param>
+    /// <returns>true if the neighborhood action responsible for executing this method should be removed, false otherwise.</returns>
+    private async Task<bool> NeighborhoodRequestStopUpdates(byte[] NeighborId, string NeighborInfo)
+    {
+      log.Trace("(NeighborId:'{0}',NeighborInfo:'{1}')", NeighborId.ToHex(), NeighborInfo);
+
+      bool res = false;
+
+      Neighbor neighbor = null;
+      IPAddress ipAddress = IPAddress.Any;
+      try
+      {
+        neighbor = JsonConvert.DeserializeObject<Neighbor>(NeighborInfo);
+        ipAddress = IPAddress.Parse(neighbor.IpAddress);
+      }
+      catch (Exception e)
+      {
+        log.Error("Exception occurred: {0}", e.ToString());
+      }
+
+      if (neighbor == null)
+      {
+        // Delete this action, it is corrupted.
+        log.Trace("(-)[ERROR]:true");
+        return true;
+      }
+
+      int srNeighborPort = neighbor.SrNeighborPort != null ? neighbor.SrNeighborPort.Value : 0;
+
+      if (srNeighborPort == 0)
+        srNeighborPort = await GetServerRolePortFromPrimaryPort(ipAddress, neighbor.PrimaryPort, ServerRoleType.SrNeighbor);
+
+      if (srNeighborPort != 0)
+      {
+        IPEndPoint endPoint = new IPEndPoint(ipAddress, srNeighborPort);
+        using (OutgoingClient client = new OutgoingClient(endPoint, true, ShutdownSignaling.ShutdownCancellationTokenSource.Token))
+        {
+          if (await client.ConnectAndVerifyIdentityAsync())
+          {
+            if (client.MatchServerId(NeighborId))
+            {
+              Message requestMessage = client.MessageBuilder.CreateStopNeighborhoodUpdatesRequest();
+              if (await client.SendStopNeighborhoodUpdates(requestMessage))
+              {
+                res = true;
+              }
+              else
+              {
+                if (client.LastResponseStatus == Status.ErrorNotFound)
+                {
+                  log.Info("Neighbor ID '{0}' does not register us as followers.", NeighborId.ToHex());
+                  // We do not expect this server to send us any more updates.
+                  res = true;
+                }
+                else log.Warn("Sending update to neighbor ID '{0}' failed, error status {1}, will retry later.", NeighborId.ToHex(), client.LastResponseStatus);
+              }
+            }
+            else
+            {
+              log.Warn("Server identity differs from expected ID '{0}'.", NeighborId.ToHex());
+              // This is not the server we want to send request to.
+              // We will do nothing and will not try again.
+              // It has been deleted from our database and if it sends us an update, 
+              // we will reject it.
+              res = true;
+            }
+          }
+          else log.Info("Unable to initiate conversation with neighbor ID '{0}' on address {1}, will retry later.", NeighborId.ToHex(), endPoint);
+        }
+      }
+      else log.Warn("Unable to find neighbor ID '{0}' IP and port information, will retry later.", NeighborId.ToHex());
 
       log.Trace("(-):{0}", res);
       return res;
@@ -827,10 +912,11 @@ namespace ProfileServer.Network
     /// <param name="IdentityId">Identifier of the identity which profile has changed.</param>
     /// <param name="ActionType">Type of profile change action.</param>
     /// <param name="AdditionalData">Additional action data or null if action has no additional data.</param>
-    /// <returns>true if the function succeeds, false otherwise.</returns>
-    private async Task<bool> NeighborhoodProfileUpdate(byte[] FollowerId, byte[] IdentityId, NeighborhoodActionType ActionType, string AdditionalData)
+    /// <param name="ActionId">Identifier of the neighborhood action currently being executed.</param>
+    /// <returns>true if the neighborhood action responsible for executing this method should be removed, false otherwise.</returns>
+    private async Task<bool> NeighborhoodProfileUpdate(byte[] FollowerId, byte[] IdentityId, NeighborhoodActionType ActionType, string AdditionalData, int ActionId)
     {
-      log.Trace("(FollowerId:'{0}',IdentityId:'{1}',ActionType:{2},AdditionalData:'{3}')", FollowerId.ToHex(), IdentityId.ToHex(), ActionType, AdditionalData);
+      log.Trace("(FollowerId:'{0}',IdentityId:'{1}',ActionType:{2},AdditionalData:'{3}',ActionId:{4})", FollowerId.ToHex(), IdentityId.ToHex(), ActionType, AdditionalData, ActionId);
 
       bool res = false;
 
@@ -950,6 +1036,8 @@ namespace ProfileServer.Network
 
         if (updateItem != null)
         {
+          bool deleteFollower = false;
+
           using (OutgoingClient client = new OutgoingClient(endPoint, true, ShutdownSignaling.ShutdownCancellationTokenSource.Token))
           {
             // If we successfully constructed the update for the follower server, we connect to it and send it.
@@ -969,15 +1057,44 @@ namespace ProfileServer.Network
 
                   res = true;
                 }
-                else log.Error("Sending update to follower ID '{0}' failed.", FollowerId.ToHex());
+                else
+                {
+                  if (client.LastResponseStatus == Status.ErrorRejected)
+                  {
+                    log.Info("Follower ID '{0}' rejected an update, deleting this follower.", FollowerId.ToHex());
+                    deleteFollower = true;
+                  }
+                  else log.Warn("Sending update to follower ID '{0}' failed, error status {1}, will retry later.", FollowerId.ToHex(), client.LastResponseStatus);
+                }
               }
-              else log.Error("Server identity differs from expected ID '{0}'.", FollowerId.ToHex());
+              else
+              {
+                log.Warn("Server identity differs from expected ID '{0}', deleting this follower.", FollowerId.ToHex());
+                deleteFollower = true;
+              }
             }
-            else log.Warn("Unable to initiate conversation with follower ID '{0}' on address {1}.", FollowerId.ToHex(), endPoint);
+            else log.Info("Unable to initiate conversation with follower ID '{0}' on address {1}, will retry later.", FollowerId.ToHex(), endPoint);
+          }
+
+          if (deleteFollower)
+          {
+            using (UnitOfWork unitOfWork = new UnitOfWork())
+            {
+              Status status = await unitOfWork.FollowerRepository.DeleteFollower(unitOfWork, FollowerId, ActionId);
+              if ((status == Status.Ok) || (status == Status.ErrorNotFound))
+              {
+                // Follower was deleted from the database, all its actions should be deleted 
+                // except for this one that is currently being executed.
+                // Nothing more to do here.
+                log.Info("Follower ID '{0}' has been deleted.", FollowerId.ToHex());
+                res = true;
+              }
+              else log.Error("Unable to delete follower ID '{0}' from database.", FollowerId.ToHex());
+            }
           }
         }
       }
-      else log.Error("Unable to find follower ID '{0}' IP and port information.", FollowerId.ToHex());
+      else log.Warn("Unable to find follower ID '{0}' IP and port information, will retry later.", FollowerId.ToHex());
 
       log.Trace("(-):{0}", res);
       return res;
@@ -999,6 +1116,7 @@ namespace ProfileServer.Network
       Message res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
 
       NeighborhoodSharedProfileUpdateRequest neighborhoodSharedProfileUpdateRequest = RequestMessage.Request.ConversationRequest.NeighborhoodSharedProfileUpdate;
+      log.Debug("Received {0} update items.", neighborhoodSharedProfileUpdateRequest.Items.Count);
 
       bool error = false;
       int itemIndex = 0;
@@ -1250,7 +1368,7 @@ namespace ProfileServer.Network
           {
             try
             {
-              Neighbor neighbor = (await unitOfWork.NeighborRepository.GetAsync(n => n.Id == Client.ServerId)).FirstOrDefault();
+              Neighbor neighbor = (await unitOfWork.NeighborRepository.GetAsync(n => n.NeighborId == Client.ServerId)).FirstOrDefault();
               if (neighbor != null)
               {
                 // The neighbor is now initialized and is allowed to send us updates.
@@ -1332,7 +1450,7 @@ namespace ProfileServer.Network
         await unitOfWork.AcquireLockAsync(lockObject);
         try
         {
-          Follower follower = (await unitOfWork.FollowerRepository.GetAsync(f => f.Id == FollowerId)).FirstOrDefault();
+          Follower follower = (await unitOfWork.FollowerRepository.GetAsync(f => f.FollowerId == FollowerId)).FirstOrDefault();
           if (follower != null)
           {
             follower.LastRefreshTime = DateTime.UtcNow;

@@ -7,6 +7,7 @@ using System.Threading;
 using ProfileServer.Utils;
 using ProfileServer.Data.Models;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ProfileServer.Data
 {
@@ -113,31 +114,43 @@ namespace ProfileServer.Data
       bool res = false;
       using (UnitOfWork unitOfWork = new UnitOfWork())
       {
+        List<Neighbor> neighborsToDelete = null;
+
         DatabaseLock lockObject = UnitOfWork.NeighborLock;
         unitOfWork.AcquireLock(lockObject);
         try
         {
-          List<Neighbor> neighbors = unitOfWork.NeighborRepository.Get(n => n.LastRefreshTime == null).ToList();
-          if (neighbors.Count > 0)
-          {
-            log.Debug("Removing {0} uninitialized neighbors.", neighbors.Count);
-            foreach (Neighbor neighbor in neighbors)
-              unitOfWork.NeighborRepository.Delete(neighbor);
-
-            res = unitOfWork.Save();
-          }
-          else
-          {
-            res = true;
-            log.Debug("No uninitialized neighbors found.");
-          }
+          neighborsToDelete = unitOfWork.NeighborRepository.Get(n => n.LastRefreshTime == null).ToList();
         }
         catch (Exception e)
         {
           log.Error("Exception occurred: {0}", e.ToString());
         }
-
         unitOfWork.ReleaseLock(lockObject);
+
+        // Delete neighbor completely.
+        if (neighborsToDelete.Count > 0)
+        {
+          bool error = false;
+          log.Debug("Removing {0} uninitialized neighbors.", neighborsToDelete.Count);
+          foreach (Neighbor neighbor in neighborsToDelete)
+          {
+            Task<bool> task = unitOfWork.NeighborRepository.DeleteNeighbor(unitOfWork, neighbor.NeighborId);
+            if (!task.Result)
+            {
+              log.Error("Unable to delete neighbor ID '{0}' from the database.", neighbor.NeighborId.ToHex());
+              error = true;
+              break;
+            }
+          }
+
+          res = !error;
+        }
+        else
+        {
+          res = true;
+          log.Debug("No uninitialized neighbors found.");
+        }
       }
 
       log.Info("(-):{0}", res);
@@ -164,35 +177,33 @@ namespace ProfileServer.Data
         unitOfWork.AcquireLock(lockObjects);
         try
         {
-          List<byte[]> neighborIds = unitOfWork.NeighborRepository.Get(null, null, true).Select(n => n.Id).ToList();
+          List<byte[]> neighborIds = unitOfWork.NeighborRepository.Get(null, null, true).Select(n => n.NeighborId).ToList();
           HashSet<byte[]> neighborIdsHashSet = new HashSet<byte[]>(neighborIds, StructuralEqualityComparer<byte[]>.Default); 
           List<NeighborIdentity> identities = unitOfWork.NeighborIdentityRepository.Get(null, null, true).ToList();
 
-          List<NeighborIdentity> identitiesToDelete = new List<NeighborIdentity>();
+          bool saveDb = false;
+          int deleteCounter = 0;
           foreach (NeighborIdentity identity in identities)
           {
-            if (!neighborIdsHashSet.Contains(identity.IdentityId))
-              identitiesToDelete.Add(identity);
-          }
-
-          if (identitiesToDelete.Count > 0)
-          {
-            log.Debug("Removing {0} identities without existing neighbor server.", identitiesToDelete.Count);
-            foreach (NeighborIdentity identity in identitiesToDelete)
+            if (!neighborIdsHashSet.Contains(identity.HostingServerId))
             {
               if (identity.ProfileImage != null) imagesToDelete.Add(identity.ProfileImage.Value);
               if (identity.ThumbnailImage != null) imagesToDelete.Add(identity.ThumbnailImage.Value);
 
               unitOfWork.NeighborIdentityRepository.Delete(identity);
+              saveDb = true;
+              deleteCounter++;
             }
+          }
 
-            res = unitOfWork.Save();
-          }
-          else
+          if (saveDb)
           {
-            log.Debug("No identities without existing neighbor server found.");
-            res = true;
+            log.Debug("Removing {0} identities without existing neighbor server.", deleteCounter);
+
+            unitOfWork.SaveThrow();
           }
+          else log.Debug("No identities without existing neighbor server found.");
+          res = true;
         }
         catch (Exception e)
         {
@@ -226,10 +237,10 @@ namespace ProfileServer.Data
         unitOfWork.AcquireLock(lockObjects);
         try
         {
-          List<byte[]> neighborIds = unitOfWork.NeighborRepository.Get().Select(n => n.Id).ToList();
+          List<byte[]> neighborIds = unitOfWork.NeighborRepository.Get().Select(n => n.NeighborId).ToList();
           HashSet<byte[]> neighborIdsHashSet = new HashSet<byte[]>(neighborIds, StructuralEqualityComparer<byte[]>.Default);
 
-          List<byte[]> followerIds = unitOfWork.FollowerRepository.Get().Select(f => f.Id).ToList();
+          List<byte[]> followerIds = unitOfWork.FollowerRepository.Get().Select(f => f.FollowerId).ToList();
           HashSet<byte[]> followerIdsHashSet = new HashSet<byte[]>(followerIds, StructuralEqualityComparer<byte[]>.Default);
 
           List<NeighborhoodAction> actions = unitOfWork.NeighborhoodActionRepository.Get().ToList();

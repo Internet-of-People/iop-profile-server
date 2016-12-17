@@ -17,6 +17,8 @@ namespace ProfileServer
     public static void Main(string[] args)
     {
       log.Info("()");
+      Console.WriteLine("Initializing ...");
+
       if (Base.Init())
       {
         Console.WriteLine("Profile server is running now.");

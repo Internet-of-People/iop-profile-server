@@ -37,6 +37,10 @@ namespace ProfileServer.Data.Models
     public const int MaxSignatureLengthBytes = 100;
 
 
+    /// <summary>Unique primary key for the database.</summary>
+    /// <remarks>This is primary key - see ProfileServer.Data.Context.OnModelCreating.</remarks>
+    [Required]
+    public int DbId { get; set; }
 
     /// <summary>Identifier of the hosted identity.</summary>
     /// <remarks>This is part of the key and index - see ProfileServer.Data.Context.OnModelCreating.</remarks>

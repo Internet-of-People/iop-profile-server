@@ -18,8 +18,11 @@ namespace ProfileServer.Migrations
 
             modelBuilder.Entity("ProfileServer.Data.Models.Follower", b =>
                 {
-                    b.Property<byte[]>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("DbId")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<byte[]>("FollowerId")
+                        .IsRequired()
                         .HasMaxLength(32);
 
                     b.Property<string>("IpAddress")
@@ -31,9 +34,9 @@ namespace ProfileServer.Migrations
 
                     b.Property<int?>("SrNeighborPort");
 
-                    b.HasKey("Id");
+                    b.HasKey("DbId");
 
-                    b.HasIndex("Id")
+                    b.HasIndex("FollowerId")
                         .IsUnique();
 
                     b.HasIndex("LastRefreshTime");
@@ -45,9 +48,8 @@ namespace ProfileServer.Migrations
 
             modelBuilder.Entity("ProfileServer.Data.Models.HostedIdentity", b =>
                 {
-                    b.Property<byte[]>("IdentityId")
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(32);
+                    b.Property<int>("DbId")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<DateTime?>("ExpirationDate");
 
@@ -56,6 +58,10 @@ namespace ProfileServer.Migrations
                         .HasMaxLength(200);
 
                     b.Property<byte[]>("HostingServerId")
+                        .HasMaxLength(32);
+
+                    b.Property<byte[]>("IdentityId")
+                        .IsRequired()
                         .HasMaxLength(32);
 
                     b.Property<decimal>("InitialLocationLatitude")
@@ -84,7 +90,7 @@ namespace ProfileServer.Migrations
                         .IsRequired()
                         .HasMaxLength(3);
 
-                    b.HasKey("IdentityId");
+                    b.HasKey("DbId");
 
                     b.HasIndex("ExpirationDate");
 
@@ -106,9 +112,8 @@ namespace ProfileServer.Migrations
 
             modelBuilder.Entity("ProfileServer.Data.Models.Neighbor", b =>
                 {
-                    b.Property<byte[]>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(32);
+                    b.Property<int>("DbId")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("IpAddress")
                         .IsRequired();
@@ -121,16 +126,20 @@ namespace ProfileServer.Migrations
                     b.Property<decimal>("LocationLongitude")
                         .HasColumnType("decimal(9,6)");
 
+                    b.Property<byte[]>("NeighborId")
+                        .IsRequired()
+                        .HasMaxLength(32);
+
                     b.Property<int>("PrimaryPort");
 
                     b.Property<int?>("SrNeighborPort");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("Id")
-                        .IsUnique();
+                    b.HasKey("DbId");
 
                     b.HasIndex("LastRefreshTime");
+
+                    b.HasIndex("NeighborId")
+                        .IsUnique();
 
                     b.HasIndex("IpAddress", "PrimaryPort");
 
@@ -179,17 +188,22 @@ namespace ProfileServer.Migrations
 
             modelBuilder.Entity("ProfileServer.Data.Models.NeighborIdentity", b =>
                 {
-                    b.Property<byte[]>("IdentityId")
-                        .HasMaxLength(32);
-
-                    b.Property<byte[]>("HostingServerId")
-                        .HasMaxLength(32);
+                    b.Property<int>("DbId")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<DateTime?>("ExpirationDate");
 
                     b.Property<string>("ExtraData")
                         .IsRequired()
                         .HasMaxLength(200);
+
+                    b.Property<byte[]>("HostingServerId")
+                        .IsRequired()
+                        .HasMaxLength(32);
+
+                    b.Property<byte[]>("IdentityId")
+                        .IsRequired()
+                        .HasMaxLength(32);
 
                     b.Property<decimal>("InitialLocationLatitude")
                         .HasColumnType("decimal(9,6)");
@@ -217,9 +231,7 @@ namespace ProfileServer.Migrations
                         .IsRequired()
                         .HasMaxLength(3);
 
-                    b.HasKey("IdentityId", "HostingServerId");
-
-                    b.HasIndex("ExpirationDate");
+                    b.HasKey("DbId");
 
                     b.HasIndex("ExtraData");
 
@@ -229,22 +241,23 @@ namespace ProfileServer.Migrations
 
                     b.HasIndex("Type");
 
-                    b.HasIndex("IdentityId", "HostingServerId")
+                    b.HasIndex("HostingServerId", "IdentityId")
                         .IsUnique();
 
                     b.HasIndex("InitialLocationLatitude", "InitialLocationLongitude");
 
                     b.HasIndex("InitialLocationLatitude", "InitialLocationLongitude", "Type", "Name");
 
-                    b.ToTable("NeighborhoodIdentities");
+                    b.ToTable("NeighborIdentities");
                 });
 
             modelBuilder.Entity("ProfileServer.Data.Models.RelatedIdentity", b =>
                 {
-                    b.Property<byte[]>("IdentityId")
-                        .HasMaxLength(32);
+                    b.Property<int>("DbId")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<byte[]>("ApplicationId")
+                        .IsRequired()
                         .HasMaxLength(32);
 
                     b.Property<byte[]>("CardId")
@@ -254,6 +267,10 @@ namespace ProfileServer.Migrations
                     b.Property<byte[]>("CardVersion")
                         .IsRequired()
                         .HasMaxLength(3);
+
+                    b.Property<byte[]>("IdentityId")
+                        .IsRequired()
+                        .HasMaxLength(32);
 
                     b.Property<byte[]>("IssuerPublicKey")
                         .IsRequired()
@@ -283,7 +300,7 @@ namespace ProfileServer.Migrations
 
                     b.Property<DateTime>("ValidTo");
 
-                    b.HasKey("IdentityId", "ApplicationId");
+                    b.HasKey("DbId");
 
                     b.HasIndex("RelatedToIdentityId");
 

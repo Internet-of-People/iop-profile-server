@@ -1,5 +1,6 @@
 ﻿using Google.Protobuf;
 using Iop.Profileserver;
+using ProfileServerCrypto;
 using ProfileServerProtocol;
 using System;
 using System.Collections.Generic;
@@ -102,6 +103,9 @@ namespace ProfileServerNetworkSimulator
     /// <summary>Node profile in LBN.</summary>
     private Iop.Locnet.NodeProfile nodeProfile;
 
+    /// <summary>Network ID of the profile server.</summary>
+    private byte[] networkId;
+
     /// <summary>Node location in LBN.</summary>
     private Iop.Locnet.GpsLocation nodeLocation;
 
@@ -147,6 +151,25 @@ namespace ProfileServerNetworkSimulator
 
 
     /// <summary>
+    /// Returns instance directory for the profile server instance.
+    /// </summary>
+    /// <returns>Instance directory for the profile server instance.</returns>
+    public string GetInstanceDirectoryName()
+    {
+      return GetInstanceDirectoryName(name);
+    }
+
+    /// <summary>
+    /// Returns instance directory for the profile server instance.
+    /// </summary>
+    /// <param name="InstanceName">Name of the profile server instance.</param>
+    /// <returns>Instance directory for the profile server instance.</returns>
+    public static string GetInstanceDirectoryName(string InstanceName)
+    {
+      return Path.Combine(CommandProcessor.InstanceDirectory, "Ps-" + InstanceName);
+    }
+
+    /// <summary>
     /// Initialize a new instance of a profile server.
     /// </summary>
     /// <returns>true if the function succeeds, false otherwise.</returns>
@@ -158,7 +181,7 @@ namespace ProfileServerNetworkSimulator
 
       try
       {
-        instanceDirectory = Path.Combine(CommandProcessor.InstanceDirectory, "Ps-" + name);
+        instanceDirectory = GetInstanceDirectoryName();
         Directory.CreateDirectory(instanceDirectory);
 
         if (Helpers.DirectoryCopy(CommandProcessor.ProfileServerBinariesDirectory, instanceDirectory))
@@ -255,7 +278,7 @@ namespace ProfileServerNetworkSimulator
       if (runningProcess != null)
       {
         log.Trace("Waiting for profile server to start ...");
-        if (serverProcessInitializationCompleteEvent.WaitOne(20 * 1000))
+        if (serverProcessInitializationCompleteEvent.WaitOne(60 * 1000))
         {
           res = true;
         }
@@ -280,11 +303,25 @@ namespace ProfileServerNetworkSimulator
       if (runningProcess != null)
       {
         log.Trace("Instance process is running, stopping it now.");
-        res = StopProcess();
+        if (StopProcess())
+        {
+          RemoveNodeProfile();
+          res = true;
+        }
       }
 
       log.Trace("(-):{0}", res);
       return res;
+    }
+
+
+    /// <summary>
+    /// Checks whether the profile server process is running.
+    /// </summary>
+    /// <returns>true if the profile server process is running.</returns>
+    public bool IsRunningProcess()
+    {
+      return runningProcess != null;
     }
 
     /// <summary>
@@ -306,7 +343,7 @@ namespace ProfileServerNetworkSimulator
           sw.Write(inputData);
         }
 
-        if (runningProcess.WaitForExit(10 * 1000))
+        if (runningProcess.WaitForExit(20 * 1000))
         {
           res = true;
         }
@@ -316,7 +353,11 @@ namespace ProfileServerNetworkSimulator
           res = Helpers.KillProcess(runningProcess);
         }
 
-        if (res) runningProcess = null;
+        if (res)
+        {
+          serverProcessInitializationCompleteEvent.Reset();
+          runningProcess = null;
+        }
       }
       catch (Exception e)
       {
@@ -356,8 +397,15 @@ namespace ProfileServerNetworkSimulator
         process.OutputDataReceived += new DataReceivedEventHandler(ProcessOutputHandler);
         process.ErrorDataReceived += new DataReceivedEventHandler(ProcessOutputHandler);
 
-        process.Start();
-        processIsRunning = true;
+        if (process.Start())
+        {
+          processIsRunning = true;
+        }
+        else
+        {
+          log.Error("New process was not started.");
+          error = true;
+        }
       }
       catch (Exception e)
       {
@@ -386,7 +434,7 @@ namespace ProfileServerNetworkSimulator
       }
 
       Process res = !error ? process : null;
-      log.Trace("(-)");
+      log.Trace("(-):{0}", res != null ? "Process" : "null");
       return res;
     }
 
@@ -433,6 +481,15 @@ namespace ProfileServerNetworkSimulator
       log.Trace("(-)");
     }
 
+    /// <summary>
+    /// Adds a new identity client to the profile servers identity client list when initializing from snapshot.
+    /// </summary>
+    /// <param name="Client">Identity client that the profile server is going to host.</param>
+    public void AddIdentityClientSnapshot(IdentityClient Client)
+    {
+      hostedIdentities.Add(Client);
+    }
+
 
     /// <summary>
     /// Sets profile server's node profile.
@@ -446,6 +503,8 @@ namespace ProfileServerNetworkSimulator
       lock (internalLock)
       {
         nodeProfile = NodeProfile;
+        networkId = nodeProfile.NodeId.ToByteArray();
+
         if (initializationNeighborhoodNotificationList.Count != 0)
         {
           serversToNotify = initializationNeighborhoodNotificationList.ToList();
@@ -482,19 +541,18 @@ namespace ProfileServerNetworkSimulator
     /// Obtains server's network identifier.
     /// </summary>
     /// <returns>Profile server's network ID.</returns>
-    public Google.Protobuf.ByteString GetNetworkId()
+    public byte[] GetNetworkId()
     {
       log.Trace("()");
 
-      Google.Protobuf.ByteString res = null;
+      byte[] res = null;
 
       lock (internalLock)
       {
-        if (nodeProfile != null)
-          res = nodeProfile.NodeId;
+        res = networkId;
       }
 
-      log.Trace("(-):{0}", res != null ? ProfileServerCrypto.Crypto.ToHex(res.ToByteArray()) : "null");
+      log.Trace("(-):{0}", res != null ? ProfileServerCrypto.Crypto.ToHex(res) : "null");
       return res;
     }
 
@@ -519,6 +577,30 @@ namespace ProfileServerNetworkSimulator
     }
 
     /// <summary>
+    /// Acquires internal lock of the profile server.
+    /// </summary>
+    public void Lock()
+    {
+      log.Trace("()");
+
+      Monitor.Enter(internalLock);
+
+      log.Trace("(-)");
+    }
+
+    /// <summary>
+    /// Releases internal lock of the profile server.
+    /// </summary>
+    public void Unlock()
+    {
+      log.Trace("()");
+
+      Monitor.Exit(internalLock);
+
+      log.Trace("(-)");
+    }
+
+    /// <summary>
     /// Returns NodeInfo structure of the profile server.
     /// </summary>
     /// <returns>NodeInfo structure of the profile server.</returns>
@@ -531,12 +613,12 @@ namespace ProfileServerNetworkSimulator
       {
         res = new Iop.Locnet.NodeInfo()
         {
-          Profile = this.nodeProfile,
-          Location = this.nodeLocation
+          Profile = nodeProfile,
+          Location = nodeLocation
         };
       }
 
-      log.Trace("(-):{0}", res != null ? "NodeInfo" : "null");
+      log.Trace("(-)");
       return res;
     }
 
@@ -581,17 +663,20 @@ namespace ProfileServerNetworkSimulator
     /// <param name="LogDirectory">If the function succeeds, this is filled with the name of the log directory of the profile server instance.</param>
     /// <param name="FileNames">If the function succeeds, this is filled with log file names.</param>
     /// <param name="ErrorCount">If the function succeeds, this is filled with number of errors found in log files.</param>
+    /// <param name="WarningCount">If the function succeeds, this is filled with number of warnings found in log files.</param>
     /// <returns>true if the function succeeds, false otherwise.</returns>
-    public bool CheckLogs(out string LogDirectory, out List<string> FileNames, out List<int> ErrorCount)
+    public bool CheckLogs(out string LogDirectory, out List<string> FileNames, out List<int> ErrorCount, out List<int> WarningCount)
     {
       log.Trace("()");
 
       FileNames = null;
       ErrorCount = null;
+      WarningCount = null;
       LogDirectory = null;
 
       List<string> fileNames = new List<string>();
       List<int> errorCount = new List<int>();
+      List<int> warningCount = new List<int>();
       string logDirectory = Path.Combine(instanceDirectory, "Logs");
       bool error = false;
       try
@@ -599,11 +684,13 @@ namespace ProfileServerNetworkSimulator
         string[] files = Directory.GetFiles(logDirectory, "*.txt", SearchOption.TopDirectoryOnly);
         foreach (string file in files)
         {
-          int count = 0;
-          if (CheckLogFile(file, out count))
+          int errCount = 0;
+          int warnCount = 0;
+          if (CheckLogFile(file, out errCount, out warnCount))
           {
             fileNames.Add(Path.GetFileName(file));
-            errorCount.Add(count);
+            errorCount.Add(errCount);
+            warningCount.Add(warnCount);
           }
           else
           {
@@ -622,6 +709,7 @@ namespace ProfileServerNetworkSimulator
       {
         FileNames = fileNames;
         ErrorCount = errorCount;
+        WarningCount = warningCount;
         LogDirectory = instanceDirectory;
       }
 
@@ -635,25 +723,32 @@ namespace ProfileServerNetworkSimulator
     /// </summary>
     /// <param name="FileName">Name of the log file to check.</param>
     /// <param name="ErrorCount">If the function succeeds, this is filled with number of errors found in the log file.</param>
+    /// <param name="WarningCount">If the function succeeds, this is filled with number of warnings found in the log file.</param>
     /// <returns>true if the function succeeds, false otherwise.</returns>
-    public bool CheckLogFile(string FileName, out int ErrorCount)
+    public bool CheckLogFile(string FileName, out int ErrorCount, out int WarningCount)
     {
       log.Trace("(FileName:'{0}')", FileName);
 
       bool res = false;
       ErrorCount = 0;
+      WarningCount = 0;
       try
       {
         int errors = 0;
+        int warnings = 0;
         string[] lines = File.ReadAllLines(FileName);
         for (int i = 0; i < lines.Length; i++)
         {
           string line = lines[i];
           if (line.Contains("] ERROR:"))
             errors++;
+
+          if (line.Contains("] WARN:") && (!line.Contains("WARN: ProfileServer.Utils.DbLogger.Log Sensitive data logging is enabled")))
+            warnings++;
         }
 
         ErrorCount = errors;
+        WarningCount = warnings;
         res = true;
       }
       catch (Exception e)
@@ -661,7 +756,7 @@ namespace ProfileServerNetworkSimulator
         log.Error("Unable to analyze logs, exception occurred: {0}", e.ToString());
       }
 
-      log.Trace("(-):{0},ErrorCount={1}", res, ErrorCount);
+      log.Trace("(-):{0},ErrorCount={1},WarningCount={1}", res, ErrorCount, WarningCount);
       return res;
     }
 
@@ -675,14 +770,19 @@ namespace ProfileServerNetworkSimulator
     /// <param name="Radius">If <paramref name="LocationFilter"/> is not null, this is the radius of the target area.</param>
     /// <param name="IncludeHostedOnly">If set to true, the search results should only include profiles hosted on the queried profile server.</param>
     /// <param name="IncludeImages">If set to true, the search results should include images.</param>
+    /// <param name="ExpectedCoveredServers">If the function succeeds, this is filled with list of covered servers that the search query should return.</param>
+    /// <param name="LocalServerResultsCount">If the function succeeds, this is filled with the number of search results obtained from the local server.</param>
     /// <returns>List of profiles that match the given criteria or null if the function fails.</returns>
-    public List<IdentityNetworkProfileInformation> GetExpectedSearchResults(string NameFilter, string TypeFilter, GpsLocation LocationFilter, int Radius, bool IncludeHostedOnly, bool IncludeImages)
+    public List<IdentityNetworkProfileInformation> GetExpectedSearchResults(string NameFilter, string TypeFilter, GpsLocation LocationFilter, int Radius, bool IncludeHostedOnly, bool IncludeImages, out List<byte[]> ExpectedCoveredServers, out int LocalServerResultsCount)
     {
       log.Trace("(NameFilter:'{0}',TypeFilter:'{1}',LocationFilter:'{2}',Radius:{3},IncludeHostedOnly:{4},IncludeImages:{5})", NameFilter, TypeFilter, LocationFilter, Radius, IncludeHostedOnly, IncludeImages);
 
       List<IdentityNetworkProfileInformation> res = new List<IdentityNetworkProfileInformation>();
+      ExpectedCoveredServers = new List<byte[]>();
+      ExpectedCoveredServers.Add(networkId);
 
       List<IdentityNetworkProfileInformation> localResults = SearchQuery(NameFilter, TypeFilter, LocationFilter, Radius, IncludeImages);
+      LocalServerResultsCount = localResults.Count;
 
       foreach (IdentityNetworkProfileInformation localResult in localResults)
       {
@@ -697,7 +797,8 @@ namespace ProfileServerNetworkSimulator
         List<ProfileServer> neighbors = LbnServer.GetNeighbors();
         foreach (ProfileServer neighbor in neighbors)
         {
-          ByteString neighborId = neighbor.GetNetworkId();
+          ByteString neighborId = ProtocolHelper.ByteArrayToByteString(neighbor.GetNetworkId());
+          ExpectedCoveredServers.Add(neighborId.ToByteArray());
           List<IdentityNetworkProfileInformation> neighborResults = neighbor.SearchQuery(NameFilter, TypeFilter, LocationFilter, Radius, IncludeImages);
           foreach (IdentityNetworkProfileInformation neighborResult in neighborResults)
           {
@@ -742,5 +843,75 @@ namespace ProfileServerNetworkSimulator
       return res;
     }
 
+
+    /// <summary>
+    /// Creates profile server's snapshot.
+    /// </summary>
+    /// <returns>Profile server's snapshot.</returns>
+    public ProfileServerSnapshot CreateSnapshot()
+    {
+      ProfileServerSnapshot res = new ProfileServerSnapshot()
+      {
+        AvailableIdentitySlots = this.availableIdentitySlots,
+        BasePort = this.basePort,
+        ClientAppServiceInterfacePort = this.clientAppServiceInterfacePort,
+        ClientCustomerInterfacePort = this.clientCustomerInterfacePort,
+        ClientNonCustomerInterfacePort = this.clientNonCustomerInterfacePort,
+        HostedIdentities = this.hostedIdentities.Select(i => i.Name).ToList(),
+        IpAddress = this.ipAddress.ToString(),
+        IsRunning = false,
+        LbnPort = this.lbnPort,
+        LbnServer = this.lbnServer.CreateSnapshot(),
+        LocationLatitude = this.location.Latitude,
+        LocationLongitude = this.location.Longitude,
+        Name = this.name,
+        NetworkId = Crypto.ToHex(this.networkId),
+        PrimaryInterfacePort = this.primaryInterfacePort,
+        ServerNeighborInterfacePort = this.serverNeighborInterfacePort        
+      };
+      return res;
+    }
+
+
+    /// <summary>
+    /// Creates instance of profile server from snapshot.
+    /// </summary>
+    /// <param name="Snapshot">Profile server snapshot.</param>
+    /// <returns>New profile server instance.</returns>
+    public static ProfileServer CreateFromSnapshot(ProfileServerSnapshot Snapshot)
+    {
+      ProfileServer res = new ProfileServer(Snapshot.Name, new GpsLocation(Snapshot.LocationLatitude, Snapshot.LocationLongitude), Snapshot.BasePort);
+
+      res.availableIdentitySlots = Snapshot.AvailableIdentitySlots;
+      res.clientAppServiceInterfacePort = Snapshot.ClientAppServiceInterfacePort;
+      res.clientCustomerInterfacePort = Snapshot.ClientCustomerInterfacePort;
+      res.clientNonCustomerInterfacePort = Snapshot.ClientNonCustomerInterfacePort;
+      res.ipAddress = IPAddress.Parse(Snapshot.IpAddress);
+      res.lbnPort = Snapshot.LbnPort;
+      res.networkId = Crypto.FromHex(Snapshot.NetworkId);
+      res.primaryInterfacePort = Snapshot.PrimaryInterfacePort;
+      res.serverNeighborInterfacePort = Snapshot.ServerNeighborInterfacePort;
+      res.instanceDirectory = res.GetInstanceDirectoryName();
+      res.lbnServer = new LbnServer(res);
+
+      byte[] ipBytes = res.ipAddress.GetAddressBytes();
+      Iop.Locnet.Contact contact = new Iop.Locnet.Contact();
+      Iop.Locnet.IpAddress ipAddress = new Iop.Locnet.IpAddress()
+      {
+        Host = ProtocolHelper.ByteArrayToByteString(ipBytes),
+        Port = (uint)res.primaryInterfacePort
+      };
+
+      if (res.ipAddress.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork) contact.Ipv4 = ipAddress;
+      else contact.Ipv6 = ipAddress;
+
+      res.nodeProfile = new Iop.Locnet.NodeProfile()
+      {
+        NodeId = ProtocolHelper.ByteArrayToByteString(res.networkId),
+        Contact = contact
+      };
+
+      return res;
+    }
   }
 }

@@ -198,7 +198,7 @@ namespace ProfileServerProtocol
       catch (Exception e)
       {
         if ((e is ObjectDisposedException) || (e is IOException)) log.Debug("Connection to client has been terminated.");
-        else if (e is TaskCanceledException) log.Debug("Shutdown detected.");
+        else if (e is TaskCanceledException) log.Debug("Timeout or shutdown detected.");
         else log.Error("Exception occurred: {0}", e.ToString());
       }
 

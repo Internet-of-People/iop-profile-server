@@ -138,14 +138,14 @@ namespace ProfileServer.Data
 
 
     /// <summary>Repository of profile server neighbors.</summary>
-    private GenericRepository<Neighbor> neighborRepository;
+    private NeighborRepository neighborRepository;
     /// <summary>Repository of profile server neighbors.</summary>
-    public GenericRepository<Neighbor> NeighborRepository
+    public NeighborRepository NeighborRepository
     {
       get
       {
         if (neighborRepository == null)
-          neighborRepository = new GenericRepository<Neighbor>(Context);
+          neighborRepository = new NeighborRepository(Context);
 
         return neighborRepository;
       }
@@ -167,14 +167,14 @@ namespace ProfileServer.Data
 
 
     /// <summary>Repository of profile server followers.</summary>
-    private GenericRepository<Follower> followerRepository;
+    private FollowerRepository followerRepository;
     /// <summary>Repository of profile server followers.</summary>
-    public GenericRepository<Follower> FollowerRepository
+    public FollowerRepository FollowerRepository
     {
       get
       {
         if (followerRepository == null)
-          followerRepository = new GenericRepository<Follower>(Context);
+          followerRepository = new FollowerRepository(Context);
 
         return followerRepository;
       }

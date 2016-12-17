@@ -32,6 +32,9 @@ namespace ProfileServerNetworkSimulator
     /// <summary>Full path to the directory that contains original profile server files within binary directory.</summary>
     public static string ProfileServerBinariesDirectory = Path.Combine(BinariesDirectory, "ProfileServer");
 
+    /// <summary>Full path to the directory that contains snapshots.</summary>
+    public static string SnapshotDirectory = Path.Combine(BaseDirectory, "snapshots");
+
     /// <summary>List of commands to execute.</summary>
     private List<Command> commands;
 
@@ -40,6 +43,10 @@ namespace ProfileServerNetworkSimulator
 
     /// <summary>List of identity client instances mapped by their name.</summary>
     private Dictionary<string, IdentityClient> identityClients = new Dictionary<string, IdentityClient>(StringComparer.Ordinal);
+
+    /// <summary>True if debug mode is currently enabled, false otherwise.</summary>
+    private bool DebugModeEnabled;
+
 
     /// <summary>
     /// Initializes the object instance.
@@ -79,19 +86,22 @@ namespace ProfileServerNetworkSimulator
       log.Trace("()");
 
       bool res = false;
+
+      log.Info("Cleaning old history.");
+
       if (!ClearHistory())
       {
         log.Error("Unable to clear history, please make sure the access to the instance folder is not blocked by other process.");
         log.Trace("(-):{0}", res);
         return res;
       }
+      log.Info("");
 
       int index = 1;
       bool error = false;
       foreach (Command command in commands)
       {
         log.Info("Executing #{0:0000}@l{1}: {2}", index, command.LineNumber, command.OriginalCommand);
-        index++;
 
         switch (command.Type)
         {
@@ -444,7 +454,7 @@ namespace ProfileServerNetworkSimulator
                   ProfileServer target;
                   if (profileServers.TryGetValue(name, out target))
                   {
-                    neighborhoodList.Add(profileServer);
+                    neighborhoodList.Add(target);
                   }
                   else
                   {
@@ -502,6 +512,8 @@ namespace ProfileServerNetworkSimulator
 
               }
 
+              int serversSkipped = 0;
+              int serversQueried = 0;
               IdentityClient client = null;
               try
               {
@@ -513,19 +525,44 @@ namespace ProfileServerNetworkSimulator
                 GpsLocation queryLocation = cmd.Latitude != GpsLocation.NoLocation.Latitude ? new GpsLocation(cmd.Latitude, cmd.Longitude) : null;
                 foreach (ProfileServer targetServer in targetServers)
                 {
+                  if (!targetServer.IsInitialized())
+                  {
+                    log.Trace("Profile server '{0}' not initialized, skipping ...", targetServer.Name);
+                    serversSkipped++;
+                    continue;
+                  }
+                  byte[] targetServerId = targetServer.GetNetworkId();
                   client.InitializeTcpClient();
-                  Task<List<IdentityNetworkProfileInformation>> searchTask = client.SearchQueryAsync(targetServer, nameFilter, typeFilter, queryLocation, cmd.Radius, false, cmd.IncludeImages);
-                  List<IdentityNetworkProfileInformation> searchResults = searchTask.Result;
+                  Task<IdentityClient.SearchQueryInfo> searchTask = client.SearchQueryAsync(targetServer, nameFilter, typeFilter, queryLocation, cmd.Radius, false, cmd.IncludeImages);
+                  IdentityClient.SearchQueryInfo searchResults = searchTask.Result;
                   if (searchResults != null)
                   {
-                    List<IdentityNetworkProfileInformation> expectedSearchResults = targetServer.GetExpectedSearchResults(nameFilter, typeFilter, queryLocation, cmd.Radius, false, cmd.IncludeImages);
+                    List<byte[]> expectedCoveredServers;
+                    int localServerResults;
+                    List<IdentityNetworkProfileInformation> expectedSearchResults = targetServer.GetExpectedSearchResults(nameFilter, typeFilter, queryLocation, cmd.Radius, false, cmd.IncludeImages, out expectedCoveredServers, out localServerResults);
+                    List<IdentityNetworkProfileInformation> realResults = searchResults.Results;
+                    List<byte[]> realCoveredServers = searchResults.CoveredServers;
 
-                    if (!CompareSearchResults(searchResults, expectedSearchResults, maxResults))
+                    if (DebugModeEnabled)
+                    {
+                      log.Info("  * '{0}': {1} real results, {2} calculated results, {3} max. real results, {4} local server results, {5} real covered servers, {6} calculated covered servers.", targetServer.Name, realResults.Count, expectedSearchResults.Count, maxResults, localServerResults, realCoveredServers.Count, expectedCoveredServers.Count);
+                    }
+
+                    if (!CompareSearchResults(realResults, expectedSearchResults, maxResults))
                     {
                       log.Error("  * Real search results are different from the expected results on server instance '{0}'.", targetServer.Name);
                       error = true;
                       break;
                     }
+
+                    if (!CompareCoveredServers(targetServerId, realCoveredServers, expectedCoveredServers, localServerResults, maxResults))
+                    {
+                      log.Error("  * Real covered servers are different from the expected covered servers on server instance '{0}'.", targetServer.Name);
+                      error = true;
+                      break;
+                    }
+
+                    serversQueried++;
                   }
                   else 
                   {
@@ -542,7 +579,7 @@ namespace ProfileServerNetworkSimulator
                 break;
               }
 
-              if (!error) log.Info("  * Results of search queries on {0} servers match expected results.", targetServers.Count);
+              if (!error) log.Info("  * Results of search queries on {0} servers match expected results. {1} servers were offline and skipped.", serversQueried, serversSkipped);
 
               break;
             }
@@ -557,12 +594,153 @@ namespace ProfileServerNetworkSimulator
               break;
             }
 
+
+          case CommandType.TakeSnapshot:
+            {
+              CommandTakeSnapshot cmd = (CommandTakeSnapshot)command;
+
+              HashSet<string> runningServerNames = new HashSet<string>();
+              foreach (ProfileServer ps in profileServers.Values)
+              {
+                if (ps.IsRunningProcess())
+                {
+                  if (!ps.Stop())
+                  {
+                    log.Error("  * Failed to stop profile server '{0}'.", ps.Name);
+                    error = true;
+                    break;
+                  }
+
+                  runningServerNames.Add(ps.Name);
+                }
+              }
+
+              if (error) break;
+
+              Snapshot snapshot = new Snapshot(cmd.Name);
+              if (snapshot.Take(runningServerNames, profileServers, identityClients))
+              {
+                log.Info("  * Snapshot '{0}' has been created.", cmd.Name);
+              }
+              else
+              {
+                log.Error("  * Failed to take simulation snapshot.");
+                error = true;
+              }
+
+              break;
+            }
+
+          case CommandType.LoadSnapshot:
+            {
+              CommandLoadSnapshot cmd = (CommandLoadSnapshot)command;
+
+              if (index != 1)
+              {
+                log.Error("  * LoadSnapshot must be the very first command in the scenario.");
+                error = true;
+                break;
+              }
+
+              Snapshot snapshot = new Snapshot(cmd.Name);
+              if (!snapshot.Load())
+              {
+                log.Error("  * Unable to load snapshot '{0}'.", cmd.Name);
+                error = true;
+                break;
+              }
+
+              try
+              {
+                // Initialize profile servers.
+                log.Debug("Initializing profile servers.");
+                foreach (ProfileServerSnapshot serverSnapshot in snapshot.ProfileServers)
+                {
+                  ProfileServer profileServer = ProfileServer.CreateFromSnapshot(serverSnapshot);
+                  profileServers.Add(profileServer.Name, profileServer);
+                }
+
+                // Initialize identities and connect them with their profile servers.
+                log.Debug("Initializing identity clients.");
+                foreach (IdentitySnapshot identitySnapshot in snapshot.Identities)
+                {
+                  ProfileServer profileServer = profileServers[identitySnapshot.ProfileServerName];
+                  IdentityClient identityClient = IdentityClient.CreateFromSnapshot(identitySnapshot, snapshot.Images, profileServer);
+                  profileServer.AddIdentityClientSnapshot(identityClient);
+                  identityClients.Add(identityClient.Name, identityClient);
+                }
+
+                // Initialize neighbor relations.
+                log.Debug("Initializing neighborhoods.");
+                foreach (ProfileServerSnapshot serverSnapshot in snapshot.ProfileServers)
+                {
+                  ProfileServer profileServer = profileServers[serverSnapshot.Name];
+
+                  List<ProfileServer> neighborServers = new List<ProfileServer>();
+                  foreach (string neighborName in serverSnapshot.LbnServer.NeighborsNames)
+                  {
+                    ProfileServer neighborServer = profileServers[neighborName];
+                    neighborServers.Add(neighborServer);
+                  }
+
+                  profileServer.LbnServer.SetNeighborhood(neighborServers);
+                }
+
+                // Start LBN servers and profile servers.
+                log.Debug("Starting servers.");
+                foreach (ProfileServerSnapshot serverSnapshot in snapshot.ProfileServers)
+                {
+                  ProfileServer profileServer = profileServers[serverSnapshot.Name];
+                  if (!profileServer.LbnServer.Start())
+                  {
+                    log.Error("  * Unable to start LBN server of profile server instance '{0}'.", profileServer.Name);
+                    error = true;
+                    break;
+                  }
+
+                  if (serverSnapshot.IsRunning)
+                  {
+                    if (!profileServer.Start())
+                    {
+                      log.Error("  * Unable to start profile server instance '{0}'.", profileServer.Name);
+                      error = true;
+                      break;
+                    }
+                  }
+                }
+              }
+              catch (Exception e)
+              {
+                log.Error("  * Snapshot is corrupted, exception occurred: {0}", e.ToString());
+                error = true;
+                break;
+              }
+
+
+              if (!error) log.Info("  * Simulation state loaded from snapshot '{0}'.", cmd.Name);
+
+              break;
+            }
+
+
+          case CommandType.DebugMode:
+            {
+              CommandDebugMode cmd = (CommandDebugMode)command;
+              log.Info("  * Debug mode is now {0}.", cmd.Enable ? "ENABLED" : "DISABLED");
+              DebugModeEnabled = cmd.Enable;
+              break;
+            }
+
+
+
+
           default:
             log.Error("Invalid command type '{0}'.", command.Type);
             error = true;
             break;
         }
 
+        index++;
         if (error) break;
       }
 
@@ -591,7 +769,7 @@ namespace ProfileServerNetworkSimulator
       }
       catch (Exception e)
       {
-        log.Error("Exception occurred while trying to delete and recreated '{0}': {1}", InstanceDirectory, e.ToString());
+        log.Error("Exception occurred while trying to delete and recreate '{0}': {1}", InstanceDirectory, e.ToString());
       }
 
       log.Trace("(-):{0}", res);
@@ -625,17 +803,20 @@ namespace ProfileServerNetworkSimulator
     /// <summary>
     /// Checks log files of server instances to see if there are any errors.
     /// </summary>
-    public void CheckLogs()
+    /// <returns>true if the logs are clear, false if any errors were found.</returns>
+    public bool CheckLogs()
     {
       log.Trace("()");
 
+      bool res = false;
       bool error = false;
       foreach (ProfileServer server in profileServers.Values)
       {        
         string logDir;
         List<string> fileNames;
         List<int> errorCount;
-        if (server.CheckLogs(out logDir, out fileNames, out errorCount))
+        List<int> warningCount;
+        if (server.CheckLogs(out logDir, out fileNames, out errorCount, out warningCount))
         {
           if (logDir.ToLowerInvariant().StartsWith(InstanceDirectory.ToLowerInvariant() + Path.DirectorySeparatorChar))
             logDir = Path.Combine("instances", logDir.Substring(InstanceDirectory.Length + 1));
@@ -644,21 +825,25 @@ namespace ProfileServerNetworkSimulator
           for (int i = 0; i < errorCount.Count; i++)
             instanceErrorCount += errorCount[i];
 
-          if (instanceErrorCount > 0)
+          int instanceWarningCount = 0;
+          for (int i = 0; i < warningCount.Count; i++)
+            instanceWarningCount += warningCount[i];
+
+          if ((instanceErrorCount > 0) || (instanceWarningCount > 0))
           {
             error = true;
 
             if (fileNames.Count == 1)
             {
-              log.Info("  * {0} errors found in instance {1} log file '{2}'.", errorCount[0], server.Name, Path.Combine(logDir, fileNames[0]));
+              log.Info("  * {0} errors and {1} warnings found in instance {2} log file '{3}'.", errorCount[0], warningCount[0], server.Name, Path.Combine(logDir, fileNames[0]));
             }
             else
             {
-              log.Info("  * {0} errors found in log files of instance {1}, log directory '{2}':", instanceErrorCount, server.Name, logDir);
+              log.Info("  * {0} errors and {1} warnings found in log files of instance {2}, log directory '{3}':", instanceErrorCount, instanceWarningCount, server.Name, logDir);
               for (int i = 0; i < fileNames.Count; i++)
               {
                 if (errorCount[i] > 0)
-                  log.Info("    * {0}: {1} errors.", fileNames[i], errorCount[i]);
+                  log.Info("    * {0}: {1} errors, {2} warnings.", fileNames[i], errorCount[i], warningCount[i]);
               }
             }
           }
@@ -670,9 +855,14 @@ namespace ProfileServerNetworkSimulator
         }
       }
 
-      if (!error) log.Info("  * No errors found in logs.");
+      if (!error)
+      {
+        log.Info("  * No errors or warnings found in logs.");
+        res = true;
+      }
 
-      log.Trace("(-)");
+      log.Trace("(-):{0}", res);
+      return res;
     }
 
 
@@ -706,56 +896,90 @@ namespace ProfileServerNetworkSimulator
 
       if (res)
       {
-        HashSet<int> expectedRecordIndexes = new HashSet<int>();
-        for (int i = 0; i < RealSearchResults.Count; i++)
+        HashSet<byte[]> expectedSearchBins = new HashSet<byte[]>(StructuralEqualityComparer<byte[]>.Default);
+        foreach (IdentityNetworkProfileInformation info in ExpectedSearchResults)
         {
-          IdentityNetworkProfileInformation info = RealSearchResults[i];
+          byte[] infoBinary = info.ToByteArray();
+          expectedSearchBins.Add(infoBinary);
+        }
+
+        foreach (IdentityNetworkProfileInformation info in RealSearchResults)
+        {
+          byte[] infoBinary = info.ToByteArray();
+          if (expectedSearchBins.Contains(infoBinary))
+          {
+            expectedSearchBins.Remove(infoBinary);
+          }
+          else
+          {
+            res = false;
+            break;
+          }
+        }
+      }
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+
+    /// <summary>
+    /// Compares list of covered servers returned by a test search query with the list of expected covered servers.
+    /// </summary>
+    /// <param name="TargetServer">Network ID of profile server that the client queried.</param>
+    /// <param name="RealCoveredServers">List of covered servers obtained by real client from a profile server.</param>
+    /// <param name="ExpectedCoveredServers">List of covered servers calculated from the global knowledge.</param>
+    /// <param name="LocalServerResults">Number of results from the server that was queried.</param>
+    /// <param name="MaxTotalResults">Limit to total number of real results that could be obtained by the client.</param>
+    /// <returns>true if real covered servers is same as expected covered servers, false otherwise.</returns>
+    public bool CompareCoveredServers(byte[] TargetServerId, List<byte[]> RealCoveredServers, List<byte[]> ExpectedCoveredServers, int LocalServerResults, int MaxTotalResults)
+    {
+      log.Trace("(RealCoveredServers.Count:{0},ExpectedCoveredServers.Count:{1},LocalServerResults:{2},MaxTotalResults:{3})", RealCoveredServers != null ? RealCoveredServers.Count.ToString() : "n/a", ExpectedCoveredServers != null ? ExpectedCoveredServers.Count.ToString() : "n/a", LocalServerResults, MaxTotalResults);
+
+      bool res = false;
+
+      if ((RealCoveredServers != null) && (ExpectedCoveredServers != null))
+      {
+        if (MaxTotalResults <= LocalServerResults)
+        {
+          // In this case all results may come solely from the target server.
+          if (RealCoveredServers.Count == 1)
+          {
+            bool match = StructuralEqualityComparer<byte[]>.Default.Equals(RealCoveredServers[0], TargetServerId);
+            if (match)
+            {
+              res = true;
+              log.Trace("(-):{0}", res);
+              return res;
+            }
+          }
+        }
+        else
+        {
+          // In all other cases the lists of covered servers must match exactly.
+          res = RealCoveredServers.Count == ExpectedCoveredServers.Count;
+        }
+      }
+
+      if (res)
+      {
+        HashSet<int> expectedServersIndexes = new HashSet<int>();
+        for (int i = 0; i < RealCoveredServers.Count; i++)
+        {
+          byte[] realServer = RealCoveredServers[i];
 
           bool match = false;
-          for (int j = 0; j < ExpectedSearchResults.Count; j++)
+          for (int j = 0; j < ExpectedCoveredServers.Count; j++)
           {
             // The record can not be used twice.
-            if (expectedRecordIndexes.Contains(j)) continue;
+            if (expectedServersIndexes.Contains(j)) continue;
 
-            IdentityNetworkProfileInformation expectedRecord = ExpectedSearchResults[j];
-            byte[] infoBinary = info.ToByteArray();
-            byte[] expectedRecordBinary = expectedRecord.ToByteArray();
-            bool itemMatch = StructuralEqualityComparer<byte[]>.Default.Equals(infoBinary, expectedRecordBinary);
-            /*
-            byte[] infoPubKey = info.IdentityPublicKey.ToByteArray();
-            byte[] expectedPubKey = expectedRecord.IdentityPublicKey.ToByteArray();
-            bool pubKeyMatch = StructuralEqualityComparer<byte[]>.Default.Equals(infoPubKey, expectedPubKey);
+            byte[] expectedServer = ExpectedCoveredServers[j];
+            bool itemMatch = StructuralEqualityComparer<byte[]>.Default.Equals(realServer, expectedServer);
 
-            if (!pubKeyMatch) continue;
-
-            bool matchExtraData = info.ExtraData == expectedRecord.ExtraData;
-
-            byte[] infoHostingId = info.HostingServerNetworkId.ToByteArray();
-            byte[] expectedHostingId = expectedRecord.HostingServerNetworkId.ToByteArray();
-            bool hostingIdMatch = StructuralEqualityComparer<byte[]>.Default.Equals(infoHostingId, expectedHostingId);
-
-            bool isHostedMatch = info.IsHosted == expectedRecord.IsHosted;
-            bool isOnlineMatch = info.IsOnline == expectedRecord.IsOnline;
-            bool latitudeMatch = info.Latitude == expectedRecord.Latitude;
-            bool longitudeMatch = info.Longitude == expectedRecord.Longitude;
-            bool nameMatch = info.Name == expectedRecord.Name;
-
-            byte[] infoImage = info.ThumbnailImage.ToByteArray();
-            byte[] expectedImage = expectedRecord.ThumbnailImage.ToByteArray();
-            bool imageMatch = StructuralEqualityComparer<byte[]>.Default.Equals(infoImage, expectedImage);
-
-            bool typeMatch = info.Type == expectedRecord.Type;
-
-            byte[] infoVersion = info.Version.ToByteArray();
-            byte[] expectedVersion = expectedRecord.Version.ToByteArray();
-            bool versionMatch = StructuralEqualityComparer<byte[]>.Default.Equals(infoVersion, expectedVersion);
-
-            // Real search result is found among the expected results, if everything matches.
-            bool itemMatch = pubKeyMatch && matchExtraData && hostingIdMatch && isHostedMatch && isOnlineMatch && latitudeMatch && longitudeMatch && nameMatch && imageMatch && typeMatch && versionMatch;
-            */
             if (itemMatch)
             {
-              expectedRecordIndexes.Add(j);
+              expectedServersIndexes.Add(j);
               match = true;
               break;
             }
@@ -773,5 +997,6 @@ namespace ProfileServerNetworkSimulator
       log.Trace("(-):{0}", res);
       return res;
     }
+
   }
 }

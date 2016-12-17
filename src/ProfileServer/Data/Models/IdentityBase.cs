@@ -14,7 +14,7 @@ namespace ProfileServer.Data.Models
   /// Database representation of IoP Identity profile. This is base class for HomeIdentity and NeighborIdentity classes
   /// and must not be used on its own.
   /// </summary>
-  public abstract class IdentityBase
+  public abstract class IdentityBase 
   {
     private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Data.Models.IdentityBase");
 
@@ -41,6 +41,12 @@ namespace ProfileServer.Data.Models
 
     /// <summary>Maximum number of bytes that public key can occupy.</summary>
     public const int MaxPublicKeyLengthBytes = 128;
+
+
+    /// <summary>Unique primary key for the database.</summary>
+    /// <remarks>This is primary key - see ProfileServer.Data.Context.OnModelCreating.</remarks>
+    [Required]
+    public int DbId { get; set; }
 
     /// <summary>Identity identifier is SHA256 hash of identity's public key.</summary>
     /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>

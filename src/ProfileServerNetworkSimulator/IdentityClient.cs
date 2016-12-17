@@ -12,6 +12,7 @@ using System.Net.Sockets;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using Google.Protobuf;
 
 namespace ProfileServerNetworkSimulator
 {
@@ -38,9 +39,13 @@ namespace ProfileServerNetworkSimulator
 
     /// <summary>Profile image data or null if the identity has no profile image.</summary>
     private byte[] profileImage;
+    /// <summary>Profile image data or null if the identity has no profile image.</summary>
+    public byte[] ProfileImage { get { return profileImage; } }
 
     /// <summary>Thumbnail image data or null if the identity has no thumbnail image.</summary>
     private byte[] thumbnailImage;
+    /// <summary>Thumbnail image data or null if the identity has no thumbnail image.</summary>
+    public byte[] ThumbnailImage { get { return thumbnailImage; } }
 
     /// <summary>Profile extra data information.</summary>
     private string extraData;
@@ -86,6 +91,13 @@ namespace ProfileServerNetworkSimulator
     /// <summary>true if the client has an active hosting agreement with the profile server, false otherwise.</summary>
     private bool hostingActive;
 
+    /// <summary>
+    /// Empty constructor for manual construction of the instance when loading simulation for snapshot.
+    /// </summary>
+    public IdentityClient()
+    {
+    }
+
 
     /// <summary>
     /// Creates a new identity client.
@@ -129,11 +141,7 @@ namespace ProfileServerNetworkSimulator
     /// </summary>
     public void Shutdown()
     {
-      log.Trace("()");
-
       CloseTcpClient();
-
-      log.Trace("(-)");
     }
 
 
@@ -576,6 +584,15 @@ namespace ProfileServerNetworkSimulator
     }
 
 
+    public class SearchQueryInfo
+    {
+      /// <summary>Search results - list of found profiles.</summary>
+      public List<IdentityNetworkProfileInformation> Results;
+
+      /// <summary>List of covered servers returned by the queried profile server.</summary>
+      public List<byte[]> CoveredServers;
+    }
+
 
     /// <summary>
     /// Connects to a profile server and performs a search query on it and downloads all possible results.
@@ -588,11 +605,11 @@ namespace ProfileServerNetworkSimulator
     /// <param name="IncludeHostedOnly">If set to true, the search results should only include profiles hosted on the queried profile server.</param>
     /// <param name="IncludeImages">If set to true, the search results should include images.</param>
     /// <returns>List of results or null if the function fails.</returns>
-    public async Task<List<IdentityNetworkProfileInformation>> SearchQueryAsync(ProfileServer Server, string NameFilter, string TypeFilter, GpsLocation LocationFilter, int Radius, bool IncludeHostedOnly, bool IncludeImages)
+    public async Task<SearchQueryInfo> SearchQueryAsync(ProfileServer Server, string NameFilter, string TypeFilter, GpsLocation LocationFilter, int Radius, bool IncludeHostedOnly, bool IncludeImages)
     {
       log.Trace("()");
 
-      List<IdentityNetworkProfileInformation> res = null;
+      SearchQueryInfo res = null;
       try
       {
         await ConnectAsync(Server.IpAddress, Server.ClientNonCustomerInterfacePort, true);
@@ -611,6 +628,9 @@ namespace ProfileServerNetworkSimulator
           if (searchRequestOk)
           {
             int totalResultCount = (int)responseMessage.Response.ConversationResponse.ProfileSearch.TotalRecordCount;
+            List<byte[]> coveredServers = new List<byte[]>();
+            foreach (ByteString coveredServerId in responseMessage.Response.ConversationResponse.ProfileSearch.CoveredServers)
+              coveredServers.Add(coveredServerId.ToByteArray());
 
             List<IdentityNetworkProfileInformation> results = responseMessage.Response.ConversationResponse.ProfileSearch.Profiles.ToList();
             while (results.Count < totalResultCount)
@@ -626,10 +646,12 @@ namespace ProfileServerNetworkSimulator
               searchRequestOk = idOk && statusOk;
               if (!searchRequestOk) break;
 
-              results.AddRange(responseMessage.Response.ConversationResponse.ProfileSearch.Profiles.ToList());
+              results.AddRange(responseMessage.Response.ConversationResponse.ProfileSearchPart.Profiles.ToList());
             }
 
-            res = results;
+            res = new SearchQueryInfo();
+            res.CoveredServers = coveredServers;
+            res.Results = results;
           }
         }
       }
@@ -638,7 +660,7 @@ namespace ProfileServerNetworkSimulator
         log.Error("Exception occurred: {0}", e.ToString());
       }
 
-      if (res != null) log.Trace("(-):*.Count={0}", res.Count);
+      if (res != null) log.Trace("(-):*.Results.Count={0},*.CoveredServers.Count={1}", res.Results.Count, res.CoveredServers.Count);
       else log.Trace("(-):null");
       return res;
     }
@@ -780,6 +802,100 @@ namespace ProfileServerNetworkSimulator
     public static bool PeerCertificateValidationCallback(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
     {
       return true;
+    }
+
+
+    /// <summary>
+    /// Creates identity client snapshot.
+    /// </summary>
+    /// <returns>Identity client snapshot.</returns>
+    public IdentitySnapshot CreateSnapshot()
+    {
+      IdentitySnapshot res = new IdentitySnapshot()
+      {
+        Challenge = Crypto.ToHex(this.challenge),
+        ClientChallenge = Crypto.ToHex(this.clientChallenge),
+        ExpandedPrivateKeyHex = this.keys.ExpandedPrivateKeyHex,
+        ExtraData = this.extraData,
+        HostingActive = this.hostingActive,
+        IdentityId = Crypto.ToHex(this.identityId),
+        ImageFileName = Path.GetFileName(imageFileName),
+        LocationLatitude = this.location.Latitude,
+        LocationLongitude = this.location.Longitude,
+        Name = this.name,
+        PrivateKeyHex = this.keys.PrivateKeyHex,
+        ProfileInitialized = this.profileInitialized,
+        ProfileImageHash = null,
+        ProfileServerKey = Crypto.ToHex(this.profileServerKey),
+        ProfileServerName = this.profileServer.Name,
+        PublicKeyHex = this.keys.PublicKeyHex,
+        ThumbnailImageHash = null,
+        Type = this.type,
+        Version = this.version
+      };
+
+
+      if (this.profileImage != null)
+      {
+        byte[] profileImageHash = Crypto.Sha256(profileImage);
+        string profileImageHashHex = Crypto.ToHex(profileImageHash);
+        res.ProfileImageHash = profileImageHashHex;
+      }
+
+      if (this.thumbnailImage != null)
+      {
+        byte[] thumbnailImageHash = Crypto.Sha256(thumbnailImage);
+        string thumbnailImageHashHex = Crypto.ToHex(thumbnailImageHash);
+        res.ThumbnailImageHash = thumbnailImageHashHex;
+      }
+
+      return res;
+    }
+
+
+    /// <summary>
+    /// Creates instance of identity client from snapshot.
+    /// </summary>
+    /// <param name="Snapshot">Identity client snapshot.</param>
+    /// <param name="Images">Hexadecimal image data mapping to SHA256 hash.</param>
+    /// <param name="ProfileServer">Profile server that hosts identity's profile.</param>
+    /// <returns>New identity client instance.</returns>
+    public static IdentityClient CreateFromSnapshot(IdentitySnapshot Snapshot, Dictionary<string, string> Images, ProfileServer ProfileServer)
+    {
+      IdentityClient res = new IdentityClient();
+
+      res.challenge = Crypto.FromHex(Snapshot.Challenge);
+      res.clientChallenge = Crypto.FromHex(Snapshot.ClientChallenge);
+
+      res.keys = new KeysEd25519();
+      res.keys.ExpandedPrivateKeyHex = Snapshot.ExpandedPrivateKeyHex;
+      res.keys.PublicKeyHex = Snapshot.PublicKeyHex;
+      res.keys.PrivateKeyHex = Snapshot.PrivateKeyHex;
+      res.keys.ExpandedPrivateKey = Crypto.FromHex(res.keys.ExpandedPrivateKeyHex);
+      res.keys.PublicKey = Crypto.FromHex(res.keys.PublicKeyHex);
+      res.keys.PrivateKey = Crypto.FromHex(res.keys.PrivateKeyHex);
+
+      res.extraData = Snapshot.ExtraData;
+      res.hostingActive = Snapshot.HostingActive;
+      res.identityId = Crypto.FromHex(Snapshot.IdentityId);
+      res.imageFileName = Snapshot.ImageFileName != null ? Path.Combine(CommandProcessor.ImagesDirectory, Snapshot.ImageFileName) : null;
+      res.location = new GpsLocation(Snapshot.LocationLatitude, Snapshot.LocationLongitude);
+      res.name = Snapshot.Name;
+      res.profileInitialized = Snapshot.ProfileInitialized;
+
+      res.profileImage = Snapshot.ProfileImageHash != null ? Crypto.FromHex(Images[Snapshot.ProfileImageHash]) : null;
+      res.thumbnailImage = Snapshot.ThumbnailImageHash != null ? Crypto.FromHex(Images[Snapshot.ThumbnailImageHash]) : null;
+
+      res.profileServerKey = Crypto.FromHex(Snapshot.ProfileServerKey);
+      res.type = Snapshot.Type;
+      res.version = Snapshot.Version;
+
+      res.profileServer = ProfileServer;
+      res.log = new PrefixLogger("ProfileServerSimulator.IdentityClient", "[" + res.Name + "] ");
+      res.messageBuilder = new MessageBuilder(0, new List<SemVer>() { SemVer.V100 }, res.keys);
+      res.InitializeTcpClient();
+
+      return res;
     }
 
   }

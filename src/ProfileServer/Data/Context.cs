@@ -23,8 +23,8 @@ namespace ProfileServer.Data
     /// <summary>Access to IoP identities, for which the node acts as a home node, in the database.</summary>
     public DbSet<HostedIdentity> Identities { get; set; }
 
-    /// <summary>Access to IoP identities, which are not hosted on this node, but are hosted in this node's neighborhood.</summary>
-    public DbSet<NeighborIdentity> NeighborhoodIdentities { get; set; }
+    /// <summary>Access to IoP identities, which are not hosted on this node, but are hosted in this profile server's neighborhood.</summary>
+    public DbSet<NeighborIdentity> NeighborIdentities { get; set; }
 
     /// <summary>Related identities announced by hosted identities.</summary>
     public DbSet<RelatedIdentity> RelatedIdentities { get; set; }
@@ -56,7 +56,7 @@ namespace ProfileServer.Data
     {
       base.OnModelCreating(modelBuilder);
 
-      modelBuilder.Entity<HostedIdentity>().HasKey(i => i.IdentityId);
+      modelBuilder.Entity<HostedIdentity>().HasKey(i => new { i.DbId });
       modelBuilder.Entity<HostedIdentity>().HasIndex(i => new { i.IdentityId }).IsUnique();
       modelBuilder.Entity<HostedIdentity>().HasIndex(i => new { i.Name });
       modelBuilder.Entity<HostedIdentity>().HasIndex(i => new { i.Type });
@@ -70,8 +70,8 @@ namespace ProfileServer.Data
 
       // In case of neighbors, it is possible that a single identity is hosted on multiple nodes.
       // Therefore IdentityId on itself does not form a unique key.
-      modelBuilder.Entity<NeighborIdentity>().HasKey(i => new { i.IdentityId, i.HostingServerId });
-      modelBuilder.Entity<NeighborIdentity>().HasIndex(i => new { i.IdentityId, i.HostingServerId }).IsUnique();
+      modelBuilder.Entity<NeighborIdentity>().HasKey(i => new { i.DbId });
+      modelBuilder.Entity<NeighborIdentity>().HasIndex(i => new { i.HostingServerId, i.IdentityId }).IsUnique();
       modelBuilder.Entity<NeighborIdentity>().HasIndex(i => new { i.HostingServerId });
       modelBuilder.Entity<NeighborIdentity>().HasIndex(i => new { i.Name });
       modelBuilder.Entity<NeighborIdentity>().HasIndex(i => new { i.Type });
@@ -81,9 +81,10 @@ namespace ProfileServer.Data
 
       modelBuilder.Entity<NeighborIdentity>().Property(i => i.InitialLocationLatitude).HasColumnType("decimal(9,6)").IsRequired(true);
       modelBuilder.Entity<NeighborIdentity>().Property(i => i.InitialLocationLongitude).HasColumnType("decimal(9,6)").IsRequired(true);
+      modelBuilder.Entity<NeighborIdentity>().Property(e => e.HostingServerId).IsRequired(true);
 
 
-      modelBuilder.Entity<RelatedIdentity>().HasKey(i => new { i.IdentityId, i.ApplicationId });
+      modelBuilder.Entity<RelatedIdentity>().HasKey(i => new { i.DbId });
       modelBuilder.Entity<RelatedIdentity>().HasIndex(i => new { i.IdentityId, i.ApplicationId }).IsUnique();
       modelBuilder.Entity<RelatedIdentity>().HasIndex(i => new { i.Type });
       modelBuilder.Entity<RelatedIdentity>().HasIndex(i => new { i.ValidFrom, i.ValidTo });
@@ -91,8 +92,8 @@ namespace ProfileServer.Data
       modelBuilder.Entity<RelatedIdentity>().HasIndex(i => new { i.IdentityId, i.Type, i.RelatedToIdentityId, i.ValidFrom, i.ValidTo });
 
 
-      modelBuilder.Entity<Neighbor>().HasKey(i => i.Id);
-      modelBuilder.Entity<Neighbor>().HasIndex(i => new { i.Id }).IsUnique();
+      modelBuilder.Entity<Neighbor>().HasKey(i => i.DbId);
+      modelBuilder.Entity<Neighbor>().HasIndex(i => new { i.NeighborId }).IsUnique();
       modelBuilder.Entity<Neighbor>().HasIndex(i => new { i.IpAddress, i.PrimaryPort });
       modelBuilder.Entity<Neighbor>().HasIndex(i => new { i.LastRefreshTime });
 
@@ -101,8 +102,8 @@ namespace ProfileServer.Data
       modelBuilder.Entity<Neighbor>().Property(i => i.LocationLongitude).HasColumnType("decimal(9,6)").IsRequired(true);
 
 
-      modelBuilder.Entity<Follower>().HasKey(i => i.Id);
-      modelBuilder.Entity<Follower>().HasIndex(i => new { i.Id }).IsUnique();
+      modelBuilder.Entity<Follower>().HasKey(i => i.DbId);
+      modelBuilder.Entity<Follower>().HasIndex(i => new { i.FollowerId }).IsUnique();
       modelBuilder.Entity<Follower>().HasIndex(i => new { i.IpAddress, i.PrimaryPort });
       modelBuilder.Entity<Follower>().HasIndex(i => new { i.LastRefreshTime });
 

@@ -484,7 +484,7 @@ namespace ProfileServer.Network
             bool saveDb = false;
 
             // Delete the follower itself.
-            Follower existingFollower = (await unitOfWork.FollowerRepository.GetAsync(f => f.Id == followerId)).FirstOrDefault();
+            Follower existingFollower = (await unitOfWork.FollowerRepository.GetAsync(f => f.FollowerId == followerId)).FirstOrDefault();
             if (existingFollower != null)
             {
               unitOfWork.FollowerRepository.Delete(existingFollower);

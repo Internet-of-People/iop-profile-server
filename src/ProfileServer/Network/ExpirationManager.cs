@@ -36,8 +36,14 @@ namespace ProfileServer.Network
     private const int CheckExpiredHostedIdentitiesTimerInterval = 119 * 60 * 1000;
 
 
-    /// <summary>How quickly in milliseconds after the component start will checkExpiredNeighborIdentitiesRefreshTimer signal for the first time.</summary>
-    private const int CheckExpiredNeighborIdentitiesTimerStartDelay = 5 * 1000;
+    /// <summary>
+    /// How quickly in milliseconds after the component start will checkExpiredNeighborIdentitiesRefreshTimer signal for the first time.
+    /// <para>
+    /// We want a certain delay here after the start of the server to allow getting fresh neighborhood information from the LBN server.
+    /// But if LBN server is not initialized by then, it does not matter, cleanup will be postponed.
+    /// </para>
+    /// </summary>
+    private const int CheckExpiredNeighborIdentitiesTimerStartDelay = 5 * 60 * 1000;
 
     /// <summary>Interval in milliseconds for checkExpiredNeighborIdentitiesRefreshTimer.</summary>
     private const int CheckExpiredNeighborIdentitiesTimerInterval = 31 * 60 * 1000;
@@ -174,7 +180,13 @@ namespace ProfileServer.Network
         else if (handles[index] == checkExpiredNeighborIdentitiesEvent)
         {
           log.Trace("checkExpiredNeighborIdentitiesEvent activated.");
-          CheckExpiredNeighborIdentities();
+
+          LocationBasedNetwork locationBasedNetwork = (LocationBasedNetwork)Base.ComponentDictionary["Network.LocationBasedNetwork"];
+          if (locationBasedNetwork.LbnServerInitialized)
+          {
+            CheckExpiredNeighborIdentities();
+          }
+          else log.Debug("LBN component is not in sync with the LBN server yet, checking expired neighbors will not be executed now.");
         }
       }
 
@@ -206,7 +218,6 @@ namespace ProfileServer.Network
     private void CheckFollowersRefresh()
     {
       log.Trace("()");
-
       
       // If a follower server's LastRefreshTime is lower than this limit, it should be refreshed.
       DateTime limitLastRefreshTime = DateTime.UtcNow.AddSeconds(-Base.Configuration.FollowerRefreshTimeSeconds);
@@ -225,7 +236,7 @@ namespace ProfileServer.Network
             {
               NeighborhoodAction action = new NeighborhoodAction()
               {
-                ServerId = follower.Id,
+                ServerId = follower.FollowerId,
                 Type = NeighborhoodActionType.RefreshProfiles,
                 Timestamp = DateTime.UtcNow,
                 ExecuteAfter = DateTime.UtcNow,
@@ -234,7 +245,7 @@ namespace ProfileServer.Network
               };
 
               unitOfWork.NeighborhoodActionRepository.Insert(action);
-              log.Debug("Refresh neighborhood action for follower ID '{0}' will be inserted to the database.", follower.Id);
+              log.Debug("Refresh neighborhood action for follower ID '{0}' will be inserted to the database.", follower.FollowerId.ToHex());
             }
 
             unitOfWork.SaveThrow();
@@ -266,6 +277,9 @@ namespace ProfileServer.Network
       List<Guid> imagesToDelete = new List<Guid>();
       using (UnitOfWork unitOfWork = new UnitOfWork())
       {
+        // Disable change tracking for faster multiple deletes.
+        unitOfWork.Context.ChangeTracker.AutoDetectChangesEnabled = false;
+
         DatabaseLock lockObject = UnitOfWork.HostedIdentityLock;
         unitOfWork.AcquireLock(lockObject);
         try
@@ -280,7 +294,7 @@ namespace ProfileServer.Network
               if (identity.ThumbnailImage != null) imagesToDelete.Add(identity.ThumbnailImage.Value);
 
               unitOfWork.HostedIdentityRepository.Delete(identity);
-              log.Debug("Identity ID '{0}' expired and will be deleted.", identity.IdentityId);
+              log.Debug("Identity ID '{0}' expired and will be deleted.", identity.IdentityId.ToHex());
             }
 
             unitOfWork.SaveThrow();
@@ -336,7 +350,7 @@ namespace ProfileServer.Network
                 // This action will cause our profile server to erase all profiles of the neighbor that has been removed.
                 NeighborhoodAction action = new NeighborhoodAction()
                 {
-                  ServerId = neighbor.Id,
+                  ServerId = neighbor.NeighborId,
                   Timestamp = DateTime.UtcNow,
                   Type = NeighborhoodActionType.RemoveNeighbor,
                   TargetIdentityId = null,
@@ -347,9 +361,10 @@ namespace ProfileServer.Network
 
               unitOfWork.SaveThrow();
               transaction.Commit();
-              success = true;
             }
             else log.Debug("No expired neighbors found.");
+
+            success = true;
           }
           catch (Exception e)
           {

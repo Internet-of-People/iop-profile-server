@@ -2,6 +2,10 @@
 
 # IoP Profile Server
 
+## Installation
+
+See [Installation](INSTALLATION.md) file. 
+
 ## TODOs and Possible Improvements
 
 See [TODO](TODO.md) file. 

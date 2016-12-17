@@ -108,7 +108,7 @@ namespace ProfileServerNetworkSimulator
     /// </summary>
     /// <param name="Parts">List of tokens of the line being parsed.</param>
     /// <param name="LineNumber">Line number of the line being parsed.</param>
-    /// <returns></returns>
+    /// <returns>Initialized command object.</returns>
     public static Command ParseCommand(string[] Parts, int LineNumber)
     {
       log.Trace("(Parse:'{0}',LineNumber:{1})", string.Join(" ", Parts), LineNumber);
@@ -285,25 +285,26 @@ namespace ProfileServerNetworkSimulator
               command.PsCounts.Add(int.Parse(Parts[p++]));
 
               int groupNo = (i / 3) + 1;
+              int groupIndex = groupNo - 1;
 
-              bool indexValid = (1 <= command.PsIndexes[i]) && (command.PsIndexes[i] <= 999);
+              bool indexValid = (1 <= command.PsIndexes[groupIndex]) && (command.PsIndexes[groupIndex] <= 999);
               if (!indexValid)
               {
-                log.Error("PsIndex${0} '{1}' on line {2} is invalid. It must be an integer between 1 and 999.", groupNo, command.PsIndexes[i], LineNumber);
+                log.Error("PsIndex${0} '{1}' on line {2} is invalid. It must be an integer between 1 and 999.", groupNo, command.PsIndexes[groupIndex], LineNumber);
                 break;
               }
 
-              bool countValid = (1 <= command.PsCounts[i]) && (command.PsCounts[i] <= 999);
+              bool countValid = (1 <= command.PsCounts[groupIndex]) && (command.PsCounts[groupIndex] <= 999);
               if (!countValid)
               {
-                log.Error("PsCount${0} '{1}' on line {2} is invalid. It must be an integer between 1 and 999.", groupNo, command.PsCounts[i], LineNumber);
+                log.Error("PsCount${0} '{1}' on line {2} is invalid. It must be an integer between 1 and 999.", groupNo, command.PsCounts[groupIndex], LineNumber);
                 break;
               }
 
-              countValid = command.PsIndexes[i] + command.PsCounts[i] <= 999;
+              countValid = command.PsIndexes[groupIndex] + command.PsCounts[groupIndex] <= 999;
               if (!countValid)
               {
-                log.Error("Having PsIndex${0} '{1}', PsCount{0} '{2}' on line {3} is invalid. PsIndex$i + PsCount$i must not be greater than 999.", groupNo, command.PsIndexes[i], command.PsCounts[i], LineNumber);
+                log.Error("Having PsIndex${0} '{1}', PsCount{0} '{2}' on line {3} is invalid. PsIndex$i + PsCount$i must not be greater than 999.", groupNo, command.PsIndexes[groupIndex], command.PsCounts[groupIndex], LineNumber);
                 break;
               }
             }
@@ -647,6 +648,69 @@ namespace ProfileServerNetworkSimulator
             break;
           }
 
+
+        case CommandType.TakeSnapshot:
+          {
+            if (paramCount != 1)
+            {
+              log.Error("TakeSnapshot requires 1 parameter, but {0} parameters found on line {1}.", paramCount, LineNumber);
+              break;
+            }
+
+            CommandTakeSnapshot command = new CommandTakeSnapshot(LineNumber, line)
+            {
+              Name = Parts[p++]
+            };
+
+
+            res = command;
+            break;
+          }
+
+
+        case CommandType.LoadSnapshot:
+          {
+            if (paramCount != 1)
+            {
+              log.Error("LoadSnapshot requires 1 parameter, but {0} parameters found on line {1}.", paramCount, LineNumber);
+              break;
+            }
+
+            CommandLoadSnapshot command = new CommandLoadSnapshot(LineNumber, line)
+            {
+              Name = Parts[p++]
+            };
+
+
+            res = command;
+            break;
+          }
+
+        case CommandType.DebugMode:
+          {
+            if (paramCount != 1)
+            {
+              log.Error("DebugMode requires 1 parameter, but {0} parameters found on line {1}.", paramCount, LineNumber);
+              break;
+            }
+
+            string enable = Parts[p++].ToLowerInvariant();
+            CommandDebugMode command = new CommandDebugMode(LineNumber, line)
+            {
+              Enable = enable == "on"
+            };
+
+            bool enableValid = (enable == "on") || (enable == "off");
+            if (!enableValid)
+            {
+              log.Error("Enable on line {0} is invalid. It must be either 'on' or 'off'.", enable);
+              break;
+            }
+
+
+            res = command;
+            break;
+          }
 
         default:
           log.Error("Invalid command '{0}' on line number {1}.", Parts[0], LineNumber);

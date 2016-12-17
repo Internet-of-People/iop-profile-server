@@ -1982,7 +1982,7 @@ namespace ProfileServer.Network
       res.Add(serverComponent.ServerId);
       if (!LocalServerOnly)
       {
-        List<byte[]> neighborIds = (await UnitOfWork.NeighborRepository.GetAsync(null, null, true)).Select(n => n.Id).ToList();
+        List<byte[]> neighborIds = (await UnitOfWork.NeighborRepository.GetAsync(null, null, true)).Select(n => n.NeighborId).ToList();
         res.AddRange(neighborIds);
       }
 
@@ -2740,7 +2740,7 @@ namespace ProfileServer.Network
         {
           NeighborhoodAction neighborhoodAction = new NeighborhoodAction()
           {
-            ServerId = follower.Id,
+            ServerId = follower.FollowerId,
             ExecuteAfter = null,
             TargetIdentityId = IdentityId,
             Timestamp = now,
@@ -2749,7 +2749,7 @@ namespace ProfileServer.Network
           };
           UnitOfWork.NeighborhoodActionRepository.Insert(neighborhoodAction);
           res = true;
-          log.Trace("Add profile action with identity ID '{0}' added for follower ID '{1}'.", IdentityId.ToHex(), follower.Id.ToHex());
+          log.Trace("Add profile action with identity ID '{0}' added for follower ID '{1}'.", IdentityId.ToHex(), follower.FollowerId.ToHex());
         }
       }
       else log.Trace("No followers found to propagate identity profile change to.");
@@ -2809,7 +2809,7 @@ namespace ProfileServer.Network
                 int neighborhoodInitializationsInProgress = await unitOfWork.FollowerRepository.CountAsync(f => f.LastRefreshTime == null);
                 if (neighborhoodInitializationsInProgress < Base.Configuration.NeighborhoodInitializationParallelism)
                 {
-                  Follower existingFollower = (await unitOfWork.FollowerRepository.GetAsync(f => f.Id == followerId)).FirstOrDefault();
+                  Follower existingFollower = (await unitOfWork.FollowerRepository.GetAsync(f => f.FollowerId == followerId)).FirstOrDefault();
                   if (existingFollower == null)
                   {
                     // Take snapshot of all our identities.
@@ -2834,7 +2834,7 @@ namespace ProfileServer.Network
                     // Create new follower.
                     Follower follower = new Follower()
                     {
-                      Id = followerId,
+                      FollowerId = followerId,
                       IpAddress = Client.RemoteEndPoint.Address.ToString(),
                       PrimaryPort = primaryPort,
                       SrNeighborPort = srNeighborPort,
@@ -3055,7 +3055,7 @@ namespace ProfileServer.Network
       // First, we verify that the client is our neighbor.
       using (UnitOfWork unitOfWork = new UnitOfWork())
       {
-        Neighbor neighbor = (await unitOfWork.NeighborRepository.GetAsync(n => n.Id == neighborId)).FirstOrDefault();
+        Neighbor neighbor = (await unitOfWork.NeighborRepository.GetAsync(n => n.NeighborId == neighborId)).FirstOrDefault();
         if (neighbor == null)
         {
           log.Warn("Share profile update request came from client ID '{0}', who is not our neighbor.", neighborId.ToHex());
@@ -3386,7 +3386,7 @@ namespace ProfileServer.Network
             NeighborIdentity existingIdentity = (await UnitOfWork.NeighborIdentityRepository.GetAsync(i => (i.IdentityId == identityId) && (i.HostingServerId == NeighborId))).FirstOrDefault();
             if (existingIdentity != null)
             {
-              res.ImageToDelete = existingIdentity.ThumbnailImage.Value;
+              res.ImageToDelete = existingIdentity.ThumbnailImage;
 
               UnitOfWork.NeighborIdentityRepository.Delete(existingIdentity);
               res.SaveDb = true;
@@ -3423,7 +3423,7 @@ namespace ProfileServer.Network
         await unitOfWork.AcquireLockAsync(lockObject);
         try
         {
-          Neighbor neighbor = (await unitOfWork.NeighborRepository.GetAsync(n => n.Id == NeighborId)).FirstOrDefault();
+          Neighbor neighbor = (await unitOfWork.NeighborRepository.GetAsync(n => n.NeighborId == NeighborId)).FirstOrDefault();
           if (neighbor != null)
           {
             neighbor.LastRefreshTime = DateTime.UtcNow;
@@ -3791,46 +3791,18 @@ namespace ProfileServer.Network
       MessageBuilder messageBuilder = Client.MessageBuilder;
       StopNeighborhoodUpdatesRequest stopNeighborhoodUpdatesRequest = RequestMessage.Request.ConversationRequest.StopNeighborhoodUpdates;
 
-      res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
+      
+      byte[] followerId = Client.IdentityId;
+
       using (UnitOfWork unitOfWork = new UnitOfWork())
       {
-        byte[] followerId = Client.IdentityId;
+        Status status = await unitOfWork.FollowerRepository.DeleteFollower(unitOfWork, followerId);
 
-        bool success = false;
-        DatabaseLock[] lockObjects = new DatabaseLock[] { UnitOfWork.FollowerLock, UnitOfWork.NeighborhoodActionLock };
-        await unitOfWork.AcquireLockAsync(lockObjects);
-        try
-        {
-          Follower existingFollower = (await unitOfWork.FollowerRepository.GetAsync(f => f.Id == followerId)).FirstOrDefault();
-          if (existingFollower != null)
-          {
-            unitOfWork.FollowerRepository.Delete(existingFollower);
-
-            List<NeighborhoodAction> actions = (await unitOfWork.NeighborhoodActionRepository.GetAsync(a => a.ServerId == followerId)).ToList();
-            foreach (NeighborhoodAction action in actions)
-              unitOfWork.NeighborhoodActionRepository.Delete(action);
-
-            await unitOfWork.SaveThrowAsync();
-            success = true;
-          }
-          else
-          {
-            log.Warn("Follower ID '{0}' not found.", followerId.ToHex());
-            res = messageBuilder.CreateErrorNotFoundResponse(RequestMessage);
-          }
-        }
-        catch (Exception e)
-        {
-          log.Error("Exception occurred: {0}", e.ToString());
-        }
-
-        unitOfWork.ReleaseLock(lockObjects);
-
-        if (success)
-        {
-          res = messageBuilder.CreateStopNeighborhoodUpdatesResponse(RequestMessage);
-        }
+        if (status == Status.Ok) res = messageBuilder.CreateStopNeighborhoodUpdatesResponse(RequestMessage);
+        else if (status == Status.ErrorNotFound) res = messageBuilder.CreateErrorNotFoundResponse(RequestMessage);
+        else res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
       }
+
 
       log.Trace("(-):*.Response.Status={0}", res.Response.Status);
       return res;
@@ -3929,7 +3901,7 @@ namespace ProfileServer.Network
                 bool saveDb = false;
 
                 // Update the follower, so it is considered as fully initialized.
-                Follower follower = (await unitOfWork.FollowerRepository.GetAsync(f => f.Id == followerId)).FirstOrDefault();
+                Follower follower = (await unitOfWork.FollowerRepository.GetAsync(f => f.FollowerId == followerId)).FirstOrDefault();
                 if (follower != null)
                 {
                   follower.LastRefreshTime = DateTime.UtcNow;

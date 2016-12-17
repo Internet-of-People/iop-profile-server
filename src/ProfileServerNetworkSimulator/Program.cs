@@ -41,6 +41,8 @@ namespace ProfileServerNetworkSimulator
       CultureInfo.CurrentUICulture = culture;
 
       string scenarioFile = args[0];
+      log.Info("Loading scenario file '{0}'.", scenarioFile);
+      log.Info("");
       List<Command> commands = CommandParser.ParseScenarioFile(scenarioFile);
       if (commands == null)
       {
@@ -51,14 +53,20 @@ namespace ProfileServerNetworkSimulator
       CommandProcessor processor = new CommandProcessor(commands);
       bool success = processor.Execute();
 
-      log.Info("\nAll done, shutting down ...");
+      log.Info("");
+      log.Info("All done, shutting down ...");
       processor.Shutdown();
 
       if (success)
       {
-        log.Info("\nAnalyzing log files ...");
-        processor.CheckLogs();
+        log.Info("");
+        log.Info("Analyzing log files ...");
+        success = processor.CheckLogs();
       }
+
+      log.Info("");
+      log.Info("SCENARIO {0}", success ? "PASSED" : "FAILED");
+      log.Info("");
 
       log.Trace("(-)");
 

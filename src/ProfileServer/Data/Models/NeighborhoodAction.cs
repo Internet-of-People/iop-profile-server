@@ -25,8 +25,15 @@ namespace ProfileServer.Data.Models
     /// <summary>
     /// LBN server informed the profile server about a server leaving its neighborhood.
     /// The profile server removes the profiles hosted on the neighbor server from its database.
+    /// Then it creates StopNeighborhoodUpdates action.
     /// </summary>
     RemoveNeighbor = 2,
+
+    /// <summary>
+    /// Profile server removed a neighbor and wants to ask the neighbor profile server 
+    /// to stop sending profile updates.
+    /// </summary>
+    StopNeighborhoodUpdates = 3,
 
     /// <summary>
     /// New identity registered and initialized its profile on the profile server.
@@ -73,7 +80,7 @@ namespace ProfileServer.Data.Models
     private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Data.Models.NeighborhoodAction");
 
     /// <summary>Unique identifier of the action for ordering purposes.</summary>
-    /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
+    /// <remarks>This is index and key - see ProfileServer.Data.Context.OnModelCreating.</remarks>
     public int Id { get; set; }
 
     /// <summary>Network identifier of the neighbor/follower profile server.</summary>

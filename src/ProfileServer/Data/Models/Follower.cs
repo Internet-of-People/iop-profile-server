@@ -23,11 +23,16 @@ namespace ProfileServer.Data.Models
   {
     private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Data.Models.Follower");
 
+    /// <summary>Unique primary key for the database.</summary>
+    /// <remarks>This is primary key - see ProfileServer.Data.Context.OnModelCreating.</remarks>
+    [Required]
+    public int DbId { get; set; }
+
     /// <summary>Network identifier of the profile server is SHA256 hash of identity's public key.</summary>
     /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
     [Required]
     [MaxLength(IdentityBase.IdentifierLength)]
-    public byte[] Id { get; set; }
+    public byte[] FollowerId { get; set; }
 
     /// <summary>IP address of the profile server.</summary>
     /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>

@@ -135,6 +135,7 @@ namespace ProfileServer.Network
       log.Trace("()");
 
       bool res = false;
+
       if (ResponseMessage != null)
       {
         if (ResponseMessage.Id == RequestMessage.Id)
@@ -171,7 +172,7 @@ namespace ProfileServer.Network
                   }
                   else log.Debug("Response message conversation type {0} does not match request message conversation type {1}.", response.ConversationTypeCase, RequestMessage.Request.ConversationTypeCase);
                   break;
-                  
+
                 default:
                   log.Error("Invalid response conversation type {0}.", ResponseMessage.Response.ConversationTypeCase);
                   break;
@@ -328,7 +329,11 @@ namespace ProfileServer.Network
       {
         res = true;
       }
-      else log.Warn("Received unexpected or invalid message.");
+      else
+      {
+        if (lastResponseStatus != Status.ErrorBusy)
+          log.Warn("Received unexpected or invalid message.");
+      }
 
       log.Trace("(-):{0}", res);
       return res;
@@ -353,7 +358,41 @@ namespace ProfileServer.Network
       {
         res = true;
       }
-      else log.Warn("Received unexpected or invalid message.");
+      else
+      {
+        if (lastResponseStatus != Status.ErrorRejected)
+          log.Warn("Received unexpected or invalid message.");
+      }
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+
+
+
+    /// <summary>
+    /// Sends StopNeighborhoodUpdatesRequest to the server and reads a response.
+    /// </summary>
+    /// <param name="RequestMessage">Request message to send.</param>
+    /// <returns>true if the function succeeds, false otherwise.</returns>
+    public async Task<bool> SendStopNeighborhoodUpdates(Message RequestMessage)
+    {
+      log.Trace("()");
+
+      bool res = false;
+      Message requestMessage = RequestMessage;
+      await SendMessageAsync(requestMessage);
+      Message responseMessage = await ReceiveMessageAsync();
+      if (CheckResponseMessage(requestMessage, responseMessage))
+      {
+        res = true;
+      }
+      else
+      {
+        if (lastResponseStatus != Status.ErrorNotFound)
+          log.Warn("Received unexpected or invalid message.");
+      }
 
       log.Trace("(-):{0}", res);
       return res;

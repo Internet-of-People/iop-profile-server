@@ -12,7 +12,9 @@ namespace ProfileServer.Migrations
                 name: "Followers",
                 columns: table => new
                 {
-                    Id = table.Column<byte[]>(maxLength: 32, nullable: false),
+                    DbId = table.Column<int>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    FollowerId = table.Column<byte[]>(maxLength: 32, nullable: false),
                     IpAddress = table.Column<string>(nullable: false),
                     LastRefreshTime = table.Column<DateTime>(nullable: true),
                     PrimaryPort = table.Column<int>(nullable: false),
@@ -20,17 +22,19 @@ namespace ProfileServer.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Followers", x => x.Id);
+                    table.PrimaryKey("PK_Followers", x => x.DbId);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Identities",
                 columns: table => new
                 {
-                    IdentityId = table.Column<byte[]>(maxLength: 32, nullable: false),
+                    DbId = table.Column<int>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
                     ExpirationDate = table.Column<DateTime>(nullable: true),
                     ExtraData = table.Column<string>(maxLength: 200, nullable: false),
                     HostingServerId = table.Column<byte[]>(maxLength: 32, nullable: true),
+                    IdentityId = table.Column<byte[]>(maxLength: 32, nullable: false),
                     InitialLocationLatitude = table.Column<decimal>(type: "decimal(9,6)", nullable: false),
                     InitialLocationLongitude = table.Column<decimal>(type: "decimal(9,6)", nullable: false),
                     Name = table.Column<string>(maxLength: 64, nullable: false),
@@ -42,24 +46,26 @@ namespace ProfileServer.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Identities", x => x.IdentityId);
+                    table.PrimaryKey("PK_Identities", x => x.DbId);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Neighbors",
                 columns: table => new
                 {
-                    Id = table.Column<byte[]>(maxLength: 32, nullable: false),
+                    DbId = table.Column<int>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
                     IpAddress = table.Column<string>(nullable: false),
                     LastRefreshTime = table.Column<DateTime>(nullable: true),
                     LocationLatitude = table.Column<decimal>(type: "decimal(9,6)", nullable: false),
                     LocationLongitude = table.Column<decimal>(type: "decimal(9,6)", nullable: false),
+                    NeighborId = table.Column<byte[]>(maxLength: 32, nullable: false),
                     PrimaryPort = table.Column<int>(nullable: false),
                     SrNeighborPort = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Neighbors", x => x.Id);
+                    table.PrimaryKey("PK_Neighbors", x => x.DbId);
                 });
 
             migrationBuilder.CreateTable(
@@ -81,13 +87,15 @@ namespace ProfileServer.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "NeighborhoodIdentities",
+                name: "NeighborIdentities",
                 columns: table => new
                 {
-                    IdentityId = table.Column<byte[]>(maxLength: 32, nullable: false),
-                    HostingServerId = table.Column<byte[]>(maxLength: 32, nullable: false),
+                    DbId = table.Column<int>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
                     ExpirationDate = table.Column<DateTime>(nullable: true),
                     ExtraData = table.Column<string>(maxLength: 200, nullable: false),
+                    HostingServerId = table.Column<byte[]>(maxLength: 32, nullable: false),
+                    IdentityId = table.Column<byte[]>(maxLength: 32, nullable: false),
                     InitialLocationLatitude = table.Column<decimal>(type: "decimal(9,6)", nullable: false),
                     InitialLocationLongitude = table.Column<decimal>(type: "decimal(9,6)", nullable: false),
                     Name = table.Column<string>(maxLength: 64, nullable: false),
@@ -99,17 +107,19 @@ namespace ProfileServer.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_NeighborhoodIdentities", x => new { x.IdentityId, x.HostingServerId });
+                    table.PrimaryKey("PK_NeighborIdentities", x => x.DbId);
                 });
 
             migrationBuilder.CreateTable(
                 name: "RelatedIdentities",
                 columns: table => new
                 {
-                    IdentityId = table.Column<byte[]>(maxLength: 32, nullable: false),
+                    DbId = table.Column<int>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
                     ApplicationId = table.Column<byte[]>(maxLength: 32, nullable: false),
                     CardId = table.Column<byte[]>(maxLength: 32, nullable: false),
                     CardVersion = table.Column<byte[]>(maxLength: 3, nullable: false),
+                    IdentityId = table.Column<byte[]>(maxLength: 32, nullable: false),
                     IssuerPublicKey = table.Column<byte[]>(maxLength: 128, nullable: false),
                     IssuerSignature = table.Column<byte[]>(maxLength: 100, nullable: false),
                     RecipientPublicKey = table.Column<byte[]>(maxLength: 128, nullable: false),
@@ -121,7 +131,7 @@ namespace ProfileServer.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RelatedIdentities", x => new { x.IdentityId, x.ApplicationId });
+                    table.PrimaryKey("PK_RelatedIdentities", x => x.DbId);
                 });
 
             migrationBuilder.CreateTable(
@@ -137,9 +147,9 @@ namespace ProfileServer.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Followers_Id",
+                name: "IX_Followers_FollowerId",
                 table: "Followers",
-                column: "Id",
+                column: "FollowerId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -189,15 +199,15 @@ namespace ProfileServer.Migrations
                 columns: new[] { "ExpirationDate", "InitialLocationLatitude", "InitialLocationLongitude", "Type", "Name" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Neighbors_Id",
-                table: "Neighbors",
-                column: "Id",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Neighbors_LastRefreshTime",
                 table: "Neighbors",
                 column: "LastRefreshTime");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Neighbors_NeighborId",
+                table: "Neighbors",
+                column: "NeighborId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Neighbors_IpAddress_PrimaryPort",
@@ -241,44 +251,39 @@ namespace ProfileServer.Migrations
                 columns: new[] { "ServerId", "Type", "TargetIdentityId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_NeighborhoodIdentities_ExpirationDate",
-                table: "NeighborhoodIdentities",
-                column: "ExpirationDate");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_NeighborhoodIdentities_ExtraData",
-                table: "NeighborhoodIdentities",
+                name: "IX_NeighborIdentities_ExtraData",
+                table: "NeighborIdentities",
                 column: "ExtraData");
 
             migrationBuilder.CreateIndex(
-                name: "IX_NeighborhoodIdentities_HostingServerId",
-                table: "NeighborhoodIdentities",
+                name: "IX_NeighborIdentities_HostingServerId",
+                table: "NeighborIdentities",
                 column: "HostingServerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_NeighborhoodIdentities_Name",
-                table: "NeighborhoodIdentities",
+                name: "IX_NeighborIdentities_Name",
+                table: "NeighborIdentities",
                 column: "Name");
 
             migrationBuilder.CreateIndex(
-                name: "IX_NeighborhoodIdentities_Type",
-                table: "NeighborhoodIdentities",
+                name: "IX_NeighborIdentities_Type",
+                table: "NeighborIdentities",
                 column: "Type");
 
             migrationBuilder.CreateIndex(
-                name: "IX_NeighborhoodIdentities_IdentityId_HostingServerId",
-                table: "NeighborhoodIdentities",
-                columns: new[] { "IdentityId", "HostingServerId" },
+                name: "IX_NeighborIdentities_HostingServerId_IdentityId",
+                table: "NeighborIdentities",
+                columns: new[] { "HostingServerId", "IdentityId" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_NeighborhoodIdentities_InitialLocationLatitude_InitialLocationLongitude",
-                table: "NeighborhoodIdentities",
+                name: "IX_NeighborIdentities_InitialLocationLatitude_InitialLocationLongitude",
+                table: "NeighborIdentities",
                 columns: new[] { "InitialLocationLatitude", "InitialLocationLongitude" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_NeighborhoodIdentities_InitialLocationLatitude_InitialLocationLongitude_Type_Name",
-                table: "NeighborhoodIdentities",
+                name: "IX_NeighborIdentities_InitialLocationLatitude_InitialLocationLongitude_Type_Name",
+                table: "NeighborIdentities",
                 columns: new[] { "InitialLocationLatitude", "InitialLocationLongitude", "Type", "Name" });
 
             migrationBuilder.CreateIndex(
@@ -323,7 +328,7 @@ namespace ProfileServer.Migrations
                 name: "NeighborhoodActions");
 
             migrationBuilder.DropTable(
-                name: "NeighborhoodIdentities");
+                name: "NeighborIdentities");
 
             migrationBuilder.DropTable(
                 name: "RelatedIdentities");

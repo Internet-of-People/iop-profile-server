@@ -8,7 +8,7 @@ namespace ProfileServerNetworkSimulator
   /// <summary>
   /// All types of commands that are supported. Note that Unknown represents an invalid command.
   /// </summary>
-  public enum CommandType { Unknown, ProfileServer, StartServer, StopServer, Neighborhood, CancelNeighborhood, Neighbor, CancelNeighbor, Identity, CancelIdentity, TestQuery, Delay }
+  public enum CommandType { Unknown, ProfileServer, StartServer, StopServer, Neighborhood, CancelNeighborhood, Neighbor, CancelNeighbor, Identity, CancelIdentity, TestQuery, Delay, TakeSnapshot, LoadSnapshot, DebugMode }
 
   /// <summary>
   /// Base class for all types for commands.
@@ -172,7 +172,7 @@ namespace ProfileServerNetworkSimulator
     /// <param name="LineNumber">Line number of the command in the scenario file.</param>
     /// <param name="OriginalCommand">Original scenario file line.</param>
     public CommandCancelNeighborhood(int LineNumber, string OriginalCommand) :
-      base(CommandType.Neighborhood, LineNumber, OriginalCommand)
+      base(CommandType.CancelNeighborhood, LineNumber, OriginalCommand)
     {
     }
   }
@@ -218,7 +218,7 @@ namespace ProfileServerNetworkSimulator
     /// <param name="LineNumber">Line number of the command in the scenario file.</param>
     /// <param name="OriginalCommand">Original scenario file line.</param>
     public CommandCancelNeighbor(int LineNumber, string OriginalCommand) :
-      base(CommandType.Neighbor, LineNumber, OriginalCommand)
+      base(CommandType.CancelNeighbor, LineNumber, OriginalCommand)
     {
     }
   }
@@ -276,7 +276,7 @@ namespace ProfileServerNetworkSimulator
 
 
   /// <summary>
-  /// CancelIdentity command cancels hosting agreement of one or more identities with their profile servers. 
+  /// CancelIdentity command cancels hosting agreements of one or more identities with their profile servers. 
   /// </summary>
   public class CommandCancelIdentity : Command
   {
@@ -295,7 +295,7 @@ namespace ProfileServerNetworkSimulator
     /// <param name="LineNumber">Line number of the command in the scenario file.</param>
     /// <param name="OriginalCommand">Original scenario file line.</param>
     public CommandCancelIdentity(int LineNumber, string OriginalCommand) :
-      base(CommandType.Neighborhood, LineNumber, OriginalCommand)
+      base(CommandType.CancelIdentity, LineNumber, OriginalCommand)
     {
     }
   }
@@ -363,4 +363,63 @@ namespace ProfileServerNetworkSimulator
     {
     }
   }
+
+  /// <summary>
+  /// TakeSnapshot command saves the current state of the simulation to the directory under the snapshots folder.
+  /// </summary>
+  public class CommandTakeSnapshot : Command
+  {
+    /// <summary>Name of the snapshot.</summary>
+    public string Name;
+
+    /// <summary>
+    /// Initializes the base command type.
+    /// </summary>
+    /// <param name="LineNumber">Line number of the command in the scenario file.</param>
+    /// <param name="OriginalCommand">Original scenario file line.</param>
+    public CommandTakeSnapshot(int LineNumber, string OriginalCommand) :
+      base(CommandType.TakeSnapshot, LineNumber, OriginalCommand)
+    {
+    }
+  }
+
+  /// <summary>
+  /// LoadSnapshot command restores the state of the simulation from the directory under the snapshots folder.
+  /// </summary>
+  public class CommandLoadSnapshot : Command
+  {
+    /// <summary>Name of the snapshot.</summary>
+    public string Name;
+
+    /// <summary>
+    /// Initializes the base command type.
+    /// </summary>
+    /// <param name="LineNumber">Line number of the command in the scenario file.</param>
+    /// <param name="OriginalCommand">Original scenario file line.</param>
+    public CommandLoadSnapshot(int LineNumber, string OriginalCommand) :
+      base(CommandType.LoadSnapshot, LineNumber, OriginalCommand)
+    {
+    }
+  }
+
+
+  /// <summary>
+  /// DebugMode command enables or disables debug console outputs.
+  /// </summary>
+  public class CommandDebugMode : Command
+  {
+    /// <summary>true to enable, false to disable debug outputs.</summary>
+    public bool Enable; 
+
+    /// <summary>
+    /// Initializes the base command type.
+    /// </summary>
+    /// <param name="LineNumber">Line number of the command in the scenario file.</param>
+    /// <param name="OriginalCommand">Original scenario file line.</param>
+    public CommandDebugMode(int LineNumber, string OriginalCommand) :
+      base(CommandType.DebugMode, LineNumber, OriginalCommand)
+    {
+    }
+  }
+
 }
