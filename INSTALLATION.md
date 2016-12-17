@@ -7,7 +7,7 @@ In order to install and run Profile Server, you need to
  * download the Profile Server source codes from GitHub,
  * build the Profile Server binaries,
  * configure the Profile Server,
- * run the Profile Server
+ * run the Profile Server.
 
 ## Install .NET Core
 
@@ -75,6 +75,11 @@ server_interface = 198.51.100.53
 ```
 
 
+### Add Logging Configuration
+
+Copy logging configuration file `$InstDir\src\ProfileServer\ProfileServer.conf` to your `$BinDir`.
+
+
 
 ## Run Profile Server
 
@@ -89,4 +94,11 @@ Otherwise, you can go to `$InstDir\src\ProfileServer` and execute
 ```
 dotnet run
 ```
+
+
+## Troubleshooting
+
+If you added a logging configuration file to your `$BinDir` as described above, every time you run the Profile Server, logs are going to be created in `$BinDir\Logs` folder. If there are any problems 
+with your Profile Server, the log file will contain detailed information about it and may help you overcome the problems.
+
 

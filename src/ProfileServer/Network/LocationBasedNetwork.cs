@@ -785,7 +785,7 @@ namespace ProfileServer.Network
           // i.e. the neighborhood initialization process will be started.
           // We set a random delay depending on the current size of the neighborhood, 
           // so that a new server joining a neighborhood is not overwhelmed with requests.
-          int delay = RandomSource.Generator.Next(0, 2 * res.NeighborhoodSize);
+          int delay = RandomSource.Generator.Next(0, 3 * res.NeighborhoodSize);
           NeighborhoodAction action = new NeighborhoodAction()
           {
             ServerId = ServerId,
