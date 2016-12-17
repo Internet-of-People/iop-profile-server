@@ -44,11 +44,18 @@ Go to `$InstDir\src\ProfileServer` and execute
 ```
 dotnet restore
 dotnet build
-dotnet ef database update
 ```
 
 The last command will create `$InstDir\src\ProfileServer\bin` folder with a subfolder that contains the compiled Profile Server binaries. The actual name of the final binary folder 
 differs with each operating system. The final folder with the binaries will be called `$BinDir` in the text below. 
+
+Finally, go to `$InstDir\src\ProfileServer` and execute 
+
+```
+dotnet ef database update
+```
+
+to initialize the Profile Server's database.
 
 ## Configure Profile Server
 
