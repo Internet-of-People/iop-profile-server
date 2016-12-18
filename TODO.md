@@ -51,13 +51,3 @@ greatly suffer.
 
 
 
-### Unused Images in Images Folder
-
-Currently, there is no garbage collector that would remove unused images from the images folder. If the server process is terminated in certain 
-situations, image files that are not linked to any records in the database can be created. 
-
-To solve this problem, a garbage collector could be implemented, that could possibly run during the profile server startup and that would 
-delete all images in the images folder that are not referenced from the database. 
-
-
-

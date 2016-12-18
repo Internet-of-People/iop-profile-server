@@ -16,7 +16,8 @@ namespace ProfileServer.Network
   /// Expiration manager is responsible for several maintanence tasks:
   ///  * periodically check follower servers to prevent expiration and deleting of shared profiles on follower servers,
   ///  * periodically check for expired hosted identities and delete them,
-  ///  * periodically check for expired neighbor identities and delete them and the neighbors themselves.
+  ///  * periodically check for expired neighbor identities and delete them and the neighbors themselves,
+  ///  * periodically check and delete unused profile images.
   /// </summary>
   public class ExpirationManager : Component
   {
@@ -49,6 +50,15 @@ namespace ProfileServer.Network
     private const int CheckExpiredNeighborIdentitiesTimerInterval = 31 * 60 * 1000;
 
 
+
+    /// <summary>How quickly in milliseconds after the component start will checkUnusedImagesTimer signal for the first time.</summary>
+    private const int CheckUnusedImagesTimerStartDelay = 200 * 1000;
+
+    /// <summary>Interval in milliseconds for checkUnusedImagesTimer.</summary>
+    private const int CheckUnusedImagesTimerInterval = 37 * 60 * 1000;
+
+
+
     /// <summary>Timer that invokes checks of follower servers.</summary>
     private static Timer checkFollowersRefreshTimer;
 
@@ -71,6 +81,14 @@ namespace ProfileServer.Network
 
 
 
+    /// <summary>Timer that invokes checks of neighbor identities.</summary>
+    private static Timer checkUnusedImagesTimer;
+
+    /// <summary>Event that is set by checkUnusedImagesTimer.</summary>
+    private static AutoResetEvent checkUnusedImagesEvent = new AutoResetEvent(false);
+
+
+
     /// <summary>Event that is set when maintenanceThread is not running.</summary>
     private ManualResetEvent executiveThreadFinished = new ManualResetEvent(true);
 
@@ -89,6 +107,7 @@ namespace ProfileServer.Network
         checkFollowersRefreshTimer = new Timer(SignalTimerCallback, checkFollowersRefreshEvent, CheckFollowersRefreshTimerStartDelay, CheckFollowersRefreshTimerInterval);
         checkExpiredHostedIdentitiesTimer = new Timer(SignalTimerCallback, checkExpiredHostedIdentitiesEvent, CheckExpiredHostedIdentitiesTimerStartDelay, CheckExpiredHostedIdentitiesTimerInterval);
         checkExpiredNeighborIdentitiesTimer = new Timer(SignalTimerCallback, checkExpiredNeighborIdentitiesEvent, CheckExpiredNeighborIdentitiesTimerStartDelay, CheckExpiredNeighborIdentitiesTimerInterval);
+        checkUnusedImagesTimer = new Timer(SignalTimerCallback, checkUnusedImagesEvent, CheckUnusedImagesTimerStartDelay, CheckUnusedImagesTimerInterval);
 
         executiveThread = new Thread(new ThreadStart(ExecutiveThread));
         executiveThread.Start();
@@ -116,6 +135,9 @@ namespace ProfileServer.Network
 
         if (checkExpiredNeighborIdentitiesTimer != null) checkExpiredNeighborIdentitiesTimer.Dispose();
         checkExpiredNeighborIdentitiesTimer = null;
+
+        if (checkUnusedImagesTimer != null) checkUnusedImagesTimer.Dispose();
+        checkUnusedImagesTimer = null;
       }
 
       log.Info("(-):{0}", res);
@@ -137,6 +159,10 @@ namespace ProfileServer.Network
 
       if (checkExpiredNeighborIdentitiesTimer != null) checkExpiredNeighborIdentitiesTimer.Dispose();
       checkExpiredNeighborIdentitiesTimer = null;
+
+      if (checkUnusedImagesTimer != null) checkUnusedImagesTimer.Dispose();
+      checkUnusedImagesTimer = null;
+
 
       if ((executiveThread != null) && !executiveThreadFinished.WaitOne(10000))
         log.Error("Executive thread did not terminated in 10 seconds.");
@@ -187,6 +213,13 @@ namespace ProfileServer.Network
             CheckExpiredNeighborIdentities();
           }
           else log.Debug("LBN component is not in sync with the LBN server yet, checking expired neighbors will not be executed now.");
+        } 
+        else if (handles[index] == checkUnusedImagesEvent)
+        {
+          log.Trace("checkExpiredHostedIdentitiesEvent activated.");
+
+          ImageManager imageManager = (ImageManager)Base.ComponentDictionary["Data.ImageManager"];
+          imageManager.ProcessImageDeleteList();
         }
       }
 
@@ -274,7 +307,7 @@ namespace ProfileServer.Network
       log.Trace("()");
 
       DateTime now = DateTime.UtcNow;
-      List<Guid> imagesToDelete = new List<Guid>();
+      List<byte[]> imagesToDelete = new List<byte[]>();
       using (UnitOfWork unitOfWork = new UnitOfWork())
       {
         // Disable change tracking for faster multiple deletes.
@@ -290,8 +323,8 @@ namespace ProfileServer.Network
             log.Debug("There are {0} expired hosted identities.", expiredIdentities.Count);
             foreach (HostedIdentity identity in expiredIdentities)
             {
-              if (identity.ProfileImage != null) imagesToDelete.Add(identity.ProfileImage.Value);
-              if (identity.ThumbnailImage != null) imagesToDelete.Add(identity.ThumbnailImage.Value);
+              if (identity.ProfileImage != null) imagesToDelete.Add(identity.ProfileImage);
+              if (identity.ThumbnailImage != null) imagesToDelete.Add(identity.ThumbnailImage);
 
               unitOfWork.HostedIdentityRepository.Delete(identity);
               log.Debug("Identity ID '{0}' expired and will be deleted.", identity.IdentityId.ToHex());
@@ -310,9 +343,15 @@ namespace ProfileServer.Network
         unitOfWork.ReleaseLock(lockObject);
       }
 
-      foreach (Guid guid in imagesToDelete)
-        if (!ImageHelper.DeleteImageFile(guid))
-          log.Warn("Unable to delete image file of image GUID '{0}'.", guid);
+
+      if (imagesToDelete.Count > 0)
+      {
+        ImageManager imageManager = (ImageManager)Base.ComponentDictionary["Data.ImageManager"];
+
+        foreach (byte[] hash in imagesToDelete)
+          imageManager.RemoveImageReference(hash);
+      }
+
 
       log.Trace("(-)");
     }

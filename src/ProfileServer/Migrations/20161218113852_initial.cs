@@ -38,9 +38,9 @@ namespace ProfileServer.Migrations
                     InitialLocationLatitude = table.Column<decimal>(type: "decimal(9,6)", nullable: false),
                     InitialLocationLongitude = table.Column<decimal>(type: "decimal(9,6)", nullable: false),
                     Name = table.Column<string>(maxLength: 64, nullable: false),
-                    ProfileImage = table.Column<Guid>(nullable: true),
+                    ProfileImage = table.Column<byte[]>(nullable: true),
                     PublicKey = table.Column<byte[]>(maxLength: 128, nullable: false),
-                    ThumbnailImage = table.Column<Guid>(nullable: true),
+                    ThumbnailImage = table.Column<byte[]>(nullable: true),
                     Type = table.Column<string>(maxLength: 64, nullable: false),
                     Version = table.Column<byte[]>(maxLength: 3, nullable: false)
                 },
@@ -99,9 +99,9 @@ namespace ProfileServer.Migrations
                     InitialLocationLatitude = table.Column<decimal>(type: "decimal(9,6)", nullable: false),
                     InitialLocationLongitude = table.Column<decimal>(type: "decimal(9,6)", nullable: false),
                     Name = table.Column<string>(maxLength: 64, nullable: false),
-                    ProfileImage = table.Column<Guid>(nullable: true),
+                    ProfileImage = table.Column<byte[]>(nullable: true),
                     PublicKey = table.Column<byte[]>(maxLength: 128, nullable: false),
-                    ThumbnailImage = table.Column<Guid>(nullable: true),
+                    ThumbnailImage = table.Column<byte[]>(nullable: true),
                     Type = table.Column<string>(maxLength: 64, nullable: false),
                     Version = table.Column<byte[]>(maxLength: 3, nullable: false)
                 },

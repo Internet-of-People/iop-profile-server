@@ -41,6 +41,7 @@ namespace ProfileServer.Kernel
       {
         { "Config.Config", Configuration },
         { "Data.Database", new Data.Database() },
+        { "Data.ImageManager", new Data.ImageManager() },
         { "Network.Server", new Network.Server() },
         { "Network.LocationBasedNetwork", new Network.LocationBasedNetwork() },
         { "Network.NeighborhoodActionProcessor", new Network.NeighborhoodActionProcessor() },
@@ -52,6 +53,7 @@ namespace ProfileServer.Kernel
       {
         ComponentDictionary["Config.Config"],
         ComponentDictionary["Data.Database"],
+        ComponentDictionary["Data.ImageManager"],
         ComponentDictionary["Network.Server"],
         ComponentDictionary["Network.LocationBasedNetwork"],
         ComponentDictionary["Network.NeighborhoodActionProcessor"],

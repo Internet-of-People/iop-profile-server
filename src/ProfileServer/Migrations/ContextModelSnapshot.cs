@@ -74,13 +74,13 @@ namespace ProfileServer.Migrations
                         .IsRequired()
                         .HasMaxLength(64);
 
-                    b.Property<Guid?>("ProfileImage");
+                    b.Property<byte[]>("ProfileImage");
 
                     b.Property<byte[]>("PublicKey")
                         .IsRequired()
                         .HasMaxLength(128);
 
-                    b.Property<Guid?>("ThumbnailImage");
+                    b.Property<byte[]>("ThumbnailImage");
 
                     b.Property<string>("Type")
                         .IsRequired()
@@ -215,13 +215,13 @@ namespace ProfileServer.Migrations
                         .IsRequired()
                         .HasMaxLength(64);
 
-                    b.Property<Guid?>("ProfileImage");
+                    b.Property<byte[]>("ProfileImage");
 
                     b.Property<byte[]>("PublicKey")
                         .IsRequired()
                         .HasMaxLength(128);
 
-                    b.Property<Guid?>("ThumbnailImage");
+                    b.Property<byte[]>("ThumbnailImage");
 
                     b.Property<string>("Type")
                         .IsRequired()

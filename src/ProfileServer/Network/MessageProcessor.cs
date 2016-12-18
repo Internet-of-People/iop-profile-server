@@ -1062,19 +1062,19 @@ namespace ProfileServer.Network
               // If we are replacing those images, we have to create new files and delete the old files.
               // First, we create the new files and then in DB transaction, we get information about 
               // whether to delete existing files and which ones.
-              Guid? profileImageToDelete = null;
-              Guid? thumbnailImageToDelete = null;
+              byte[] profileImageToDelete = null;
+              byte[] thumbnailImageToDelete = null;
 
               if (updateProfileRequest.SetImage)
               {
                 byte[] profileImage = updateProfileRequest.Image.ToByteArray();
                 if (profileImage.Length > 0)
                 {
-                  identityForValidation.ProfileImage = Guid.NewGuid();
-                  identityForValidation.ThumbnailImage = Guid.NewGuid();
-
                   byte[] thumbnailImage;
-                  ImageHelper.ProfileImageToThumbnailImage(profileImage, out thumbnailImage);
+                  ImageManager.ProfileImageToThumbnailImage(profileImage, out thumbnailImage);
+
+                  identityForValidation.ProfileImage = Crypto.Sha256(profileImage);
+                  identityForValidation.ThumbnailImage = Crypto.Sha256(thumbnailImage);
 
                   await identityForValidation.SaveProfileImageDataAsync(profileImage);
                   await identityForValidation.SaveThumbnailImageDataAsync(thumbnailImage);
@@ -1110,7 +1110,7 @@ namespace ProfileServer.Network
                     if (updateProfileRequest.SetImage)
                     {
                       // Here we replace existing images with new ones
-                      // and we save the old images GUIDs so we can delete them later.
+                      // and we save the old images hashes so we can delete them later.
                       profileImageToDelete = identity.ProfileImage;
                       thumbnailImageToDelete = identity.ThumbnailImage;
 
@@ -1183,18 +1183,11 @@ namespace ProfileServer.Network
                   NeighborhoodActionProcessor neighborhoodActionProcessor = (NeighborhoodActionProcessor)Base.ComponentDictionary["Network.NeighborhoodActionProcessor"];
                   neighborhoodActionProcessor.Signal();
                 }
-              }
 
-              // Delete old files, if there are any.
-              if (profileImageToDelete != null)
-              {
-                if (ImageHelper.DeleteImageFile(profileImageToDelete.Value)) log.Trace("Old file of image {0} deleted.", profileImageToDelete.Value);
-                else log.Error("Unable to delete old file of image {0}.", profileImageToDelete.Value);
-              }
-              if (thumbnailImageToDelete != null)
-              {
-                if (ImageHelper.DeleteImageFile(thumbnailImageToDelete.Value)) log.Trace("Old file of image {0} deleted.", thumbnailImageToDelete.Value);
-                else log.Error("Unable to delete old file of image {0}.", thumbnailImageToDelete.Value);
+                // Delete old files, if there are any.
+                ImageManager imageManager = (ImageManager)Base.ComponentDictionary["Data.ImageManager"];
+                if (profileImageToDelete != null) imageManager.RemoveImageReference(profileImageToDelete);
+                if (thumbnailImageToDelete != null) imageManager.RemoveImageReference(thumbnailImageToDelete);
               }
             }
             else res = errorResponse;
@@ -1299,7 +1292,7 @@ namespace ProfileServer.Network
 
           // Profile image must be PNG or JPEG image, no bigger than Identity.MaxProfileImageLengthBytes.
           bool eraseImage = image.Length == 0;
-          bool imageValid = (image.Length <= IdentityBase.MaxProfileImageLengthBytes) && (eraseImage || ImageHelper.ValidateImageFormat(image));
+          bool imageValid = (image.Length <= IdentityBase.MaxProfileImageLengthBytes) && (eraseImage || ImageManager.ValidateImageFormat(image));
           if (!imageValid)
           {
             log.Debug("Invalid image.");
@@ -1376,8 +1369,8 @@ namespace ProfileServer.Network
 
       if (!cancelHostingAgreementRequest.RedirectToNewProfileServer || (cancelHostingAgreementRequest.NewProfileServerNetworkId.Length == IdentityBase.IdentifierLength))
       {
-        Guid? profileImageToDelete = null;
-        Guid? thumbnailImageToDelete = null;
+        byte[] profileImageToDelete = null;
+        byte[] thumbnailImageToDelete = null;
 
         bool success = false;
         res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
@@ -1397,8 +1390,12 @@ namespace ProfileServer.Network
                 if (!identity.IsProfileInitialized())
                   identity.Version = SemVer.V100.ToByteArray();
 
+                // We are going to delete the images, so we have to make sure, the identity in database does not reference it anymore.
                 profileImageToDelete = identity.ProfileImage;
                 thumbnailImageToDelete = identity.ThumbnailImage;
+
+                identity.ProfileImage = null;
+                identity.ThumbnailImage = null;
 
                 if (cancelHostingAgreementRequest.RedirectToNewProfileServer)
                 {
@@ -1457,19 +1454,12 @@ namespace ProfileServer.Network
               NeighborhoodActionProcessor neighborhoodActionProcessor = (NeighborhoodActionProcessor)Base.ComponentDictionary["Network.NeighborhoodActionProcessor"];
               neighborhoodActionProcessor.Signal();
             }
-          }
-        }
 
-        // Delete old files, if there are any.
-        if (profileImageToDelete != null)
-        {
-          if (ImageHelper.DeleteImageFile(profileImageToDelete.Value)) log.Trace("Old file of image {0} deleted.", profileImageToDelete.Value);
-          else log.Error("Unable to delete old file of image {0}.", profileImageToDelete.Value);
-        }
-        if (thumbnailImageToDelete != null)
-        {
-          if (ImageHelper.DeleteImageFile(thumbnailImageToDelete.Value)) log.Trace("Old file of image {0} deleted.", thumbnailImageToDelete.Value);
-          else log.Error("Unable to delete old file of image {0}.", thumbnailImageToDelete.Value);
+            // Delete old files, if there are any.
+            ImageManager imageManager = (ImageManager)Base.ComponentDictionary["Data.ImageManager"];
+            if (profileImageToDelete != null) imageManager.RemoveImageReference(profileImageToDelete);
+            if (thumbnailImageToDelete != null) imageManager.RemoveImageReference(thumbnailImageToDelete);
+          }
         }
       }
       else
@@ -3164,9 +3154,9 @@ namespace ProfileServer.Network
 
       // Second, we do a validation of all items without touching a database.
 
-      // itemsImageGuids is a mapping of indexes of update items to GUIDs of images that has been successfully 
+      // itemsImageHashes is a mapping of indexes of update items to hashes of images that has been successfully 
       // stored to the images folder.
-      Dictionary<int, Guid> itemsImageGuids = new Dictionary<int, Guid>();
+      Dictionary<int, byte[]> itemsImageHashes = new Dictionary<int, byte[]>();
 
       // itemIndex will hold the index of the first item that is invalid.
       // If it reaches the number of items, all items are valid.
@@ -3184,18 +3174,17 @@ namespace ProfileServer.Network
           if (updateItem.ActionTypeCase == SharedProfileUpdateItem.ActionTypeOneofCase.Add && updateItem.Add.SetThumbnailImage) newImageData = updateItem.Add.ThumbnailImage.ToByteArray();
           else if (updateItem.ActionTypeCase == SharedProfileUpdateItem.ActionTypeOneofCase.Add && updateItem.Add.SetThumbnailImage) newImageData = updateItem.Change.ThumbnailImage.ToByteArray();
 
-          Guid? imageGuid = null;
           if ((newImageData != null) && (newImageData.Length != 0))
           {
-            imageGuid = Guid.NewGuid();
-            if (!await ImageHelper.SaveImageDataAsync(imageGuid.Value, newImageData))
+            byte[] imageHash = Crypto.Sha256(newImageData);
+            if (!await ImageManager.SaveImageDataAsync(imageHash, newImageData))
             {
               log.Error("Unable to save image data from item index {0} to file.", itemIndex);
               res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
               break;
             }
 
-            itemsImageGuids.Add(itemIndex, imageGuid.Value);
+            itemsImageHashes.Add(itemIndex, imageHash);
           }
 
           if (updateItem.ActionTypeCase == SharedProfileUpdateItem.ActionTypeOneofCase.Refresh)
@@ -3224,12 +3213,8 @@ namespace ProfileServer.Network
       // We will process the data in batches of max 100 items, not to occupy the database locks for too long.
       log.Trace("Saving {0} valid profiles.", itemIndex);
 
-      // imagesToDelete is a list of image GUIDs that were replaced and the corresponding image files should be deleted.
-      HashSet<Guid> imagesToDelete = new HashSet<Guid>();
-
-      // savedImageGuids is a list of image GUIDs that were sent in update message and that were successfully stored in the database.
-      // Such images should not be deleted as they are referenced from DB.
-      HashSet<Guid> savedImageGuids = new HashSet<Guid>();
+      // imagesToDelete is a list of image hashes that were replaced and the corresponding image files should be deleted.
+      List<byte[]> imagesToDelete = new List<byte[]>();
 
       // Index of the update item currently being processed.
       int index = 0;
@@ -3243,9 +3228,12 @@ namespace ProfileServer.Network
           log.Trace("Processing batch number {0}, which starts with item index {1}.", batchNumber, index);
           batchNumber++;
 
-          // List of image GUIDs that this batch used.
-          // If the batch is saved to the database successfully, all these images are safe and should go to savedImageGuids list.
-          List<Guid> batchImageGuids = new List<Guid>();
+          // List of update item indexes with images that this batch used.
+          // If the batch is saved to the database successfully, all images of these items are safe.
+          List<int> batchUsedImageItemIndexes = new List<int>();
+
+          // List of item image hashes of images that were removed during this batch.
+          List<byte[]> batchDeletedImageHashes = new List<byte[]>();
 
           DatabaseLock lockObject = UnitOfWork.NeighborIdentityLock;
           using (IDbContextTransaction transaction = await unitOfWork.BeginTransactionWithLockAsync(lockObject))
@@ -3258,17 +3246,16 @@ namespace ProfileServer.Network
               {
                 SharedProfileUpdateItem updateItem = neighborhoodSharedProfileUpdateRequest.Items[index];
 
-                Guid? itemImage = null;
-                Guid itemImageGuid;
-                if (itemsImageGuids.TryGetValue(index, out itemImageGuid))
-                  itemImage = itemImageGuid;
+                byte[] itemImageHash = null;
+                if (!itemsImageHashes.TryGetValue(index, out itemImageHash))
+                  itemImageHash = null;
 
-                StoreSharedProfileUpdateResult storeResult = await StoreSharedProfileUpdateToDatabase(unitOfWork, updateItem, index, neighborId, itemImage, messageBuilder, RequestMessage);
+                StoreSharedProfileUpdateResult storeResult = await StoreSharedProfileUpdateToDatabase(unitOfWork, updateItem, index, neighborId, itemImageHash, messageBuilder, RequestMessage);
                 if (storeResult.SaveDb) saveDb = true;
                 if (storeResult.Error) error = true;
                 if (storeResult.ErrorResponse != null) res = storeResult.ErrorResponse;
-                if (storeResult.ImageToDelete != null) imagesToDelete.Add(storeResult.ImageToDelete.Value);
-                if (storeResult.ItemImageUsed) batchImageGuids.Add(itemImage.Value);
+                if (storeResult.ImageToDelete != null) batchDeletedImageHashes.Add(storeResult.ImageToDelete);
+                if (storeResult.ItemImageUsed) batchUsedImageItemIndexes.Add(index);
 
                 // Error here means that we want to save all already processed items to the database
                 // and quite the loop right after that, the response is filled with error response already.
@@ -3293,9 +3280,18 @@ namespace ProfileServer.Network
             if (success)
             {
               // Data were saved to the database successfully.
-              // All image guids from this batch are safe in DB.
-              foreach (Guid guid in batchImageGuids)
-                savedImageGuids.Add(guid);
+              // All image hashes from this batch are safe in DB.
+              // We remove the index from itemsImageHashes, which will leave 
+              // unused images in itemsImageHashes.
+              foreach (int iIndex in batchUsedImageItemIndexes)
+              {
+                if (itemsImageHashes.ContainsKey(iIndex))
+                  itemsImageHashes.Remove(iIndex);
+              }
+
+              // Similarly, all deleted images should be processed as well.
+              foreach (byte[] hash in batchDeletedImageHashes)
+                imagesToDelete.Add(hash);
             }
             else
             {
@@ -3313,15 +3309,12 @@ namespace ProfileServer.Network
 
       // We now extend the list of images to delete with images of all profiles that were not saved to the database.
       // And then we delete all the image files that are not referenced from DB.
-      foreach (Guid guid in itemsImageGuids.Values)
-      {
-        if (!savedImageGuids.Contains(guid))
-          imagesToDelete.Add(guid);
-      }
+      foreach (byte[] hash in itemsImageHashes.Values)
+          imagesToDelete.Add(hash);
 
-      foreach (Guid guid in imagesToDelete)
-        if (!ImageHelper.DeleteImageFile(guid))
-          log.Error("Unable to delete image file GUID '{0}' from images folder.", guid);
+      ImageManager imageManager = (ImageManager)Base.ComponentDictionary["Data.ImageManager"];
+      foreach (byte[] hash in imagesToDelete)
+        imageManager.RemoveImageReference(hash);
 
 
       if (res == null) res = messageBuilder.CreateNeighborhoodSharedProfileUpdateResponse(RequestMessage);
@@ -3345,8 +3338,8 @@ namespace ProfileServer.Network
       /// <summary>If there was an error, this is the error response message to be delivered to the neighbor.</summary>
       public Message ErrorResponse;
 
-      /// <summary>If any image was replaced and the file on disk should be deleted, this is set to its GUID.</summary>
-      public Guid? ImageToDelete;
+      /// <summary>If any image was replaced and the file on disk should be deleted, this is set to its hash.</summary>
+      public byte[] ImageToDelete;
 
       /// <summary>True if the ItemImage was used, false otherwise.</summary>
       public bool ItemImageUsed;
@@ -3360,12 +3353,12 @@ namespace ProfileServer.Network
     /// <param name="UpdateItem">Update item that is to be processed.</param>
     /// <param name="UpdateItemIndex">Index of the item within the request.</param>
     /// <param name="NeighborId">Identifier of the neighbor that sent the request.</param>
-    /// <param name="ItemImage">GUID of the image related to this item, or null if this item does not have a related image.</param>
+    /// <param name="ItemImageHash">Hash of the image related to this item, or null if this item does not have a related image.</param>
     /// <param name="MessageBuilder">Neighbor client's message builder.</param>
     /// <param name="RequestMessage">Original request message sent by the neighbor.</param>
     /// <returns>Result described by StoreSharedProfileUpdateResult class.</returns>
     /// <remarks>The caller of this function is responsible to call this function within a database transaction with acquired NeighborIdentityLock.</remarks>
-    private async Task<StoreSharedProfileUpdateResult> StoreSharedProfileUpdateToDatabase(UnitOfWork UnitOfWork, SharedProfileUpdateItem UpdateItem, int UpdateItemIndex, byte[] NeighborId, Guid? ItemImage, MessageBuilder MessageBuilder, Message RequestMessage)
+    private async Task<StoreSharedProfileUpdateResult> StoreSharedProfileUpdateToDatabase(UnitOfWork UnitOfWork, SharedProfileUpdateItem UpdateItem, int UpdateItemIndex, byte[] NeighborId, byte[] ItemImageHash, MessageBuilder MessageBuilder, Message RequestMessage)
     {
       log.Trace("(UpdateItemIndex:{0})", UpdateItemIndex);
 
@@ -3402,11 +3395,11 @@ namespace ProfileServer.Network
                 InitialLocationLongitude = location.Longitude,
                 ExtraData = addItem.ExtraData,
                 ProfileImage = null,
-                ThumbnailImage = ItemImage,
+                ThumbnailImage = ItemImageHash,
                 ExpirationDate = null
               };
 
-              res.ItemImageUsed = ItemImage != null;
+              res.ItemImageUsed = ItemImageHash != null;
 
               UnitOfWork.NeighborIdentityRepository.Insert(newIdentity);
               res.SaveDb = true;
@@ -3437,8 +3430,8 @@ namespace ProfileServer.Network
               {
                 res.ImageToDelete = existingIdentity.ThumbnailImage;
 
-                existingIdentity.ThumbnailImage = ItemImage;
-                res.ItemImageUsed = ItemImage != null;
+                existingIdentity.ThumbnailImage = ItemImageHash;
+                res.ItemImageUsed = ItemImageHash != null;
               }
 
               if (changeItem.SetLocation)
@@ -3486,7 +3479,7 @@ namespace ProfileServer.Network
           }
       }
 
-      log.Trace("(-):*.Error={0},*.SaveDb={1},*.ItemImageUsed={2},*.ImageToDelete='{3}'", res.Error, res.SaveDb, res.ItemImageUsed, res.ImageToDelete != null ? res.ImageToDelete.Value.ToString() : "null");
+      log.Trace("(-):*.Error={0},*.SaveDb={1},*.ItemImageUsed={2},*.ImageToDelete='{3}'", res.Error, res.SaveDb, res.ItemImageUsed, res.ImageToDelete != null ? res.ImageToDelete.ToHex() : "null");
       return res;
     }
 
@@ -3644,7 +3637,7 @@ namespace ProfileServer.Network
       {
         byte[] thumbnailImage = AddItem.ThumbnailImage.ToByteArray();
 
-        bool imageValid = (thumbnailImage.Length <= IdentityBase.MaxThumbnailImageLengthBytes) && ImageHelper.ValidateImageFormat(thumbnailImage);
+        bool imageValid = (thumbnailImage.Length <= IdentityBase.MaxThumbnailImageLengthBytes) && ImageManager.ValidateImageFormat(thumbnailImage);
         if (!imageValid)
         {
           log.Debug("Invalid thumbnail image.");
@@ -3764,7 +3757,7 @@ namespace ProfileServer.Network
 
         bool deleteImage = thumbnailImage.Length == 0;
         bool imageValid = (thumbnailImage.Length <= IdentityBase.MaxThumbnailImageLengthBytes) 
-          && (deleteImage || ImageHelper.ValidateImageFormat(thumbnailImage));
+          && (deleteImage || ImageManager.ValidateImageFormat(thumbnailImage));
         if (!imageValid)
         {
           log.Debug("Invalid thumbnail image.");

@@ -140,11 +140,11 @@ namespace ProfileServer.Data.Models
     // the additional complexity would probably not justify the rare frequency of occurance
     // of this problem.
 
-    /// <summary>Guid of user defined profile picture, which data is stored on disk.</summary>
-    public Guid? ProfileImage { get; set; }
+    /// <summary>SHA256 hash of profile image data, which is stored on disk, or null if the identity has no profile image.</summary>
+    public byte[] ProfileImage { get; set; }
 
-    /// <summary>Guid of thumbnail profile picture, which data is stored on disk.</summary>
-    public Guid? ThumbnailImage { get; set; }
+    /// <summary>SHA256 hash of thumbnail image data, which is stored on disk, or null if the identity has no thumbnail image.</summary>
+    public byte[] ThumbnailImage { get; set; }
 
 
 
@@ -166,7 +166,7 @@ namespace ProfileServer.Data.Models
       if (ProfileImage == null)
         return false;
 
-      profileImageData = await Utils.ImageHelper.GetImageDataAsync(ProfileImage.Value);
+      profileImageData = await ImageManager.GetImageDataAsync(ProfileImage);
       return profileImageData != null;
     }
 
@@ -179,7 +179,7 @@ namespace ProfileServer.Data.Models
       if (ThumbnailImage == null)
         return false;
 
-      thumbnailImageData = await Utils.ImageHelper.GetImageDataAsync(ThumbnailImage.Value);
+      thumbnailImageData = await ImageManager.GetImageDataAsync(ThumbnailImage);
       return thumbnailImageData != null;
     }
 
@@ -223,17 +223,6 @@ namespace ProfileServer.Data.Models
       return thumbnailImageData;
     }
 
-    /// <summary>
-    /// Saves profile image data to a file provided that profileImageData field is initialized.
-    /// </summary>
-    /// <returns>true if the function succeeds, false otherwise.</returns>
-    public async Task<bool> SaveProfileImageDataAsync()
-    {
-      if (ProfileImage == null)
-        return false;
-
-      return await Utils.ImageHelper.SaveImageDataAsync(ProfileImage.Value, profileImageData);
-    }
 
     /// <summary>
     /// Sets and saves profile image data to a file provided.
@@ -246,21 +235,9 @@ namespace ProfileServer.Data.Models
         return false;
 
       profileImageData = Data;
-      return await Utils.ImageHelper.SaveImageDataAsync(ProfileImage.Value, profileImageData);
+      return await ImageManager.SaveImageDataAsync(ProfileImage, profileImageData);
     }
 
-
-    /// <summary>
-    /// Saves thumbnail image data to a file provided that thumbnailImageData field is initialized.
-    /// </summary>
-    /// <returns>true if the function succeeds, false otherwise.</returns>
-    public async Task<bool> SaveThumbnailImageDataAsync()
-    {
-      if (ThumbnailImage == null)
-        return false;
-
-      return await Utils.ImageHelper.SaveImageDataAsync(ThumbnailImage.Value, thumbnailImageData);
-    }
 
     /// <summary>
     /// Sets and saves thumbnail image data to a file provided.
@@ -273,7 +250,7 @@ namespace ProfileServer.Data.Models
         return false;
 
       thumbnailImageData = Data;
-      return await Utils.ImageHelper.SaveImageDataAsync(ThumbnailImage.Value, thumbnailImageData);
+      return await ImageManager.SaveImageDataAsync(ThumbnailImage, thumbnailImageData);
     }
 
 

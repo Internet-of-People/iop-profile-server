@@ -9,7 +9,7 @@ using ProfileServer.Data.Models;
 namespace ProfileServer.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20161213144450_initial")]
+    [Migration("20161218113852_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -75,13 +75,13 @@ namespace ProfileServer.Migrations
                         .IsRequired()
                         .HasMaxLength(64);
 
-                    b.Property<Guid?>("ProfileImage");
+                    b.Property<byte[]>("ProfileImage");
 
                     b.Property<byte[]>("PublicKey")
                         .IsRequired()
                         .HasMaxLength(128);
 
-                    b.Property<Guid?>("ThumbnailImage");
+                    b.Property<byte[]>("ThumbnailImage");
 
                     b.Property<string>("Type")
                         .IsRequired()
@@ -216,13 +216,13 @@ namespace ProfileServer.Migrations
                         .IsRequired()
                         .HasMaxLength(64);
 
-                    b.Property<Guid?>("ProfileImage");
+                    b.Property<byte[]>("ProfileImage");
 
                     b.Property<byte[]>("PublicKey")
                         .IsRequired()
                         .HasMaxLength(128);
 
-                    b.Property<Guid?>("ThumbnailImage");
+                    b.Property<byte[]>("ThumbnailImage");
 
                     b.Property<string>("Type")
                         .IsRequired()

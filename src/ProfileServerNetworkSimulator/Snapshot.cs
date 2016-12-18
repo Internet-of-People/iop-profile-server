@@ -284,7 +284,7 @@ namespace ProfileServerNetworkSimulator
         {
           string serverInstanceDirectory = server.GetInstanceDirectoryName();
           string snapshotInstanceDirectory = Path.Combine(new string[] { snapshotDirectory, "bin", server.Name });
-          if (!Helpers.DirectoryCopy(serverInstanceDirectory, snapshotInstanceDirectory))
+          if (!Helpers.DirectoryCopy(serverInstanceDirectory, snapshotInstanceDirectory, true, new string[] { "logs", "tmp" }))
           {
             log.Error("Unable to copy files from directory '{0}' to '{1}'.", serverInstanceDirectory, snapshotInstanceDirectory);
             error = true;

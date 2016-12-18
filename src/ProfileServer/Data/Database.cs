@@ -167,7 +167,6 @@ namespace ProfileServer.Data
       log.Info("()");
 
       bool res = false;
-      List<Guid> imagesToDelete = new List<Guid>();
       using (UnitOfWork unitOfWork = new UnitOfWork())
       {
         // Disable change tracking for faster multiple deletes.
@@ -187,8 +186,7 @@ namespace ProfileServer.Data
           {
             if (!neighborIdsHashSet.Contains(identity.HostingServerId))
             {
-              if (identity.ProfileImage != null) imagesToDelete.Add(identity.ProfileImage.Value);
-              if (identity.ThumbnailImage != null) imagesToDelete.Add(identity.ThumbnailImage.Value);
+              // Do not delete images here, ImageManager will delete them during its initialization.
 
               unitOfWork.NeighborIdentityRepository.Delete(identity);
               saveDb = true;
@@ -212,10 +210,6 @@ namespace ProfileServer.Data
 
         unitOfWork.ReleaseLock(lockObjects);
       }
-
-      foreach (Guid guid in imagesToDelete)
-        if (!ImageHelper.DeleteImageFile(guid))
-          log.Warn("Unable to delete image file of image GUID '{0}'.", guid);
 
       log.Info("(-):{0}", res);
       return res;

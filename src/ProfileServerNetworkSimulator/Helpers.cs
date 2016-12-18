@@ -30,7 +30,7 @@ namespace ProfileServerNetworkSimulator
     /// <remarks>
     /// Original code - https://msdn.microsoft.com/en-us/library/bb762914.aspx.
     /// </remarks>
-    public static bool DirectoryCopy(string SourceDirName, string DestDirName, bool CopySubDirs = true, string[] DontCopyDirectories)
+    public static bool DirectoryCopy(string SourceDirName, string DestDirName, bool CopySubDirs = true, string[] DontCopyDirectories = null)
     {
       bool res = false;
       DirectoryInfo dir = new DirectoryInfo(SourceDirName);
@@ -58,8 +58,24 @@ namespace ProfileServerNetworkSimulator
         {
           foreach (DirectoryInfo subdir in dirs)
           {
+            if (DontCopyDirectories != null)
+            {
+              bool dontCopy = false;
+              string subdirName = subdir.Name.ToLowerInvariant();
+              foreach (string dontCopyDir in DontCopyDirectories)
+              {
+                if (subdirName == dontCopyDir.ToLowerInvariant())
+                {
+                  dontCopy = true;
+                  break;
+                }
+              }
+
+              if (dontCopy) continue;
+            }
+
             string temppath = Path.Combine(DestDirName, subdir.Name);
-            res = DirectoryCopy(subdir.FullName, temppath, CopySubDirs);
+            res = DirectoryCopy(subdir.FullName, temppath, CopySubDirs, DontCopyDirectories);
             if (!res) break;
           }
         }

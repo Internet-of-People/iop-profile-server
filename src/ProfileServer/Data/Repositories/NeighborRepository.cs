@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using ProfileServerProtocol;
 using ProfileServer.Network;
 using ProfileServer.Utils;
+using ProfileServer.Kernel;
 
 namespace ProfileServer.Data.Repositories
 {
@@ -42,7 +43,7 @@ namespace ProfileServer.Data.Repositories
       log.Trace("(NeighborId:'{0}',ActionId:{1})", NeighborId.ToHex(), ActionId);
 
       bool res = false;
-      List<Guid> imagesToDelete = new List<Guid>();
+      List<byte[]> imagesToDelete = new List<byte[]>();
       using (UnitOfWork unitOfWork = new UnitOfWork())
       {
         bool success = false;
@@ -92,8 +93,7 @@ namespace ProfileServer.Data.Repositories
               log.Debug("There are {0} identities of removed neighbor ID '{1}'.", identities.Count, NeighborId.ToHex());
               foreach (NeighborIdentity identity in identities)
               {
-                if (identity.ProfileImage != null) imagesToDelete.Add(identity.ProfileImage.Value);
-                if (identity.ThumbnailImage != null) imagesToDelete.Add(identity.ThumbnailImage.Value);
+                if (identity.ThumbnailImage != null) imagesToDelete.Add(identity.ThumbnailImage);
 
                 unitOfWork.NeighborIdentityRepository.Delete(identity);
               }
@@ -148,9 +148,13 @@ namespace ProfileServer.Data.Repositories
       }
 
 
-      foreach (Guid guid in imagesToDelete)
-        if (!ImageHelper.DeleteImageFile(guid))
-          log.Warn("Unable to delete image file of image GUID '{0}'.", guid);
+      if (imagesToDelete.Count > 0)
+      {
+        ImageManager imageManager = (ImageManager)Base.ComponentDictionary["Data.ImageManager"];
+
+        foreach (byte[] hash in imagesToDelete)
+          imageManager.RemoveImageReference(hash);
+      }
 
       log.Trace("(-):{0}", res);
       return res;

@@ -31,8 +31,8 @@ namespace ProfileServer.Network
   {
     private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Network.NeighborhoodActionProcessor");
 
-    /// <summary>Interval for role servers inactive client connection checks.</summary>
-    private const int CheckActionListTimerInterval = 60000;
+    /// <summary>Interval for checking the list of neighborhood actions.</summary>
+    private const int CheckActionListTimerInterval = 20000;
 
 
     /// <summary>Timer that invokes checks of the list of neighborhood actions.</summary>
@@ -575,6 +575,12 @@ namespace ProfileServer.Network
                       error = true;
                       break;
                     }
+
+                    if (client.ForceDisconnect)
+                    {
+                      error = true;
+                      break;
+                    }
                   }
                   else
                   {
@@ -584,6 +590,18 @@ namespace ProfileServer.Network
                 }
 
                 res = !error;
+
+                if (!res)
+                {
+                  log.Debug("Error occurred, erasing images of all profiles received from neighbor ID '{0}'.", NeighborId.ToHex());
+
+                  ImageManager imageManager = (ImageManager)Base.ComponentDictionary["Data.ImageManager"];
+                  foreach (NeighborIdentity identity in identityDatabase.Values)
+                  {
+                    if (identity.ThumbnailImage != null)
+                      imageManager.RemoveImageReference(identity.ThumbnailImage);
+                  }
+                }
               }
               else
               {
@@ -794,7 +812,6 @@ namespace ProfileServer.Network
       log.Trace("(NeighborId:'{0}',CurrentActionId:{1})", NeighborId.ToHex(), CurrentActionId);
 
       bool res = false;
-      List<Guid> imagesToDelete = new List<Guid>();
       using (UnitOfWork unitOfWork = new UnitOfWork())
       {
         Neighbor neighbor = (await unitOfWork.NeighborRepository.GetAsync(n => n.NeighborId == NeighborId, null, false)).FirstOrDefault();
@@ -1117,7 +1134,7 @@ namespace ProfileServer.Network
 
     /// <summary>
     /// Processes NeighborhoodSharedProfileUpdateRequest message from client sent during neighborhood initialization process.
-    /// <para>Saves incoming profiles information to the temporary memory location and profiles images to the temporary disk directory.</para>
+    /// <para>Saves incoming profiles information to the temporary memory location.</para>
     /// </summary>
     /// <param name="Client">Client that received the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
@@ -1143,14 +1160,14 @@ namespace ProfileServer.Network
           Dictionary<byte[], NeighborIdentity> identityDatabase = (Dictionary<byte[], NeighborIdentity>)Client.Context;
           if (ValidateInMemorySharedProfileAddItem(addItem, itemIndex, identityDatabase, Client.MessageBuilder, RequestMessage, out errorResponse))
           {
-            Guid? thumbnailImageGuid = null;
+            byte[] thumbnailImageHash = null;
             byte[] thumbnailImageData = addItem.SetThumbnailImage ? addItem.ThumbnailImage.ToByteArray() : null;
             if (thumbnailImageData != null)
             {
-              thumbnailImageGuid = Guid.NewGuid();
-              if (!await ImageHelper.SaveTempImageDataAsync(thumbnailImageGuid.Value, thumbnailImageData))
+              thumbnailImageHash = Crypto.Sha256(thumbnailImageData);
+              if (!await ImageManager.SaveImageDataAsync(thumbnailImageHash, thumbnailImageData))
               {
-                log.Error("Unable to save image GUID '{0}' data to temporary directory.", thumbnailImageGuid.Value);
+                log.Error("Unable to save image hash '{0}' data to images directory.", thumbnailImageHash.ToHex());
                 error = true;
                 break;
               }
@@ -1172,7 +1189,7 @@ namespace ProfileServer.Network
               ExtraData = addItem.ExtraData,
               ExpirationDate = null,
               ProfileImage = null,
-              ThumbnailImage = thumbnailImageGuid
+              ThumbnailImage = thumbnailImageHash
             };
             identityDatabase.Add(identity.IdentityId, identity);
           }
@@ -1190,10 +1207,13 @@ namespace ProfileServer.Network
           error = true;
           break;
         }
+
         itemIndex++;
       }
 
+      // Setting Client.ForceDisconnect to true will cause newly added images to be deleted.
       if (!error) res = messageBuilder.CreateNeighborhoodSharedProfileUpdateResponse(RequestMessage);
+      else Client.ForceDisconnect = true;
 
       log.Trace("(-):*.Response.Status={0}", res.Response.Status);
       return res;
@@ -1281,7 +1301,7 @@ namespace ProfileServer.Network
       {
         byte[] thumbnailImage = AddItem.ThumbnailImage.ToByteArray();
 
-        bool imageValid = (thumbnailImage.Length <= IdentityBase.MaxThumbnailImageLengthBytes) && ImageHelper.ValidateImageFormat(thumbnailImage);
+        bool imageValid = (thumbnailImage.Length <= IdentityBase.MaxThumbnailImageLengthBytes) && ImageManager.ValidateImageFormat(thumbnailImage);
         if (!imageValid)
         {
           log.Debug("Invalid thumbnail image.");
@@ -1351,97 +1371,53 @@ namespace ProfileServer.Network
       bool error = false;
       Dictionary<byte[], NeighborIdentity> identityDatabase = (Dictionary<byte[], NeighborIdentity>)Client.Context;
 
-      // First we move image files from temporary directory to images directory.
-      HashSet<Guid> imagesAlreadyMoved = new HashSet<Guid>();
-      foreach (NeighborIdentity identity in identityDatabase.Values)
+      // Save new identities to the database.
+      using (UnitOfWork unitOfWork = new UnitOfWork())
       {
-        if (identity.ThumbnailImage != null)
+        bool success = false;
+        DatabaseLock[] lockObjects = new DatabaseLock[] { UnitOfWork.NeighborIdentityLock, UnitOfWork.NeighborLock };
+        using (IDbContextTransaction transaction = await unitOfWork.BeginTransactionWithLockAsync(lockObjects))
         {
-          if (ImageHelper.MoveImageFileFromTemp(identity.ThumbnailImage.Value))
+          try
           {
-            imagesAlreadyMoved.Add(identity.ThumbnailImage.Value);
+            Neighbor neighbor = (await unitOfWork.NeighborRepository.GetAsync(n => n.NeighborId == Client.ServerId)).FirstOrDefault();
+            if (neighbor != null)
+            {
+              // The neighbor is now initialized and is allowed to send us updates.
+              neighbor.LastRefreshTime = DateTime.UtcNow;
+              unitOfWork.NeighborRepository.Update(neighbor);
+
+              // Insert all its identities.
+              foreach (NeighborIdentity identity in identityDatabase.Values)
+                unitOfWork.NeighborIdentityRepository.Insert(identity);
+
+              await unitOfWork.SaveThrowAsync();
+              transaction.Commit();
+              success = true;
+            }
+            else log.Error("Unable to find neighbor ID '{0}'.", Client.ServerId.ToHex());
           }
-          else
+          catch (Exception e)
           {
+            log.Error("Exception occurred: {0}", e.ToString());
+          }
+
+          if (!success)
+          {
+            log.Warn("Rolling back transaction.");
+            unitOfWork.SafeTransactionRollback(transaction);
             error = true;
-            log.Error("Unable to move image GUID '{0}' from temporary directory to images folder.", identity.ThumbnailImage.Value);
-            break;
           }
+
+          unitOfWork.ReleaseLock(lockObjects);
         }
       }
 
 
-      // Then we save new identities to the database.
-      if (!error)
-      {
-        using (UnitOfWork unitOfWork = new UnitOfWork())
-        {
-          bool success = false;
-          DatabaseLock[] lockObjects = new DatabaseLock[] { UnitOfWork.NeighborIdentityLock, UnitOfWork.NeighborLock };
-          using (IDbContextTransaction transaction = await unitOfWork.BeginTransactionWithLockAsync(lockObjects))
-          {
-            try
-            {
-              Neighbor neighbor = (await unitOfWork.NeighborRepository.GetAsync(n => n.NeighborId == Client.ServerId)).FirstOrDefault();
-              if (neighbor != null)
-              {
-                // The neighbor is now initialized and is allowed to send us updates.
-                neighbor.LastRefreshTime = DateTime.UtcNow;
-                unitOfWork.NeighborRepository.Update(neighbor);
-
-                // Insert all its identities.
-                foreach (NeighborIdentity identity in identityDatabase.Values)
-                  unitOfWork.NeighborIdentityRepository.Insert(identity);
-
-                await unitOfWork.SaveThrowAsync();
-                transaction.Commit();
-                success = true;
-              }
-              else log.Error("Unable to find neighbor ID '{0}'.", Client.ServerId.ToHex());
-            }
-            catch (Exception e)
-            {
-              log.Error("Exception occurred: {0}", e.ToString());
-            }
-
-            if (!success)
-            {
-              log.Warn("Rolling back transaction.");
-              unitOfWork.SafeTransactionRollback(transaction);
-              error = true;
-            }
-
-            unitOfWork.ReleaseLock(lockObjects);
-          }
-        }
-      }
-
-      // Finally, if there was an error, we delete all relevant image files.
-      if (error)
-      {
-        log.Debug("Error occurred, erasing images of all profiles received from neighbor ID '{0}'.", Client.ServerId.ToHex());
-        foreach (NeighborIdentity identity in identityDatabase.Values)
-        {
-          if (identity.ThumbnailImage != null)
-          {
-            if (imagesAlreadyMoved.Contains(identity.ThumbnailImage.Value))
-            {
-              // This image is in images folder.
-              if (!ImageHelper.DeleteImageFile(identity.ThumbnailImage.Value))
-                log.Error("Unable to delete image GUID '{0}' from images folder.", identity.ThumbnailImage.Value);
-            }
-            else
-            {
-              // This image is in temporary folder.
-              if (!ImageHelper.DeleteTempImageFile(identity.ThumbnailImage.Value))
-                log.Error("Unable to delete image GUID '{0}' from temporary folder.", identity.ThumbnailImage.Value);
-            }
-          }
-        }
-      }
-
-
+      // If there was an error, we delete all relevant image files, this is done in NeighborhoodInitializationProcess
+      // when Client.ForceDisconnect is true or any other error occurs.
       if (!error) res = messageBuilder.CreateFinishNeighborhoodInitializationResponse(RequestMessage);
+      else Client.ForceDisconnect = true;
 
       log.Trace("(-):*.Response.Status={0}", res.Response.Status);
       return res;
