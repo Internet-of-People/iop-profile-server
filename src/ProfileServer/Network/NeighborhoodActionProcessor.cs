@@ -345,7 +345,7 @@ namespace ProfileServer.Network
             bool isLocked = (isProfileAction && profileActionsLockedIds.Contains(action.ServerId))
               || (!isProfileAction && serverActionsLockedIds.Contains(action.ServerId));
 
-            log.Trace("Action type is {0}, isProfileAction is {1}, isLocked is {2}, execute after time is {3}.", action.Type, isProfileAction, isLocked, action.ExecuteAfter != null ? action.ExecuteAfter.Value.ToString("yyyy-MM-dd HH:mm:ss") : "null");
+            log.Trace("Action ID {0}, action type is {1}, isProfileAction is {2}, isLocked is {3}, execute after time is {4}.", action.Id, action.Type, isProfileAction, isLocked, action.ExecuteAfter != null ? action.ExecuteAfter.Value.ToString("yyyy-MM-dd HH:mm:ss") : "null");
 
             if (!isLocked)
             {
