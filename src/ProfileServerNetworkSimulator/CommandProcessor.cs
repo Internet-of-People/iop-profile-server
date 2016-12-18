@@ -761,11 +761,32 @@ namespace ProfileServerNetworkSimulator
       bool res = false;
       try
       {
-        if (Directory.Exists(InstanceDirectory))
-          Directory.Delete(InstanceDirectory, true);
+        // First try.
+        // Sometimes the system blocks access to some files during the first try.
+        // If that happens, we wait a couple of seconds and try again.
+        try
+        {
+          if (Directory.Exists(InstanceDirectory))
+            Directory.Delete(InstanceDirectory, true);
 
-        Directory.CreateDirectory(InstanceDirectory);
-        res = true;
+          Directory.CreateDirectory(InstanceDirectory);
+          res = true;
+        }
+        catch 
+        {
+          log.Debug("First try to delete and recreate '{0}' failed, will try again in 10 seconds.", InstanceDirectory);
+        }
+
+        if (!res)
+        {
+          Thread.Sleep(10000);
+          
+          // Second try.
+          if (Directory.Exists(InstanceDirectory))
+            Directory.Delete(InstanceDirectory, true);
+
+          Directory.CreateDirectory(InstanceDirectory);
+        }
       }
       catch (Exception e)
       {

@@ -15,7 +15,7 @@ namespace ProfileServer.Data
   /// <summary>
   /// Synchronization object that is used to prevent race conditions while accessing database.
   /// </summary>
-  public class DatabaseLock
+  public class DatabaseLock: IComparable
   {
     /// <summary>Lock object itself.</summary>
     public SemaphoreSlim Lock;
@@ -36,6 +36,18 @@ namespace ProfileServer.Data
     public override string ToString()
     {
       return Name;
+    }
+
+    /// <summary>
+    /// Compares the a database lock to another database lock by its name.
+    /// </summary>
+    /// <param name="Other">Database lock to compare with the current instance.</param>
+    /// <returns>Less than zero if this instance precedes value. Zero if this instance has the same position in the sort order as value.
+    /// Greater than zero if this instance follows value or the other instance is null.</returns>
+    public int CompareTo(object Other)
+    {
+      if (Other == null) return 1;
+      return Other != null ? string.CompareOrdinal(this.Name, ((DatabaseLock)Other).Name) : 1;
     }
   }
 
@@ -344,6 +356,9 @@ namespace ProfileServer.Data
     /// <remarks>The caller is responsible for releasing the locks by calling ReleaseLock.</remarks>
     public IDbContextTransaction BeginTransactionWithLock(DatabaseLock[] Locks)
     {
+      // We have to sort the locks before we try to enter them, otherwise we could deadlock.
+      Array.Sort(Locks);
+
       log.Trace("(Locks:[{0}])", string.Join<DatabaseLock>(",", Locks));
 
       for (int i = 0; i < Locks.Length; i++)
@@ -366,6 +381,9 @@ namespace ProfileServer.Data
     /// <remarks>The caller is responsible for releasing the locks by calling ReleaseLock.</remarks>
     public async Task<IDbContextTransaction> BeginTransactionWithLockAsync(DatabaseLock[] Locks)
     {
+      // We have to sort the locks before we try to enter them, otherwise we could deadlock.
+      Array.Sort(Locks);
+
       log.Trace("(Locks:[{0}])", string.Join<DatabaseLock>(",", Locks));
 
       for (int i = 0; i < Locks.Length; i++)
@@ -430,6 +448,9 @@ namespace ProfileServer.Data
     /// <remarks>The caller is responsible for releasing the locks by calling ReleaseLock.</remarks>
     public void AcquireLock(DatabaseLock[] Locks)
     {
+      // We have to sort the locks before we try to enter them, otherwise we could deadlock.
+      Array.Sort(Locks);
+
       log.Trace("(Locks:[{0}])", string.Join<DatabaseLock>(",", Locks));
 
       for (int i = 0; i < Locks.Length; i++)
@@ -446,6 +467,9 @@ namespace ProfileServer.Data
     /// <remarks>The caller is responsible for releasing the locks by calling ReleaseLock.</remarks>
     public async Task AcquireLockAsync(DatabaseLock[] Locks)
     {
+      // We have to sort the locks before we try to enter them, otherwise we could deadlock.
+      Array.Sort(Locks);
+
       log.Trace("(Locks:[{0}])", string.Join<DatabaseLock>(",", Locks));
 
       for (int i = 0; i < Locks.Length; i++)
@@ -475,6 +499,9 @@ namespace ProfileServer.Data
     /// <param name="Locks">Lock objects to release.</param>
     public void ReleaseLock(DatabaseLock[] Locks)
     {
+      // We have to sort the locks before we try to enter them, otherwise we could deadlock.
+      Array.Sort(Locks);
+
       log.Trace("(Locks:[{0}])", string.Join<DatabaseLock>(",", Locks));
 
       for (int i = Locks.Length - 1; i >= 0; i--)

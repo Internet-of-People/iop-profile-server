@@ -309,6 +309,20 @@ namespace ProfileServer.Network
 
       NeighborhoodAction res = null;
 
+      int actionsInProgress = 0;
+      lock (actionExecutorLock)
+      {
+        actionsInProgress = actionExecutorCounter;
+      }
+
+      // Never execute more than 10 actions at once.
+      if (actionsInProgress >= 10)
+      {
+        log.Trace("(-)[TOO_MANY_ACTIONS]:null");
+        return res;
+      }
+
+
       // Network IDs of servers which profile actions can't be executed because a blocking action with future ExecuteAfter exists.
       HashSet<byte[]> profileActionsLockedIds = new HashSet<byte[]>(StructuralEqualityComparer<byte[]>.Default);
       

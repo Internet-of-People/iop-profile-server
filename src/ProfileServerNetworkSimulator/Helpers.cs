@@ -25,11 +25,12 @@ namespace ProfileServerNetworkSimulator
     /// <param name="SourceDirName">Name of the source directory.</param>
     /// <param name="DestDirName">Name of the destination directory.</param>
     /// <param name="CopySubDirs">True if subdirectories should be copied as well, false otherwise.</param>
+    /// <param name="DontCopyDirectories">List of directory names that should not be copied.</param>
     /// <returns>true if the function succeeds, false otherwise.</returns>
     /// <remarks>
     /// Original code - https://msdn.microsoft.com/en-us/library/bb762914.aspx.
     /// </remarks>
-    public static bool DirectoryCopy(string SourceDirName, string DestDirName, bool CopySubDirs = true)
+    public static bool DirectoryCopy(string SourceDirName, string DestDirName, bool CopySubDirs = true, string[] DontCopyDirectories)
     {
       bool res = false;
       DirectoryInfo dir = new DirectoryInfo(SourceDirName);

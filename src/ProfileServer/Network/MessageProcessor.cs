@@ -2711,7 +2711,7 @@ namespace ProfileServer.Network
 
 
     /// <summary>
-    /// Adds neighborhood action that will announce a change in a specific identity profile to all neighbors of the profile server.
+    /// Adds neighborhood actions that will announce a change in a specific identity profile to all followers of the profile server.
     /// </summary>
     /// <param name="UnitOfWork">Unit of work instance.</param>
     /// <param name="ActionType">Type of action on the identity profile.</param>
@@ -2748,6 +2748,7 @@ namespace ProfileServer.Network
             AdditionalData = AdditionalData
           };
           UnitOfWork.NeighborhoodActionRepository.Insert(neighborhoodAction);
+
           res = true;
           log.Trace("Add profile action with identity ID '{0}' added for follower ID '{1}'.", IdentityId.ToHex(), follower.FollowerId.ToHex());
         }
@@ -2798,93 +2799,91 @@ namespace ProfileServer.Network
       {
         using (UnitOfWork unitOfWork = new UnitOfWork())
         {
-          DatabaseLock[] lockObjects = new DatabaseLock[] { UnitOfWork.HostedIdentityLock, UnitOfWork.FollowerLock, UnitOfWork.NeighborhoodActionLock };
-          using (IDbContextTransaction transaction = await unitOfWork.BeginTransactionWithLockAsync(lockObjects))
+          int blockActionId = await InstallInitializationProcessInProgress(unitOfWork, followerId);
+          if (blockActionId != -1)
           {
-            try
+            DatabaseLock[] lockObjects = new DatabaseLock[] { UnitOfWork.HostedIdentityLock, UnitOfWork.FollowerLock };
+            using (IDbContextTransaction transaction = await unitOfWork.BeginTransactionWithLockAsync(lockObjects))
             {
-              int followerCount = await unitOfWork.FollowerRepository.CountAsync();
-              if (followerCount < Base.Configuration.MaxFollowerServersCount)
+              try
               {
-                int neighborhoodInitializationsInProgress = await unitOfWork.FollowerRepository.CountAsync(f => f.LastRefreshTime == null);
-                if (neighborhoodInitializationsInProgress < Base.Configuration.NeighborhoodInitializationParallelism)
+                int followerCount = await unitOfWork.FollowerRepository.CountAsync();
+                if (followerCount < Base.Configuration.MaxFollowerServersCount)
                 {
-                  Follower existingFollower = (await unitOfWork.FollowerRepository.GetAsync(f => f.FollowerId == followerId)).FirstOrDefault();
-                  if (existingFollower == null)
+                  int neighborhoodInitializationsInProgress = await unitOfWork.FollowerRepository.CountAsync(f => f.LastRefreshTime == null);
+                  if (neighborhoodInitializationsInProgress < Base.Configuration.NeighborhoodInitializationParallelism)
                   {
-                    // Take snapshot of all our identities.
-                    byte[] invalidVersion = SemVer.Invalid.ToByteArray();
-                    List<HostedIdentity> allHostedIdentities = (await unitOfWork.HostedIdentityRepository.GetAsync(i => (i.ExpirationDate == null) && (i.Version != invalidVersion), null, true)).ToList();
-
-                    // This action will make sure the profile server will not send updates to the new follower
-                    // until the neighborhood initialization process is complete.
-                    NeighborhoodAction action = new NeighborhoodAction()
+                    Follower existingFollower = (await unitOfWork.FollowerRepository.GetAsync(f => f.FollowerId == followerId)).FirstOrDefault();
+                    if (existingFollower == null)
                     {
-                      ServerId = followerId,
-                      Type = NeighborhoodActionType.InitializationProcessInProgress,
-                      TargetIdentityId = null,
-                      Timestamp = DateTime.UtcNow,
-                      AdditionalData = null,
+                      // Take snapshot of all our identities.
+                      byte[] invalidVersion = SemVer.Invalid.ToByteArray();
+                      List<HostedIdentity> allHostedIdentities = (await unitOfWork.HostedIdentityRepository.GetAsync(i => (i.ExpirationDate == null) && (i.Version != invalidVersion), null, true)).ToList();
 
-                      // This will cause other actions to this follower to be postponed for 20 minutes from now.
-                      ExecuteAfter = DateTime.UtcNow.AddMinutes(20)
-                    };
-                    unitOfWork.NeighborhoodActionRepository.Insert(action);
+                      // Create new follower.
+                      Follower follower = new Follower()
+                      {
+                        FollowerId = followerId,
+                        IpAddress = Client.RemoteEndPoint.Address.ToString(),
+                        PrimaryPort = primaryPort,
+                        SrNeighborPort = srNeighborPort,
+                        LastRefreshTime = null
+                      };
 
-                    // Create new follower.
-                    Follower follower = new Follower()
+                      unitOfWork.FollowerRepository.Insert(follower);
+                      await unitOfWork.SaveThrowAsync();
+                      transaction.Commit();
+                      success = true;
+
+                      // Set the client to be in the middle of neighbor initialization process.
+                      Client.NeighborhoodInitializationProcessInProgress = true;
+                      nipContext = new NeighborhoodInitializationProcessContext()
+                      {
+                        HostedIdentities = allHostedIdentities,
+                        IdentitiesDone = 0
+                      };
+                    }
+                    else
                     {
-                      FollowerId = followerId,
-                      IpAddress = Client.RemoteEndPoint.Address.ToString(),
-                      PrimaryPort = primaryPort,
-                      SrNeighborPort = srNeighborPort,
-                      LastRefreshTime = null
-                    };
-
-                    unitOfWork.FollowerRepository.Insert(follower);
-                    await unitOfWork.SaveThrowAsync();
-                    transaction.Commit();
-                    success = true;
-
-                    // Set the client to be in the middle of neighbor initialization process.
-                    Client.NeighborhoodInitializationProcessInProgress = true;
-                    nipContext = new NeighborhoodInitializationProcessContext()
-                    {
-                      HostedIdentities = allHostedIdentities,
-                      IdentitiesDone = 0
-                    };
+                      log.Warn("Follower ID '{0}' already exists in the database.", followerId.ToHex());
+                      res = messageBuilder.CreateErrorAlreadyExistsResponse(RequestMessage);
+                    }
                   }
                   else
                   {
-                    log.Warn("Follower ID '{0}' already exists in the database.", followerId.ToHex());
-                    res = messageBuilder.CreateErrorAlreadyExistsResponse(RequestMessage);
+                    log.Warn("Maximal number of neighborhood initialization processes {0} in progress has been reached.", Base.Configuration.NeighborhoodInitializationParallelism);
+                    res = messageBuilder.CreateErrorBusyResponse(RequestMessage);
                   }
                 }
                 else
                 {
-                  log.Warn("Maximal number of neighborhood initialization processes {0} in progress has been reached.", Base.Configuration.NeighborhoodInitializationParallelism);
-                  res = messageBuilder.CreateErrorBusyResponse(RequestMessage);
+                  log.Warn("Maximal number of follower servers {0} has been reached already. Will not accept another follower.", Base.Configuration.MaxFollowerServersCount);
+                  res = messageBuilder.CreateErrorRejectedResponse(RequestMessage);
                 }
               }
-              else
+              catch (Exception e)
               {
-                log.Warn("Maximal number of follower servers {0} has been reached already. Will not accept another follower.", Base.Configuration.MaxFollowerServersCount);
-                res = messageBuilder.CreateErrorRejectedResponse(RequestMessage);
+                log.Error("Exception occurred: {0}", e.ToString());
               }
-            }
-            catch (Exception e)
-            {
-              log.Error("Exception occurred: {0}", e.ToString());
+
+              if (!success)
+              {
+                log.Warn("Rolling back transaction.");
+                unitOfWork.SafeTransactionRollback(transaction);
+              }
+
+              unitOfWork.ReleaseLock(lockObjects);
             }
 
             if (!success)
             {
-              log.Warn("Rolling back transaction.");
-              unitOfWork.SafeTransactionRollback(transaction);
+              // It may happen that due to power failure, this will not get executed but when the server runs next time, 
+              // Data.Database.DeleteInvalidNeighborhoodActions will be executed during the startup and will delete the blocking action.
+              if (!await UninstallInitializationProcessInProgress(unitOfWork, blockActionId))
+                log.Error("Unable to uninstall blocking neighborhood action ID {0} for follower ID '{1}'.", blockActionId, followerId.ToHex());
             }
-
-            unitOfWork.ReleaseLock(lockObjects);
           }
+          else log.Error("Unable to install blocking neighborhood action for follower ID '{0}'.", followerId.ToHex());
         }
       }
       else
@@ -2936,6 +2935,92 @@ namespace ProfileServer.Network
       else log.Trace("(-):null");
       return res;
     }
+
+
+    /// <summary>
+    /// Installs InitializationProcessInProgress neighborhood action that will prevent 
+    /// the profile server to sending updates to a new follower.
+    /// </summary>
+    /// <param name="UnitOfWork">Unit of work instance.</param>
+    /// <param name="FollowerId">Identifier of the follower to block updates to.</param>
+    /// <returns>Action ID of the newly installed action, or -1 if the function fails.</returns>
+    public async Task<int> InstallInitializationProcessInProgress(UnitOfWork UnitOfWork, byte[] FollowerId)
+    {
+      log.Trace("(FollowerId:'{0}')", FollowerId.ToHex());
+
+      int res = -1;
+
+      DatabaseLock lockObject = UnitOfWork.NeighborhoodActionLock;
+      await UnitOfWork.AcquireLockAsync(lockObject);
+
+      try
+      {
+        // This action will make sure the profile server will not send updates to the new follower
+        // until the neighborhood initialization process is complete.
+        NeighborhoodAction action = new NeighborhoodAction()
+        {
+          ServerId = FollowerId,
+          Type = NeighborhoodActionType.InitializationProcessInProgress,
+          TargetIdentityId = null,
+          Timestamp = DateTime.UtcNow,
+          AdditionalData = null,
+
+          // This will cause other actions to this follower to be postponed for 20 minutes from now.
+          ExecuteAfter = DateTime.UtcNow.AddMinutes(20)
+        };
+        UnitOfWork.NeighborhoodActionRepository.Insert(action);
+        await UnitOfWork.SaveThrowAsync();
+        res = action.Id;
+      }
+      catch (Exception e)
+      {
+        log.Error("Exception occurred: {0}", e.ToString());
+      }
+
+      UnitOfWork.ReleaseLock(lockObject);
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+
+    /// <summary>
+    /// Uninstalls InitializationProcessInProgress neighborhood action that was installed by InstallInitializationProcessInProgress.
+    /// </summary>
+    /// <param name="UnitOfWork">Unit of work instance.</param>
+    /// <param name="FollowerId">Identifier of the follower.</param>
+    /// <returns>true if the function suceeds, false otherwise.</returns>
+    public async Task<bool> UninstallInitializationProcessInProgress(UnitOfWork UnitOfWork, int ActionId)
+    {
+      log.Trace("(ActionId:'{0}')", ActionId);
+
+      bool res = false;
+
+      DatabaseLock lockObject = UnitOfWork.NeighborhoodActionLock;
+      await UnitOfWork.AcquireLockAsync(lockObject);
+
+      try
+      {
+        NeighborhoodAction action = (await UnitOfWork.NeighborhoodActionRepository.GetAsync(a => a.Id == ActionId)).FirstOrDefault();
+        if (action != null)
+        {
+          UnitOfWork.NeighborhoodActionRepository.Delete(action);
+          await UnitOfWork.SaveThrowAsync();
+          res = true;
+        }
+        else log.Error("Action ID {0} not found.", ActionId);
+      }
+      catch (Exception e)
+      {
+        log.Error("Exception occurred: {0}", e.ToString());
+      }
+
+      UnitOfWork.ReleaseLock(lockObject);
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
 
 
     /// <summary>
