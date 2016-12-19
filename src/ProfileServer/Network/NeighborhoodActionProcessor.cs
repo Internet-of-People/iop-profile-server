@@ -315,8 +315,8 @@ namespace ProfileServer.Network
         actionsInProgress = actionExecutorCounter;
       }
 
-      // Never execute more than 10 actions at once.
-      if (actionsInProgress >= 10)
+      // Never execute more than 5 actions at once.
+      if (actionsInProgress >= 5)
       {
         log.Trace("(-)[TOO_MANY_ACTIONS]:null");
         return res;

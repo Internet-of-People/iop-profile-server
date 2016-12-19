@@ -53,6 +53,7 @@ namespace ProfileServer.Network
     /// <summary>true if the component received current information about the server's neighborhood from the LBN server.</summary>
     public bool LbnServerInitialized { get { return lbnServerInitialized; } }
 
+
     public override bool Init()
     {
       log.Info("()");
@@ -722,7 +723,7 @@ namespace ProfileServer.Network
     /// <remarks>The caller is responsible for calling this function within a database transaction with NeighborLock and NeighborhoodActionLock locks.</remarks>
     public async Task<AddOrChangeNeighborResult> AddOrChangeNeighbor(UnitOfWork UnitOfWork, byte[] ServerId, IPAddress IpAddress, int Port, int Latitude, int Longitude, int NeighborhoodSize)
     {
-      log.Trace("(ServerId:'{0}',IpAddress:{1},Port:{2},Latitude:{3},Longitude:{4})", ServerId.ToHex(), IpAddress, Port, Latitude, Longitude);
+      log.Trace("(ServerId:'{0}',IpAddress:{1},Port:{2},Latitude:{3},Longitude:{4},NeighborhoodSize:{5})", ServerId.ToHex(), IpAddress, Port, Latitude, Longitude, NeighborhoodSize);
 
       AddOrChangeNeighborResult res = new AddOrChangeNeighborResult();
       res.NeighborhoodSize = NeighborhoodSize;
@@ -783,9 +784,9 @@ namespace ProfileServer.Network
 
           // This action will cause our profile server to contact the new neighbor server and ask it to share its profile database,
           // i.e. the neighborhood initialization process will be started.
-          // We set a random delay depending on the current size of the neighborhood, 
-          // so that a new server joining a neighborhood is not overwhelmed with requests.
+          // We set a delay depending on the number of neighbors, so that a new server joining a neighborhood is not overwhelmed with requests.
           int delay = RandomSource.Generator.Next(0, 3 * res.NeighborhoodSize);
+
           NeighborhoodAction action = new NeighborhoodAction()
           {
             ServerId = ServerId,

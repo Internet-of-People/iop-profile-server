@@ -326,11 +326,12 @@ namespace ProfileServer.Network
         {
           // acceptTask is finished here, asking for Result won't block.
           TcpClient client = acceptTask.Result;
+          EndPoint ep = client.Client.RemoteEndPoint;
           lock (clientQueueLock)
           {
             clientQueue.Enqueue(client);
           }
-          log.Debug("New client '{0}' accepted.", client.Client.RemoteEndPoint);
+          log.Debug("New client '{0}' accepted.", ep);
           clientQueueEvent.Set();
         }
         catch (Exception e)
