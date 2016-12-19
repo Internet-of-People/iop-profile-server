@@ -73,6 +73,7 @@ namespace ProfileServerProtocol
       Message res = new Message();
       res.Id = (uint)newId;
       res.Request = new Request();
+      res.Request.Version = version;
 
       return res;
     }
@@ -179,5 +180,166 @@ namespace ProfileServerProtocol
         res.Response.Details = Details;
       return res;
     }
+
+
+    /// <summary>
+    /// Creates and initializes the LocalService part of the request.
+    /// </summary>
+    /// <returns>Request with initialized LocalService part.</returns>
+    public Message CreateLocalServiceRequest()
+    {
+      Message res = CreateRequest();
+      res.Request.LocalService = new LocalServiceRequest();
+      return res;
+    }
+
+    /// <summary>
+    /// Creates a new response for a specific request with initialized LocalService part and STATUS_OK status code.
+    /// </summary>
+    /// <param name="Request">Request message for which the response is created.</param>
+    /// <returns>Response with initialized LocalService part.</returns>
+    public Message CreateLocalServiceOkResponse(Message Request)
+    {
+      Message res = CreateOkResponse(Request);
+      res.Response.LocalService = new LocalServiceResponse();
+      return res;
+    }
+
+
+    /// <summary>
+    /// Creates a new RegisterServiceRequest message.
+    /// </summary>
+    /// <param name="ServiceType">Type of service to register.</param>
+    /// <param name="NodeProfile">Node profile with interface to register.</param>
+    /// <returns>RegisterServiceRequest message that is ready to be sent.</returns>
+    public Message CreateRegisterServiceRequest(ServiceType ServiceType, NodeProfile NodeProfile)
+    {
+      RegisterServiceRequest registerServiceRequest = new RegisterServiceRequest();
+      registerServiceRequest.ServiceType = ServiceType;
+      registerServiceRequest.NodeProfile = NodeProfile;
+
+      Message res = CreateLocalServiceRequest();
+      res.Request.LocalService.RegisterService = registerServiceRequest;
+
+      return res;
+    }
+
+
+    /// <summary>
+    /// Creates a response message to a RegisterServiceRequest message.
+    /// </summary>
+    /// <param name="Request">RegisterServiceRequest message for which the response is created.</param>
+    /// <returns>RegisterServiceResponse message that is ready to be sent.</returns>
+    public Message CreateRegisterServiceResponse(Message Request)
+    {
+      RegisterServiceResponse registerServiceResponse = new RegisterServiceResponse();
+
+      Message res = CreateLocalServiceOkResponse(Request);
+      res.Response.LocalService.RegisterService = registerServiceResponse;
+
+      return res;
+    }
+
+
+    /// <summary>
+    /// Creates a new DeregisterServiceRequest message.
+    /// </summary>
+    /// <param name="ServiceType">Type of service to unregister.</param>
+    /// <returns>DeregisterServiceRequest message that is ready to be sent.</returns>
+    public Message CreateDeregisterServiceRequest(ServiceType ServiceType)
+    {
+      DeregisterServiceRequest deregisterServiceRequest = new DeregisterServiceRequest();
+      deregisterServiceRequest.ServiceType = ServiceType;
+
+      Message res = CreateLocalServiceRequest();
+      res.Request.LocalService.DeregisterService = deregisterServiceRequest;
+
+      return res;
+    }
+
+
+    /// <summary>
+    /// Creates a response message to a DeregisterServiceRequest message.
+    /// </summary>
+    /// <param name="Request">DeregisterServiceRequest message for which the response is created.</param>
+    /// <returns>DeregisterServiceResponse message that is ready to be sent.</returns>
+    public Message CreateDeregisterServiceResponse(Message Request)
+    {
+      DeregisterServiceResponse deregisterServiceResponse = new DeregisterServiceResponse();
+
+      Message res = CreateLocalServiceOkResponse(Request);
+      res.Response.LocalService.DeregisterService = deregisterServiceResponse;
+
+      return res;
+    }
+
+
+    /// <summary>
+    /// Creates a new GetNeighbourNodesByDistanceLocalRequest message.
+    /// </summary>
+    /// <param name="KeepAlive">If set to true, the LBN server will send neighborhood updates over the open connection.</param>
+    /// <returns>GetNeighbourNodesByDistanceLocalRequest message that is ready to be sent.</returns>
+    public Message CreateGetNeighbourNodesByDistanceLocalRequest(bool KeepAlive = true)
+    {
+      GetNeighbourNodesByDistanceLocalRequest getNeighbourNodesByDistanceLocalRequest = new GetNeighbourNodesByDistanceLocalRequest();
+      getNeighbourNodesByDistanceLocalRequest.KeepAliveAndSendUpdates = KeepAlive;
+
+      Message res = CreateLocalServiceRequest();
+      res.Request.LocalService.GetNeighbourNodes = getNeighbourNodesByDistanceLocalRequest;
+
+      return res;
+    }
+
+
+    /// <summary>
+    /// Creates a response message to a GetNeighbourNodesByDistanceLocalRequest message.
+    /// </summary>
+    /// <param name="Request">GetNeighbourNodesByDistanceLocalRequest message for which the response is created.</param>
+    /// <param name="Nodes">List of nodes in the neighborhood.</param>
+    /// <returns>GetNeighbourNodesByDistanceLocalResponse message that is ready to be sent.</returns>
+    public Message CreateGetNeighbourNodesByDistanceLocalResponse(Message Request, IEnumerable<NodeInfo> Nodes)
+    {
+      GetNeighbourNodesByDistanceResponse getNeighbourNodesByDistanceResponse = new GetNeighbourNodesByDistanceResponse();
+      getNeighbourNodesByDistanceResponse.Nodes.AddRange(Nodes);
+
+      Message res = CreateLocalServiceOkResponse(Request);
+      res.Response.LocalService.GetNeighbourNodes = getNeighbourNodesByDistanceResponse;
+
+      return res;
+    }
+
+
+    /// <summary>
+    /// Creates a new NeighbourhoodChangedNotificationRequest message.
+    /// </summary>
+    /// <param name="Changes">List of changes in the neighborhood.</param>
+    /// <returns>NeighbourhoodChangedNotificationRequest message that is ready to be sent.</returns>
+    public Message CreateNeighbourhoodChangedNotificationRequest(IEnumerable<NeighbourhoodChange> Changes)
+    {
+      NeighbourhoodChangedNotificationRequest neighbourhoodChangedNotificationRequest = new NeighbourhoodChangedNotificationRequest();
+      neighbourhoodChangedNotificationRequest.Changes.AddRange(Changes);
+
+      Message res = CreateLocalServiceRequest();
+      res.Request.LocalService.NeighbourhoodChanged = neighbourhoodChangedNotificationRequest;
+
+      return res;
+    }
+
+
+    /// <summary>
+    /// Creates a response message to a NeighbourhoodChangedNotificationRequest message.
+    /// </summary>
+    /// <param name="Request">NeighbourhoodChangedNotificationRequest message for which the response is created.</param>
+    /// <returns>NeighbourhoodChangedNotificationResponse message that is ready to be sent.</returns>
+    public Message CreateNeighbourhoodChangedNotificationResponse(Message Request)
+    {
+      NeighbourhoodChangedNotificationResponse neighbourhoodChangedNotificationResponse = new NeighbourhoodChangedNotificationResponse();
+
+      Message res = CreateLocalServiceOkResponse(Request);
+      res.Response.LocalService.NeighbourhoodUpdated = neighbourhoodChangedNotificationResponse;
+
+      return res;
+    }
+
   }
 }

@@ -16,6 +16,8 @@ using ProfileServer.Data.Models;
 using Iop.Profileserver;
 using ProfileServerCrypto;
 using System.Security.Authentication;
+using ProfileServer.Data;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace ProfileServer.Network
 {
@@ -39,13 +41,10 @@ namespace ProfileServer.Network
   };
 
   /// <summary>
-  /// Client class represents any kind of TCP client that connects to one of the node's TCP servers.
+  /// Incoming client class represents any kind of TCP client that connects to one of the profile server's TCP servers.
   /// </summary>
-  public class Client : IDisposable
-  {
-    private PrefixLogger log;
-
-    
+  public class IncomingClient : ClientBase, IDisposable
+  {   
     /// <summary>Maximum number of bytes that application service name can occupy.</summary>
     public const int MaxApplicationServiceNameLengthBytes = 32;
 
@@ -66,21 +65,6 @@ namespace ProfileServer.Network
     /// <summary>Role server assigned client identifier.</summary>
     public ulong Id;
 
-    /// <summary>Source IP address and port of the client.</summary>
-    public EndPoint RemoteEndPoint;
-
-    /// <summary>TCP client class that holds the connection and allows communication with the client.</summary>
-    public TcpClient TcpClient;
-
-    /// <summary>Network or SSL stream to the client.</summary>
-    public Stream Stream;
-
-    /// <summary>Lock object for writing to the stream.</summary>
-    public SemaphoreSlim StreamWriteLock = new SemaphoreSlim(1);
-
-    /// <summary>true if the client is connected to the TLS port, false otherwise.</summary>
-    public bool UseTls;
-
     /// <summary>UTC time before next message has to come over the connection from this client or the node can close the connection due to inactivity.</summary>
     public DateTime NextKeepAliveTime;
 
@@ -88,12 +72,6 @@ namespace ProfileServer.Network
     /// TcpRoleServer.NodeKeepAliveIntervalSeconds for node to node or unknown connections.</summary>
     public int KeepAliveIntervalSeconds;
 
-    /// <summary>Protocol message builder.</summary>
-    public MessageBuilder MessageBuilder;
-
-
-    /// <summary>If set to true, the client should be disconnected as soon as possible.</summary>
-    public bool ForceDisconnect;
 
     // Client Context Section
     
@@ -139,6 +117,11 @@ namespace ProfileServer.Network
     /// the cache is deleted and cached results are no longer available.
     /// </summary>
     private Timer profileSearchResultCacheExpirationTimer;
+
+
+    /// <summary>True if the client connection is from a follower server who initiated the neighborhood initialization process in this session.</summary>
+    public bool NeighborhoodInitializationProcessInProgress;
+
     // \Client Context Section
 
 
@@ -157,23 +140,21 @@ namespace ProfileServer.Network
 
 
     /// <summary>
-    /// Creates the encapsulation for a new TCP server client.
+    /// Creates the instance for a new TCP server client.
     /// </summary>
     /// <param name="Server">Role server that the client connected to.</param>
     /// <param name="TcpClient">TCP client class that holds the connection and allows communication with the client.</param>
     /// <param name="Id">Unique identifier of the client's connection.</param>
     /// <param name="UseTls">true if the client is connected to the TLS port, false otherwise.</param>
     /// <param name="KeepAliveIntervalSeconds">Number of seconds for the connection to this client to be without any message until the node can close it for inactivity.</param>
-    public Client(TcpRoleServer Server, TcpClient TcpClient, ulong Id, bool UseTls, int KeepAliveIntervalSeconds)
+    public IncomingClient(TcpRoleServer Server, TcpClient TcpClient, ulong Id, bool UseTls, int KeepAliveIntervalSeconds):
+      base(TcpClient, UseTls, Server.IdBase)
     {
-      this.TcpClient = TcpClient;
       this.Id = Id;
-      RemoteEndPoint = this.TcpClient.Client.RemoteEndPoint;
-
       server = Server;
       string logPrefix = string.Format("[{0}<=>{1}|{2}] ", server.EndPoint, RemoteEndPoint, Id.ToHex());
-      string logName = "ProfileServer.Network.Client";
-      this.log = new PrefixLogger(logName, logPrefix);
+      string logName = "ProfileServer.Network.IncomingClient";
+      log = new PrefixLogger(logName, logPrefix);
 
       log.Trace("(UseTls:{0},KeepAliveIntervalSeconds:{1})", UseTls, KeepAliveIntervalSeconds);
 
@@ -182,15 +163,6 @@ namespace ProfileServer.Network
       this.KeepAliveIntervalSeconds = KeepAliveIntervalSeconds;
       NextKeepAliveTime = DateTime.UtcNow.AddSeconds(this.KeepAliveIntervalSeconds);
     
-      this.TcpClient.LingerState = new LingerOption(true, 0);
-      this.TcpClient.NoDelay = true;
-
-      this.UseTls = UseTls;
-      Stream = this.TcpClient.GetStream();
-      if (this.UseTls)
-        Stream = new SslStream(Stream, false, PeerCertificateValidationCallback);
-
-      MessageBuilder = new MessageBuilder(server.IdBase, new List<SemVer>() { SemVer.V100 }, Base.Configuration.Keys);
       ConversationStatus = ClientConversationStatus.NoConversation;
       IsOurCheckedInClient = false;
 
@@ -215,12 +187,11 @@ namespace ProfileServer.Network
           await sslStream.AuthenticateAsServerAsync(Base.Configuration.TcpServerTlsCertificate, false, SslProtocols.Tls12, false);
         }
 
-
         RawMessageReader messageReader = new RawMessageReader(Stream);
         while (!server.ShutdownSignaling.IsShutdown)
         {
-          RawMessageResult rawMessage = await messageReader.ReceiveMessage(server.ShutdownSignaling.ShutdownCancellationTokenSource.Token);
-          bool disconnect = rawMessage.Disconnect;
+          RawMessageResult rawMessage = await messageReader.ReceiveMessageAsync(server.ShutdownSignaling.ShutdownCancellationTokenSource.Token);
+          bool disconnect = rawMessage.Data == null;
           bool protocolViolation = rawMessage.ProtocolViolation;
           if (rawMessage.Data != null)
           {
@@ -248,29 +219,6 @@ namespace ProfileServer.Network
     }
 
 
-    /// <summary>
-    /// Constructs ProtoBuf message from raw data read from the network stream.
-    /// </summary>
-    /// <param name="Data">Raw data to be decoded to the message.</param>
-    /// <returns>ProtoBuf message or null if the data do not represent a valid message.</returns>
-    public Message CreateMessageFromRawData(byte[] Data)
-    {
-      log.Trace("()");
-
-      Message res = null;
-      try
-      {
-        res = MessageWithHeader.Parser.ParseFrom(Data).Body;
-      }
-      catch (Exception e)
-      {
-        log.Warn("Exception occurred, connection to the client will be closed: {0}", e.ToString());
-        // Connection will be closed in ReceiveMessageLoop.
-      }
-
-      log.Trace("(-):{0}", res != null ? "Message" : "null");
-      return res;
-    }
 
 
     /// <summary>
@@ -301,65 +249,6 @@ namespace ProfileServer.Network
       return res;
     }
 
-    /// <summary>
-    /// Sends a message to the client over the open network stream.
-    /// </summary>
-    /// <param name="Message">Message to send.</param>
-    /// <returns>true if the connection to the client should remain open, false otherwise.</returns>
-    public async Task<bool> SendMessageAsync(Message Message)
-    {
-      log.Trace("()");
-
-      bool res = await SendMessageInternalAsync(Message);
-      if (res)
-      {
-        // If the message was sent successfully to the target, we close the connection only in case of protocol violation error.
-        res = Message.Response.Status != Status.ErrorProtocolViolation;
-      }
-
-      log.Trace("(-):{0}", res);
-      return res;
-    }
-
-
-    /// <summary>
-    /// Sends a message to the client over the open network stream.
-    /// </summary>
-    /// <param name="Message">Message to send.</param>
-    /// <returns>true if the message was sent successfully to the target recipient.</returns>
-    private async Task<bool> SendMessageInternalAsync(Message Message)
-    {
-      log.Trace("()");
-
-      bool res = false;
-
-      string msgStr = Message.ToString();
-      log.Trace("Sending response to client:\n{0}", msgStr.SubstrMax(512));
-      byte[] responseBytes = ProtocolHelper.GetMessageBytes(Message);
-
-      await StreamWriteLock.WaitAsync();
-      try
-      {
-        if (Stream != null)
-        {
-          await Stream.WriteAsync(responseBytes, 0, responseBytes.Length);
-          res = true;
-        }
-        else log.Info("Connection to the client has been terminated.");
-      }
-      catch (IOException)
-      {
-        log.Info("Connection to the client has been terminated.");
-      }
-      finally
-      {
-        StreamWriteLock.Release();
-      }
-
-      log.Trace("(-):{0}", res);
-      return res;
-    }
-
 
     /// <summary>
     /// Handles client disconnection. Destroys objects that are connected to this client 
@@ -376,6 +265,13 @@ namespace ProfileServer.Network
         // This connection is on clAppService port. There might be the other peer still connected 
         // to this relay, so we have to make sure that other peer is disconnected as well.
         await Relay.HandleDisconnectedClient(this, true);
+      }
+
+      if (NeighborhoodInitializationProcessInProgress)
+      {
+        // This client is a follower server and when it disconnected there was an unfinished neighborhood initialization process.
+        // We need to delete its traces from the database.
+        await DeleteUnfinishedFollowerInitialization();
       }
 
       log.Trace("(-)");
@@ -568,86 +464,76 @@ namespace ProfileServer.Network
 
 
     /// <summary>
-    /// Closes connection if it is opened and frees used resources.
+    /// Deletes a follower entry from the database when the follower disconnected before the neighborhood initialization process completed.
     /// </summary>
-    public async Task CloseConnection()
+    /// <returns>true if the function succeeds, false othewise.</returns>
+    private async Task<bool> DeleteUnfinishedFollowerInitialization()
     {
       log.Trace("()");
 
-      await StreamWriteLock.WaitAsync();
-
-      CloseConnectionLocked();
-
-      StreamWriteLock.Release();
-
-      log.Trace("(-)");
-    }
-
-
-    /// <summary>
-    /// The function attempts to read all pending data on the stream in order to clear it. 
-    /// This is necessary in order for all pending outgoing data to be delivered to the other party
-    /// before we close the connection.
-    /// </summary>
-    public async Task EmptyStream()
-    {
-      log.Trace("()");
-
-      bool clear = false;
-      byte[] buf = new byte[8192];
-
-      await StreamWriteLock.WaitAsync();
-
-      while (!clear)
+      bool res = false;
+      byte[] followerId = IdentityId;
+      bool success = false;
+      using (UnitOfWork unitOfWork = new UnitOfWork())
       {
-        try
+        DatabaseLock[] lockObjects = new DatabaseLock[] { UnitOfWork.FollowerLock, UnitOfWork.NeighborhoodActionLock };
+        using (IDbContextTransaction transaction = await unitOfWork.BeginTransactionWithLockAsync(lockObjects))
         {
-          Task<int> readTask = Stream.ReadAsync(buf, 0, buf.Length);
-          if (readTask.Wait(50)) clear = readTask.Result < buf.Length;
-          else clear = true;
-        }
-        catch
-        {
-          clear = true;
+          try
+          {
+            bool saveDb = false;
+
+            // Delete the follower itself.
+            Follower existingFollower = (await unitOfWork.FollowerRepository.GetAsync(f => f.FollowerId == followerId)).FirstOrDefault();
+            if (existingFollower != null)
+            {
+              unitOfWork.FollowerRepository.Delete(existingFollower);
+              log.Debug("Follower ID '{0}' will be removed from the database.", followerId.ToHex());
+              saveDb = true;
+            }
+            else log.Error("Follower ID '{0}' not found.", followerId.ToHex());
+
+            // Delete all its neighborhood actions.
+            List<NeighborhoodAction> actions = (await unitOfWork.NeighborhoodActionRepository.GetAsync(a => a.ServerId == followerId)).ToList();
+            foreach (NeighborhoodAction action in actions)
+            {
+              if (action.IsProfileAction())
+              {
+                log.Debug("Action ID {0}, type {1}, serverId '{2}' will be removed from the database.", action.Id, action.Type, followerId.ToHex());
+                unitOfWork.NeighborhoodActionRepository.Delete(action);
+                saveDb = true;
+              }
+            }
+
+
+            if (saveDb)
+            { 
+              await unitOfWork.SaveThrowAsync();
+              transaction.Commit();
+            }
+
+            success = true;
+            res = true;
+          }
+          catch (Exception e)
+          {
+            log.Error("Exception occurred: {0}", e.ToString());
+          }
+
+          if (!success)
+          {
+            log.Warn("Rolling back transaction.");
+            unitOfWork.SafeTransactionRollback(transaction);
+          }
+
+          unitOfWork.ReleaseLock(lockObjects);
         }
       }
 
-      StreamWriteLock.Release();
-      log.Trace("(-)");
+      log.Trace("(-):{0}", res);
+      return res;
     }
 
-    /// <summary>
-    /// Closes connection if it is opened and frees used resources, assuming StreamWriteLock is acquired.
-    /// </summary>
-    public void CloseConnectionLocked()
-    {
-      log.Trace("()");
-
-      Stream stream = Stream;
-      Stream = null;
-      if (stream != null) stream.Dispose();
-
-      TcpClient tcpClient = TcpClient;
-      TcpClient = null;
-      if (tcpClient != null) tcpClient.Dispose();
-
-      log.Trace("(-)");
-    }
-
-
-    /// <summary>
-    /// Callback routine that validates client connection to TLS port.
-    /// As we do not perform client certificate validation, we just return true to allow everyone to connect to our server.
-    /// </summary>
-    /// <param name="sender"><see cref="System.Net.Security.RemoteCertificateValidationCallback"/> Delegate.</param>
-    /// <param name="certificate"><see cref="System.Net.Security.RemoteCertificateValidationCallback"/> Delegate.</param>
-    /// <param name="chain"><see cref="System.Net.Security.RemoteCertificateValidationCallback"/> Delegate.</param>
-    /// <param name="sslPolicyErrors"><see cref="System.Net.Security.RemoteCertificateValidationCallback"/> Delegate.</param>
-    /// <returns><see cref="System.Net.Security.RemoteCertificateValidationCallback"/> Delegate.</returns>
-    public static bool PeerCertificateValidationCallback(Object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
-    {
-      return true;
-    }
 
 
     /// <summary>Signals whether the instance has been disposed already or not.</summary>
@@ -657,19 +543,10 @@ namespace ProfileServer.Network
     private object disposingLock = new object();
 
     /// <summary>
-    /// Disposes the instance of the class.
-    /// </summary>
-    public void Dispose()
-    {
-      Dispose(true);
-      GC.SuppressFinalize(this);
-    }
-
-    /// <summary>
     /// Disposes the instance of the class if it has not been disposed yet and <paramref name="Disposing"/> is set.
     /// </summary>
     /// <param name="Disposing">Indicates whether the method was invoked from the IDisposable.Dispose implementation or from the finalizer.</param>
-    protected virtual void Dispose(bool Disposing)
+    protected override void Dispose(bool Disposing)
     {
       bool disposedAlready = false;
       lock (disposingLock)
@@ -681,7 +558,7 @@ namespace ProfileServer.Network
 
       if (Disposing)
       {
-        CloseConnection().Wait();
+        base.Dispose(Disposing);
 
         lock (profileSearchResultCacheLock)
         {

@@ -1,15 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using NLog;
-using NLog.Common;
-using System.IO;
-using System.Diagnostics;
-
 using ProfileServer.Kernel;
-using System.Net.Sockets;
-using System.Threading;
 
 namespace ProfileServer
 {
@@ -18,7 +8,7 @@ namespace ProfileServer
   /// </summary>
   public class Program
   {
-    private static NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
+    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Program");
 
     /// <summary>
     /// Application entry point.
@@ -27,6 +17,8 @@ namespace ProfileServer
     public static void Main(string[] args)
     {
       log.Info("()");
+      Console.WriteLine("Initializing ...");
+
       if (Base.Init())
       {
         Console.WriteLine("Profile server is running now.");

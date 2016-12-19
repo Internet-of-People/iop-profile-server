@@ -15,7 +15,7 @@ namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
   /// PS02023 - Profile Stats
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS02.md#ps02023---profile-stats
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS02.md#ps02023---profile-stats---no-profile-initialization
   /// </summary>
   public class PS02023 : ProtocolTest
   {
@@ -78,7 +78,7 @@ namespace ProfileServerProtocolTests.Tests
         {
           ProtocolClient cl = testIdentities[i];
           await cl.ConnectAsync(ServerIp, ClNonCustomerPort, true);
-          if (!await cl.EstablishHomeNodeAsync(IdentityTypes[i]))
+          if (!await cl.EstablishHostingAsync(IdentityTypes[i]))
           {
             error = true;
             break;
@@ -86,7 +86,10 @@ namespace ProfileServerProtocolTests.Tests
           cl.CloseConnection();
         }
 
-        bool homeNodesOk = !error;
+        bool hostingOk = !error;
+
+
+
 
         await client.ConnectAsync(ServerIp, ClNonCustomerPort, true);
         Message requestMessage = mb.CreateProfileStatsRequest();
@@ -95,31 +98,10 @@ namespace ProfileServerProtocolTests.Tests
 
         bool idOk = responseMessage.Id == requestMessage.Id;
         bool statusOk = responseMessage.Response.Status == Status.Ok;
-        bool countOk = responseMessage.Response.SingleResponse.ProfileStats.Stats.Count == 5;
-
-        List<ProfileStatsItem> controlList = new List<ProfileStatsItem>()
-        {
-          new ProfileStatsItem() { IdentityType = "Type A", Count = 2 },
-          new ProfileStatsItem() { IdentityType = "Type B", Count = 3 },
-          new ProfileStatsItem() { IdentityType = "Type Alpha", Count = 1 },
-          new ProfileStatsItem() { IdentityType = "Type A B", Count = 1 },
-          new ProfileStatsItem() { IdentityType = "Type Beta", Count = 1 },
-        };
-
-        foreach (ProfileStatsItem item in responseMessage.Response.SingleResponse.ProfileStats.Stats)
-        {
-          ProfileStatsItem controlItem = controlList.Find(i => (i.IdentityType == item.IdentityType) && (i.Count == item.Count));
-          if (!controlList.Remove(controlItem))
-          {
-            error = true;
-            break;
-          }
-        }
-
-        bool contentOk = (controlList.Count == 0) && !error;
+        bool countOk = responseMessage.Response.SingleResponse.ProfileStats.Stats.Count == 0;
 
         // Step 1 Acceptance
-        bool step1Ok = idOk && statusOk && countOk && contentOk;
+        bool step1Ok = idOk && statusOk && countOk;
 
         log.Trace("Step 1: {0}", step1Ok ? "PASSED" : "FAILED");
 
@@ -131,7 +113,7 @@ namespace ProfileServerProtocolTests.Tests
         {
           ProtocolClient cl = testIdentities[i];
           await cl.ConnectAsync(ServerIp, ClNonCustomerPort, true);
-          if (!await cl.EstablishHomeNodeAsync(IdentityTypes[i]))
+          if (!await cl.EstablishHostingAsync(IdentityTypes[i]))
           {
             error = true;
             break;
@@ -139,7 +121,7 @@ namespace ProfileServerProtocolTests.Tests
           cl.CloseConnection();
         }
 
-        homeNodesOk = !error;
+        hostingOk = !error;
 
         requestMessage = mb.CreateProfileStatsRequest();
         await client.SendMessageAsync(requestMessage);
@@ -147,32 +129,10 @@ namespace ProfileServerProtocolTests.Tests
 
         idOk = responseMessage.Id == requestMessage.Id;
         statusOk = responseMessage.Response.Status == Status.Ok;
-        countOk = responseMessage.Response.SingleResponse.ProfileStats.Stats.Count == 6;
-
-        controlList = new List<ProfileStatsItem>()
-        {
-          new ProfileStatsItem() { IdentityType = "Type A", Count = 2 },
-          new ProfileStatsItem() { IdentityType = "Type B", Count = 3 },
-          new ProfileStatsItem() { IdentityType = "Type Alpha", Count = 1 },
-          new ProfileStatsItem() { IdentityType = "Type A B", Count = 2 },
-          new ProfileStatsItem() { IdentityType = "Type Beta", Count = 1 },
-          new ProfileStatsItem() { IdentityType = "Type C", Count = 1 },
-        };
-
-        foreach (ProfileStatsItem item in responseMessage.Response.SingleResponse.ProfileStats.Stats)
-        {
-          ProfileStatsItem controlItem = controlList.Find(i => (i.IdentityType == item.IdentityType) && (i.Count == item.Count));
-          if (!controlList.Remove(controlItem))
-          {
-            error = true;
-            break;
-          }
-        }
-
-        contentOk = (controlList.Count == 0) && !error;
+        countOk = responseMessage.Response.SingleResponse.ProfileStats.Stats.Count == 0;
 
         // Step 2 Acceptance
-        bool step2Ok = idOk && statusOk && countOk && contentOk;
+        bool step2Ok = idOk && statusOk && countOk;
 
         log.Trace("Step 2: {0}", step1Ok ? "PASSED" : "FAILED");
 

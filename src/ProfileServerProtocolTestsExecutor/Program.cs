@@ -66,7 +66,7 @@ namespace ProfileServerProtocolTestsExecutor
   /// </summary>
   public class Program
   {
-    private static NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
+    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocolTestsExecutor.Program");
 
     /// <summary>
     /// Information about all tests required for their execution.
@@ -181,7 +181,7 @@ namespace ProfileServerProtocolTestsExecutor
 
       new Test("PS06001", "ProfileServer-default.conf",          new string[] { "127.0.0.1", "16987" }, false),
       new Test("PS06002", "ProfileServer-default.conf",          new string[] { "127.0.0.1", "16987" }, false),
-      new Test("PS06003", "ProfileServer-default.conf",          new string[] { "127.0.0.1", "16987" }, false),
+      new Test("PS06003", "ProfileServer-default.conf",          new string[] { "127.0.0.1", "16987" }, true),
       new Test("PS06004", "ProfileServer-default.conf",          new string[] { "127.0.0.1", "16987" }, false),
 
       new Test("PS07001", "ProfileServer-default.conf",          new string[] { "127.0.0.1", "16987" }, false),
@@ -344,6 +344,7 @@ namespace ProfileServerProtocolTestsExecutor
             {
               log.Error("Test process did not finish on time, killing it now.");
               KillProcess(testProcess);
+              noresult++;
               break;
             }
           }

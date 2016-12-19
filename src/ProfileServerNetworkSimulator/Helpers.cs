@@ -6,16 +6,16 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ProfileServerSimulator
+namespace ProfileServerNetworkSimulator
 {
   /// <summary>
   /// Implementation of various helper routines.
   /// </summary>
   public static class Helpers
   {
-    private static NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
+    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerNetworkSimulator.Helpers");
 
-    
+
     /// <summary>Random number generator.</summary>
     public static Random Rng = new Random();
 
@@ -25,11 +25,12 @@ namespace ProfileServerSimulator
     /// <param name="SourceDirName">Name of the source directory.</param>
     /// <param name="DestDirName">Name of the destination directory.</param>
     /// <param name="CopySubDirs">True if subdirectories should be copied as well, false otherwise.</param>
+    /// <param name="DontCopyDirectories">List of directory names that should not be copied.</param>
     /// <returns>true if the function succeeds, false otherwise.</returns>
     /// <remarks>
     /// Original code - https://msdn.microsoft.com/en-us/library/bb762914.aspx.
     /// </remarks>
-    public static bool DirectoryCopy(string SourceDirName, string DestDirName, bool CopySubDirs = true)
+    public static bool DirectoryCopy(string SourceDirName, string DestDirName, bool CopySubDirs = true, string[] DontCopyDirectories = null)
     {
       bool res = false;
       DirectoryInfo dir = new DirectoryInfo(SourceDirName);
@@ -57,8 +58,24 @@ namespace ProfileServerSimulator
         {
           foreach (DirectoryInfo subdir in dirs)
           {
+            if (DontCopyDirectories != null)
+            {
+              bool dontCopy = false;
+              string subdirName = subdir.Name.ToLowerInvariant();
+              foreach (string dontCopyDir in DontCopyDirectories)
+              {
+                if (subdirName == dontCopyDir.ToLowerInvariant())
+                {
+                  dontCopy = true;
+                  break;
+                }
+              }
+
+              if (dontCopy) continue;
+            }
+
             string temppath = Path.Combine(DestDirName, subdir.Name);
-            res = DirectoryCopy(subdir.FullName, temppath, CopySubDirs);
+            res = DirectoryCopy(subdir.FullName, temppath, CopySubDirs, DontCopyDirectories);
             if (!res) break;
           }
         }
@@ -102,7 +119,7 @@ namespace ProfileServerSimulator
     /// <returns>true if the function succeeds, false otherwise.</returns>
     public static bool KillProcess(Process Process)
     {
-      log.Info("()");
+      log.Debug("()");
 
       bool res = false;
       try
@@ -115,7 +132,7 @@ namespace ProfileServerSimulator
         log.Error("Exception occurred when trying to kill process: {0}", e.ToString());
       }
 
-      log.Info("(-):{0}", res);
+      log.Debug("(-):{0}", res);
       return res;
     }
   }

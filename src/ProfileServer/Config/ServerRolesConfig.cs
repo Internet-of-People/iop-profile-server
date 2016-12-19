@@ -65,5 +65,29 @@ namespace ProfileServer.Config
       log.Trace("(-):{0}", res);
       return res;
     }
+
+    
+    /// <summary>
+    /// Gets a port number for a specific server role.
+    /// </summary>
+    /// <param name="Role">Server role to get port number for.</param>
+    /// <returns>Port number on which the server role is served, or 0 if no port servers the role.</returns>
+    public int GetRolePort(ServerRole Role)
+    {
+      log.Trace("(Role:{0})", Role);
+
+      int res = 0;
+      foreach (RoleServerConfiguration rsc in RoleServers.Values)
+      {
+        if (rsc.Roles.HasFlag(Role))
+        {
+          res = rsc.Port;
+          break;
+        }
+      }
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
   }
 }

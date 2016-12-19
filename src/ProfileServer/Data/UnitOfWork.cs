@@ -15,7 +15,7 @@ namespace ProfileServer.Data
   /// <summary>
   /// Synchronization object that is used to prevent race conditions while accessing database.
   /// </summary>
-  public class DatabaseLock
+  public class DatabaseLock: IComparable
   {
     /// <summary>Lock object itself.</summary>
     public SemaphoreSlim Lock;
@@ -36,6 +36,18 @@ namespace ProfileServer.Data
     public override string ToString()
     {
       return Name;
+    }
+
+    /// <summary>
+    /// Compares the a database lock to another database lock by its name.
+    /// </summary>
+    /// <param name="Other">Database lock to compare with the current instance.</param>
+    /// <returns>Less than zero if this instance precedes value. Zero if this instance has the same position in the sort order as value.
+    /// Greater than zero if this instance follows value or the other instance is null.</returns>
+    public int CompareTo(object Other)
+    {
+      if (Other == null) return 1;
+      return Other != null ? string.CompareOrdinal(this.Name, ((DatabaseLock)Other).Name) : 1;
     }
   }
 
@@ -60,22 +72,27 @@ namespace ProfileServer.Data
     }
 
 
-    /// <summary>Lock for the hosted identity repository.</summary>
+    /// <summary>Lock for HostedIdentityRepository.</summary>
     public static DatabaseLock HostedIdentityLock = new DatabaseLock("HOSTED_IDENTITY");
 
-    /// <summary>Lock for the neighborhood identity repository.</summary>
-    public static DatabaseLock NeighborhoodIdentityLock = new DatabaseLock("NEIGHBORHOOD_IDENTITY");
+    /// <summary>Lock for NeighborIdentityRepository.</summary>
+    public static DatabaseLock NeighborIdentityLock = new DatabaseLock("NEIGHBORHOOD_IDENTITY");
 
-    /// <summary>Lock for the related identity repository.</summary>
+    /// <summary>Lock for RelatedIdentityRepository.</summary>
     public static DatabaseLock RelatedIdentityLock = new DatabaseLock("RELATED_IDENTITY");
 
+    /// <summary>Lock for NeighborRepository.</summary>
+    public static DatabaseLock NeighborLock = new DatabaseLock("NEIGHBOR");
 
+    /// <summary>Lock for NeighborhoodActionRepository.</summary>
+    public static DatabaseLock NeighborhoodActionLock = new DatabaseLock("NEIGHBORHOOD_ACTION");
+
+    /// <summary>Lock for FollowerRepository.</summary>
+    public static DatabaseLock FollowerLock = new DatabaseLock("FOLLOWER");
+
+
+    /// <summary>Settings repository.</summary>
     private SettingsRepository settingsRepository;
-    private HostedIdentityRepository hostedIdentityRepository;
-    private NeighborhoodIdentityRepository neighborhoodIdentityRepository;
-    private RelatedIdentityRepository relatedIdentityRepository;
-
-
     /// <summary>Settings repository.</summary>
     public SettingsRepository SettingsRepository
     {
@@ -90,6 +107,8 @@ namespace ProfileServer.Data
 
 
     /// <summary>Identity repository for the node customers.</summary>
+    private HostedIdentityRepository hostedIdentityRepository;
+    /// <summary>Identity repository for the node customers.</summary>
     public HostedIdentityRepository HostedIdentityRepository
     {
       get
@@ -102,17 +121,21 @@ namespace ProfileServer.Data
     }
 
     /// <summary>Identity repository for identities hosted in the node's neighborhood.</summary>
-    public NeighborhoodIdentityRepository NeighborhoodIdentityRepository
+    private NeighborIdentityRepository neighborIdentityRepository;
+    /// <summary>Identity repository for identities hosted in the node's neighborhood.</summary>
+    public NeighborIdentityRepository NeighborIdentityRepository
     {
       get
       {
-        if (neighborhoodIdentityRepository == null)
-          neighborhoodIdentityRepository = new NeighborhoodIdentityRepository(Context);
+        if (neighborIdentityRepository == null)
+          neighborIdentityRepository = new NeighborIdentityRepository(Context);
 
-        return neighborhoodIdentityRepository;
+        return neighborIdentityRepository;
       }
     }
 
+    /// <summary>Repository of relations of hosted identities.</summary>
+    private RelatedIdentityRepository relatedIdentityRepository;
     /// <summary>Repository of relations of hosted identities.</summary>
     public RelatedIdentityRepository RelatedIdentityRepository
     {
@@ -125,6 +148,49 @@ namespace ProfileServer.Data
       }
     }
 
+
+    /// <summary>Repository of profile server neighbors.</summary>
+    private NeighborRepository neighborRepository;
+    /// <summary>Repository of profile server neighbors.</summary>
+    public NeighborRepository NeighborRepository
+    {
+      get
+      {
+        if (neighborRepository == null)
+          neighborRepository = new NeighborRepository(Context);
+
+        return neighborRepository;
+      }
+    }
+
+    /// <summary>Repository of planned actions in the neighborhood.</summary>
+    private GenericRepository<NeighborhoodAction> neighborhoodActionRepository;
+    /// <summary>Repository of planned actions in the neighborhood.</summary>
+    public GenericRepository<NeighborhoodAction> NeighborhoodActionRepository
+    {
+      get
+      {
+        if (neighborhoodActionRepository == null)
+          neighborhoodActionRepository = new GenericRepository<NeighborhoodAction>(Context);
+
+        return neighborhoodActionRepository;
+      }
+    }
+
+
+    /// <summary>Repository of profile server followers.</summary>
+    private FollowerRepository followerRepository;
+    /// <summary>Repository of profile server followers.</summary>
+    public FollowerRepository FollowerRepository
+    {
+      get
+      {
+        if (followerRepository == null)
+          followerRepository = new FollowerRepository(Context);
+
+        return followerRepository;
+      }
+    }
 
 
     /// <summary>
@@ -253,7 +319,7 @@ namespace ProfileServer.Data
       log.Trace("(Lock:{0})", Lock);
 
       Lock.Lock.Wait();
-      IDbContextTransaction result = Context.Database.BeginTransaction();
+      IDbContextTransaction result = Context.Database.BeginTransaction(IsolationLevel.Serializable);
 
       log.Trace("(-)");
       return result;
@@ -273,7 +339,7 @@ namespace ProfileServer.Data
       log.Trace("(Lock:{0})", Lock);
 
       await Lock.Lock.WaitAsync();
-      IDbContextTransaction result = await Context.Database.BeginTransactionAsync();
+      IDbContextTransaction result = await Context.Database.BeginTransactionAsync(IsolationLevel.Serializable);
 
       log.Trace("(-)");
       return result;
@@ -290,12 +356,15 @@ namespace ProfileServer.Data
     /// <remarks>The caller is responsible for releasing the locks by calling ReleaseLock.</remarks>
     public IDbContextTransaction BeginTransactionWithLock(DatabaseLock[] Locks)
     {
+      // We have to sort the locks before we try to enter them, otherwise we could deadlock.
+      Array.Sort(Locks);
+
       log.Trace("(Locks:[{0}])", string.Join<DatabaseLock>(",", Locks));
 
       for (int i = 0; i < Locks.Length; i++)
         Locks[i].Lock.Wait();
 
-      IDbContextTransaction result = Context.Database.BeginTransaction();
+      IDbContextTransaction result = Context.Database.BeginTransaction(IsolationLevel.Serializable);
 
       log.Trace("(-)");
       return result;
@@ -312,12 +381,15 @@ namespace ProfileServer.Data
     /// <remarks>The caller is responsible for releasing the locks by calling ReleaseLock.</remarks>
     public async Task<IDbContextTransaction> BeginTransactionWithLockAsync(DatabaseLock[] Locks)
     {
+      // We have to sort the locks before we try to enter them, otherwise we could deadlock.
+      Array.Sort(Locks);
+
       log.Trace("(Locks:[{0}])", string.Join<DatabaseLock>(",", Locks));
 
       for (int i = 0; i < Locks.Length; i++)
         await Locks[i].Lock.WaitAsync();
 
-      IDbContextTransaction result = await Context.Database.BeginTransactionAsync();
+      IDbContextTransaction result = await Context.Database.BeginTransactionAsync(IsolationLevel.Serializable);
 
       log.Trace("(-)");
       return result;
@@ -376,6 +448,9 @@ namespace ProfileServer.Data
     /// <remarks>The caller is responsible for releasing the locks by calling ReleaseLock.</remarks>
     public void AcquireLock(DatabaseLock[] Locks)
     {
+      // We have to sort the locks before we try to enter them, otherwise we could deadlock.
+      Array.Sort(Locks);
+
       log.Trace("(Locks:[{0}])", string.Join<DatabaseLock>(",", Locks));
 
       for (int i = 0; i < Locks.Length; i++)
@@ -392,6 +467,9 @@ namespace ProfileServer.Data
     /// <remarks>The caller is responsible for releasing the locks by calling ReleaseLock.</remarks>
     public async Task AcquireLockAsync(DatabaseLock[] Locks)
     {
+      // We have to sort the locks before we try to enter them, otherwise we could deadlock.
+      Array.Sort(Locks);
+
       log.Trace("(Locks:[{0}])", string.Join<DatabaseLock>(",", Locks));
 
       for (int i = 0; i < Locks.Length; i++)
@@ -419,11 +497,14 @@ namespace ProfileServer.Data
     /// Releases acquired locks.
     /// </summary>
     /// <param name="Locks">Lock objects to release.</param>
-    public void ReleaseLocks(DatabaseLock[] Locks)
+    public void ReleaseLock(DatabaseLock[] Locks)
     {
+      // We have to sort the locks before we try to enter them, otherwise we could deadlock.
+      Array.Sort(Locks);
+
       log.Trace("(Locks:[{0}])", string.Join<DatabaseLock>(",", Locks));
 
-      for (int i = Locks.Length - 1; i >= 0; i++)
+      for (int i = Locks.Length - 1; i >= 0; i--)
         Locks[i].Lock.Release();
 
       log.Trace("(-)");

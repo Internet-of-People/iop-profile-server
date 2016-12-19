@@ -61,7 +61,7 @@ namespace ProfileServerProtocolTests.Tests
         // Step 1 Acceptance
         bool idOk = responseMessage.Id == requestMessage.Id;
         bool statusOk = responseMessage.Response.Status == Status.Ok;
-        bool verifyChallengeOk = client.VerifyNodeChallengeSignature(responseMessage);
+        bool verifyChallengeOk = client.VerifyServerChallengeSignature(responseMessage);
 
         SemVer receivedVersion = new SemVer(responseMessage.Response.ConversationResponse.Start.Version);
         bool versionOk = receivedVersion.Equals(SemVer.V100);

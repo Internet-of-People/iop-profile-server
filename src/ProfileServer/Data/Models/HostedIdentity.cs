@@ -13,7 +13,7 @@ namespace ProfileServer.Data.Models
   /// <summary>
   /// Database representation of IoP Identity profile that is hosted by the profile server.
   /// </summary>
-  public class HostedIdentity : BaseIdentity
+  public class HostedIdentity : IdentityBase
   {
     private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Data.Models.HostedIdentity");
   }

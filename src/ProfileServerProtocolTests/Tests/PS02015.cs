@@ -54,7 +54,7 @@ namespace ProfileServerProtocolTests.Tests
 
         // Step 1
         await client.ConnectAsync(ServerIp, ClNonCustomerPort, true);
-        bool registerHostingOk = await client.EstablishHomeNodeAsync();
+        bool registerHostingOk = await client.EstablishHostingAsync();
 
         Message requestMessage = mb.CreateGetIdentityInformationRequest(client.GetIdentityId());
         await client.SendMessageAsync(requestMessage);

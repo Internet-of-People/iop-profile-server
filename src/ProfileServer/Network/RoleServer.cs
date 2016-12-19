@@ -18,8 +18,8 @@ namespace ProfileServer.Network
   [Flags]
   public enum ServerRole
   {
-    /// <summary>Primary and Unrelated Nodes Interface server role.</summary>
-    PrimaryUnrelated = 1,
+    /// <summary>Primary Interface server role.</summary>
+    Primary = 1,
 
     /// <summary>Neighbors Interface server role.</summary>
     ServerNeighbor = 4,
@@ -63,7 +63,7 @@ namespace ProfileServer.Network
     /// </summary>
     public static Dictionary<ServerRole, bool> ServerRoleEncryption = new Dictionary<ServerRole, bool>()
     {
-      { ServerRole.PrimaryUnrelated,  false },
+      { ServerRole.Primary,  false },
       { ServerRole.ServerNeighbor,    true  },
       { ServerRole.ClientCustomer,    true  },
       { ServerRole.ClientNonCustomer, true  },
@@ -76,7 +76,7 @@ namespace ProfileServer.Network
     /// </summary>
     public static Dictionary<ServerRole, bool> ServerRoleForNodes = new Dictionary<ServerRole, bool>()
     {
-      { ServerRole.PrimaryUnrelated,  true  },
+      { ServerRole.Primary,  true  },
       { ServerRole.ServerNeighbor,    true  },
       { ServerRole.ClientCustomer,    false },
       { ServerRole.ClientNonCustomer, false },
@@ -134,7 +134,7 @@ namespace ProfileServer.Network
     private Thread clientQueueHandlerThread;
 
     /// <summary>List of server's network peers and clients.</summary>
-    private ClientList clientList;
+    private IncomingClientList clientList;
 
     /// <summary>Pointer to the Network.Server component.</summary>
     private Server serverComponent;
@@ -170,7 +170,7 @@ namespace ProfileServer.Network
     public TcpRoleServer(IPEndPoint EndPoint, bool UseTls, ServerRole Roles)
     {
       logPrefix = string.Format("[{0}/tcp{1}] ", EndPoint.Port, UseTls ? "_tls" : "");
-      logName = "ProfileServer.Network.RoleServer";
+      logName = "ProfileServer.Network.TcpRoleServer";
       log = new PrefixLogger(logName, logPrefix);
 
       this.UseTls = UseTls;
@@ -300,7 +300,9 @@ namespace ProfileServer.Network
     /// </summary>
     private void AcceptThread()
     {
-      log.Info("()");
+      LogDiagnosticContext.Start();
+
+      log.Trace("()");
 
       acceptThreadFinished.Reset();
 
@@ -308,7 +310,7 @@ namespace ProfileServer.Network
 
       while (!ShutdownSignaling.IsShutdown)
       {
-        log.Info("Waiting for new client.");
+        log.Debug("Waiting for new client.");
         Task<TcpClient> acceptTask = Listener.AcceptTcpClientAsync();
         acceptTask.ContinueWith(t => acceptTaskEvent.Set());
 
@@ -324,11 +326,12 @@ namespace ProfileServer.Network
         {
           // acceptTask is finished here, asking for Result won't block.
           TcpClient client = acceptTask.Result;
+          EndPoint ep = client.Client.RemoteEndPoint;
           lock (clientQueueLock)
           {
             clientQueue.Enqueue(client);
           }
-          log.Info("New client '{0}' accepted.", client.Client.RemoteEndPoint);
+          log.Debug("New client '{0}' accepted.", ep);
           clientQueueEvent.Set();
         }
         catch (Exception e)
@@ -339,7 +342,9 @@ namespace ProfileServer.Network
 
       acceptThreadFinished.Set();
 
-      log.Info("(-)");
+      log.Trace("(-)");
+
+      LogDiagnosticContext.Stop();
     }
 
 
@@ -379,7 +384,7 @@ namespace ProfileServer.Network
           {
             int keepAliveInterval = IsServingClientsOnly ? ClientKeepAliveIntervalSeconds : NodeKeepAliveIntervalSeconds;
 
-            Client client = new Client(this, tcpClient, clientList.GetNewClientId(), UseTls, keepAliveInterval);
+            IncomingClient client = new IncomingClient(this, tcpClient, clientList.GetNewClientId(), UseTls, keepAliveInterval);
             ClientHandlerAsync(client);
 
             lock (clientQueueLock)
@@ -399,18 +404,17 @@ namespace ProfileServer.Network
 
 
     /// <summary>
-    /// Asynchronous read and processing function for each client that connects to the TCP server.
+    /// Handler for each client that connects to the TCP server.
     /// </summary>
     /// <param name="Client">Client that is connected to TCP server.</param>
     /// <remarks>The client is being handled in the processing loop until the connection to it 
     /// is terminated by either side. This function implements reading the message from the network stream,
     /// which includes reading the message length prefix followed by the entire message.</remarks>
-    private async void ClientHandlerAsync(Client Client)
+    private async void ClientHandlerAsync(IncomingClient Client)
     {
-      this.log.Info("(Client.RemoteEndPoint:{0})", Client.RemoteEndPoint);
+      LogDiagnosticContext.Start();
 
-      string prefix = string.Format("{0}[{1}] ", this.logPrefix, Client.RemoteEndPoint);
-      PrefixLogger log = new PrefixLogger(this.logName, prefix);
+      log.Info("(Client.RemoteEndPoint:{0})", Client.RemoteEndPoint);
 
       clientList.AddNetworkPeer(Client);
       log.Debug("Client ID set to {0}.", Client.Id.ToHex());
@@ -423,6 +427,8 @@ namespace ProfileServer.Network
       Client.Dispose();
 
       log.Info("(-)");
+
+      LogDiagnosticContext.Stop();
     }
   }
 }

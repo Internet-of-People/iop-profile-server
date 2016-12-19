@@ -39,7 +39,7 @@ namespace ProfileServerProtocolTests
     private KeysEd25519 keys;
 
     /// <summary>Node's public key received when starting conversation.</summary>
-    public byte[] NodeKey;
+    public byte[] ServerKey;
 
     /// <summary>Challenge that the node sent to the client when starting conversation.</summary>
     public byte[] Challenge;
@@ -228,7 +228,6 @@ namespace ProfileServerProtocolTests
 
       bool idOk = responseMessage.Id == requestMessage.Id;
       bool statusOk = responseMessage.Response.Status == Status.Ok;
-      bool challengeVerifyOk = VerifyNodeChallengeSignature(responseMessage);
 
       SemVer receivedVersion = new SemVer(responseMessage.Response.ConversationResponse.Start.Version);
       bool versionOk = receivedVersion.Equals(new SemVer(MessageBuilder.Version));
@@ -236,10 +235,11 @@ namespace ProfileServerProtocolTests
       bool pubKeyLenOk = responseMessage.Response.ConversationResponse.Start.PublicKey.Length == 32;
       bool challengeOk = responseMessage.Response.ConversationResponse.Start.Challenge.Length == 32;
 
-      NodeKey = responseMessage.Response.ConversationResponse.Start.PublicKey.ToByteArray();
+      ServerKey = responseMessage.Response.ConversationResponse.Start.PublicKey.ToByteArray();
       Challenge = responseMessage.Response.ConversationResponse.Start.Challenge.ToByteArray();
+      bool challengeVerifyOk = VerifyServerChallengeSignature(responseMessage);
 
-      bool res = idOk && statusOk && challengeVerifyOk && versionOk && pubKeyLenOk && challengeOk;
+      bool res = idOk && statusOk && versionOk && pubKeyLenOk && challengeOk && challengeVerifyOk;
 
       log.Trace("(-):{0}", res);
       return res;
@@ -252,7 +252,7 @@ namespace ProfileServerProtocolTests
     /// </summary>
     /// <param name="IdentityType">Identity type of the new identity.</param>
     /// <returns>true if the function succeeds, false otherwise.</returns>
-    public async Task<bool> EstablishHomeNodeAsync(string IdentityType = null)
+    public async Task<bool> EstablishHostingAsync(string IdentityType = null)
     {
       log.Trace("()");
 
@@ -428,7 +428,7 @@ namespace ProfileServerProtocolTests
       client = new TcpClient();
       client.NoDelay = true;
       client.LingerState = new LingerOption(true, 0);
-      NodeKey = null;
+      ServerKey = null;
       Challenge = null;
       MessageBuilder.ResetId();
 
@@ -466,18 +466,18 @@ namespace ProfileServerProtocolTests
 
 
     /// <summary>
-    /// Verifies whether the node successfully signed the correct start conversation challenge.
+    /// Verifies whether the server successfully signed the correct start conversation challenge.
     /// </summary>
     /// <param name="StartConversationResponse">StartConversationResponse received from the node.</param>
     /// <returns>true if the signature is valid, false otherwise.</returns>
-    public bool VerifyNodeChallengeSignature(Message StartConversationResponse)
+    public bool VerifyServerChallengeSignature(Message StartConversationResponse)
     {
       log.Trace("()");
 
+      if (ServerKey == null) ServerKey = StartConversationResponse.Response.ConversationResponse.Start.PublicKey.ToByteArray();
       byte[] receivedChallenge = StartConversationResponse.Response.ConversationResponse.Start.ClientChallenge.ToByteArray();
-      byte[] nodePublicKey = StartConversationResponse.Response.ConversationResponse.Start.PublicKey.ToByteArray();
       bool res = (StructuralComparisons.StructuralComparer.Compare(receivedChallenge, ClientChallenge) == 0) 
-        && MessageBuilder.VerifySignedConversationResponseBodyPart(StartConversationResponse, receivedChallenge, nodePublicKey);
+        && MessageBuilder.VerifySignedConversationResponseBodyPart(StartConversationResponse, receivedChallenge, ServerKey);
 
       log.Trace("(-):{0}", res);
       return res;

@@ -665,7 +665,7 @@ namespace ProfileServerProtocol
     /// </summary>
     /// <param name="Version">Profile version information or null if profile version is not to be changed.</param>
     /// <param name="Name">Identity name or null if identity name is not to be changed.</param>
-    /// <param name="Image">Profile image data or null if profile image is not to be changed.</param>
+    /// <param name="Image">Profile image data or null if profile image is not to be changed, to erase image, use empty byte array.</param>
     /// <param name="Location">Profile location information or null if location is not to be changed.</param>
     /// <param name="ExtraData">Profile's extra data information or null if profile's extra data is not to be changed.</param>
     /// <returns>CreateUpdateProfileRequest message that is ready to be sent.</returns>
@@ -1085,8 +1085,8 @@ namespace ProfileServerProtocol
     /// <param name="ExtraData">Regular expression string filter for profile's extra data information. If filtering by extra data information is not required this is set to null.</param>
     /// <param name="Location">GPS location, near which the target identities has to be located. If no location filtering is required this is set to null.</param>
     /// <param name="Radius">If <paramref name="Location"/> is not 0, this is radius in metres that together with <paramref name="Location"/> defines the target area.</param>
-    /// <param name="MaxResponseRecordCount">Maximal number of results to be included in the response. This is an integer between 1 and 100 if <paramref name="IncludeThumnailImages"/> is false, otherwise this is integer between 1 and 1000.</param>
-    /// <param name="MaxTotalRecordCount">Maximal number of total results that the node will look for and save. This is an integer between 1 and 1000 if <paramref name="IncludeThumnailImages"/> is false, otherwise this is integer between 1 and 10000.</param>
+    /// <param name="MaxResponseRecordCount">Maximal number of results to be included in the response. This is an integer between 1 and 100 if <paramref name="IncludeThumnailImages"/> is true, otherwise this is integer between 1 and 1000.</param>
+    /// <param name="MaxTotalRecordCount">Maximal number of total results that the node will look for and save. This is an integer between 1 and 1000 if <paramref name="IncludeThumnailImages"/> is true, otherwise this is integer between 1 and 10000.</param>
     /// <param name="IncludeHostedOnly">If set to true, the node only returns profiles of its own hosted identities. Otherwise, identities from the node's neighborhood can be included.</param>
     /// <param name="IncludeThumbnailImages">If set to true, the response will include a thumbnail image of each profile.</param>
     /// <returns>ProfileSearchRequest message that is ready to be sent.</returns>
@@ -1143,7 +1143,7 @@ namespace ProfileServerProtocol
     /// <summary>
     /// Creates a new ProfileSearchPartRequest message.
     /// </summary>
-    /// <param name="RecordIndex">Index of the first result to retrieve.</param>
+    /// <param name="RecordIndex">Zero-based index of the first result to retrieve.</param>
     /// <param name="RecordCount">Number of results to retrieve. If 'ProfileSearchResponse.IncludeThumbnailImages' was set, this has to be an integer between 1 and 100, otherwise it has to be an integer between 1 and 1000.</param>
     /// <returns>ProfileSearchRequest message that is ready to be sent.</returns>
     public Message CreateProfileSearchPartRequest(uint RecordIndex, uint RecordCount)
@@ -1222,7 +1222,7 @@ namespace ProfileServerProtocol
     /// Creates a new RemoveRelatedIdentityRequest message.
     /// </summary>
     /// <param name="CardApplicationIdentifier">Identifier of the card application to remove.</param>
-    /// <returns>AddRelatedIdentityRequest message that is ready to be sent.</returns>
+    /// <returns>RemoveRelatedIdentityRequest message that is ready to be sent.</returns>
     public Message CreateRemoveRelatedIdentityRequest(byte[] CardApplicationIdentifier)
     {
       RemoveRelatedIdentityRequest removeRelatedIdentityRequest = new RemoveRelatedIdentityRequest();
@@ -1291,6 +1291,137 @@ namespace ProfileServerProtocol
 
       Message res = CreateSingleResponse(Request);
       res.Response.SingleResponse.GetIdentityRelationshipsInformation = getIdentityRelationshipsInformationResponse;
+
+      return res;
+    }
+
+
+
+    /// <summary>
+    /// Creates a new StartNeighborhoodInitializationRequest message.
+    /// </summary>
+    /// <param name="PrimaryPort">Primary interface port of the requesting profile server.</param>
+    /// <param name="SrNeighborPort">Neighbors interface port of the requesting profile server.</param>
+    /// <returns>StartNeighborhoodInitializationRequest message that is ready to be sent.</returns>
+    public Message CreateStartNeighborhoodInitializationRequest(uint PrimaryPort, uint SrNeighborPort)
+    {
+      StartNeighborhoodInitializationRequest startNeighborhoodInitializationRequest = new StartNeighborhoodInitializationRequest();
+      startNeighborhoodInitializationRequest.PrimaryPort = PrimaryPort;
+      startNeighborhoodInitializationRequest.SrNeighborPort = SrNeighborPort;
+
+      Message res = CreateConversationRequest();
+      res.Request.ConversationRequest.StartNeighborhoodInitialization = startNeighborhoodInitializationRequest;
+
+      return res;
+    }
+
+
+    /// <summary>
+    /// Creates a response message to a StartNeighborhoodInitializationRequest message.
+    /// </summary>
+    /// <param name="Request">StartNeighborhoodInitializationRequest message for which the response is created.</param>
+    /// <returns>StartNeighborhoodInitializationResponse message that is ready to be sent.</returns>
+    public Message CreateStartNeighborhoodInitializationResponse(Message Request)
+    {
+      StartNeighborhoodInitializationResponse startNeighborhoodInitializationResponse = new StartNeighborhoodInitializationResponse();
+
+      Message res = CreateConversationResponse(Request);
+      res.Response.ConversationResponse.StartNeighborhoodInitialization = startNeighborhoodInitializationResponse;
+
+      return res;
+    }
+
+
+    /// <summary>
+    /// Creates a new FinishNeighborhoodInitializationRequest message.
+    /// </summary>
+    /// <returns>FinishNeighborhoodInitializationRequest message that is ready to be sent.</returns>
+    public Message CreateFinishNeighborhoodInitializationRequest()
+    {
+      FinishNeighborhoodInitializationRequest finishNeighborhoodInitializationRequest = new FinishNeighborhoodInitializationRequest();
+
+      Message res = CreateConversationRequest();
+      res.Request.ConversationRequest.FinishNeighborhoodInitialization = finishNeighborhoodInitializationRequest;
+
+      return res;
+    }
+
+
+    /// <summary>
+    /// Creates a response message to a FinishNeighborhoodInitializationRequest message.
+    /// </summary>
+    /// <param name="Request">FinishNeighborhoodInitializationRequest message for which the response is created.</param>
+    /// <returns>FinishNeighborhoodInitializationResponse message that is ready to be sent.</returns>
+    public Message CreateFinishNeighborhoodInitializationResponse(Message Request)
+    {
+      FinishNeighborhoodInitializationResponse finishNeighborhoodInitializationResponse = new FinishNeighborhoodInitializationResponse();
+
+      Message res = CreateConversationResponse(Request);
+      res.Response.ConversationResponse.FinishNeighborhoodInitialization = finishNeighborhoodInitializationResponse;
+
+      return res;
+    }
+
+
+    /// <summary>
+    /// Creates a new NeighborhoodSharedProfileUpdateRequest message.
+    /// </summary>
+    /// <param name="Items">List of profile changes to share.</param>
+    /// <returns>NeighborhoodSharedProfileUpdateRequest message that is ready to be sent.</returns>
+    public Message CreateNeighborhoodSharedProfileUpdateRequest(IEnumerable<SharedProfileUpdateItem> Items = null)
+    {
+      NeighborhoodSharedProfileUpdateRequest neighborhoodSharedProfileUpdateRequest = new NeighborhoodSharedProfileUpdateRequest();
+      if (Items != null) neighborhoodSharedProfileUpdateRequest.Items.AddRange(Items);
+
+      Message res = CreateConversationRequest();
+      res.Request.ConversationRequest.NeighborhoodSharedProfileUpdate = neighborhoodSharedProfileUpdateRequest;
+      
+      return res;
+    }
+
+
+    /// <summary>
+    /// Creates a response message to a NeighborhoodSharedProfileUpdateRequest message.
+    /// </summary>
+    /// <param name="Request">NeighborhoodSharedProfileUpdateRequest message for which the response is created.</param>
+    /// <returns>NeighborhoodSharedProfileUpdateResponse message that is ready to be sent.</returns>
+    public Message CreateNeighborhoodSharedProfileUpdateResponse(Message Request)
+    {
+      NeighborhoodSharedProfileUpdateResponse neighborhoodSharedProfileUpdateResponse = new NeighborhoodSharedProfileUpdateResponse();
+
+      Message res = CreateConversationResponse(Request);
+      res.Response.ConversationResponse.NeighborhoodSharedProfileUpdate = neighborhoodSharedProfileUpdateResponse;
+
+      return res;
+    }
+
+
+    /// <summary>
+    /// Creates a new StopNeighborhoodUpdatesRequest message.
+    /// </summary>
+    /// <returns>StopNeighborhoodUpdatesRequest message that is ready to be sent.</returns>
+    public Message CreateStopNeighborhoodUpdatesRequest()
+    {
+      StopNeighborhoodUpdatesRequest stopNeighborhoodUpdatesRequest = new StopNeighborhoodUpdatesRequest();
+
+      Message res = CreateConversationRequest();
+      res.Request.ConversationRequest.StopNeighborhoodUpdates = stopNeighborhoodUpdatesRequest;
+
+      return res;
+    }
+
+
+    /// <summary>
+    /// Creates a response message to a StopNeighborhoodUpdatesRequest message.
+    /// </summary>
+    /// <param name="Request">StopNeighborhoodUpdatesRequest message for which the response is created.</param>
+    /// <returns>StopNeighborhoodUpdatesResponse message that is ready to be sent.</returns>
+    public Message CreateStopNeighborhoodUpdatesResponse(Message Request)
+    {
+      StopNeighborhoodUpdatesResponse stopNeighborhoodUpdatesResponse = new StopNeighborhoodUpdatesResponse();
+
+      Message res = CreateConversationResponse(Request);
+      res.Response.ConversationResponse.StopNeighborhoodUpdates = stopNeighborhoodUpdatesResponse;
 
       return res;
     }

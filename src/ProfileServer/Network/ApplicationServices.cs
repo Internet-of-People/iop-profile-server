@@ -50,7 +50,7 @@ namespace ProfileServer.Network
         foreach (string serviceName in ServiceNames)
           newSet.Add(serviceName);
 
-        if (newSet.Count < Client.MaxClientApplicationServices)
+        if (newSet.Count < IncomingClient.MaxClientApplicationServices)
         {
           serviceNames = newSet;
           res = true;

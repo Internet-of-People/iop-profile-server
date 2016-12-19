@@ -6,4 +6,5 @@ project.lock.json
 .DS_Store
 *.db
 images/
+instances/
 *.cmd

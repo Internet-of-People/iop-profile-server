@@ -8,13 +8,14 @@
     "ProfileServerProtocol": "1.0.0-*",
     "ProfileServerCrypto": "1.0.0-*",
     "Microsoft.NETCore.App": {
-      "version": "1.1.0-preview1-001100-00"
+      "version": "1.1.0"
     },
-    "NLog": "4.4.0-betaV15",
-    "System.Runtime.InteropServices": "4.3.0-preview1-24530-04",
-    "Microsoft.EntityFrameworkCore.Sqlite": "1.1.0-preview1-final",
-    "Microsoft.EntityFrameworkCore.Design": "1.1.0-preview1-final",
-    "Microsoft.EntityFrameworkCore.Tools": "1.0.0-preview3-final"
+    "NLog": "5.0.0-beta03",
+    "System.Runtime.InteropServices": "4.3.0",
+    "Microsoft.EntityFrameworkCore.Sqlite": "1.1.0",
+    "Microsoft.EntityFrameworkCore.Design": "1.1.0",
+    "Microsoft.EntityFrameworkCore.Tools": "1.1.0-preview4-final",
+    "Newtonsoft.Json": "9.0.1"
   },
 
   "frameworks": {

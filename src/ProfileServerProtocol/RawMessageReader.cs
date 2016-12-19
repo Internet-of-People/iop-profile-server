@@ -27,15 +27,12 @@ namespace ProfileServerProtocol
     /// <summary>Actual message being read if the reading process was successful.</summary>
     public byte[] Data = null;
     
-    /// <summary>Indication of whether the connection has been or should be terminated.</summary>
-    public bool Disconnect = false;
-
     /// <summary>Indication of whether a protocol violation error has been detected and we should inform the other side about it.</summary>
     public bool ProtocolViolation = false;
 
     public override string ToString()
     {
-      return string.Format("RawMessage.Length={0},Disconnect={1},ProtocolViolation={2}", Data != null ? Data.Length.ToString() : "n/a", Disconnect, ProtocolViolation);
+      return string.Format("RawMessage.Length={0},ProtocolViolation={1}", Data != null ? Data.Length.ToString() : "n/a", ProtocolViolation);
     }
   }
 
@@ -49,142 +46,160 @@ namespace ProfileServerProtocol
   {
     private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocol.RawMessageReader");
 
+    /// <summary>Network connection stream.</summary>
     private Stream rawStream;
 
+    /// <summary>Buffer for message header.</summary>
     private byte[] messageHeaderBuffer = new byte[ProtocolHelper.HeaderSize];
+    
+    /// <summary>Buffer for whole message.</summary>
     private byte[] messageBuffer = null;
 
+    /// <summary>Status of the message reader.</summary>
     private ReaderStatus readerStatus = ReaderStatus.ReadingHeader;
 
+    /// <summary>Size of the message the reader expects to read.</summary>
     private uint messageSize = 0;
+
+    /// <summary>Number of header bytes read from the stream.</summary>
     private int messageHeaderBytesRead = 0;
+
+    /// <summary>Number of bytes read from the message body.</summary>
     private int messageBytesRead = 0;
 
+
+    /// <summary>
+    /// Initializes message reader using a network stream.
+    /// </summary>
+    /// <param name="RawStream">Stream of the connection to read from.</param>
     public RawMessageReader(Stream RawStream)
     {
-      log.Info("()");
+      log.Trace("()");
 
       rawStream = RawStream;
 
-      log.Info("(-)");
+      log.Trace("(-)");
     }
 
 
     /// <summary>
     /// Reads a message from the stream.
     /// </summary>
-    public async Task<RawMessageResult> ReceiveMessage(CancellationToken CancelToken)
+    public async Task<RawMessageResult> ReceiveMessageAsync(CancellationToken CancelToken)
     {
       log.Trace("()");
 
+      bool disconnect = false;
       RawMessageResult res = new RawMessageResult();
       try
       {
-        Task<int> readTask = null;
-        int remain = 0;
-
-        log.Trace("Reader status is '{0}'.", readerStatus);
-        switch (readerStatus)
+        while ((res.Data == null) && !disconnect)
         {
-          case ReaderStatus.ReadingHeader:
-            {
-              remain = ProtocolHelper.HeaderSize - messageHeaderBytesRead;
-              readTask = rawStream.ReadAsync(messageHeaderBuffer, messageHeaderBytesRead, remain, CancelToken);
-              break;
-            }
+          Task<int> readTask = null;
+          int remain = 0;
 
-          case ReaderStatus.ReadingBody:
-            {
-              remain = (int)messageSize - messageBytesRead;
-              readTask = rawStream.ReadAsync(messageBuffer, ProtocolHelper.HeaderSize + messageBytesRead, remain, CancelToken);
-              break;
-            }
-
-          default:
-            log.Error("Invalid client status '{0}'.", readerStatus);
-            break;
-        }
-
-        if (readTask != null)
-        {
-          log.Trace("{0} bytes remains to be read.", remain);
-
-          int readAmount = await readTask;
-          if (readAmount != 0)
+          log.Trace("Reader status is '{0}'.", readerStatus);
+          switch (readerStatus)
           {
-            log.Trace("Read completed: {0} bytes.", readAmount);
+            case ReaderStatus.ReadingHeader:
+              {
+                remain = ProtocolHelper.HeaderSize - messageHeaderBytesRead;
+                readTask = rawStream.ReadAsync(messageHeaderBuffer, messageHeaderBytesRead, remain, CancelToken);
+                break;
+              }
 
-            switch (readerStatus)
+            case ReaderStatus.ReadingBody:
+              {
+                remain = (int)messageSize - messageBytesRead;
+                readTask = rawStream.ReadAsync(messageBuffer, ProtocolHelper.HeaderSize + messageBytesRead, remain, CancelToken);
+                break;
+              }
+
+            default:
+              log.Error("Invalid client status '{0}'.", readerStatus);
+              break;
+          }
+
+          if (readTask != null)
+          {
+            log.Trace("{0} bytes remains to be read.", remain);
+
+            int readAmount = await readTask;
+            if (readAmount != 0)
             {
-              case ReaderStatus.ReadingHeader:
-                {
-                  messageHeaderBytesRead += readAmount;
-                  if (readAmount == remain)
+              log.Trace("Read completed: {0} bytes.", readAmount);
+
+              switch (readerStatus)
+              {
+                case ReaderStatus.ReadingHeader:
                   {
-                    if (messageHeaderBuffer[0] == 0x0D)
+                    messageHeaderBytesRead += readAmount;
+                    if (readAmount == remain)
                     {
-                      uint hdr = ProtocolHelper.GetValueLittleEndian(messageHeaderBuffer, 1);
-                      if (hdr + ProtocolHelper.HeaderSize <= ProtocolHelper.MaxSize)
+                      if (messageHeaderBuffer[0] == 0x0D)
                       {
-                        messageSize = hdr;
-                        readerStatus = ReaderStatus.ReadingBody;
-                        messageBuffer = new byte[ProtocolHelper.HeaderSize + messageSize];
-                        Array.Copy(messageHeaderBuffer, messageBuffer, messageHeaderBuffer.Length);
-                        log.Trace("Reading of message header completed. Message size is {0} bytes.", messageSize);
+                        uint hdr = ProtocolHelper.GetValueLittleEndian(messageHeaderBuffer, 1);
+                        if (hdr + ProtocolHelper.HeaderSize <= ProtocolHelper.MaxMessageSize)
+                        {
+                          messageSize = hdr;
+                          readerStatus = ReaderStatus.ReadingBody;
+                          messageBuffer = new byte[ProtocolHelper.HeaderSize + messageSize];
+                          Array.Copy(messageHeaderBuffer, messageBuffer, messageHeaderBuffer.Length);
+                          log.Trace("Reading of message header completed. Message size is {0} bytes.", messageSize);
+                        }
+                        else
+                        {
+                          log.Warn("Client claimed message of size {0} which exceeds the maximum.", hdr + ProtocolHelper.HeaderSize);
+                          res.ProtocolViolation = true;
+                        }
                       }
                       else
                       {
-                        log.Warn("Client claimed message of size {0} which exceeds the maximum.", hdr + ProtocolHelper.HeaderSize);
+                        log.Warn("Message has invalid format - it's first byte is 0x{0:X2}, should be 0x0D.", messageHeaderBuffer[0]);
                         res.ProtocolViolation = true;
                       }
                     }
-                    else
-                    {
-                      log.Warn("Message has invalid format - it's first byte is 0x{0:X2}, should be 0x0D.", messageHeaderBuffer[0]);
-                      res.ProtocolViolation = true;
-                    }
+                    break;
                   }
-                  break;
-                }
 
-              case ReaderStatus.ReadingBody:
-                {
-                  messageBytesRead += readAmount;
-                  if (readAmount == remain)
+                case ReaderStatus.ReadingBody:
                   {
-                    readerStatus = ReaderStatus.ReadingHeader;
-                    messageBytesRead = 0;
-                    messageHeaderBytesRead = 0;
-                    log.Trace("Reading of message size {0} completed.", messageSize);
+                    messageBytesRead += readAmount;
+                    if (readAmount == remain)
+                    {
+                      readerStatus = ReaderStatus.ReadingHeader;
+                      messageBytesRead = 0;
+                      messageHeaderBytesRead = 0;
+                      log.Trace("Reading of message size {0} completed.", messageSize);
 
-                    res.Data = messageBuffer;
+                      res.Data = messageBuffer;
+                    }
+                    break;
                   }
+
+                default:
+                  log.Error("Invalid message reader status {0}.", readerStatus);
+                  disconnect = true;
                   break;
-                }
+              }
 
-              default:
-                log.Error("Invalid message reader status {0}.", readerStatus);
-                res.Disconnect = true;
-                break;
+              if (res.ProtocolViolation)
+                disconnect = true;
             }
-
-            if (res.ProtocolViolation)
-              res.Disconnect = true;
+            else
+            {
+              log.Debug("Connection has been closed.");
+              disconnect = true;
+            }
           }
-          else
-          {
-            log.Info("Connection has been closed.");
-            res.Disconnect = true;
-          }
+          else disconnect = true;
         }
-        else res.Disconnect = true;
       }
       catch (Exception e)
       {
-        if ((e is ObjectDisposedException) || (e is IOException)) log.Info("Connection to client has been terminated.");
+        if ((e is ObjectDisposedException) || (e is IOException)) log.Debug("Connection to client has been terminated.");
+        else if (e is TaskCanceledException) log.Debug("Timeout or shutdown detected.");
         else log.Error("Exception occurred: {0}", e.ToString());
-
-        res.Disconnect = true;
       }
 
       log.Trace("(-):{0}", res);

@@ -36,7 +36,7 @@ namespace ProfileServer.Network
     private Server serverComponent;
 
     /// <summary>List of server's network peers and clients owned by Network.Server component.</summary>
-    public ClientList clientList;
+    public IncomingClientList clientList;
 
     /// <summary>
     /// Creates a new instance connected to the parent role server.
@@ -60,10 +60,9 @@ namespace ProfileServer.Network
     /// <param name="Client">TCP client who send the message.</param>
     /// <param name="IncomingMessage">Full ProtoBuf message to be processed.</param>
     /// <returns>true if the conversation with the client should continue, false if a protocol violation error occurred and the client should be disconnected.</returns>
-    public async Task<bool> ProcessMessageAsync(Client Client, Message IncomingMessage)
+    public async Task<bool> ProcessMessageAsync(IncomingClient Client, Message IncomingMessage)
     {
-      string prefix = string.Format("{0}[{1}] ", logPrefix, Client.RemoteEndPoint);
-      PrefixLogger log = new PrefixLogger("ProfileServer.Network.MessageProcessor", prefix);
+      PrefixLogger log = new PrefixLogger("ProfileServer.Network.MessageProcessor", logPrefix);
 
       MessageBuilder messageBuilder = Client.MessageBuilder;
 
@@ -75,8 +74,7 @@ namespace ProfileServer.Network
         Client.NextKeepAliveTime = DateTime.UtcNow.AddSeconds(Client.KeepAliveIntervalSeconds);
         log.Trace("Client ID {0} NextKeepAliveTime updated to {1}.", Client.Id.ToHex(), Client.NextKeepAliveTime.ToString("yyyy-MM-dd HH:mm:ss"));
 
-        string msgStr = IncomingMessage.ToString();
-        log.Trace("Received message type is {0}, message ID is {1}:\n{2}", IncomingMessage.MessageTypeCase, IncomingMessage.Id, msgStr.SubstrMax(512));
+        log.Trace("Received message type is {0}, message ID is {1}.", IncomingMessage.MessageTypeCase, IncomingMessage.Id);
         switch (IncomingMessage.MessageTypeCase)
         {
           case Message.MessageTypeOneofCase.Request:
@@ -193,6 +191,22 @@ namespace ProfileServer.Network
                         responseMessage = await ProcessMessageRemoveRelatedIdentityRequestAsync(Client, IncomingMessage);
                         break;
 
+                      case ConversationRequest.RequestTypeOneofCase.StartNeighborhoodInitialization:
+                        responseMessage = await ProcessMessageStartNeighborhoodInitializationRequestAsync(Client, IncomingMessage);
+                        break;
+
+                      case ConversationRequest.RequestTypeOneofCase.FinishNeighborhoodInitialization:
+                        responseMessage = ProcessMessageFinishNeighborhoodInitializationRequest(Client, IncomingMessage);
+                        break;
+
+                      case ConversationRequest.RequestTypeOneofCase.NeighborhoodSharedProfileUpdate:
+                        responseMessage = await ProcessMessageNeighborhoodSharedProfileUpdateRequestAsync(Client, IncomingMessage);
+                        break;
+
+                      case ConversationRequest.RequestTypeOneofCase.StopNeighborhoodUpdates:
+                        responseMessage = await ProcessMessageStopNeighborhoodUpdatesRequest(Client, IncomingMessage);
+                        break;
+
                       default:
                         log.Warn("Invalid request type '{0}'.", conversationRequest.RequestTypeCase);
                         // Connection will be closed in ReceiveMessageLoop.
@@ -225,7 +239,7 @@ namespace ProfileServer.Network
           case Message.MessageTypeOneofCase.Response:
             {
               Response response = IncomingMessage.Response;
-              log.Trace("Response status is {0}, details are '{1}', conversation type is {0}.", response.Status, response.Details, response.ConversationTypeCase);
+              log.Trace("Response status is {0}, details are '{1}', conversation type is {2}.", response.Status, response.Details, response.ConversationTypeCase);
 
               // Find associated request. If it does not exist, disconnect the client as it 
               // send a response without receiving a request. This is protocol violation, 
@@ -288,6 +302,14 @@ namespace ProfileServer.Network
                             res = await ProcessMessageIncomingCallNotificationResponseAsync(Client, IncomingMessage, unfinishedRequest);
                             break;
 
+                          case ConversationRequest.RequestTypeOneofCase.NeighborhoodSharedProfileUpdate:
+                            res = await ProcessMessageNeighborhoodSharedProfileUpdateResponseAsync(Client, IncomingMessage, unfinishedRequest);
+                            break;
+
+                          case ConversationRequest.RequestTypeOneofCase.FinishNeighborhoodInitialization:
+                            res = await ProcessMessageFinishNeighborhoodInitializationResponseAsync(Client, IncomingMessage, unfinishedRequest);
+                            break;
+
                           default:
                             log.Warn("Invalid type '{0}' of the corresponding request.", conversationRequest.RequestTypeCase);
                             // Connection will be closed in ReceiveMessageLoop.
@@ -331,7 +353,7 @@ namespace ProfileServer.Network
         // Connection will be closed in ReceiveMessageLoop.
       }
 
-      if (res &&  Client.ForceDisconnect)
+      if (res && Client.ForceDisconnect)
       {
         log.Debug("Connection to the client will be forcefully closed.");
         res = false;
@@ -346,7 +368,7 @@ namespace ProfileServer.Network
     /// Sends ERROR_PROTOCOL_VIOLATION to client with message ID set to 0x0BADC0DE.
     /// </summary>
     /// <param name="Client">Client to send the error to.</param>
-    public async Task SendProtocolViolation(Client Client)
+    public async Task SendProtocolViolation(IncomingClient Client)
     {
       MessageBuilder mb = new MessageBuilder(0, new List<SemVer>() { SemVer.V100 }, null);
       Message response = mb.CreateErrorProtocolViolationResponse(new Message() { Id = 0x0BADC0DE });
@@ -366,7 +388,7 @@ namespace ProfileServer.Network
     /// <param name="RequiredConversationStatus">Required conversation status for the message, or null for single messages.</param>
     /// <param name="ResponseMessage">If the verification fails, this is filled with error response to be sent to the client.</param>
     /// <returns>true if the function succeeds (i.e. required conditions are met and the message can be processed), false otherwise.</returns>
-    public bool CheckSessionConditions(Client Client, Message RequestMessage, ServerRole? RequiredRole, ClientConversationStatus? RequiredConversationStatus, out Message ResponseMessage)
+    public bool CheckSessionConditions(IncomingClient Client, Message RequestMessage, ServerRole? RequiredRole, ClientConversationStatus? RequiredConversationStatus, out Message ResponseMessage)
     {
       log.Trace("(RequiredRole:{0},RequiredConversationStatus:{1})", RequiredRole != null ? RequiredRole.ToString() : "null", RequiredConversationStatus != null ? RequiredConversationStatus.Value.ToString() : "null");
 
@@ -447,9 +469,7 @@ namespace ProfileServer.Network
     /// <returns>true if the function succeeds, false otherwise.</returns>
     public bool GetCommonSupportedVersion(IEnumerable<ByteString> ClientVersions, out SemVer SelectedCommonVersion)
     {
-#warning TODO: This function is currently implemented only to support version 1.0.0.
       log.Trace("()");
-      log.Warn("TODO UNIMPLEMENTED");
       SelectedCommonVersion = SemVer.Invalid;
 
       SemVer selectedVersion = SemVer.Invalid;
@@ -481,7 +501,7 @@ namespace ProfileServer.Network
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public Message ProcessMessagePingRequest(Client Client, Message RequestMessage)
+    public Message ProcessMessagePingRequest(IncomingClient Client, Message RequestMessage)
     {
       log.Trace("()");
 
@@ -502,12 +522,12 @@ namespace ProfileServer.Network
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public Message ProcessMessageListRolesRequest(Client Client, Message RequestMessage)
+    public Message ProcessMessageListRolesRequest(IncomingClient Client, Message RequestMessage)
     {
       log.Trace("()");
 
       Message res = null;
-      if (!CheckSessionConditions(Client, RequestMessage, ServerRole.PrimaryUnrelated, null, out res))
+      if (!CheckSessionConditions(Client, RequestMessage, ServerRole.Primary, null, out res))
       {
         log.Trace("(-):*.Response.Status={0}", res.Response.Status);
         return res;
@@ -545,7 +565,7 @@ namespace ProfileServer.Network
             ServerRoleType srt = ServerRoleType.Primary;
             switch (role)
             {
-              case ServerRole.PrimaryUnrelated: srt = ServerRoleType.Primary; break;
+              case ServerRole.Primary: srt = ServerRoleType.Primary; break;
               case ServerRole.ServerNeighbor: srt = ServerRoleType.SrNeighbor; break;
               case ServerRole.ClientNonCustomer: srt = ServerRoleType.ClNonCustomer; break;
               case ServerRole.ClientCustomer: srt = ServerRoleType.ClCustomer; break;
@@ -583,7 +603,7 @@ namespace ProfileServer.Network
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public async Task<Message> ProcessMessageGetIdentityInformationRequestAsync(Client Client, Message RequestMessage)
+    public async Task<Message> ProcessMessageGetIdentityInformationRequestAsync(IncomingClient Client, Message RequestMessage)
     {
       log.Trace("()");
 
@@ -598,7 +618,7 @@ namespace ProfileServer.Network
       GetIdentityInformationRequest getIdentityInformationRequest = RequestMessage.Request.SingleRequest.GetIdentityInformation;
 
       byte[] identityId = getIdentityInformationRequest.IdentityNetworkId.ToByteArray();
-      if (identityId.Length == BaseIdentity.IdentifierLength)
+      if (identityId.Length == IdentityBase.IdentifierLength)
       {
         using (UnitOfWork unitOfWork = new UnitOfWork())
         {
@@ -610,7 +630,7 @@ namespace ProfileServer.Network
               bool isHosted = identity.ExpirationDate == null;
               if (isHosted)
               {
-                Client targetClient = clientList.GetCheckedInClient(identityId);
+                IncomingClient targetClient = clientList.GetCheckedInClient(identityId);
                 bool isOnline = targetClient != null;
                 byte[] publicKey = identity.PublicKey;
                 SemVer version = new SemVer(identity.Version);
@@ -636,7 +656,7 @@ namespace ProfileServer.Network
               }
               else
               {
-                byte[] targetHomeNode = identity.HomeNodeId;
+                byte[] targetHomeNode = identity.HostingServerId;
                 res = messageBuilder.CreateGetIdentityInformationResponse(RequestMessage, isHosted, targetHomeNode, null);
               }
             }
@@ -671,7 +691,7 @@ namespace ProfileServer.Network
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public Message ProcessMessageStartConversationRequest(Client Client, Message RequestMessage)
+    public Message ProcessMessageStartConversationRequest(IncomingClient Client, Message RequestMessage)
     {
       log.Trace("()");
 
@@ -690,7 +710,7 @@ namespace ProfileServer.Network
 
       if (clientChallenge.Length == ProtocolHelper.ChallengeDataSize)
       {
-        if ((0 < pubKey.Length) && (pubKey.Length <= BaseIdentity.MaxPublicKeyLengthBytes))
+        if ((0 < pubKey.Length) && (pubKey.Length <= IdentityBase.MaxPublicKeyLengthBytes))
         {
           SemVer version;
           if (GetCommonSupportedVersion(startConversationRequest.SupportedVersions, out version))
@@ -746,9 +766,9 @@ namespace ProfileServer.Network
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public async Task<Message> ProcessMessageRegisterHostingRequestAsync(Client Client, Message RequestMessage)
+    public async Task<Message> ProcessMessageRegisterHostingRequestAsync(IncomingClient Client, Message RequestMessage)
     {
-#warning TODO: This function is currently implemented to mostly contracts, they can only be used for specifying identity type.
+#warning TODO: This function is currently implemented to support empty contracts or contracts with just identity type.
       // TODO: CHECK CONTRACT:
       // * signature is valid 
       // * planId is valid
@@ -800,9 +820,9 @@ namespace ProfileServer.Network
                 // We can't change primary identifier in existing entity.
                 if (existingIdentity == null) identity.IdentityId = Client.IdentityId;
 
-                identity.HomeNodeId = new byte[0];
+                identity.HostingServerId = new byte[0];
                 identity.PublicKey = Client.PublicKey;
-                identity.Version = new byte[] { 0, 0, 0 };
+                identity.Version = SemVer.Invalid.ToByteArray();
                 identity.Name = "";
                 identity.Type = identityType;
                 // Existing cancelled identity profile does not have images, no need to delete anything at this point.
@@ -810,7 +830,7 @@ namespace ProfileServer.Network
                 identity.ThumbnailImage = null;
                 identity.InitialLocationLatitude = GpsLocation.NoLocation.Latitude;
                 identity.InitialLocationLongitude = GpsLocation.NoLocation.Longitude;
-                identity.ExtraData = null;
+                identity.ExtraData = "";
                 identity.ExpirationDate = null;
 
                 if (existingIdentity == null) unitOfWork.HostedIdentityRepository.Insert(identity);
@@ -872,7 +892,7 @@ namespace ProfileServer.Network
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public async Task<Message> ProcessMessageCheckInRequestAsync(Client Client, Message RequestMessage)
+    public async Task<Message> ProcessMessageCheckInRequestAsync(IncomingClient Client, Message RequestMessage)
     {
       log.Trace("()");
 
@@ -955,12 +975,12 @@ namespace ProfileServer.Network
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public Message ProcessMessageVerifyIdentityRequest(Client Client, Message RequestMessage)
+    public Message ProcessMessageVerifyIdentityRequest(IncomingClient Client, Message RequestMessage)
     {
       log.Trace("()");
 
       Message res = null;
-      if (!CheckSessionConditions(Client, RequestMessage, ServerRole.ClientNonCustomer, ClientConversationStatus.ConversationStarted, out res))
+      if (!CheckSessionConditions(Client, RequestMessage, ServerRole.ClientNonCustomer | ServerRole.ServerNeighbor, ClientConversationStatus.ConversationStarted, out res))
       {
         log.Trace("(-):*.Response.Status={0}", res.Response.Status);
         return res;
@@ -1012,7 +1032,7 @@ namespace ProfileServer.Network
     /// and if this is a problem for a long term existance of the node, 
     /// the unreferenced files can be cleaned using some kind of maintanence process that will 
     /// delete all image files unreferenced from the database.</remarks>
-    public async Task<Message> ProcessMessageUpdateProfileRequestAsync(Client Client, Message RequestMessage)
+    public async Task<Message> ProcessMessageUpdateProfileRequestAsync(IncomingClient Client, Message RequestMessage)
     {
       log.Trace("()");
 
@@ -1042,89 +1062,132 @@ namespace ProfileServer.Network
               // If we are replacing those images, we have to create new files and delete the old files.
               // First, we create the new files and then in DB transaction, we get information about 
               // whether to delete existing files and which ones.
-              Guid? profileImageToDelete = null;
-              Guid? thumbnailImageToDelete = null;
+              byte[] profileImageToDelete = null;
+              byte[] thumbnailImageToDelete = null;
 
               if (updateProfileRequest.SetImage)
               {
-                identityForValidation.ProfileImage = Guid.NewGuid();
-                identityForValidation.ThumbnailImage = Guid.NewGuid();
-
                 byte[] profileImage = updateProfileRequest.Image.ToByteArray();
-                byte[] thumbnailImage;
-                ImageHelper.ProfileImageToThumbnailImage(profileImage, out thumbnailImage);
-
-                await identityForValidation.SaveProfileImageDataAsync(profileImage);
-                await identityForValidation.SaveThumbnailImageDataAsync(thumbnailImage);
-              }
-
-
-              // Update database record.
-              DatabaseLock lockObject = UnitOfWork.HostedIdentityLock;
-              await unitOfWork.AcquireLockAsync(lockObject);
-              try
-              {
-                HostedIdentity identity = (await unitOfWork.HostedIdentityRepository.GetAsync(i => (i.IdentityId == Client.IdentityId) && (i.ExpirationDate == null))).FirstOrDefault();
-
-                if (identity != null)
+                if (profileImage.Length > 0)
                 {
-                  if (updateProfileRequest.SetVersion)
-                    identity.Version = updateProfileRequest.Version.ToByteArray();
+                  byte[] thumbnailImage;
+                  ImageManager.ProfileImageToThumbnailImage(profileImage, out thumbnailImage);
 
-                  if (updateProfileRequest.SetName)
-                    identity.Name = updateProfileRequest.Name;
+                  identityForValidation.ProfileImage = Crypto.Sha256(profileImage);
+                  identityForValidation.ThumbnailImage = Crypto.Sha256(thumbnailImage);
 
-                  if (updateProfileRequest.SetImage)
-                  {
-                    // Here we replace existing images with new ones
-                    // and we save the old images GUIDs so we can delete them later.
-                    profileImageToDelete = identity.ProfileImage;
-                    thumbnailImageToDelete = identity.ThumbnailImage;
-
-                    identity.ProfileImage = identityForValidation.ProfileImage;
-                    identity.ThumbnailImage = identityForValidation.ThumbnailImage;
-                  }
-
-                  if (updateProfileRequest.SetLocation)
-                  {
-                    GpsLocation gpsLocation = new GpsLocation(updateProfileRequest.Latitude, updateProfileRequest.Longitude);
-                    identity.SetInitialLocation(gpsLocation);
-                  }
-
-                  if (updateProfileRequest.SetExtraData)
-                    identity.ExtraData = updateProfileRequest.ExtraData;
-
-                  unitOfWork.HostedIdentityRepository.Update(identity);
-                  success = await unitOfWork.SaveAsync();
+                  await identityForValidation.SaveProfileImageDataAsync(profileImage);
+                  await identityForValidation.SaveThumbnailImageDataAsync(thumbnailImage);
                 }
                 else
                 {
-                  log.Debug("Identity '{0}' is not a client of this node.", Client.IdentityId.ToHex());
-                  res = messageBuilder.CreateErrorNotFoundResponse(RequestMessage);
+                  // Erase image.
+                  identityForValidation.ProfileImage = null;
+                  identityForValidation.ThumbnailImage = null;
                 }
               }
-              catch (Exception e)
+
+              bool signalNeighborhoodAction = false;
+
+              // Update database record.
+              DatabaseLock[] lockObjects = new DatabaseLock[] { UnitOfWork.HostedIdentityLock, UnitOfWork.FollowerLock, UnitOfWork.NeighborhoodActionLock };
+              using (IDbContextTransaction transaction = await unitOfWork.BeginTransactionWithLockAsync(lockObjects))
               {
-                log.Error("Exception occurred: {0}", e);
+                try
+                {
+                  HostedIdentity identity = (await unitOfWork.HostedIdentityRepository.GetAsync(i => (i.IdentityId == Client.IdentityId) && (i.ExpirationDate == null))).FirstOrDefault();
+
+                  if (identity != null)
+                  {
+                    bool isProfileInitialization = !identity.IsProfileInitialized();
+
+                    if (updateProfileRequest.SetVersion)
+                      identity.Version = updateProfileRequest.Version.ToByteArray();
+
+                    if (updateProfileRequest.SetName)
+                      identity.Name = updateProfileRequest.Name;
+
+                    if (updateProfileRequest.SetImage)
+                    {
+                      // Here we replace existing images with new ones
+                      // and we save the old images hashes so we can delete them later.
+                      profileImageToDelete = identity.ProfileImage;
+                      thumbnailImageToDelete = identity.ThumbnailImage;
+
+                      identity.ProfileImage = identityForValidation.ProfileImage;
+                      identity.ThumbnailImage = identityForValidation.ThumbnailImage;
+                    }
+
+                    if (updateProfileRequest.SetLocation)
+                    {
+                      GpsLocation gpsLocation = new GpsLocation(updateProfileRequest.Latitude, updateProfileRequest.Longitude);
+                      identity.SetInitialLocation(gpsLocation);
+                    }
+
+                    if (updateProfileRequest.SetExtraData)
+                      identity.ExtraData = updateProfileRequest.ExtraData;
+
+                    unitOfWork.HostedIdentityRepository.Update(identity);
+
+
+                    // The profile change has to be propagated to all our followers
+                    // we create database actions that will be processed by dedicated thread.
+                    NeighborhoodActionType actionType = isProfileInitialization ? NeighborhoodActionType.AddProfile : NeighborhoodActionType.ChangeProfile;
+                    string extraInfo = null;
+                    if (actionType == NeighborhoodActionType.ChangeProfile)
+                    {
+                      SharedProfileChangeItem changeItem = new SharedProfileChangeItem()
+                      {
+                        SetVersion = updateProfileRequest.SetVersion,
+                        SetName = updateProfileRequest.SetName,
+                        SetThumbnailImage = updateProfileRequest.SetImage,
+                        SetLocation = updateProfileRequest.SetLocation,
+                        SetExtraData = updateProfileRequest.SetExtraData
+                      };
+                      extraInfo = changeItem.ToString();
+                    }
+                    signalNeighborhoodAction = await AddIdentityProfileFollowerActions(unitOfWork, actionType, identity.IdentityId, extraInfo);
+
+                    await unitOfWork.SaveThrowAsync();
+                    transaction.Commit();
+                    success = true;
+                  }
+                  else
+                  {
+                    log.Debug("Identity '{0}' is not a client of this node.", Client.IdentityId.ToHex());
+                    res = messageBuilder.CreateErrorNotFoundResponse(RequestMessage);
+                  }
+                }
+                catch (Exception e)
+                {
+                  log.Error("Exception occurred: {0}", e.ToString());
+                }
+
+                if (!success)
+                {
+                  log.Warn("Rolling back transaction.");
+                  unitOfWork.SafeTransactionRollback(transaction);
+                }
+
+                unitOfWork.ReleaseLock(lockObjects);
               }
-              unitOfWork.ReleaseLock(lockObject);
 
               if (success)
               {
                 log.Debug("Identity '{0}' updated its profile in the database.", Client.IdentityId.ToHex());
                 res = messageBuilder.CreateUpdateProfileResponse(RequestMessage);
-              }
 
-              // Delete old files, if there are any.
-              if (profileImageToDelete != null)
-              {
-                if (ImageHelper.DeleteImageFile(profileImageToDelete.Value)) log.Trace("Old file of image {0} deleted.", profileImageToDelete.Value);
-                else log.Error("Unable to delete old file of image {0}.", profileImageToDelete.Value);
-              }
-              if (thumbnailImageToDelete != null)
-              {
-                if (ImageHelper.DeleteImageFile(thumbnailImageToDelete.Value)) log.Trace("Old file of image {0} deleted.", thumbnailImageToDelete.Value);
-                else log.Error("Unable to delete old file of image {0}.", thumbnailImageToDelete.Value);
+                // Send signal to neighborhood action processor to process the new series of actions.
+                if (signalNeighborhoodAction)
+                {
+                  NeighborhoodActionProcessor neighborhoodActionProcessor = (NeighborhoodActionProcessor)Base.ComponentDictionary["Network.NeighborhoodActionProcessor"];
+                  neighborhoodActionProcessor.Signal();
+                }
+
+                // Delete old files, if there are any.
+                ImageManager imageManager = (ImageManager)Base.ComponentDictionary["Data.ImageManager"];
+                if (profileImageToDelete != null) imageManager.RemoveImageReference(profileImageToDelete);
+                if (thumbnailImageToDelete != null) imageManager.RemoveImageReference(thumbnailImageToDelete);
               }
             }
             else res = errorResponse;
@@ -1216,7 +1279,7 @@ namespace ProfileServer.Network
           string name = UpdateProfileRequest.Name;
 
           // Name is non-empty string, max Identity.MaxProfileNameLengthBytes bytes long.
-          if (string.IsNullOrEmpty(name) || (Encoding.UTF8.GetByteCount(name) > BaseIdentity.MaxProfileNameLengthBytes))
+          if (string.IsNullOrEmpty(name) || (Encoding.UTF8.GetByteCount(name) > IdentityBase.MaxProfileNameLengthBytes))
           {
             log.Debug("Invalid name '{0}'.", name);
             details = "name";
@@ -1228,7 +1291,9 @@ namespace ProfileServer.Network
           byte[] image = UpdateProfileRequest.Image.ToByteArray();
 
           // Profile image must be PNG or JPEG image, no bigger than Identity.MaxProfileImageLengthBytes.
-          if ((image.Length == 0) || (image.Length > BaseIdentity.MaxProfileImageLengthBytes) || !ImageHelper.ValidateImageFormat(image))
+          bool eraseImage = image.Length == 0;
+          bool imageValid = (image.Length <= IdentityBase.MaxProfileImageLengthBytes) && (eraseImage || ImageManager.ValidateImageFormat(image));
+          if (!imageValid)
           {
             log.Debug("Invalid image.");
             details = "image";
@@ -1258,9 +1323,9 @@ namespace ProfileServer.Network
           if (extraData == null) extraData = "";
 
           // Extra data is semicolon separated 'key=value' list, max Identity.MaxProfileExtraDataLengthBytes bytes long.
-          if (Encoding.UTF8.GetByteCount(extraData) > BaseIdentity.MaxProfileExtraDataLengthBytes)
+          if (Encoding.UTF8.GetByteCount(extraData) > IdentityBase.MaxProfileExtraDataLengthBytes)
           {
-            log.Debug("Extra data too large ({0} bytes, limit is {1}).", Encoding.UTF8.GetByteCount(extraData), BaseIdentity.MaxProfileExtraDataLengthBytes);
+            log.Debug("Extra data too large ({0} bytes, limit is {1}).", Encoding.UTF8.GetByteCount(extraData), IdentityBase.MaxProfileExtraDataLengthBytes);
             details = "extraData";
           }
         }
@@ -1288,7 +1353,7 @@ namespace ProfileServer.Network
     /// The profile itself is not immediately deleted, but its expiration date is set, 
     /// which will lead to its deletion. If the home node redirection is installed, the expiration date 
     /// is set to a later time.</remarks>
-    public async Task<Message> ProcessMessageCancelHostingAgreementRequestAsync(Client Client, Message RequestMessage)
+    public async Task<Message> ProcessMessageCancelHostingAgreementRequestAsync(IncomingClient Client, Message RequestMessage)
     {
       log.Trace("()");
 
@@ -1302,56 +1367,79 @@ namespace ProfileServer.Network
       MessageBuilder messageBuilder = Client.MessageBuilder;
       CancelHostingAgreementRequest cancelHostingAgreementRequest = RequestMessage.Request.ConversationRequest.CancelHostingAgreement;
 
-      if (!cancelHostingAgreementRequest.RedirectToNewProfileServer || (cancelHostingAgreementRequest.NewProfileServerNetworkId.Length == BaseIdentity.IdentifierLength))
+      if (!cancelHostingAgreementRequest.RedirectToNewProfileServer || (cancelHostingAgreementRequest.NewProfileServerNetworkId.Length == IdentityBase.IdentifierLength))
       {
-        Guid? profileImageToDelete = null;
-        Guid? thumbnailImageToDelete = null;
+        byte[] profileImageToDelete = null;
+        byte[] thumbnailImageToDelete = null;
 
         bool success = false;
         res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
         using (UnitOfWork unitOfWork = new UnitOfWork())
         {
-          DatabaseLock lockObject = UnitOfWork.HostedIdentityLock;
-          await unitOfWork.AcquireLockAsync(lockObject);
-          try
+          bool signalNeighborhoodAction = false;
+
+          DatabaseLock[] lockObjects = new DatabaseLock[] { UnitOfWork.HostedIdentityLock, UnitOfWork.FollowerLock, UnitOfWork.NeighborhoodActionLock };
+          using (IDbContextTransaction transaction = await unitOfWork.BeginTransactionWithLockAsync(lockObjects))
           {
-            HostedIdentity identity = (await unitOfWork.HostedIdentityRepository.GetAsync(i => (i.IdentityId == Client.IdentityId) && (i.ExpirationDate == null))).FirstOrDefault();
-            if (identity != null)
+            try
             {
-              // We artificially initialize the profile when we cancel it in order to allow queries towards this profile.
-              if (!identity.IsProfileInitialized())
-                identity.Version = SemVer.V100.ToByteArray();
-
-              profileImageToDelete = identity.ProfileImage;
-              thumbnailImageToDelete = identity.ThumbnailImage;
-
-              if (cancelHostingAgreementRequest.RedirectToNewProfileServer)
+              HostedIdentity identity = (await unitOfWork.HostedIdentityRepository.GetAsync(i => (i.IdentityId == Client.IdentityId) && (i.ExpirationDate == null))).FirstOrDefault();
+              if (identity != null)
               {
-                // The customer cancelled the contract, but left a redirect, which we will maintain for 14 days.
-                identity.ExpirationDate = DateTime.UtcNow.AddDays(14);
-                identity.HomeNodeId = cancelHostingAgreementRequest.NewProfileServerNetworkId.ToByteArray();
+                // We artificially initialize the profile when we cancel it in order to allow queries towards this profile.
+                if (!identity.IsProfileInitialized())
+                  identity.Version = SemVer.V100.ToByteArray();
+
+                // We are going to delete the images, so we have to make sure, the identity in database does not reference it anymore.
+                profileImageToDelete = identity.ProfileImage;
+                thumbnailImageToDelete = identity.ThumbnailImage;
+
+                identity.ProfileImage = null;
+                identity.ThumbnailImage = null;
+
+                if (cancelHostingAgreementRequest.RedirectToNewProfileServer)
+                {
+                  // The customer cancelled the contract, but left a redirect, which we will maintain for 14 days.
+                  identity.ExpirationDate = DateTime.UtcNow.AddDays(14);
+                  identity.HostingServerId = cancelHostingAgreementRequest.NewProfileServerNetworkId.ToByteArray();
+                }
+                else
+                {
+                  // The customer cancelled the contract, no redirect is being maintained, we can delete the record at any time.
+                  identity.ExpirationDate = DateTime.UtcNow;
+                }
+
+                unitOfWork.HostedIdentityRepository.Update(identity);
+
+                // The profile change has to be propagated to all our followers
+                // we create database actions that will be processed by dedicated thread.
+                signalNeighborhoodAction = await AddIdentityProfileFollowerActions(unitOfWork, NeighborhoodActionType.RemoveProfile, identity.IdentityId);
+
+                await unitOfWork.SaveThrowAsync();
+                transaction.Commit();
+                success = true;
               }
               else
               {
-                // The customer cancelled the contract, no redirect is being maintained, we can delete the record at any time.
-                identity.ExpirationDate = DateTime.UtcNow;
+                log.Debug("Identity '{0}' is not a client of this node.", Client.IdentityId.ToHex());
+                res = messageBuilder.CreateErrorNotFoundResponse(RequestMessage);
               }
-
-              unitOfWork.HostedIdentityRepository.Update(identity);
-              success = await unitOfWork.SaveAsync();
             }
-            else
+            catch (Exception e)
             {
-              log.Debug("Identity '{0}' is not a client of this node.", Client.IdentityId.ToHex());
-              res = messageBuilder.CreateErrorNotFoundResponse(RequestMessage);
-            }
-          }
-          catch (Exception e)
-          {
-            log.Error("Exception occurred: {0}", e);
+              log.Error("Exception occurred: {0}", e.ToString());
 
+            }
+
+
+            if (!success)
+            {
+              log.Warn("Rolling back transaction.");
+              unitOfWork.SafeTransactionRollback(transaction);
+            }
+
+            unitOfWork.ReleaseLock(lockObjects);
           }
-          unitOfWork.ReleaseLock(lockObject);
 
           if (success)
           {
@@ -1359,19 +1447,19 @@ namespace ProfileServer.Network
             else log.Debug("Identity '{0}' home node agreement cancelled and no redirection set.", Client.IdentityId.ToHex());
 
             res = messageBuilder.CreateCancelHostingAgreementResponse(RequestMessage);
-          }
-        }
 
-        // Delete old files, if there are any.
-        if (profileImageToDelete != null)
-        {
-          if (ImageHelper.DeleteImageFile(profileImageToDelete.Value)) log.Trace("Old file of image {0} deleted.", profileImageToDelete.Value);
-          else log.Error("Unable to delete old file of image {0}.", profileImageToDelete.Value);
-        }
-        if (thumbnailImageToDelete != null)
-        {
-          if (ImageHelper.DeleteImageFile(thumbnailImageToDelete.Value)) log.Trace("Old file of image {0} deleted.", thumbnailImageToDelete.Value);
-          else log.Error("Unable to delete old file of image {0}.", thumbnailImageToDelete.Value);
+            // Send signal to neighborhood action processor to process the new series of actions.
+            if (signalNeighborhoodAction)
+            {
+              NeighborhoodActionProcessor neighborhoodActionProcessor = (NeighborhoodActionProcessor)Base.ComponentDictionary["Network.NeighborhoodActionProcessor"];
+              neighborhoodActionProcessor.Signal();
+            }
+
+            // Delete old files, if there are any.
+            ImageManager imageManager = (ImageManager)Base.ComponentDictionary["Data.ImageManager"];
+            if (profileImageToDelete != null) imageManager.RemoveImageReference(profileImageToDelete);
+            if (thumbnailImageToDelete != null) imageManager.RemoveImageReference(thumbnailImageToDelete);
+          }
         }
       }
       else
@@ -1393,7 +1481,7 @@ namespace ProfileServer.Network
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public Message ProcessMessageApplicationServiceAddRequest(Client Client, Message RequestMessage)
+    public Message ProcessMessageApplicationServiceAddRequest(IncomingClient Client, Message RequestMessage)
     {
       log.Trace("()");
 
@@ -1411,7 +1499,7 @@ namespace ProfileServer.Network
       for (int i = 0; i < applicationServiceAddRequest.ServiceNames.Count; i++)
       {
         string serviceName = applicationServiceAddRequest.ServiceNames[i];
-        if (string.IsNullOrEmpty(serviceName) || (Encoding.UTF8.GetByteCount(serviceName) > Client.MaxApplicationServiceNameLengthBytes))
+        if (string.IsNullOrEmpty(serviceName) || (Encoding.UTF8.GetByteCount(serviceName) > IncomingClient.MaxApplicationServiceNameLengthBytes))
         {
           log.Warn("Invalid service name '{0}'.", serviceName);
           res = messageBuilder.CreateErrorInvalidValueResponse(RequestMessage, string.Format("serviceNames[{0}]", i));
@@ -1428,7 +1516,7 @@ namespace ProfileServer.Network
         }
         else
         {
-          log.Debug("Identity '{0}' application services list not changed, number of services would exceed the limit {1}.", Client.IdentityId.ToHex(), Client.MaxClientApplicationServices);
+          log.Debug("Identity '{0}' application services list not changed, number of services would exceed the limit {1}.", Client.IdentityId.ToHex(), IncomingClient.MaxClientApplicationServices);
           res = messageBuilder.CreateErrorQuotaExceededResponse(RequestMessage);
         }
       }
@@ -1448,7 +1536,7 @@ namespace ProfileServer.Network
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public Message ProcessMessageApplicationServiceRemoveRequest(Client Client, Message RequestMessage)
+    public Message ProcessMessageApplicationServiceRemoveRequest(IncomingClient Client, Message RequestMessage)
     {
       log.Trace("()");
 
@@ -1489,7 +1577,7 @@ namespace ProfileServer.Network
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Error response message to be sent to the client, or null if everything goes OK and the callee is going to be informed 
     /// about an incoming call.</returns>
-    public async Task<Message> ProcessMessageCallIdentityApplicationServiceRequestAsync(Client Client, Message RequestMessage)
+    public async Task<Message> ProcessMessageCallIdentityApplicationServiceRequestAsync(IncomingClient Client, Message RequestMessage)
     {
       log.Trace("()");
 
@@ -1535,7 +1623,7 @@ namespace ProfileServer.Network
 
       if (res == null)
       {
-        Client callee = clientList.GetCheckedInClient(calleeIdentityId);
+        IncomingClient callee = clientList.GetCheckedInClient(calleeIdentityId);
         if (callee != null)
         {
           // The callee is hosted on the node, it is online and its profile is initialized.
@@ -1600,13 +1688,14 @@ namespace ProfileServer.Network
     /// <param name="ResponseMessage">Full response message.</param>
     /// <param name="Request">Unfinished request message that corresponds to the response message.</param>
     /// <returns>true if the connection to the client that sent the response should remain open, false if the client should be disconnected.</returns>
-    public async Task<bool> ProcessMessageIncomingCallNotificationResponseAsync(Client Client, Message ResponseMessage, UnfinishedRequest Request)
+    public async Task<bool> ProcessMessageIncomingCallNotificationResponseAsync(IncomingClient Client, Message ResponseMessage, UnfinishedRequest Request)
     {
       log.Trace("()");
 
       bool res = false;
-      
+
       RelayConnection relay = (RelayConnection)Request.Context;
+      // Both OK and error responses are handled in CalleeRepliedToIncomingCallNotification.
       res = await relay.CalleeRepliedToIncomingCallNotification(ResponseMessage, Request);
 
       log.Trace("(-):{0}", res);
@@ -1621,7 +1710,7 @@ namespace ProfileServer.Network
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public async Task<Message> ProcessMessageApplicationServiceSendMessageRequestAsync(Client Client, Message RequestMessage)
+    public async Task<Message> ProcessMessageApplicationServiceSendMessageRequestAsync(IncomingClient Client, Message RequestMessage)
     {
       log.Trace("()");
 
@@ -1672,13 +1761,14 @@ namespace ProfileServer.Network
     /// <param name="ResponseMessage">Full response message.</param>
     /// <param name="Request">Unfinished request message that corresponds to the response message.</param>
     /// <returns>true if the connection to the client that sent the response should remain open, false if the client should be disconnected.</returns>
-    public async Task<bool> ProcessMessageApplicationServiceReceiveMessageNotificationResponseAsync(Client Client, Message ResponseMessage, UnfinishedRequest Request)
+    public async Task<bool> ProcessMessageApplicationServiceReceiveMessageNotificationResponseAsync(IncomingClient Client, Message ResponseMessage, UnfinishedRequest Request)
     {
       log.Trace("()");
 
       bool res = false;
 
       RelayMessageContext context = (RelayMessageContext)Request.Context;
+      // Both OK and error responses are handled in RecipientConfirmedMessage.
       res = await context.Relay.RecipientConfirmedMessage(Client, ResponseMessage, context.SenderRequest);
 
       log.Trace("(-):{0}", res);
@@ -1693,7 +1783,7 @@ namespace ProfileServer.Network
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public async Task<Message> ProcessMessageProfileStatsRequestAsync(Client Client, Message RequestMessage)
+    public async Task<Message> ProcessMessageProfileStatsRequestAsync(IncomingClient Client, Message RequestMessage)
     {
       log.Trace("()");
 
@@ -1717,7 +1807,7 @@ namespace ProfileServer.Network
         }
         catch (Exception e)
         {
-          log.Error("Exception occurred: {0}", e);
+          log.Error("Exception occurred: {0}", e.ToString());
         }
       }
 
@@ -1767,7 +1857,7 @@ namespace ProfileServer.Network
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public async Task<Message> ProcessMessageProfileSearchRequestAsync(Client Client, Message RequestMessage)
+    public async Task<Message> ProcessMessageProfileSearchRequestAsync(IncomingClient Client, Message RequestMessage)
     {
       log.Trace("()");
 
@@ -1808,12 +1898,14 @@ namespace ProfileServer.Network
             List<IdentityNetworkProfileInformation> searchResultsLocal = await ProfileSearch(unitOfWork.HostedIdentityRepository, maxResults, typeFilter, nameFilter, locationFilter, radius, extraDataFilter, includeImages, watch);
             if (searchResultsLocal != null)
             {
+              bool localServerOnly = true;
               bool error = false;
               // If possible and needed we try to find more results among identities hosted in this node's neighborhood.
               if (!profileSearchRequest.IncludeHostedOnly && (searchResultsLocal.Count < maxResults))
               {
+                localServerOnly = false;
                 maxResults -= (uint)searchResultsLocal.Count;
-                searchResultsNeighborhood = await ProfileSearch(unitOfWork.NeighborhoodIdentityRepository, maxResults, typeFilter, nameFilter, locationFilter, radius, extraDataFilter, includeImages, watch);
+                searchResultsNeighborhood = await ProfileSearch(unitOfWork.NeighborIdentityRepository, maxResults, typeFilter, nameFilter, locationFilter, radius, extraDataFilter, includeImages, watch);
                 if (searchResultsNeighborhood == null)
                 {
                   log.Error("Profile search among neighborhood identities failed.");
@@ -1841,8 +1933,7 @@ namespace ProfileServer.Network
                   responseResults.AddRange(allResults.GetRange(0, (int)maxResponseResults));
                 }
 
-#warning TODO: implement coveredNodes
-                List<byte[]> coveredNodes = new List<byte[]>();
+                List<byte[]> coveredNodes = await ProfileSearchGetCoveredNodes(unitOfWork, localServerOnly);
                 res = messageBuilder.CreateProfileSearchResponse(RequestMessage, (uint)allResults.Count, maxResponseResults, coveredNodes, responseResults);
               }
             }
@@ -1864,6 +1955,32 @@ namespace ProfileServer.Network
 
 
     /// <summary>
+    /// Obtains list of covered nodes for a profile search query.
+    /// <para>If the search used the local profile server database only, the result is simply ID of the local profile server.
+    /// Otherwise, it is its ID and a list of all its neighbors' IDs.</para>
+    /// </summary>
+    /// <param name="UnitOfWork">Unit of work instance.</param>
+    /// <param name="LocalServerOnly">true if the search query only used the local profile server, false otherwise.</param>
+    /// <returns>List of network IDs of profile servers whose database could be used to create the result.</returns>
+    /// <remarks>Note that the covered nodes list is not guaranteed to be accurate. The search query processing is not atomic 
+    /// and during the process it may happen that a neighbor server can be added or removed from the list of neighbors.</remarks>
+    private async Task<List<byte[]>> ProfileSearchGetCoveredNodes(UnitOfWork UnitOfWork, bool LocalServerOnly)
+    {
+      log.Trace("()");
+
+      List<byte[]> res = new List<byte[]>();
+      res.Add(serverComponent.ServerId);
+      if (!LocalServerOnly)
+      {
+        List<byte[]> neighborIds = (await UnitOfWork.NeighborRepository.GetAsync(null, null, true)).Select(n => n.NeighborId).ToList();
+        res.AddRange(neighborIds);
+      }
+
+      log.Trace("(-):*.Count={0}", res.Count);
+      return res;
+    }
+
+    /// <summary>
     /// Checks whether the search profile request is valid.
     /// </summary>
     /// <param name="ProfileSearchRequest">Profile search request part of the client's request message.</param>
@@ -1883,8 +2000,8 @@ namespace ProfileServer.Network
       int responseResultLimit = includeImages ? 100 : 1000;
       int totalResultLimit = includeImages ? 1000 : 10000;
 
-      bool maxResponseRecordCountValid = (1 <= ProfileSearchRequest.MaxResponseRecordCount) 
-        && (ProfileSearchRequest.MaxResponseRecordCount <= responseResultLimit) 
+      bool maxResponseRecordCountValid = (1 <= ProfileSearchRequest.MaxResponseRecordCount)
+        && (ProfileSearchRequest.MaxResponseRecordCount <= responseResultLimit)
         && (ProfileSearchRequest.MaxResponseRecordCount <= ProfileSearchRequest.MaxTotalRecordCount);
       if (!maxResponseRecordCountValid)
       {
@@ -1986,9 +2103,9 @@ namespace ProfileServer.Network
     /// <remarks>In order to prevent DoS attacks, we require the search to complete within small period of time. 
     /// One the allowed time is up, the search is terminated even if we do not have enough results yet and there 
     /// is still a possibility to get more.</remarks>
-    private async Task<List<IdentityNetworkProfileInformation>> ProfileSearch<T>(IdentityRepository<T> Repository, uint MaxResults, string TypeFilter, string NameFilter, GpsLocation LocationFilter, uint Radius, string ExtraDataFilter, bool IncludeImages, Stopwatch TimeoutWatch) where T:BaseIdentity
+    private async Task<List<IdentityNetworkProfileInformation>> ProfileSearch<T>(IdentityRepository<T> Repository, uint MaxResults, string TypeFilter, string NameFilter, GpsLocation LocationFilter, uint Radius, string ExtraDataFilter, bool IncludeImages, Stopwatch TimeoutWatch) where T : IdentityBase
     {
-      log.Trace("(Repository:{0},MaxResults:{1},TypeFilter:'{2}',NameFilter:'{3}',LocationFilter:'{4}',Radius:{5},ExtraDataFilter:'{6}',IncludeImages:{7})", 
+      log.Trace("(Repository:{0},MaxResults:{1},TypeFilter:'{2}',NameFilter:'{3}',LocationFilter:'{4}',Radius:{5},ExtraDataFilter:'{6}',IncludeImages:{7})",
         Repository, MaxResults, TypeFilter, NameFilter, LocationFilter, Radius, ExtraDataFilter, IncludeImages);
 
       List<IdentityNetworkProfileInformation> res = new List<IdentityNetworkProfileInformation>();
@@ -2071,7 +2188,7 @@ namespace ProfileServer.Network
               else
               {
                 inpi.IsHosted = false;
-                inpi.HostingServerNetworkId = ProtocolHelper.ByteArrayToByteString(identity.HomeNodeId);
+                inpi.HostingServerNetworkId = ProtocolHelper.ByteArrayToByteString(identity.HostingServerId);
               }
 
               inpi.Version = ProtocolHelper.ByteArrayToByteString(identity.Version);
@@ -2080,7 +2197,7 @@ namespace ProfileServer.Network
               inpi.Name = identity.Name != null ? identity.Name : "";
               inpi.Latitude = identityLocation.GetLocationTypeLatitude();
               inpi.Longitude = identityLocation.GetLocationTypeLongitude();
-              inpi.ExtraData = identity.ExtraData != null ? identity.ExtraData : "";
+              inpi.ExtraData = identity.ExtraData;
               if (IncludeImages)
               {
                 byte[] image = await identity.GetThumbnailImageDataAsync();
@@ -2096,7 +2213,7 @@ namespace ProfileServer.Network
               }
             }
 
-            log.Info("Total number of examined records is {0}, {1} of them have been accepted, {2} filtered out by location, {3} filtered out by extra data filter.", 
+            log.Info("Total number of examined records is {0}, {1} of them have been accepted, {2} filtered out by location, {3} filtered out by extra data filter.",
               accepted + filteredOutLocation + filteredOutExtraData, accepted, filteredOutLocation, filteredOutExtraData);
           }
 
@@ -2119,7 +2236,7 @@ namespace ProfileServer.Network
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public Message ProcessMessageProfileSearchPartRequest(Client Client, Message RequestMessage)
+    public Message ProcessMessageProfileSearchPartRequest(IncomingClient Client, Message RequestMessage)
     {
       log.Trace("()");
 
@@ -2167,7 +2284,7 @@ namespace ProfileServer.Network
         res = messageBuilder.CreateErrorNotAvailableResponse(RequestMessage);
       }
 
-      log.Trace("(-):*.Response.Status={0}", res.Response.Status);      
+      log.Trace("(-):*.Response.Status={0}", res.Response.Status);
       return res;
     }
 
@@ -2180,7 +2297,7 @@ namespace ProfileServer.Network
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public async Task<Message> ProcessMessageAddRelatedIdentityRequestAsync(Client Client, Message RequestMessage)
+    public async Task<Message> ProcessMessageAddRelatedIdentityRequestAsync(IncomingClient Client, Message RequestMessage)
     {
       log.Trace("()");
 
@@ -2269,7 +2386,7 @@ namespace ProfileServer.Network
             {
               res = messageBuilder.CreateAddRelatedIdentityResponse(RequestMessage);
             }
-            else 
+            else
             {
               log.Warn("Rolling back transaction.");
               unitOfWork.SafeTransactionRollback(transaction);
@@ -2295,7 +2412,7 @@ namespace ProfileServer.Network
     /// <param name="RequestMessage">Full request message from client.</param>
     /// <param name="ErrorResponse">If the function fails, this is filled with error response message that is ready to be sent to the client.</param>
     /// <returns>true if the profile update request can be applied, false otherwise.</returns>
-    private bool ValidateAddRelatedIdentityRequest(Client Client, AddRelatedIdentityRequest AddRelatedIdentityRequest, MessageBuilder MessageBuilder, Message RequestMessage, out Message ErrorResponse)
+    private bool ValidateAddRelatedIdentityRequest(IncomingClient Client, AddRelatedIdentityRequest AddRelatedIdentityRequest, MessageBuilder MessageBuilder, Message RequestMessage, out Message ErrorResponse)
     {
       log.Trace("()");
 
@@ -2312,7 +2429,7 @@ namespace ProfileServer.Network
 
       if ((applicationId.Length == 0) || (applicationId.Length > RelatedIdentity.CardIdentifierLength))
       {
-        log.Debug("Card application ID is too long.");
+        log.Debug("Card application ID is invalid.");
         details = "cardApplication.applicationId";
       }
 
@@ -2338,7 +2455,7 @@ namespace ProfileServer.Network
       if (details == null)
       {
         byte[] issuerPublicKey = card.IssuerPublicKey.ToByteArray();
-        bool pubKeyValid = (0 < issuerPublicKey.Length) && (issuerPublicKey.Length <= BaseIdentity.MaxPublicKeyLengthBytes);
+        bool pubKeyValid = (0 < issuerPublicKey.Length) && (issuerPublicKey.Length <= IdentityBase.MaxPublicKeyLengthBytes);
         if (!pubKeyValid)
         {
           log.Debug("Issuer public key has invalid length {0} bytes.", issuerPublicKey.Length);
@@ -2395,7 +2512,7 @@ namespace ProfileServer.Network
           RecipientPublicKey = card.RecipientPublicKey,
           Type = card.Type,
           ValidFrom = card.ValidFrom,
-          ValidTo = card.ValidTo          
+          ValidTo = card.ValidTo
         };
 
         byte[] hash = Crypto.Sha256(emptyIdCard.ToByteArray());
@@ -2441,7 +2558,7 @@ namespace ProfileServer.Network
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public async Task<Message> ProcessMessageRemoveRelatedIdentityRequestAsync(Client Client, Message RequestMessage)
+    public async Task<Message> ProcessMessageRemoveRelatedIdentityRequestAsync(IncomingClient Client, Message RequestMessage)
     {
       log.Trace("()");
 
@@ -2500,7 +2617,7 @@ namespace ProfileServer.Network
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public async Task<Message> ProcessMessageGetIdentityRelationshipsInformationRequestAsync(Client Client, Message RequestMessage)
+    public async Task<Message> ProcessMessageGetIdentityRelationshipsInformationRequestAsync(IncomingClient Client, Message RequestMessage)
     {
       log.Trace("()");
 
@@ -2524,45 +2641,52 @@ namespace ProfileServer.Network
         res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
         using (UnitOfWork unitOfWork = new UnitOfWork())
         {
-          List<RelatedIdentity> relations = await unitOfWork.RelatedIdentityRepository.GetRelationsAsync(identityId, type, includeInvalid, issuerId);
-
-          List<IdentityRelationship> identityRelationships = new List<IdentityRelationship>();
-          foreach (RelatedIdentity relatedIdentity in relations)
+          try
           {
-            CardApplicationInformation cardApplication = new CardApplicationInformation()
-            {
-              ApplicationId = ProtocolHelper.ByteArrayToByteString(relatedIdentity.ApplicationId),
-              CardId = ProtocolHelper.ByteArrayToByteString(relatedIdentity.CardId),
-            };
+            List<RelatedIdentity> relations = await unitOfWork.RelatedIdentityRepository.GetRelationsAsync(identityId, type, includeInvalid, issuerId);
 
-            RelationshipCard card = new RelationshipCard()
+            List<IdentityRelationship> identityRelationships = new List<IdentityRelationship>();
+            foreach (RelatedIdentity relatedIdentity in relations)
             {
-              CardId = ProtocolHelper.ByteArrayToByteString(relatedIdentity.CardId),
-              Version = ProtocolHelper.ByteArrayToByteString(relatedIdentity.CardVersion),
-              IssuerPublicKey = ProtocolHelper.ByteArrayToByteString(relatedIdentity.IssuerPublicKey),
-              RecipientPublicKey = ProtocolHelper.ByteArrayToByteString(relatedIdentity.RecipientPublicKey),
-              Type = relatedIdentity.Type,
-              ValidFrom = ProtocolHelper.DateTimeToUnixTimestampMs(relatedIdentity.ValidFrom),
-              ValidTo = ProtocolHelper.DateTimeToUnixTimestampMs(relatedIdentity.ValidTo)
-            };
+              CardApplicationInformation cardApplication = new CardApplicationInformation()
+              {
+                ApplicationId = ProtocolHelper.ByteArrayToByteString(relatedIdentity.ApplicationId),
+                CardId = ProtocolHelper.ByteArrayToByteString(relatedIdentity.CardId),
+              };
 
-            SignedRelationshipCard signedCard = new SignedRelationshipCard()
-            {
-              Card = card,
-              IssuerSignature = ProtocolHelper.ByteArrayToByteString(relatedIdentity.IssuerSignature)
-            };
+              RelationshipCard card = new RelationshipCard()
+              {
+                CardId = ProtocolHelper.ByteArrayToByteString(relatedIdentity.CardId),
+                Version = ProtocolHelper.ByteArrayToByteString(relatedIdentity.CardVersion),
+                IssuerPublicKey = ProtocolHelper.ByteArrayToByteString(relatedIdentity.IssuerPublicKey),
+                RecipientPublicKey = ProtocolHelper.ByteArrayToByteString(relatedIdentity.RecipientPublicKey),
+                Type = relatedIdentity.Type,
+                ValidFrom = ProtocolHelper.DateTimeToUnixTimestampMs(relatedIdentity.ValidFrom),
+                ValidTo = ProtocolHelper.DateTimeToUnixTimestampMs(relatedIdentity.ValidTo)
+              };
 
-            IdentityRelationship relationship = new IdentityRelationship()
-            {
-              Card = signedCard,
-              CardApplication = cardApplication,
-              CardApplicationSignature = ProtocolHelper.ByteArrayToByteString(relatedIdentity.RecipientSignature)
-            };
+              SignedRelationshipCard signedCard = new SignedRelationshipCard()
+              {
+                Card = card,
+                IssuerSignature = ProtocolHelper.ByteArrayToByteString(relatedIdentity.IssuerSignature)
+              };
 
-            identityRelationships.Add(relationship);
+              IdentityRelationship relationship = new IdentityRelationship()
+              {
+                Card = signedCard,
+                CardApplication = cardApplication,
+                CardApplicationSignature = ProtocolHelper.ByteArrayToByteString(relatedIdentity.RecipientSignature)
+              };
+
+              identityRelationships.Add(relationship);
+            }
+
+            res = messageBuilder.CreateGetIdentityRelationshipsInformationResponse(RequestMessage, identityRelationships);
           }
-
-          res = messageBuilder.CreateGetIdentityRelationshipsInformationResponse(RequestMessage, identityRelationships);
+          catch (Exception e)
+          {
+            log.Error("Exception occurred: {0}", e.ToString());
+          }
         }
       }
       else
@@ -2574,5 +2698,1351 @@ namespace ProfileServer.Network
       log.Trace("(-):*.Response.Status={0}", res.Response.Status);
       return res;
     }
+
+
+    /// <summary>
+    /// Adds neighborhood actions that will announce a change in a specific identity profile to all followers of the profile server.
+    /// </summary>
+    /// <param name="UnitOfWork">Unit of work instance.</param>
+    /// <param name="ActionType">Type of action on the identity profile.</param>
+    /// <param name="IdentityId">Identifier of the identity which caused the action.</param>
+    /// <param name="AdditionalData">Additional data to store with the action.</param>
+    /// <returns>
+    /// true if at least one new action was added to the database, false otherwise.
+    /// <para>
+    /// This function can throw database exception and the caller is expected to call it within try/catch block.
+    /// </para>
+    /// </returns>
+    /// <remarks>The caller of this function is responsible starting a database transaction with FollowerLock and NeighborhoodActionLock locks.</remarks>
+    public async Task<bool> AddIdentityProfileFollowerActions(UnitOfWork UnitOfWork, NeighborhoodActionType ActionType, byte[] IdentityId, string AdditionalData = null)
+    {
+      log.Trace("(IdentityId:'{0}')", IdentityId.ToHex());
+
+      bool res = false;
+      List<Follower> followers = (await UnitOfWork.FollowerRepository.GetAsync()).ToList();
+      if (followers.Count > 0)
+      {
+        // Disable change tracking for faster multiple inserts.
+        UnitOfWork.Context.ChangeTracker.AutoDetectChangesEnabled = false;
+
+        DateTime now = DateTime.UtcNow;
+        foreach (Follower follower in followers)
+        {
+          NeighborhoodAction neighborhoodAction = new NeighborhoodAction()
+          {
+            ServerId = follower.FollowerId,
+            ExecuteAfter = null,
+            TargetIdentityId = IdentityId,
+            Timestamp = now,
+            Type = ActionType,
+            AdditionalData = AdditionalData
+          };
+          UnitOfWork.NeighborhoodActionRepository.Insert(neighborhoodAction);
+
+          res = true;
+          log.Trace("Add profile action with identity ID '{0}' added for follower ID '{1}'.", IdentityId.ToHex(), follower.FollowerId.ToHex());
+        }
+      }
+      else log.Trace("No followers found to propagate identity profile change to.");
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+
+
+
+    /// <summary>
+    /// Processes StartNeighborhoodInitializationRequest message from client.
+    /// <para>If the server is not overloaded it accepts the neighborhood initialization request, 
+    /// adds the client to the list of server for which the profile server acts as a neighbor,
+    /// and starts sharing its profile database.</para>
+    /// </summary>
+    /// <param name="Client">Client that sent the request.</param>
+    /// <param name="RequestMessage">Full request message.</param>
+    /// <returns>Response message to be sent to the client, or null if no response is to be sent by the calling function.</returns>
+    public async Task<Message> ProcessMessageStartNeighborhoodInitializationRequestAsync(IncomingClient Client, Message RequestMessage)
+    {
+      log.Trace("()");
+
+      Message res = null;
+      if (!CheckSessionConditions(Client, RequestMessage, ServerRole.ServerNeighbor, ClientConversationStatus.Verified, out res))
+      {
+        log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+        return res;
+      }
+
+      MessageBuilder messageBuilder = Client.MessageBuilder;
+      StartNeighborhoodInitializationRequest startNeighborhoodInitializationRequest = RequestMessage.Request.ConversationRequest.StartNeighborhoodInitialization;
+      int primaryPort = (int)startNeighborhoodInitializationRequest.PrimaryPort;
+      int srNeighborPort = (int)startNeighborhoodInitializationRequest.SrNeighborPort;
+      byte[] followerId = Client.IdentityId;
+
+      res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
+      bool success = false;
+
+      NeighborhoodInitializationProcessContext nipContext = null;
+
+      bool primaryPortValid = (0 < primaryPort) && (primaryPort <= 65535);
+      bool srNeighborPortValid = (0 < srNeighborPort) && (srNeighborPort <= 65535);
+      if (primaryPortValid && srNeighborPortValid)
+      {
+        using (UnitOfWork unitOfWork = new UnitOfWork())
+        {
+          int blockActionId = await InstallInitializationProcessInProgress(unitOfWork, followerId);
+          if (blockActionId != -1)
+          {
+            DatabaseLock[] lockObjects = new DatabaseLock[] { UnitOfWork.HostedIdentityLock, UnitOfWork.FollowerLock };
+            using (IDbContextTransaction transaction = await unitOfWork.BeginTransactionWithLockAsync(lockObjects))
+            {
+              try
+              {
+                int followerCount = await unitOfWork.FollowerRepository.CountAsync();
+                if (followerCount < Base.Configuration.MaxFollowerServersCount)
+                {
+                  int neighborhoodInitializationsInProgress = await unitOfWork.FollowerRepository.CountAsync(f => f.LastRefreshTime == null);
+                  if (neighborhoodInitializationsInProgress < Base.Configuration.NeighborhoodInitializationParallelism)
+                  {
+                    Follower existingFollower = (await unitOfWork.FollowerRepository.GetAsync(f => f.FollowerId == followerId)).FirstOrDefault();
+                    if (existingFollower == null)
+                    {
+                      // Take snapshot of all our identities.
+                      byte[] invalidVersion = SemVer.Invalid.ToByteArray();
+                      List<HostedIdentity> allHostedIdentities = (await unitOfWork.HostedIdentityRepository.GetAsync(i => (i.ExpirationDate == null) && (i.Version != invalidVersion), null, true)).ToList();
+
+                      // Create new follower.
+                      Follower follower = new Follower()
+                      {
+                        FollowerId = followerId,
+                        IpAddress = Client.RemoteEndPoint.Address.ToString(),
+                        PrimaryPort = primaryPort,
+                        SrNeighborPort = srNeighborPort,
+                        LastRefreshTime = null
+                      };
+
+                      unitOfWork.FollowerRepository.Insert(follower);
+                      await unitOfWork.SaveThrowAsync();
+                      transaction.Commit();
+                      success = true;
+
+                      // Set the client to be in the middle of neighbor initialization process.
+                      Client.NeighborhoodInitializationProcessInProgress = true;
+                      nipContext = new NeighborhoodInitializationProcessContext()
+                      {
+                        HostedIdentities = allHostedIdentities,
+                        IdentitiesDone = 0
+                      };
+                    }
+                    else
+                    {
+                      log.Warn("Follower ID '{0}' already exists in the database.", followerId.ToHex());
+                      res = messageBuilder.CreateErrorAlreadyExistsResponse(RequestMessage);
+                    }
+                  }
+                  else
+                  {
+                    log.Warn("Maximal number of neighborhood initialization processes {0} in progress has been reached.", Base.Configuration.NeighborhoodInitializationParallelism);
+                    res = messageBuilder.CreateErrorBusyResponse(RequestMessage);
+                  }
+                }
+                else
+                {
+                  log.Warn("Maximal number of follower servers {0} has been reached already. Will not accept another follower.", Base.Configuration.MaxFollowerServersCount);
+                  res = messageBuilder.CreateErrorRejectedResponse(RequestMessage);
+                }
+              }
+              catch (Exception e)
+              {
+                log.Error("Exception occurred: {0}", e.ToString());
+              }
+
+              if (!success)
+              {
+                log.Warn("Rolling back transaction.");
+                unitOfWork.SafeTransactionRollback(transaction);
+              }
+
+              unitOfWork.ReleaseLock(lockObjects);
+            }
+
+            if (!success)
+            {
+              // It may happen that due to power failure, this will not get executed but when the server runs next time, 
+              // Data.Database.DeleteInvalidNeighborhoodActions will be executed during the startup and will delete the blocking action.
+              if (!await UninstallInitializationProcessInProgress(unitOfWork, blockActionId))
+                log.Error("Unable to uninstall blocking neighborhood action ID {0} for follower ID '{1}'.", blockActionId, followerId.ToHex());
+            }
+          }
+          else log.Error("Unable to install blocking neighborhood action for follower ID '{0}'.", followerId.ToHex());
+        }
+      }
+      else
+      {
+        if (primaryPortValid) res = messageBuilder.CreateErrorInvalidValueResponse(RequestMessage, "srNeighborPort");
+        else res = messageBuilder.CreateErrorInvalidValueResponse(RequestMessage, "primaryPort");
+      }
+
+      if (success)
+      {
+        log.Info("New follower ID '{0}' added to the database.", followerId.ToHex());
+
+        Message responseMessage = messageBuilder.CreateStartNeighborhoodInitializationResponse(RequestMessage);
+        if (await Client.SendMessageAsync(responseMessage))
+        {
+          if (nipContext.HostedIdentities.Count > 0)
+          {
+            log.Trace("Sending first batch of our {0} hosted identities.", nipContext.HostedIdentities.Count);
+            Message updateMessage = await BuildNeighborhoodSharedProfileUpdateRequest(Client, nipContext);
+            if (!await Client.SendMessageAndSaveUnfinishedRequestAsync(updateMessage, nipContext))
+            {
+              log.Warn("Unable to send first update message to the client.");
+              Client.ForceDisconnect = true;
+            }
+          }
+          else
+          {
+            log.Trace("No hosted identities to be shared, finishing neighborhood initialization process.");
+
+            // If the profile server hosts no identities, simply finish initialization process.
+            Message finishMessage = messageBuilder.CreateFinishNeighborhoodInitializationRequest();
+            if (!await Client.SendMessageAndSaveUnfinishedRequestAsync(finishMessage, null))
+            {
+              log.Warn("Unable to send finish message to the client.");
+              Client.ForceDisconnect = true;
+            }
+          }
+        }
+        else
+        {
+          log.Warn("Unable to send reponse message to the client.");
+          Client.ForceDisconnect = true;
+        }
+
+        res = null;
+      }
+
+      if (res != null) log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+      else log.Trace("(-):null");
+      return res;
+    }
+
+
+    /// <summary>
+    /// Installs InitializationProcessInProgress neighborhood action that will prevent 
+    /// the profile server to sending updates to a new follower.
+    /// </summary>
+    /// <param name="UnitOfWork">Unit of work instance.</param>
+    /// <param name="FollowerId">Identifier of the follower to block updates to.</param>
+    /// <returns>Action ID of the newly installed action, or -1 if the function fails.</returns>
+    public async Task<int> InstallInitializationProcessInProgress(UnitOfWork UnitOfWork, byte[] FollowerId)
+    {
+      log.Trace("(FollowerId:'{0}')", FollowerId.ToHex());
+
+      int res = -1;
+
+      DatabaseLock lockObject = UnitOfWork.NeighborhoodActionLock;
+      await UnitOfWork.AcquireLockAsync(lockObject);
+
+      try
+      {
+        // This action will make sure the profile server will not send updates to the new follower
+        // until the neighborhood initialization process is complete.
+        NeighborhoodAction action = new NeighborhoodAction()
+        {
+          ServerId = FollowerId,
+          Type = NeighborhoodActionType.InitializationProcessInProgress,
+          TargetIdentityId = null,
+          Timestamp = DateTime.UtcNow,
+          AdditionalData = null,
+
+          // This will cause other actions to this follower to be postponed for 20 minutes from now.
+          ExecuteAfter = DateTime.UtcNow.AddMinutes(20)
+        };
+        UnitOfWork.NeighborhoodActionRepository.Insert(action);
+        await UnitOfWork.SaveThrowAsync();
+        res = action.Id;
+      }
+      catch (Exception e)
+      {
+        log.Error("Exception occurred: {0}", e.ToString());
+      }
+
+      UnitOfWork.ReleaseLock(lockObject);
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+
+    /// <summary>
+    /// Uninstalls InitializationProcessInProgress neighborhood action that was installed by InstallInitializationProcessInProgress.
+    /// </summary>
+    /// <param name="UnitOfWork">Unit of work instance.</param>
+    /// <param name="FollowerId">Identifier of the follower.</param>
+    /// <returns>true if the function suceeds, false otherwise.</returns>
+    public async Task<bool> UninstallInitializationProcessInProgress(UnitOfWork UnitOfWork, int ActionId)
+    {
+      log.Trace("(ActionId:'{0}')", ActionId);
+
+      bool res = false;
+
+      DatabaseLock lockObject = UnitOfWork.NeighborhoodActionLock;
+      await UnitOfWork.AcquireLockAsync(lockObject);
+
+      try
+      {
+        NeighborhoodAction action = (await UnitOfWork.NeighborhoodActionRepository.GetAsync(a => a.Id == ActionId)).FirstOrDefault();
+        if (action != null)
+        {
+          UnitOfWork.NeighborhoodActionRepository.Delete(action);
+          await UnitOfWork.SaveThrowAsync();
+          res = true;
+        }
+        else log.Error("Action ID {0} not found.", ActionId);
+      }
+      catch (Exception e)
+      {
+        log.Error("Exception occurred: {0}", e.ToString());
+      }
+
+      UnitOfWork.ReleaseLock(lockObject);
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+
+
+    /// <summary>
+    /// Builds an update message for neighborhood initialization process.
+    /// <para>An update message is built in a way that as many as possible consecutive profiles from the list 
+    /// are being put into the message.</para>
+    /// </summary>
+    /// <param name="Client">Client for which the message is to be prepared.</param>
+    /// <param name="Context">Context describing the status of the initialization process.</param>
+    /// <returns>Upadate request message that is ready to be sent to the client.</returns>
+    public async Task<Message> BuildNeighborhoodSharedProfileUpdateRequest(IncomingClient Client, NeighborhoodInitializationProcessContext Context)
+    {
+      log.Trace("()");
+
+      Message res = Client.MessageBuilder.CreateNeighborhoodSharedProfileUpdateRequest();
+
+      // We want to send as many items as possible in one message in order to minimize the number of messages 
+      // there is some overhead when the message put into the final MessageWithHeader structure, 
+      // so to be safe we just use 32 bytes less then the maximum.
+      int messageSizeLimit = ProtocolHelper.MaxMessageSize - 32;
+
+      int index = Context.IdentitiesDone;
+      List<HostedIdentity> identities = Context.HostedIdentities;
+      log.Trace("Starting with identity index {0}, total identities number is {1}.", index, identities.Count);
+      while (index < identities.Count)
+      {
+        HostedIdentity identity = identities[index];
+        byte[] thumbnailImage = await identity.GetThumbnailImageDataAsync();
+        GpsLocation location = identity.GetInitialLocation();
+        SharedProfileUpdateItem updateItem = new SharedProfileUpdateItem()
+        {
+          Add = new SharedProfileAddItem()
+          {
+            Version = ProtocolHelper.ByteArrayToByteString(identity.Version),
+            IdentityPublicKey = ProtocolHelper.ByteArrayToByteString(identity.PublicKey),
+            Name = identity.Name,
+            Type = identity.Type,
+            SetThumbnailImage = thumbnailImage != null,
+            Latitude = location.GetLocationTypeLatitude(),
+            Longitude = location.GetLocationTypeLongitude(),
+            ExtraData = identity.ExtraData
+          }
+        };
+
+        if (updateItem.Add.SetThumbnailImage)
+          updateItem.Add.ThumbnailImage = ProtocolHelper.ByteArrayToByteString(thumbnailImage);
+
+
+        res.Request.ConversationRequest.NeighborhoodSharedProfileUpdate.Items.Add(updateItem);
+        int newSize = res.CalculateSize();
+
+        log.Trace("Index {0}, message size is {1} bytes, limit is {2} bytes.", index, newSize, messageSizeLimit);
+        if (newSize > messageSizeLimit)
+        {
+          // We have reached the limit, remove the last item and send the message.
+          res.Request.ConversationRequest.NeighborhoodSharedProfileUpdate.Items.RemoveAt(res.Request.ConversationRequest.NeighborhoodSharedProfileUpdate.Items.Count - 1);
+          break;
+        }
+
+        index++;
+      }
+
+      Context.IdentitiesDone += res.Request.ConversationRequest.NeighborhoodSharedProfileUpdate.Items.Count;
+      log.Debug("{0} update items inserted to the message. Already processed {1}/{2} profiles.", 
+        res.Request.ConversationRequest.NeighborhoodSharedProfileUpdate.Items.Count, Context.IdentitiesDone, Context.HostedIdentities.Count);
+
+      log.Trace("(-)");
+      return res;
+    }
+
+
+    /// <summary>
+    /// Processes FinishNeighborhoodInitializationRequest message from client.
+    /// <para>This message should never come here from a protocol conforming client,
+    /// hence the only thing we can do is return an error.</para>
+    /// </summary>
+    /// <param name="Client">Client that sent the request.</param>
+    /// <param name="RequestMessage">Full request message.</param>
+    /// <returns>Response message to be sent to the client.</returns>
+    public Message ProcessMessageFinishNeighborhoodInitializationRequest(IncomingClient Client, Message RequestMessage)
+    {
+      log.Trace("()");
+
+      MessageBuilder messageBuilder = Client.MessageBuilder;
+      Message res = messageBuilder.CreateErrorRejectedResponse(RequestMessage);
+
+      log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+      return res;
+    }
+
+
+
+    /// <summary>
+    /// Processes NeighborhoodSharedProfileUpdateRequest message from client.
+    /// <para>Processes a shared profile update from a neighbor.</para>
+    /// </summary>
+    /// <param name="Client">Client that sent the request.</param>
+    /// <param name="RequestMessage">Full request message.</param>
+    /// <returns>Response message to be sent to the client.</returns>
+    public async Task<Message> ProcessMessageNeighborhoodSharedProfileUpdateRequestAsync(IncomingClient Client, Message RequestMessage)
+    {
+      log.Trace("()");
+
+      Message res = null;
+      if (!CheckSessionConditions(Client, RequestMessage, ServerRole.ServerNeighbor, ClientConversationStatus.Verified, out res))
+      {
+        log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+        return res;
+      }
+
+      MessageBuilder messageBuilder = Client.MessageBuilder;
+      NeighborhoodSharedProfileUpdateRequest neighborhoodSharedProfileUpdateRequest = RequestMessage.Request.ConversationRequest.NeighborhoodSharedProfileUpdate;
+
+      bool error = false;
+      byte[] neighborId = Client.IdentityId;
+
+      // First, we verify that the client is our neighbor.
+      using (UnitOfWork unitOfWork = new UnitOfWork())
+      {
+        Neighbor neighbor = (await unitOfWork.NeighborRepository.GetAsync(n => n.NeighborId == neighborId)).FirstOrDefault();
+        if (neighbor == null)
+        {
+          log.Warn("Share profile update request came from client ID '{0}', who is not our neighbor.", neighborId.ToHex());
+          res = messageBuilder.CreateErrorRejectedResponse(RequestMessage);
+          error = true;
+        }
+        else if (neighbor.LastRefreshTime == null)
+        {
+          log.Warn("Share profile update request came from client ID '{0}', who is our neighbor, but we have not finished the initialization process with it yet.", neighborId.ToHex());
+          res = messageBuilder.CreateErrorRejectedResponse(RequestMessage);
+          error = true;
+        }
+      }
+
+      if (error)
+      {
+        log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+        return res;
+      }
+
+
+      // Second, we do a validation of all items without touching a database.
+
+      // itemsImageHashes is a mapping of indexes of update items to hashes of images that has been successfully 
+      // stored to the images folder.
+      Dictionary<int, byte[]> itemsImageHashes = new Dictionary<int, byte[]>();
+
+      // itemIndex will hold the index of the first item that is invalid.
+      // If it reaches the number of items, all items are valid.
+      int itemIndex = 0;
+
+      // doRefresh is true, if at least one of the update items is of type Refresh.
+      bool doRefresh = false;
+      while (itemIndex < neighborhoodSharedProfileUpdateRequest.Items.Count)
+      {
+        SharedProfileUpdateItem updateItem = neighborhoodSharedProfileUpdateRequest.Items[itemIndex];
+        Message errorResponse;
+        if (ValidateSharedProfileUpdateItem(updateItem, itemIndex, Client.MessageBuilder, RequestMessage, out errorResponse))
+        {
+          byte[] newImageData = null;
+          if (updateItem.ActionTypeCase == SharedProfileUpdateItem.ActionTypeOneofCase.Add && updateItem.Add.SetThumbnailImage) newImageData = updateItem.Add.ThumbnailImage.ToByteArray();
+          else if (updateItem.ActionTypeCase == SharedProfileUpdateItem.ActionTypeOneofCase.Add && updateItem.Add.SetThumbnailImage) newImageData = updateItem.Change.ThumbnailImage.ToByteArray();
+
+          if ((newImageData != null) && (newImageData.Length != 0))
+          {
+            byte[] imageHash = Crypto.Sha256(newImageData);
+            if (!await ImageManager.SaveImageDataAsync(imageHash, newImageData))
+            {
+              log.Error("Unable to save image data from item index {0} to file.", itemIndex);
+              res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
+              break;
+            }
+
+            itemsImageHashes.Add(itemIndex, imageHash);
+          }
+
+          if (updateItem.ActionTypeCase == SharedProfileUpdateItem.ActionTypeOneofCase.Refresh)
+            doRefresh = true;
+        }
+        else
+        {
+          res = errorResponse;
+          break;
+        }
+
+        itemIndex++;
+      }
+
+      log.Debug("{0}/{1} update items passed validation, doRefresh is {2}.", itemIndex, neighborhoodSharedProfileUpdateRequest.Items.Count, doRefresh);
+
+
+      // If there was a refresh request, we process it first as it does no harm and we do not need to care about it later.
+      if (doRefresh)
+        await UpdateNeighborLastRefreshTime(neighborId);
+
+
+      // Now we save all valid items up to the first invalid (or all if all are valid).
+      // But if we detect duplicity of identity with Add operation, or we can not find identity 
+      // with Change or Delete action, we end earlier.
+      // We will process the data in batches of max 100 items, not to occupy the database locks for too long.
+      log.Trace("Saving {0} valid profiles.", itemIndex);
+
+      // imagesToDelete is a list of image hashes that were replaced and the corresponding image files should be deleted.
+      List<byte[]> imagesToDelete = new List<byte[]>();
+
+      // Index of the update item currently being processed.
+      int index = 0;
+
+      using (UnitOfWork unitOfWork = new UnitOfWork())
+      {
+        // Batch number just for logging purposes.
+        int batchNumber = 1;
+        while (index < itemIndex)
+        {
+          log.Trace("Processing batch number {0}, which starts with item index {1}.", batchNumber, index);
+          batchNumber++;
+
+          // List of update item indexes with images that this batch used.
+          // If the batch is saved to the database successfully, all images of these items are safe.
+          List<int> batchUsedImageItemIndexes = new List<int>();
+
+          // List of item image hashes of images that were removed during this batch.
+          List<byte[]> batchDeletedImageHashes = new List<byte[]>();
+
+          DatabaseLock lockObject = UnitOfWork.NeighborIdentityLock;
+          using (IDbContextTransaction transaction = await unitOfWork.BeginTransactionWithLockAsync(lockObject))
+          {
+            bool success = false;
+            bool saveDb = false;
+            try
+            {
+              for (int loopIndex = 0; loopIndex < 100; loopIndex++)
+              {
+                SharedProfileUpdateItem updateItem = neighborhoodSharedProfileUpdateRequest.Items[index];
+
+                byte[] itemImageHash = null;
+                if (!itemsImageHashes.TryGetValue(index, out itemImageHash))
+                  itemImageHash = null;
+
+                StoreSharedProfileUpdateResult storeResult = await StoreSharedProfileUpdateToDatabase(unitOfWork, updateItem, index, neighborId, itemImageHash, messageBuilder, RequestMessage);
+                if (storeResult.SaveDb) saveDb = true;
+                if (storeResult.Error) error = true;
+                if (storeResult.ErrorResponse != null) res = storeResult.ErrorResponse;
+                if (storeResult.ImageToDelete != null) batchDeletedImageHashes.Add(storeResult.ImageToDelete);
+                if (storeResult.ItemImageUsed) batchUsedImageItemIndexes.Add(index);
+
+                // Error here means that we want to save all already processed items to the database
+                // and quite the loop right after that, the response is filled with error response already.
+                if (error) break;
+
+                index++;
+                if (index >= itemIndex) break;
+              }
+
+              if (saveDb)
+              {
+                await unitOfWork.SaveThrowAsync();
+                transaction.Commit();
+              }
+              success = true;
+            }
+            catch (Exception e)
+            {
+              log.Error("Exception occurred: {0}", e.ToString());
+            }
+
+            if (success)
+            {
+              // Data were saved to the database successfully.
+              // All image hashes from this batch are safe in DB.
+              // We remove the index from itemsImageHashes, which will leave 
+              // unused images in itemsImageHashes.
+              foreach (int iIndex in batchUsedImageItemIndexes)
+              {
+                if (itemsImageHashes.ContainsKey(iIndex))
+                  itemsImageHashes.Remove(iIndex);
+              }
+
+              // Similarly, all deleted images should be processed as well.
+              foreach (byte[] hash in batchDeletedImageHashes)
+                imagesToDelete.Add(hash);
+            }
+            else
+            {
+              log.Warn("Rolling back transaction.");
+              unitOfWork.SafeTransactionRollback(transaction);
+            }
+
+            unitOfWork.ReleaseLock(lockObject);
+          }
+
+          if (error) break;
+        }
+      }
+
+
+      // We now extend the list of images to delete with images of all profiles that were not saved to the database.
+      // And then we delete all the image files that are not referenced from DB.
+      foreach (byte[] hash in itemsImageHashes.Values)
+          imagesToDelete.Add(hash);
+
+      ImageManager imageManager = (ImageManager)Base.ComponentDictionary["Data.ImageManager"];
+      foreach (byte[] hash in imagesToDelete)
+        imageManager.RemoveImageReference(hash);
+
+
+      if (res == null) res = messageBuilder.CreateNeighborhoodSharedProfileUpdateResponse(RequestMessage);
+
+      log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+      return res;
+    }
+
+
+    /// <summary>
+    /// Description of result of StoreSharedProfileUpdateToDatabase function.
+    /// </summary>
+    private class StoreSharedProfileUpdateResult
+    {
+      /// <summary>True if there was a change to the database that should be saved.</summary>
+      public bool SaveDb;
+      
+      /// <summary>True if there was an error and no more update items should be processed.</summary>
+      public bool Error;
+
+      /// <summary>If there was an error, this is the error response message to be delivered to the neighbor.</summary>
+      public Message ErrorResponse;
+
+      /// <summary>If any image was replaced and the file on disk should be deleted, this is set to its hash.</summary>
+      public byte[] ImageToDelete;
+
+      /// <summary>True if the ItemImage was used, false otherwise.</summary>
+      public bool ItemImageUsed;
+    }
+
+
+    /// <summary>
+    /// Updates a database according to the update item that is already partially validated.
+    /// </summary>
+    /// <param name="UnitOfWork">Instance of unit of work.</param>
+    /// <param name="UpdateItem">Update item that is to be processed.</param>
+    /// <param name="UpdateItemIndex">Index of the item within the request.</param>
+    /// <param name="NeighborId">Identifier of the neighbor that sent the request.</param>
+    /// <param name="ItemImageHash">Hash of the image related to this item, or null if this item does not have a related image.</param>
+    /// <param name="MessageBuilder">Neighbor client's message builder.</param>
+    /// <param name="RequestMessage">Original request message sent by the neighbor.</param>
+    /// <returns>Result described by StoreSharedProfileUpdateResult class.</returns>
+    /// <remarks>The caller of this function is responsible to call this function within a database transaction with acquired NeighborIdentityLock.</remarks>
+    private async Task<StoreSharedProfileUpdateResult> StoreSharedProfileUpdateToDatabase(UnitOfWork UnitOfWork, SharedProfileUpdateItem UpdateItem, int UpdateItemIndex, byte[] NeighborId, byte[] ItemImageHash, MessageBuilder MessageBuilder, Message RequestMessage)
+    {
+      log.Trace("(UpdateItemIndex:{0})", UpdateItemIndex);
+
+      StoreSharedProfileUpdateResult res = new StoreSharedProfileUpdateResult()
+      {
+        SaveDb = false,
+        Error = false,
+        ErrorResponse = null,
+        ImageToDelete = null,
+      };
+    
+      switch (UpdateItem.ActionTypeCase)
+      {
+        case SharedProfileUpdateItem.ActionTypeOneofCase.Add:
+          {
+            SharedProfileAddItem addItem = UpdateItem.Add;
+            byte[] pubKey = addItem.IdentityPublicKey.ToByteArray();
+            byte[] identityId = Crypto.Sha256(pubKey);
+
+            // Identity already exists if there exists a NeighborIdentity with same identity ID and the same hosting server ID.
+            NeighborIdentity existingIdentity = (await UnitOfWork.NeighborIdentityRepository.GetAsync(i => (i.IdentityId == identityId) && (i.HostingServerId == NeighborId))).FirstOrDefault();
+            if (existingIdentity == null)
+            {
+              GpsLocation location = new GpsLocation(addItem.Latitude, addItem.Longitude);
+              NeighborIdentity newIdentity = new NeighborIdentity()
+              {
+                IdentityId = identityId,
+                HostingServerId = NeighborId,
+                PublicKey = pubKey,
+                Version = addItem.Version.ToByteArray(),
+                Name = addItem.Name,
+                Type = addItem.Type,
+                InitialLocationLatitude = location.Latitude,
+                InitialLocationLongitude = location.Longitude,
+                ExtraData = addItem.ExtraData,
+                ProfileImage = null,
+                ThumbnailImage = ItemImageHash,
+                ExpirationDate = null
+              };
+
+              res.ItemImageUsed = ItemImageHash != null;
+
+              UnitOfWork.NeighborIdentityRepository.Insert(newIdentity);
+              res.SaveDb = true;
+            }
+            else
+            {
+              log.Error("Identity ID '{0}' already exists with hosting server ID '{1}'.", identityId.ToHex(), NeighborId.ToHex());
+              res.ErrorResponse = MessageBuilder.CreateErrorInvalidValueResponse(RequestMessage, UpdateItemIndex + ".add.identityPublicKey");
+              res.Error = true;
+            }
+
+            break;
+          }
+
+        case SharedProfileUpdateItem.ActionTypeOneofCase.Change:
+          {
+            SharedProfileChangeItem changeItem = UpdateItem.Change;
+            byte[] identityId = changeItem.IdentityNetworkId.ToByteArray();
+
+            // Identity already exists if there exists a NeighborIdentity with same identity ID and the same hosting server ID.
+            NeighborIdentity existingIdentity = (await UnitOfWork.NeighborIdentityRepository.GetAsync(i => (i.IdentityId == identityId) && (i.HostingServerId == NeighborId))).FirstOrDefault();
+            if (existingIdentity != null)
+            {
+              if (changeItem.SetVersion) existingIdentity.Version = changeItem.Version.ToByteArray();
+              if (changeItem.SetName) existingIdentity.Name = changeItem.Name;
+
+              if (changeItem.SetThumbnailImage)
+              {
+                res.ImageToDelete = existingIdentity.ThumbnailImage;
+
+                existingIdentity.ThumbnailImage = ItemImageHash;
+                res.ItemImageUsed = ItemImageHash != null;
+              }
+
+              if (changeItem.SetLocation)
+              {
+                existingIdentity.InitialLocationLatitude = changeItem.Latitude;
+                existingIdentity.InitialLocationLongitude = changeItem.Longitude;
+              }
+
+              if (changeItem.SetExtraData) existingIdentity.ExtraData = changeItem.ExtraData;
+
+              UnitOfWork.NeighborIdentityRepository.Update(existingIdentity);
+              res.SaveDb = true;
+            }
+            else
+            {
+              log.Error("Identity ID '{0}' does exists with hosting server ID '{1}'.", identityId.ToHex(), NeighborId.ToHex());
+              res.ErrorResponse = MessageBuilder.CreateErrorInvalidValueResponse(RequestMessage, UpdateItemIndex + ".change.identityNetworkId");
+              res.Error = true;
+            }
+
+            break;
+          }
+
+        case SharedProfileUpdateItem.ActionTypeOneofCase.Delete:
+          {
+            SharedProfileDeleteItem deleteItem = UpdateItem.Delete;
+            byte[] identityId = deleteItem.IdentityNetworkId.ToByteArray();
+
+            // Identity already exists if there exists a NeighborIdentity with same identity ID and the same hosting server ID.
+            NeighborIdentity existingIdentity = (await UnitOfWork.NeighborIdentityRepository.GetAsync(i => (i.IdentityId == identityId) && (i.HostingServerId == NeighborId))).FirstOrDefault();
+            if (existingIdentity != null)
+            {
+              res.ImageToDelete = existingIdentity.ThumbnailImage;
+
+              UnitOfWork.NeighborIdentityRepository.Delete(existingIdentity);
+              res.SaveDb = true;
+            }
+            else
+            {
+              log.Error("Identity ID '{0}' does exists with hosting server ID '{1}'.", identityId.ToHex(), NeighborId.ToHex());
+              res.ErrorResponse = MessageBuilder.CreateErrorInvalidValueResponse(RequestMessage, UpdateItemIndex + ".delete.identityNetworkId");
+              res.Error = true;
+            }
+            break;
+          }
+      }
+
+      log.Trace("(-):*.Error={0},*.SaveDb={1},*.ItemImageUsed={2},*.ImageToDelete='{3}'", res.Error, res.SaveDb, res.ItemImageUsed, res.ImageToDelete != null ? res.ImageToDelete.ToHex() : "null");
+      return res;
+    }
+
+
+
+    /// <summary>
+    /// Updates LastRefreshTime of a neighbor server.
+    /// </summary>
+    /// <param name="NeighborId">Identifier of the neighbor server to update.</param>
+    /// <returns>true if the function succeeds, false otherwise.</returns>
+    private async Task<bool> UpdateNeighborLastRefreshTime(byte[] NeighborId)
+    {
+      log.Trace("(NeighborId:'{0}')", NeighborId.ToHex());
+
+      bool res = false;
+      using (UnitOfWork unitOfWork = new UnitOfWork())
+      {
+        DatabaseLock lockObject = UnitOfWork.NeighborLock;
+        await unitOfWork.AcquireLockAsync(lockObject);
+        try
+        {
+          Neighbor neighbor = (await unitOfWork.NeighborRepository.GetAsync(n => n.NeighborId == NeighborId)).FirstOrDefault();
+          if (neighbor != null)
+          {
+            neighbor.LastRefreshTime = DateTime.UtcNow;
+            unitOfWork.NeighborRepository.Update(neighbor);
+            await unitOfWork.SaveThrowAsync();
+          }
+          else
+          {
+            // Between the check couple of lines above and here, the requesting server stop being our neighbor
+            // we can ignore it now and proceed as this does no harm and the requesting server will be informed later.
+            log.Error("Client ID '{0}' is no longer our neighbor.", NeighborId.ToHex());
+          }
+        }
+        catch (Exception e)
+        {
+          log.Error("Exception occurred while trying to update LastRefreshTime of neighbor ID '{0}': {1}", NeighborId.ToHex(), e.ToString());
+        }
+
+        unitOfWork.ReleaseLock(lockObject);
+      }
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+    /// <summary>
+    /// Validates incoming SharedProfileUpdateItem update item.
+    /// </summary>
+    /// <param name="UpdateItem">Update item to validate.</param>
+    /// <param name="Index">Item index in the update message.</param>
+    /// <param name="MessageBuilder">Client's network message builder.</param>
+    /// <param name="RequestMessage">Full request message received by the client.</param>
+    /// <param name="ErrorResponse">If the validation fails, this is filled with response message to be sent to the neighbor.</param>
+    /// <returns>true if the validation is successful, false otherwise.</returns>
+    public bool ValidateSharedProfileUpdateItem(SharedProfileUpdateItem UpdateItem, int Index, MessageBuilder MessageBuilder, Message RequestMessage, out Message ErrorResponse)
+    {
+      log.Trace("(Index:{0})", Index);
+
+      bool res = false;
+      ErrorResponse = null;
+
+      switch (UpdateItem.ActionTypeCase)
+      {
+        case SharedProfileUpdateItem.ActionTypeOneofCase.Add:
+          res = ValidateSharedProfileAddItem(UpdateItem.Add, Index, MessageBuilder, RequestMessage, out ErrorResponse);
+          break;
+
+        case SharedProfileUpdateItem.ActionTypeOneofCase.Change:
+          res = ValidateSharedProfileChangeItem(UpdateItem.Change, Index, MessageBuilder, RequestMessage, out ErrorResponse);
+          break;
+
+        case SharedProfileUpdateItem.ActionTypeOneofCase.Delete:
+          res = ValidateSharedProfileDeleteItem(UpdateItem.Delete, Index, MessageBuilder, RequestMessage, out ErrorResponse);
+          break;
+
+        case SharedProfileUpdateItem.ActionTypeOneofCase.Refresh:
+          res = true;
+          break;
+
+        default:
+          ErrorResponse = MessageBuilder.CreateErrorProtocolViolationResponse(RequestMessage);
+          res = false;
+          break;
+      }
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+
+    /// <summary>
+    /// Validates incoming SharedProfileAddItem update item.
+    /// </summary>
+    /// <param name="AddItem">Add item to validate.</param>
+    /// <param name="Index">Item index in the update message.</param>
+    /// <param name="MessageBuilder">Client's network message builder.</param>
+    /// <param name="RequestMessage">Full request message received by the client.</param>
+    /// <param name="ErrorResponse">If the validation fails, this is filled with response message to be sent to the neighbor.</param>
+    /// <returns>true if the validation is successful, false otherwise.</returns>
+    public bool ValidateSharedProfileAddItem(SharedProfileAddItem AddItem, int Index, MessageBuilder MessageBuilder, Message RequestMessage, out Message ErrorResponse)
+    {
+      log.Trace("(Index:{0})", Index);
+
+      bool res = false;
+      ErrorResponse = null;
+
+      string details = null;
+
+      SemVer version = new SemVer(AddItem.Version);
+      // Currently only supported version is 1.0.0.
+      if (!version.Equals(SemVer.V100))
+      {
+        log.Debug("Unsupported version '{0}'.", version);
+        details = "add.version";
+      }
+
+
+      if (details == null)
+      {
+        // We do not verify identity duplicity here, that is being done in ProcessMessageNeighborhoodSharedProfileUpdateRequestAsync.
+        byte[] pubKey = AddItem.IdentityPublicKey.ToByteArray();
+        bool pubKeyValid = (0 < pubKey.Length) && (pubKey.Length <= IdentityBase.MaxPublicKeyLengthBytes);
+        if (!pubKeyValid)
+        {
+          log.Debug("Invalid public key length '{0}'.", pubKey.Length);
+          details = "add.identityPublicKey";
+        }
+      }
+
+      if (details == null)
+      {
+        int nameSize = Encoding.UTF8.GetByteCount(AddItem.Name);
+        bool nameValid = nameSize <= IdentityBase.MaxProfileNameLengthBytes;
+        if (!nameValid)
+        {
+          log.Debug("Invalid name size in bytes {0}.", nameSize);
+          details = "add.name";
+        }
+      }
+
+      if (details == null)
+      {
+        int typeSize = Encoding.UTF8.GetByteCount(AddItem.Type);
+        bool typeValid = typeSize <= IdentityBase.MaxProfileTypeLengthBytes;
+        if (!typeValid)
+        {
+          log.Debug("Invalid type size in bytes {0}.", typeSize);
+          details = "add.type";
+        }
+      }
+
+      if ((details == null) && AddItem.SetThumbnailImage)
+      {
+        byte[] thumbnailImage = AddItem.ThumbnailImage.ToByteArray();
+
+        bool imageValid = (thumbnailImage.Length <= IdentityBase.MaxThumbnailImageLengthBytes) && ImageManager.ValidateImageFormat(thumbnailImage);
+        if (!imageValid)
+        {
+          log.Debug("Invalid thumbnail image.");
+          details = "add.thumbnailImage";
+        }
+      }
+
+      if (details == null)
+      {
+        GpsLocation locLat = new GpsLocation(AddItem.Latitude, 0);
+        if (!locLat.IsValid())
+        {
+          log.Debug("Invalid latitude {0}.", AddItem.Latitude);
+          details = "add.latitude";
+        }
+      }
+
+      if (details == null)
+      {
+        GpsLocation locLon = new GpsLocation(AddItem.Longitude, 0);
+        if (!locLon.IsValid())
+        {
+          log.Debug("Invalid longitude {0}.", AddItem.Longitude);
+          details = "add.latitude";
+        }
+      }
+
+      if (details == null)
+      {
+        int extraDataSize = Encoding.UTF8.GetByteCount(AddItem.ExtraData);
+        bool extraDataValid = extraDataSize <= IdentityBase.MaxProfileExtraDataLengthBytes;
+        if (!extraDataValid)
+        {
+          log.Debug("Invalid extraData size in bytes {0}.", extraDataSize);
+          details = "add.extraData";
+        }
+      }
+
+
+      if (details == null)
+      {
+        res = true;
+      }
+      else ErrorResponse = MessageBuilder.CreateErrorInvalidValueResponse(RequestMessage, Index.ToString() + "." + details);
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+
+    /// <summary>
+    /// Validates incoming SharedProfileChangeItem update item.
+    /// </summary>
+    /// <param name="ChangeItem">Change item to validate.</param>
+    /// <param name="Index">Item index in the update message.</param>
+    /// <param name="MessageBuilder">Client's network message builder.</param>
+    /// <param name="RequestMessage">Full request message received by the client.</param>
+    /// <param name="ErrorResponse">If the validation fails, this is filled with response message to be sent to the neighbor.</param>
+    /// <returns>true if the validation is successful, false otherwise.</returns>
+    public bool ValidateSharedProfileChangeItem(SharedProfileChangeItem ChangeItem, int Index, MessageBuilder MessageBuilder, Message RequestMessage, out Message ErrorResponse)
+    {
+      log.Trace("(Index:{0})", Index);
+
+      bool res = false;
+      ErrorResponse = null;
+
+      string details = null;
+
+      byte[] identityId = ChangeItem.IdentityNetworkId.ToByteArray();
+      // We do not verify identity existence here, that is being done in ProcessMessageNeighborhoodSharedProfileUpdateRequestAsync.
+      bool identityIdValid = identityId.Length == IdentityBase.IdentifierLength;
+      if (!identityIdValid)
+      {
+        log.Debug("Invalid identity ID length '{0}'.", identityId.Length);
+        details = "change.identityNetworkId";
+      }
+
+      if (details == null)
+      {
+        if (!ChangeItem.SetVersion
+          && !ChangeItem.SetName
+          && !ChangeItem.SetThumbnailImage
+          && !ChangeItem.SetLocation
+          && !ChangeItem.SetExtraData)
+        {
+          log.Debug("Nothing is going to change.");
+          details = "change.set*";
+        }
+      }
+
+      if ((details == null) && ChangeItem.SetVersion)
+      {
+        SemVer version = new SemVer(ChangeItem.Version);
+        // Currently only supported version is 1.0.0.
+        if (!version.Equals(SemVer.V100))
+        {
+          log.Debug("Unsupported version '{0}'.", version);
+          details = "change.version";
+        }
+      }
+
+
+      if ((details == null) && ChangeItem.SetName)
+      {
+        int nameSize = Encoding.UTF8.GetByteCount(ChangeItem.Name);
+        bool nameValid = nameSize <= IdentityBase.MaxProfileNameLengthBytes;
+        if (!nameValid)
+        {
+          log.Debug("Invalid name size in bytes {0}.", nameSize);
+          details = "change.name";
+        }
+      }
+
+      if ((details == null) && ChangeItem.SetThumbnailImage)
+      {
+        byte[] thumbnailImage = ChangeItem.ThumbnailImage.ToByteArray();
+
+        bool deleteImage = thumbnailImage.Length == 0;
+        bool imageValid = (thumbnailImage.Length <= IdentityBase.MaxThumbnailImageLengthBytes) 
+          && (deleteImage || ImageManager.ValidateImageFormat(thumbnailImage));
+        if (!imageValid)
+        {
+          log.Debug("Invalid thumbnail image.");
+          details = "change.thumbnailImage";
+        }
+      }
+
+      if ((details == null) && ChangeItem.SetLocation)
+      {
+        GpsLocation locLat = new GpsLocation(ChangeItem.Latitude, 0);
+        if (!locLat.IsValid())
+        {
+          log.Debug("Invalid latitude {0}.", ChangeItem.Latitude);
+          details = "change.latitude";
+        }
+      }
+
+      if ((details == null) && ChangeItem.SetLocation)
+      {
+        GpsLocation locLon = new GpsLocation(ChangeItem.Longitude, 0);
+        if (!locLon.IsValid())
+        {
+          log.Debug("Invalid longitude {0}.", ChangeItem.Longitude);
+          details = "change.latitude";
+        }
+      }
+
+      if ((details == null) && ChangeItem.SetExtraData)
+      {
+        int extraDataSize = Encoding.UTF8.GetByteCount(ChangeItem.ExtraData);
+        bool extraDataValid = extraDataSize <= IdentityBase.MaxProfileExtraDataLengthBytes;
+        if (!extraDataValid)
+        {
+          log.Debug("Invalid extraData size in bytes {0}.", extraDataSize);
+          details = "change.extraData";
+        }
+      }
+
+
+      if (details == null)
+      {
+        res = true;
+      }
+      else ErrorResponse = MessageBuilder.CreateErrorInvalidValueResponse(RequestMessage, Index.ToString() + "." + details);
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+
+
+    /// <summary>
+    /// Validates incoming SharedProfileDeleteItem update item.
+    /// </summary>
+    /// <param name="DeleteItem">Delete item to validate.</param>
+    /// <param name="Index">Item index in the update message.</param>
+    /// <param name="MessageBuilder">Client's network message builder.</param>
+    /// <param name="RequestMessage">Full request message received by the client.</param>
+    /// <param name="ErrorResponse">If the validation fails, this is filled with response message to be sent to the neighbor.</param>
+    /// <returns>true if the validation is successful, false otherwise.</returns>
+    public bool ValidateSharedProfileDeleteItem(SharedProfileDeleteItem DeleteItem, int Index, MessageBuilder MessageBuilder, Message RequestMessage, out Message ErrorResponse)
+    {
+      log.Trace("(Index:{0})", Index);
+
+      bool res = false;
+      ErrorResponse = null;
+
+      string details = null;
+
+      byte[] identityId = DeleteItem.IdentityNetworkId.ToByteArray();
+      // We do not verify identity existence here, that is being done in ProcessMessageNeighborhoodSharedProfileUpdateRequestAsync.
+      bool identityIdValid = identityId.Length == IdentityBase.IdentifierLength;
+      if (!identityIdValid)
+      {
+        log.Debug("Invalid identity ID length '{0}'.", identityId.Length);
+        details = "delete.identityNetworkId";
+      }
+
+
+      if (details == null)
+      {
+        res = true;
+      }
+      else ErrorResponse = MessageBuilder.CreateErrorInvalidValueResponse(RequestMessage, Index.ToString() + "." + details);
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+
+    /// <summary>
+    /// Processes StopNeighborhoodUpdatesRequest message from client.
+    /// <para>Removes follower server from the database and also removes all pending actions to the follower.</para>
+    /// </summary>
+    /// <param name="Client">Client that sent the request.</param>
+    /// <param name="RequestMessage">Full request message.</param>
+    /// <returns>Response message to be sent to the client.</returns>
+    public async Task<Message> ProcessMessageStopNeighborhoodUpdatesRequest(IncomingClient Client, Message RequestMessage)
+    {
+      log.Trace("()");
+
+      Message res = null;
+      if (!CheckSessionConditions(Client, RequestMessage, ServerRole.ServerNeighbor, ClientConversationStatus.Verified, out res))
+      {
+        log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+        return res;
+      }
+
+      MessageBuilder messageBuilder = Client.MessageBuilder;
+      StopNeighborhoodUpdatesRequest stopNeighborhoodUpdatesRequest = RequestMessage.Request.ConversationRequest.StopNeighborhoodUpdates;
+
+      
+      byte[] followerId = Client.IdentityId;
+
+      using (UnitOfWork unitOfWork = new UnitOfWork())
+      {
+        Status status = await unitOfWork.FollowerRepository.DeleteFollower(unitOfWork, followerId);
+
+        if (status == Status.Ok) res = messageBuilder.CreateStopNeighborhoodUpdatesResponse(RequestMessage);
+        else if (status == Status.ErrorNotFound) res = messageBuilder.CreateErrorNotFoundResponse(RequestMessage);
+        else res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
+      }
+
+
+      log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+      return res;
+    }
+
+
+    /// <summary>
+    /// Processes NeighborhoodSharedProfileUpdateResponse message from client.
+    /// <para>This response is received when the follower server accepted a batch of profiles and is ready to receive next batch.</para>
+    /// </summary>
+    /// <param name="Client">Client that sent the response.</param>
+    /// <param name="ResponseMessage">Full response message.</param>
+    /// <param name="Request">Unfinished request message that corresponds to the response message.</param>
+    /// <returns>true if the connection to the client that sent the response should remain open, false if the client should be disconnected.</returns>
+    public async Task<bool> ProcessMessageNeighborhoodSharedProfileUpdateResponseAsync(IncomingClient Client, Message ResponseMessage, UnfinishedRequest Request)
+    {
+      log.Trace("()");
+
+      bool res = false;
+
+      MessageBuilder messageBuilder = Client.MessageBuilder;
+      if (Client.NeighborhoodInitializationProcessInProgress)
+      {
+        if (ResponseMessage.Response.Status == Status.Ok)
+        {
+          NeighborhoodInitializationProcessContext nipContext = (NeighborhoodInitializationProcessContext)Request.Context;
+          if (nipContext.IdentitiesDone < nipContext.HostedIdentities.Count)
+          {
+            Message updateMessage = await BuildNeighborhoodSharedProfileUpdateRequest(Client, nipContext);
+            if (await Client.SendMessageAndSaveUnfinishedRequestAsync(updateMessage, nipContext))
+            {
+              res = true;
+            }
+            else log.Warn("Unable to send update message to the client.");
+          }
+          else
+          {
+            // If all hosted identities were sent, finish initialization process.
+            Message finishMessage = messageBuilder.CreateFinishNeighborhoodInitializationRequest();
+            if (await Client.SendMessageAndSaveUnfinishedRequestAsync(finishMessage, null))
+            {
+              res = true;
+            }
+            else log.Warn("Unable to send finish message to the client.");
+          }
+        }
+        else
+        {
+          // We are in the middle of the neighborhood initialization process, but the follower did not accepted our message with profiles.
+          // We should disconnect from the follower and delete it from our follower database.
+          // If it wants to retry later, it can.
+          // Follower will be deleted automatically as the connection terminates in IncomingClient.HandleDisconnect.
+          log.Warn("Client ID '{0}' is follower in the middle of the neighborhood initialization process, but it did not accept our profiles (error code {1}), so we will disconnect it and delete it from our database.", Client.IdentityId.ToHex(), ResponseMessage.Response.Status);
+        }
+      }
+      else log.Error("Client ID '{0}' does not have neighborhood initialization process in progress, client will be disconnected.", Client.IdentityId.ToHex());
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+
+    /// <summary>
+    /// Processes FinishNeighborhoodInitializationResponse message from client.
+    /// <para>
+    /// This response is received when the neighborhood initialization process is finished and the follower server confirms that.
+    /// The profile server marks the follower as fully synchronized in the database. It also unblocks the neighborhood action queue 
+    /// for this follower.
+    /// </para>
+    /// </summary>
+    /// <param name="Client">Client that sent the response.</param>
+    /// <param name="ResponseMessage">Full response message.</param>
+    /// <param name="Request">Unfinished request message that corresponds to the response message.</param>
+    /// <returns>true if the connection to the client that sent the response should remain open, false if the client should be disconnected.</returns>
+    public async Task<bool> ProcessMessageFinishNeighborhoodInitializationResponseAsync(IncomingClient Client, Message ResponseMessage, UnfinishedRequest Request)
+    {
+      log.Trace("()");
+
+      bool res = false;
+
+      if (Client.NeighborhoodInitializationProcessInProgress)
+      {
+        if (ResponseMessage.Response.Status == Status.Ok)
+        {
+          using (UnitOfWork unitOfWork = new UnitOfWork())
+          {
+            byte[] followerId = Client.IdentityId;
+
+            bool success = false;
+            bool signalNeighborhoodAction = false;
+            DatabaseLock[] lockObjects = new DatabaseLock[] { UnitOfWork.FollowerLock, UnitOfWork.NeighborhoodActionLock };
+            using (IDbContextTransaction transaction = await unitOfWork.BeginTransactionWithLockAsync(lockObjects))
+            {
+              try
+              {
+                bool saveDb = false;
+
+                // Update the follower, so it is considered as fully initialized.
+                Follower follower = (await unitOfWork.FollowerRepository.GetAsync(f => f.FollowerId == followerId)).FirstOrDefault();
+                if (follower != null)
+                {
+                  follower.LastRefreshTime = DateTime.UtcNow;
+                  unitOfWork.FollowerRepository.Update(follower);
+                  saveDb = true;
+                }
+                else log.Error("Follower ID '{0}' not found.", followerId.ToHex());
+
+                // Update the blocking neighbhorhood action, so that new updates are sent to the follower.
+                NeighborhoodAction action = (await unitOfWork.NeighborhoodActionRepository.GetAsync(a => (a.ServerId == followerId) && (a.Type == NeighborhoodActionType.InitializationProcessInProgress))).FirstOrDefault();
+                if (action != null)
+                {
+                  action.ExecuteAfter = DateTime.UtcNow;
+                  unitOfWork.NeighborhoodActionRepository.Update(action);
+                  signalNeighborhoodAction = true;
+                  saveDb = true;
+                }
+                else log.Error("Initialization process in progress neighborhood action for follower ID '{0}' not found.", followerId.ToHex());
+
+
+                if (saveDb)
+                {
+                  await unitOfWork.SaveThrowAsync();
+                  transaction.Commit();
+                }
+
+                Client.NeighborhoodInitializationProcessInProgress = false;
+                success = true;
+                res = true;
+              }
+              catch (Exception e)
+              {
+                log.Error("Exception occurred: {0}", e.ToString());
+              }
+
+              if (success)
+              {
+                if (signalNeighborhoodAction)
+                {
+                  NeighborhoodActionProcessor neighborhoodActionProcessor = (NeighborhoodActionProcessor)Base.ComponentDictionary["Network.NeighborhoodActionProcessor"];
+                  neighborhoodActionProcessor.Signal();
+                }
+              }
+              else
+              {
+                log.Warn("Rolling back transaction.");
+                unitOfWork.SafeTransactionRollback(transaction);
+              }
+            }
+            unitOfWork.ReleaseLock(lockObjects);
+          }
+        }
+        else
+        {
+          // Client is a follower in the middle of the initialization process and failed to accept the finish request.
+          // Follower will be deleted automatically as the connection terminates in IncomingClient.HandleDisconnect.
+          log.Error("Client ID '{0}' is a follower and failed to accept finish request to neighborhood initialization process (error code {1}), it will be disconnected and deleted from our database.", Client.IdentityId.ToHex(), ResponseMessage.Response.Status);
+        }
+      }
+      else log.Error("Client ID '{0}' does not have neighborhood initialization process in progress.", Client.IdentityId.ToHex());
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }    
   }
 }

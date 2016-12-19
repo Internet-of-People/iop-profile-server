@@ -14,9 +14,9 @@ namespace ProfileServer.Data.Models
   /// Database representation of IoP Identity profile. This is base class for HomeIdentity and NeighborIdentity classes
   /// and must not be used on its own.
   /// </summary>
-  public class BaseIdentity
+  public abstract class IdentityBase 
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Data.Models.BaseIdentity");
+    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Data.Models.IdentityBase");
 
     /// <summary>Maximum number of identities that a profile server can host.</summary>
     public const int MaxHostedIdentities = 20000;
@@ -42,16 +42,22 @@ namespace ProfileServer.Data.Models
     /// <summary>Maximum number of bytes that public key can occupy.</summary>
     public const int MaxPublicKeyLengthBytes = 128;
 
+
+    /// <summary>Unique primary key for the database.</summary>
+    /// <remarks>This is primary key - see ProfileServer.Data.Context.OnModelCreating.</remarks>
+    [Required]
+    public int DbId { get; set; }
+
     /// <summary>Identity identifier is SHA256 hash of identity's public key.</summary>
     /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
     [Required]
     [MaxLength(IdentifierLength)]
     public byte[] IdentityId { get; set; }
 
-    /// <summary>Identifier of the home node or empty array if the identity is hosted by this node.</summary>
+    /// <summary>Identifier of the server that hosts the identity profile, or empty array if the identity is hosted by this profile server.</summary>
     /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
     [MaxLength(IdentifierLength)]
-    public byte[] HomeNodeId { get; set; }
+    public byte[] HostingServerId { get; set; }
 
     /// <summary>Cryptographic public key that represents the identity.</summary>
     [Required]
@@ -95,22 +101,31 @@ namespace ProfileServer.Data.Models
 
     /// <summary>User defined extra data that serve for satisfying search queries in ProfileServer.</summary>
     /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
+    [Required(AllowEmptyStrings = true)]
     [MaxLength(200)]
     public string ExtraData { get; set; }
 
     /// <summary>
     /// Expiration date after which this whole record can be deleted.
-    /// This is used in case of the node clients when they change their home node 
-    /// and the node holds the redirection information. The redirect is maintained 
-    /// only until the expiration date.
     /// 
-    /// In the HomeIdentityRepository, if ExpirationDate is null, the identity's contract 
-    /// is valid. If it is not null, it has been cancelled.
+    /// <para>
+    /// In the HostedIdentityRepository, this is used when the profile server clients change their profile server
+    /// and the server holds the redirection information to their new hosting server. The redirect is maintained 
+    /// only until the expiration date.
+    /// </para>
+    /// 
+    /// <para>
+    /// In the HostedIdentityRepository, if ExpirationDate is null, the identity's contract is valid. 
+    /// If it is not null, it has been cancelled.
+    /// </para>
+    /// 
+    /// <para>
+    /// In the NeighborIdentityRepository, ExpirationDate is not used. Instead, Neighbor.LastRefreshTime is used 
+    /// to track when the identities shared by a neighbor should expire.
+    /// </para>
     /// </summary>
-    /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
+    /// <remarks>This is index in HostedIdentityRepository - see ProfileServer.Data.Context.OnModelCreating.</remarks>
     public DateTime? ExpirationDate { get; set; }
-#warning TODO: clean up expired identities
-
 
 
 
@@ -125,11 +140,11 @@ namespace ProfileServer.Data.Models
     // the additional complexity would probably not justify the rare frequency of occurance
     // of this problem.
 
-    /// <summary>Guid of user defined profile picture, which data is stored on disk.</summary>
-    public Guid? ProfileImage { get; set; }
+    /// <summary>SHA256 hash of profile image data, which is stored on disk, or null if the identity has no profile image.</summary>
+    public byte[] ProfileImage { get; set; }
 
-    /// <summary>Guid of thumbnail profile picture, which data is stored on disk.</summary>
-    public Guid? ThumbnailImage { get; set; }
+    /// <summary>SHA256 hash of thumbnail image data, which is stored on disk, or null if the identity has no thumbnail image.</summary>
+    public byte[] ThumbnailImage { get; set; }
 
 
 
@@ -151,7 +166,7 @@ namespace ProfileServer.Data.Models
       if (ProfileImage == null)
         return false;
 
-      profileImageData = await Utils.ImageHelper.GetImageDataAsync(ProfileImage.Value);
+      profileImageData = await ImageManager.GetImageDataAsync(ProfileImage);
       return profileImageData != null;
     }
 
@@ -164,7 +179,7 @@ namespace ProfileServer.Data.Models
       if (ThumbnailImage == null)
         return false;
 
-      thumbnailImageData = await Utils.ImageHelper.GetImageDataAsync(ThumbnailImage.Value);
+      thumbnailImageData = await ImageManager.GetImageDataAsync(ThumbnailImage);
       return thumbnailImageData != null;
     }
 
@@ -208,17 +223,6 @@ namespace ProfileServer.Data.Models
       return thumbnailImageData;
     }
 
-    /// <summary>
-    /// Saves profile image data to a file provided that profileImageData field is initialized.
-    /// </summary>
-    /// <returns>true if the function succeeds, false otherwise.</returns>
-    public async Task<bool> SaveProfileImageDataAsync()
-    {
-      if (ProfileImage == null)
-        return false;
-
-      return await Utils.ImageHelper.SaveImageDataAsync(ProfileImage.Value, profileImageData);
-    }
 
     /// <summary>
     /// Sets and saves profile image data to a file provided.
@@ -231,21 +235,9 @@ namespace ProfileServer.Data.Models
         return false;
 
       profileImageData = Data;
-      return await Utils.ImageHelper.SaveImageDataAsync(ProfileImage.Value, profileImageData);
+      return await ImageManager.SaveImageDataAsync(ProfileImage, profileImageData);
     }
 
-
-    /// <summary>
-    /// Saves thumbnail image data to a file provided that thumbnailImageData field is initialized.
-    /// </summary>
-    /// <returns>true if the function succeeds, false otherwise.</returns>
-    public async Task<bool> SaveThumbnailImageDataAsync()
-    {
-      if (ThumbnailImage == null)
-        return false;
-
-      return await Utils.ImageHelper.SaveImageDataAsync(ThumbnailImage.Value, thumbnailImageData);
-    }
 
     /// <summary>
     /// Sets and saves thumbnail image data to a file provided.
@@ -258,7 +250,7 @@ namespace ProfileServer.Data.Models
         return false;
 
       thumbnailImageData = Data;
-      return await Utils.ImageHelper.SaveImageDataAsync(ThumbnailImage.Value, thumbnailImageData);
+      return await ImageManager.SaveImageDataAsync(ThumbnailImage, thumbnailImageData);
     }
 
 

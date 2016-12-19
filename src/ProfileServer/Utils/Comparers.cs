@@ -48,4 +48,38 @@ namespace ProfileServer.Utils
       }
     }
   }
+
+  public static class ByteArrayComparer 
+  {
+    /// <summary>
+    /// Compares two byte arrays.
+    /// </summary>
+    /// <param name="X">First array to compare.</param>
+    /// <param name="Y">Second array to compare.</param>
+    /// <returns>-1 if X < Y
+    /// <para>0 if X == Y</para>
+    /// <para>1 if X > Y</para>.
+    /// </returns>
+    public static int Compare(byte[] X, byte[] Y)
+    {
+      if ((X == null) && (Y == null)) return 0;
+      if (X == null) return -1;
+      if (Y == null) return 1;
+
+      if (X.Length != Y.Length) return X.Length.CompareTo(Y.Length);
+
+      int res = 0;
+      for (int i = 0; i < X.Length; i++)
+      {
+        int c = X[i].CompareTo(Y[i]);
+        if (c != 0)
+        {
+          res = c;
+          break;
+        }
+      }
+
+      return res;
+    }
+  }
 }

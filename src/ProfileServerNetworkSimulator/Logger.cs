@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
-namespace ProfileServerSimulator
+namespace ProfileServerNetworkSimulator
 {
   /// <summary>
   /// NLog wrapper class to enable a simple logging with a prefix to be put in front of each message.
@@ -126,6 +127,45 @@ namespace ProfileServerSimulator
     public bool IsEnabled(NLog.LogLevel LogLevel)
     {
       return log.IsEnabled(LogLevel);
+    }
+  }
+
+
+  /// <summary>
+  /// Issues unique identifiers for diagnostic context that we use in logs.
+  /// </summary>
+  public static class LogDiagnosticContext
+  {
+    public const string ContextName = "id";
+
+    /// <summary>Last issued value of the diagnostic context.</summary>
+    private static int lastValue;
+
+    /// <summary>
+    /// Issues a new unique context value by incrementing the context value.
+    /// The value is prefixed with space to make it easier to use directly in the logs.
+    /// </summary>
+    /// <returns>Unique context value to be used in NDC.</returns>
+    public static string Create()
+    {
+      return " " + Interlocked.Increment(ref lastValue).ToString();
+    }
+
+    /// <summary>
+    /// Installs mapped diagnostic context to the current execution flow.
+    /// </summary>
+    public static void Start()
+    {
+#warning TODO: When NLog 5 is released, change this to MappedDiagnosticsLogicalContext and mdlc in config.
+      NLog.MappedDiagnosticsContext.Set(ContextName, Create());
+    }
+
+    /// <summary>
+    /// Uninstalls mapped diagnostic context to the current execution flow.
+    /// </summary>
+    public static void Stop()
+    {
+      NLog.MappedDiagnosticsContext.Remove(ContextName);
     }
   }
 }

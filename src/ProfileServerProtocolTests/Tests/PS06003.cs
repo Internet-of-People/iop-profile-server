@@ -179,7 +179,7 @@ namespace ProfileServerProtocolTests.Tests
               ProtocolClient profileClient = new ProtocolClient();
 
               await profileClient.ConnectAsync(ServerIp, (int)rolePorts[ServerRoleType.ClNonCustomer], true);
-              bool establishHomeNodeOk = await profileClient.EstablishHomeNodeAsync("test");
+              bool establishHomeNodeOk = await profileClient.EstablishHostingAsync("test");
               profileClient.CloseConnection();
 
               await profileClient.ConnectAsync(ServerIp, (int)rolePorts[ServerRoleType.ClCustomer], true);

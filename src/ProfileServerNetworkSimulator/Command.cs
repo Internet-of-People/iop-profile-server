@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ProfileServerSimulator
+namespace ProfileServerNetworkSimulator
 {
   /// <summary>
   /// All types of commands that are supported. Note that Unknown represents an invalid command.
   /// </summary>
-  public enum CommandType { Unknown, ProfileServer, StartServer, StopServer, Neighborhood, Neighbor, Identity, TestQuery, Delay }
+  public enum CommandType { Unknown, ProfileServer, StartServer, StopServer, Neighborhood, CancelNeighborhood, Neighbor, CancelNeighbor, Identity, CancelIdentity, TestQuery, Delay, TakeSnapshot, LoadSnapshot, DebugMode }
 
   /// <summary>
   /// Base class for all types for commands.
@@ -153,6 +153,32 @@ namespace ProfileServerSimulator
 
 
   /// <summary>
+  /// CancelNeighborhood command cancels a bidirectional neighborhood relationship between all servers selected by the command. 
+  /// </summary>
+  public class CommandCancelNeighborhood : Command
+  {
+    /// <summary>Names of the groups of servers.</summary>
+    public List<string> PsGroups;
+
+    /// <summary>Instance numbers of the first servers from the groups.</summary>
+    public List<int> PsIndexes;
+
+    /// <summary>Number of servers to take from the groups.</summary>
+    public List<int> PsCounts;
+
+    /// <summary>
+    /// Initializes the base command type.
+    /// </summary>
+    /// <param name="LineNumber">Line number of the command in the scenario file.</param>
+    /// <param name="OriginalCommand">Original scenario file line.</param>
+    public CommandCancelNeighborhood(int LineNumber, string OriginalCommand) :
+      base(CommandType.CancelNeighborhood, LineNumber, OriginalCommand)
+    {
+    }
+  }
+
+
+  /// <summary>
   /// Neighbor command forms an unidirectional neighborhood relationship between a source server and one or more target servers.
   /// </summary>
   public class CommandNeighbor : Command
@@ -170,6 +196,29 @@ namespace ProfileServerSimulator
     /// <param name="OriginalCommand">Original scenario file line.</param>
     public CommandNeighbor(int LineNumber, string OriginalCommand) :
       base(CommandType.Neighbor, LineNumber, OriginalCommand)
+    {
+    }
+  }
+
+
+  /// <summary>
+  /// CancelNeighbor command cancels an unidirectional neighborhood relationship between a source server and one or more target servers.
+  /// </summary>
+  public class CommandCancelNeighbor : Command
+  {
+    /// <summary>Name of the source server instance.</summary>
+    public string Source;
+
+    /// <summary>Names of target servers instances.</summary>
+    public List<string> Targets;
+
+    /// <summary>
+    /// Initializes the base command type.
+    /// </summary>
+    /// <param name="LineNumber">Line number of the command in the scenario file.</param>
+    /// <param name="OriginalCommand">Original scenario file line.</param>
+    public CommandCancelNeighbor(int LineNumber, string OriginalCommand) :
+      base(CommandType.CancelNeighbor, LineNumber, OriginalCommand)
     {
     }
   }
@@ -224,6 +273,33 @@ namespace ProfileServerSimulator
     {
     }
   }
+
+
+  /// <summary>
+  /// CancelIdentity command cancels hosting agreements of one or more identities with their profile servers. 
+  /// </summary>
+  public class CommandCancelIdentity : Command
+  {
+    /// <summary>Names of the groups of identities.</summary>
+    public string Name;
+
+    /// <summary>Index of the first identity from the group.</summary>
+    public int Index;
+
+    /// <summary>Number of identities to take from the group.</summary>
+    public int Count;
+
+    /// <summary>
+    /// Initializes the base command type.
+    /// </summary>
+    /// <param name="LineNumber">Line number of the command in the scenario file.</param>
+    /// <param name="OriginalCommand">Original scenario file line.</param>
+    public CommandCancelIdentity(int LineNumber, string OriginalCommand) :
+      base(CommandType.CancelIdentity, LineNumber, OriginalCommand)
+    {
+    }
+  }
+
 
   /// <summary>
   /// TestQuery command performs one or more search queries against specific server.
@@ -287,4 +363,63 @@ namespace ProfileServerSimulator
     {
     }
   }
+
+  /// <summary>
+  /// TakeSnapshot command saves the current state of the simulation to the directory under the snapshots folder.
+  /// </summary>
+  public class CommandTakeSnapshot : Command
+  {
+    /// <summary>Name of the snapshot.</summary>
+    public string Name;
+
+    /// <summary>
+    /// Initializes the base command type.
+    /// </summary>
+    /// <param name="LineNumber">Line number of the command in the scenario file.</param>
+    /// <param name="OriginalCommand">Original scenario file line.</param>
+    public CommandTakeSnapshot(int LineNumber, string OriginalCommand) :
+      base(CommandType.TakeSnapshot, LineNumber, OriginalCommand)
+    {
+    }
+  }
+
+  /// <summary>
+  /// LoadSnapshot command restores the state of the simulation from the directory under the snapshots folder.
+  /// </summary>
+  public class CommandLoadSnapshot : Command
+  {
+    /// <summary>Name of the snapshot.</summary>
+    public string Name;
+
+    /// <summary>
+    /// Initializes the base command type.
+    /// </summary>
+    /// <param name="LineNumber">Line number of the command in the scenario file.</param>
+    /// <param name="OriginalCommand">Original scenario file line.</param>
+    public CommandLoadSnapshot(int LineNumber, string OriginalCommand) :
+      base(CommandType.LoadSnapshot, LineNumber, OriginalCommand)
+    {
+    }
+  }
+
+
+  /// <summary>
+  /// DebugMode command enables or disables debug console outputs.
+  /// </summary>
+  public class CommandDebugMode : Command
+  {
+    /// <summary>true to enable, false to disable debug outputs.</summary>
+    public bool Enable; 
+
+    /// <summary>
+    /// Initializes the base command type.
+    /// </summary>
+    /// <param name="LineNumber">Line number of the command in the scenario file.</param>
+    /// <param name="OriginalCommand">Original scenario file line.</param>
+    public CommandDebugMode(int LineNumber, string OriginalCommand) :
+      base(CommandType.DebugMode, LineNumber, OriginalCommand)
+    {
+    }
+  }
+
 }

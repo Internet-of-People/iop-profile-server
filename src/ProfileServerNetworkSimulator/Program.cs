@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ProfileServerSimulator
+namespace ProfileServerNetworkSimulator
 {
   /// <summary>
   /// ProfileServer Simulator simulates network of profile servers on a single machine.
@@ -17,7 +17,7 @@ namespace ProfileServerSimulator
   /// </summary>
   public class Program
   {
-    private static NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
+    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerNetworkSimulator.Program");
 
     /// <summary>
     /// Main program routine.
@@ -41,6 +41,8 @@ namespace ProfileServerSimulator
       CultureInfo.CurrentUICulture = culture;
 
       string scenarioFile = args[0];
+      log.Info("Loading scenario file '{0}'.", scenarioFile);
+      log.Info("");
       List<Command> commands = CommandParser.ParseScenarioFile(scenarioFile);
       if (commands == null)
       {
@@ -49,8 +51,22 @@ namespace ProfileServerSimulator
       }
 
       CommandProcessor processor = new CommandProcessor(commands);
-      processor.Execute();
+      bool success = processor.Execute();
+
+      log.Info("");
+      log.Info("All done, shutting down ...");
       processor.Shutdown();
+
+      if (success)
+      {
+        log.Info("");
+        log.Info("Analyzing log files ...");
+        success = processor.CheckLogs();
+      }
+
+      log.Info("");
+      log.Info("SCENARIO {0}", success ? "PASSED" : "FAILED");
+      log.Info("");
 
       log.Trace("(-)");
 

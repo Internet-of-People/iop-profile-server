@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ProfileServerNetworkSimulator": {
+      "commandName": "Project",
+      "commandLineArgs": "Scenarios/scenario-015.conf"
+    }
+  }
+}

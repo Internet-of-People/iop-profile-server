@@ -40,16 +40,24 @@ namespace ProfileServer.Kernel
       ComponentDictionary = new Dictionary<string, Component>()
       {
         { "Config.Config", Configuration },
+        { "Data.Database", new Data.Database() },
+        { "Data.ImageManager", new Data.ImageManager() },
         { "Network.Server", new Network.Server() },
         { "Network.LocationBasedNetwork", new Network.LocationBasedNetwork() },
+        { "Network.NeighborhoodActionProcessor", new Network.NeighborhoodActionProcessor() },
+        { "Network.ExpirationManager", new Network.ExpirationManager() },
       };
 
       // The component list specifies the order in which the components are going to be initialized.
       List<Component> componentList = new List<Component>()
       {
         ComponentDictionary["Config.Config"],
+        ComponentDictionary["Data.Database"],
+        ComponentDictionary["Data.ImageManager"],
         ComponentDictionary["Network.Server"],
         ComponentDictionary["Network.LocationBasedNetwork"],
+        ComponentDictionary["Network.NeighborhoodActionProcessor"],
+        ComponentDictionary["Network.ExpirationManager"],
       };
 
       res = Components.Init(componentList);

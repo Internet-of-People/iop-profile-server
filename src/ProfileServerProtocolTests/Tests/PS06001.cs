@@ -137,7 +137,7 @@ namespace ProfileServerProtocolTests.Tests
           ProfilePublicKeys.Add(profileClient.GetIdentityKeys().PublicKey);
 
           await profileClient.ConnectAsync(ServerIp, (int)rolePorts[ServerRoleType.ClNonCustomer], true);
-          bool establishHomeNodeOk = await profileClient.EstablishHomeNodeAsync(ProfileTypes[i]);
+          bool establishHostingOk = await profileClient.EstablishHostingAsync(ProfileTypes[i]);
           profileClient.CloseConnection();
 
 
@@ -147,13 +147,20 @@ namespace ProfileServerProtocolTests.Tests
           byte[] imageData = ProfileImages[i] != null ? File.ReadAllBytes(ProfileImages[i]) : null;
           bool initializeProfileOk = await profileClient.InitializeProfileAsync(ProfileNames[i], imageData, ProfileLocations[i], ProfileExtraData[i]);
 
-          profileInitializationOk = establishHomeNodeOk && checkInOk && initializeProfileOk;
+          profileInitializationOk = establishHostingOk && checkInOk && initializeProfileOk;
           profileClient.Dispose();
 
           if (!profileInitializationOk) break;
         }
 
-        bool step1Ok = listPortsOk && profileInitializationOk;
+        ProtocolClient uninitializedProfileClient = new ProtocolClient();
+        await uninitializedProfileClient.ConnectAsync(ServerIp, (int)rolePorts[ServerRoleType.ClNonCustomer], true);
+        bool establishHostingUninitializedOk = await uninitializedProfileClient.EstablishHostingAsync("Profile Type B");
+        uninitializedProfileClient.CloseConnection();
+        uninitializedProfileClient.Dispose();
+
+
+        bool step1Ok = listPortsOk && profileInitializationOk && establishHostingUninitializedOk;
         log.Trace("Step 1: {0}", step1Ok ? "PASSED" : "FAILED");
 
 
