@@ -11,7 +11,7 @@ In order to install and run Profile Server, you need to
 
 ## Install .NET Core
 
-Simply go to [Microsoft .NET Core website](https://www.microsoft.com/net/download/core) and follow the instruction on how to install .NET Core to your system.
+Simply go to [Microsoft .NET Core website](https://www.microsoft.com/net/core) and follow the instruction on how to install .NET Core to your system.
 
 ## Install OpenSSL
 
