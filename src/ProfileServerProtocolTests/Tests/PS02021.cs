@@ -58,11 +58,11 @@ namespace ProfileServerProtocolTests.Tests
 
         // Step 1
         await client1.ConnectAsync(ServerIp, ClNonCustomerPort, true);
-        bool homeNodeOk = await client1.EstablishHostingAsync();
+        bool hostingOk = await client1.EstablishHostingAsync();
         client1.CloseConnection();
 
         // Step 1 Acceptance
-        bool step1Ok = homeNodeOk;
+        bool step1Ok = hostingOk;
 
 
         // Step 2

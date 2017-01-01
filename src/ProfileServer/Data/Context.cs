@@ -20,10 +20,10 @@ namespace ProfileServer.Data
     /// <summary>Access to node's settings in the database.</summary>
     public DbSet<Setting> Settings { get; set; }
 
-    /// <summary>Access to IoP identities, for which the node acts as a home node, in the database.</summary>
+    /// <summary>Access to IoP locally hosted identities in the database.</summary>
     public DbSet<HostedIdentity> Identities { get; set; }
 
-    /// <summary>Access to IoP identities, which are not hosted on this node, but are hosted in this profile server's neighborhood.</summary>
+    /// <summary>Access to IoP identities, which are not hosted on this server, but are hosted in this profile server's neighborhood.</summary>
     public DbSet<NeighborIdentity> NeighborIdentities { get; set; }
 
     /// <summary>Related identities announced by hosted identities.</summary>

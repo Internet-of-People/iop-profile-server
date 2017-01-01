@@ -656,8 +656,8 @@ namespace ProfileServer.Network
               }
               else
               {
-                byte[] targetHomeNode = identity.HostingServerId;
-                res = messageBuilder.CreateGetIdentityInformationResponse(RequestMessage, isHosted, targetHomeNode, null);
+                byte[] targetHostingServer = identity.HostingServerId;
+                res = messageBuilder.CreateGetIdentityInformationResponse(RequestMessage, isHosted, targetHostingServer, null);
               }
             }
             else
@@ -1344,15 +1344,15 @@ namespace ProfileServer.Network
 
     /// <summary>
     /// Processes CancelHostingAgreementRequest message from client.
-    /// <para>Cancels a home node agreement with an identity.</para>
+    /// <para>Cancels a hosting agreement with an identity.</para>
     /// </summary>
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    /// <remarks>Cancelling home node agreement causes identity's image files to be deleted. 
+    /// <remarks>Cancelling hosting agreement causes identity's image files to be deleted. 
     /// The profile itself is not immediately deleted, but its expiration date is set, 
-    /// which will lead to its deletion. If the home node redirection is installed, the expiration date 
-    /// is set to a later time.</remarks>
+    /// which will lead to its deletion. If the hosting server redirection is installed, 
+    /// the expiration date is set to a later time.</remarks>
     public async Task<Message> ProcessMessageCancelHostingAgreementRequestAsync(IncomingClient Client, Message RequestMessage)
     {
       log.Trace("()");
@@ -1443,8 +1443,8 @@ namespace ProfileServer.Network
 
           if (success)
           {
-            if (cancelHostingAgreementRequest.RedirectToNewProfileServer) log.Debug("Identity '{0}' home node agreement cancelled and redirection set to node '{1}'.", Client.IdentityId.ToHex(), cancelHostingAgreementRequest.NewProfileServerNetworkId.ToByteArray().ToHex());
-            else log.Debug("Identity '{0}' home node agreement cancelled and no redirection set.", Client.IdentityId.ToHex());
+            if (cancelHostingAgreementRequest.RedirectToNewProfileServer) log.Debug("Identity '{0}' hosting agreement cancelled and redirection set to node '{1}'.", Client.IdentityId.ToHex(), cancelHostingAgreementRequest.NewProfileServerNetworkId.ToByteArray().ToHex());
+            else log.Debug("Identity '{0}' hosting agreement cancelled and no redirection set.", Client.IdentityId.ToHex());
 
             res = messageBuilder.CreateCancelHostingAgreementResponse(RequestMessage);
 
@@ -1464,8 +1464,8 @@ namespace ProfileServer.Network
       }
       else
       {
-        log.Debug("Invalid home node identifier '{0}'.", cancelHostingAgreementRequest.NewProfileServerNetworkId.ToByteArray().ToHex());
-        res = messageBuilder.CreateErrorInvalidValueResponse(RequestMessage, "newHomeNodeNetworkId");
+        log.Debug("Invalid profile server identifier '{0}'.", cancelHostingAgreementRequest.NewProfileServerNetworkId.ToByteArray().ToHex());
+        res = messageBuilder.CreateErrorInvalidValueResponse(RequestMessage, "newProfileServerNetworkId");
       }
 
       log.Trace("(-):*.Response.Status={0}", res.Response.Status);
@@ -3094,8 +3094,15 @@ namespace ProfileServer.Network
     {
       log.Trace("()");
 
+      Message res = null;
+      if (!CheckSessionConditions(Client, RequestMessage, ServerRole.ServerNeighbor, ClientConversationStatus.Verified, out res))
+      {
+        log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+        return res;
+      }
+
       MessageBuilder messageBuilder = Client.MessageBuilder;
-      Message res = messageBuilder.CreateErrorRejectedResponse(RequestMessage);
+      res = messageBuilder.CreateErrorRejectedResponse(RequestMessage);
 
       log.Trace("(-):*.Response.Status={0}", res.Response.Status);
       return res;

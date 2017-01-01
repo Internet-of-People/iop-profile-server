@@ -1,4 +1,5 @@
-﻿using ProfileServerProtocol;
+﻿using ProfileServerCrypto;
+using ProfileServerProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -13,12 +14,12 @@ using System.Threading.Tasks;
 namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
-  /// PS01005 - Register Hosting Request - Bad Role
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS01.md#ps01005---register-hosting-request---bad-role
+  /// PS01019 - Neighborhood Related Calls - Bad Role
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS01.md#ps01019---neighborhood-related-calls---bad-role
   /// </summary>
-  public class PS01005 : ProtocolTest
+  public class PS01019 : ProtocolTest
   {
-    public const string TestName = "PS01005";
+    public const string TestName = "PS01019";
     private static NLog.Logger log = NLog.LogManager.GetLogger("Test." + TestName);
 
     public override string Name { get { return TestName; } }
@@ -54,26 +55,44 @@ namespace ProfileServerProtocolTests.Tests
         // Step 1
         await client.ConnectAsync(ServerIp, PrimaryPort, false);
 
-        Message requestMessage = client.CreateStartConversationRequest();
+        Message requestMessage = mb.CreateStartNeighborhoodInitializationRequest(1, 1);
         await client.SendMessageAsync(requestMessage);
         Message responseMessage = await client.ReceiveMessageAsync();
 
         bool idOk = responseMessage.Id == requestMessage.Id;
-        bool statusOk = responseMessage.Response.Status == Status.Ok;
-        bool verifyChallengeOk = client.VerifyServerChallengeSignature(responseMessage);
-        bool startConversationOk = idOk && statusOk && verifyChallengeOk;
+        bool statusOk = responseMessage.Response.Status == Status.ErrorBadRole;
+        bool startNeighborhoodInitializationOk = idOk && statusOk;
 
-        requestMessage = mb.CreateRegisterHostingRequest(null);
+
+        requestMessage = mb.CreateFinishNeighborhoodInitializationRequest();
         await client.SendMessageAsync(requestMessage);
         responseMessage = await client.ReceiveMessageAsync();
 
         idOk = responseMessage.Id == requestMessage.Id;
         statusOk = responseMessage.Response.Status == Status.ErrorBadRole;
-        bool registerHostingOk = idOk && statusOk;
+        bool finishNeighborhoodInitializationOk = idOk && statusOk;
+
+
+        requestMessage = mb.CreateNeighborhoodSharedProfileUpdateRequest(null);
+        await client.SendMessageAsync(requestMessage);
+        responseMessage = await client.ReceiveMessageAsync();
+
+        idOk = responseMessage.Id == requestMessage.Id;
+        statusOk = responseMessage.Response.Status == Status.ErrorBadRole;
+        bool neighborhoodSharedProfileUpdateOk = idOk && statusOk;
+
+
+        requestMessage = mb.CreateStopNeighborhoodUpdatesRequest();
+        await client.SendMessageAsync(requestMessage);
+        responseMessage = await client.ReceiveMessageAsync();
+
+        idOk = responseMessage.Id == requestMessage.Id;
+        statusOk = responseMessage.Response.Status == Status.ErrorBadRole;
+        bool stopNeighborhoodUpdatesOk = idOk && statusOk;
 
         // Step 1 Acceptance
 
-        Passed = startConversationOk && registerHostingOk;
+        Passed = startNeighborhoodInitializationOk && finishNeighborhoodInitializationOk && neighborhoodSharedProfileUpdateOk && stopNeighborhoodUpdatesOk;
 
         res = true;
       }

@@ -14,8 +14,8 @@ using System.Threading.Tasks;
 namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
-  /// PS02005 - Home Node Request
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS02.md#ps02005---home-node-request
+  /// PS02005 - Register Hosting Request
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS02.md#ps02005---register-hosting-request
   /// </summary>
   public class PS02005 : ProtocolTest
   {

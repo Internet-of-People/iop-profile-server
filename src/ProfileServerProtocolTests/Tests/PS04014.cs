@@ -58,10 +58,10 @@ namespace ProfileServerProtocolTests.Tests
         // Step 1
         log.Trace("Step 1");
         await client.ConnectAsync(ServerIp, ClNonCustomerPort, true);
-        bool establishHomeNodeOk = await client.EstablishHostingAsync();
+        bool establishHostingOk = await client.EstablishHostingAsync();
 
         // Step 1 Acceptance
-        bool step1Ok = establishHomeNodeOk;
+        bool step1Ok = establishHostingOk;
         log.Trace("Step 1: {0}", step1Ok ? "PASSED" : "FAILED");
 
         client.CloseConnection();

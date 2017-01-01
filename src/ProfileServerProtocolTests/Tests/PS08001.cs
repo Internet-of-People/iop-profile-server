@@ -15,12 +15,12 @@ using System.Threading.Tasks;
 namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
-  /// PS02017 - Verify Identity, Update Profile - Bad Role
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS02.md#ps02017---verify-identity-update-profile---bad-role
+  /// PS08001 - Neighborhood Related Calls - Unauthorized
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS08.md#ps08001---neighborhood-related-calls---unauthorized
   /// </summary>
-  public class PS02017 : ProtocolTest
+  public class PS08001 : ProtocolTest
   {
-    public const string TestName = "PS02017";
+    public const string TestName = "PS08001";
     private static NLog.Logger log = NLog.LogManager.GetLogger("Test." + TestName);
 
     public override string Name { get { return TestName; } }
@@ -29,7 +29,7 @@ namespace ProfileServerProtocolTests.Tests
     private List<ProtocolTestArgument> argumentDescriptions = new List<ProtocolTestArgument>()
     {
       new ProtocolTestArgument("Server IP", ProtocolTestArgumentType.IpAddress),
-      new ProtocolTestArgument("clNonCustomer Port", ProtocolTestArgumentType.Port),
+      new ProtocolTestArgument("srNeighbor Port", ProtocolTestArgumentType.Port),
     };
 
     public override List<ProtocolTestArgument> ArgumentDescriptions { get { return argumentDescriptions; } }
@@ -42,8 +42,8 @@ namespace ProfileServerProtocolTests.Tests
     public override async Task<bool> RunAsync()
     {
       IPAddress ServerIp = (IPAddress)ArgumentValues["Server IP"];
-      int ClNonCustomerPort = (int)ArgumentValues["clNonCustomer Port"];
-      log.Trace("(ServerIp:'{0}',ClNonCustomerPort:{1})", ServerIp, ClNonCustomerPort);
+      int NeighborPort = (int)ArgumentValues["srNeighbor Port"];
+      log.Trace("(ServerIp:'{0}',NeighborPort:{1})", ServerIp, NeighborPort);
 
       bool res = false;
       Passed = false;
@@ -54,28 +54,46 @@ namespace ProfileServerProtocolTests.Tests
         MessageBuilder mb = client.MessageBuilder;
 
         // Step 1
-        await client.ConnectAsync(ServerIp, ClNonCustomerPort, true);
-        bool hostingAgreementOk = await client.EstablishHostingAsync();
+        await client.ConnectAsync(ServerIp, NeighborPort, true);
 
-        Message requestMessage = mb.CreateVerifyIdentityRequest(client.Challenge);
+        Message requestMessage = mb.CreateStartNeighborhoodInitializationRequest(1, 1);
         await client.SendMessageAsync(requestMessage);
         Message responseMessage = await client.ReceiveMessageAsync();
 
         bool idOk = responseMessage.Id == requestMessage.Id;
-        bool statusOk = responseMessage.Response.Status == Status.Ok;
-        bool verifyIdentityOk = idOk && statusOk;
+        bool statusOk = responseMessage.Response.Status == Status.ErrorUnauthorized;
+        bool startNeighborhoodInitializationOk = idOk && statusOk;
 
-        requestMessage = mb.CreateUpdateProfileRequest(SemVer.V100, "Test Identity", null, new GpsLocation(0, 0), null);
+
+        requestMessage = mb.CreateFinishNeighborhoodInitializationRequest();
         await client.SendMessageAsync(requestMessage);
         responseMessage = await client.ReceiveMessageAsync();
 
         idOk = responseMessage.Id == requestMessage.Id;
-        statusOk = responseMessage.Response.Status == Status.ErrorBadRole;
-        bool updateProfileOk = idOk && statusOk;
+        statusOk = responseMessage.Response.Status == Status.ErrorUnauthorized;
+        bool finishNeighborhoodInitializationOk = idOk && statusOk;
+
+
+        requestMessage = mb.CreateNeighborhoodSharedProfileUpdateRequest(null);
+        await client.SendMessageAsync(requestMessage);
+        responseMessage = await client.ReceiveMessageAsync();
+
+        idOk = responseMessage.Id == requestMessage.Id;
+        statusOk = responseMessage.Response.Status == Status.ErrorUnauthorized;
+        bool neighborhoodSharedProfileUpdateOk = idOk && statusOk;
+
+
+        requestMessage = mb.CreateStopNeighborhoodUpdatesRequest();
+        await client.SendMessageAsync(requestMessage);
+        responseMessage = await client.ReceiveMessageAsync();
+
+        idOk = responseMessage.Id == requestMessage.Id;
+        statusOk = responseMessage.Response.Status == Status.ErrorUnauthorized;
+        bool stopNeighborhoodUpdatesOk = idOk && statusOk;
 
         // Step 1 Acceptance
-        Passed = hostingAgreementOk && verifyIdentityOk && updateProfileOk;
 
+        Passed = startNeighborhoodInitializationOk && finishNeighborhoodInitializationOk && neighborhoodSharedProfileUpdateOk && stopNeighborhoodUpdatesOk;
         res = true;
       }
       catch (Exception e)
@@ -83,6 +101,7 @@ namespace ProfileServerProtocolTests.Tests
         log.Error("Exception occurred: {0}", e.ToString());
       }
       client.Dispose();
+
 
       log.Trace("(-):{0}", res);
       return res;

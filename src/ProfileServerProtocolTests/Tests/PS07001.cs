@@ -73,30 +73,30 @@ namespace ProfileServerProtocolTests.Tests
         // Get port list.
         await clientPrimary.ConnectAsync(ServerIp, PrimaryPort, false);
         Dictionary<ServerRoleType, uint> rolePorts = new Dictionary<ServerRoleType, uint>();
-        bool listPortsOk = await clientPrimary.ListNodePorts(rolePorts);
+        bool listPortsOk = await clientPrimary.ListServerPorts(rolePorts);
         clientPrimary.CloseConnection();
 
-        // Establish home node agreement for primary client.
+        // Establish hosting agreement for primary client.
         await clientPrimary.ConnectAsync(ServerIp, (int)rolePorts[ServerRoleType.ClNonCustomer], true);
-        bool establishHomeNodeOk = await clientPrimary.EstablishHostingAsync("Primary");
+        bool establishHostingOk = await clientPrimary.EstablishHostingAsync("Primary");
         clientPrimary.CloseConnection();
 
         // Check in primary client.
         await clientPrimary.ConnectAsync(ServerIp, (int)rolePorts[ServerRoleType.ClCustomer], true);
         bool checkInOk = await clientPrimary.CheckInAsync();
 
-        bool primaryOk = establishHomeNodeOk && checkInOk;
+        bool primaryOk = establishHostingOk && checkInOk;
 
-        // Establish home node agreement for secondary client.
+        // Establish hosting agreement for secondary client.
         await clientSecondary.ConnectAsync(ServerIp, (int)rolePorts[ServerRoleType.ClNonCustomer], true);
-        establishHomeNodeOk = await clientSecondary.EstablishHostingAsync("Primary");
+        establishHostingOk = await clientSecondary.EstablishHostingAsync("Primary");
         clientSecondary.CloseConnection();
 
         // Check in secondary client.
         await clientSecondary.ConnectAsync(ServerIp, (int)rolePorts[ServerRoleType.ClCustomer], true);
         checkInOk = await clientSecondary.CheckInAsync();
 
-        bool secondaryOk = establishHomeNodeOk && checkInOk;
+        bool secondaryOk = establishHostingOk && checkInOk;
 
         // Create card issuers.
         CardIssuers = new List<ProtocolClient>();

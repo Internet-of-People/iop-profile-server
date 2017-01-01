@@ -15,8 +15,8 @@ using System.Threading.Tasks;
 namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
-  /// PS04010 - Cancel Home Node Agreement - Invalid New Home Node Id
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS04.md#ps04010---cancel-home-node-agreement---invalid-new-home-node-id
+  /// PS04010 - Cancel Hosting Agreement - Invalid New Profile Server Id
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS04.md#ps04010---cancel-hosting-agreement---invalid-new-profile-server-id
   /// </summary>
   public class PS04010 : ProtocolTest
   {
@@ -58,10 +58,10 @@ namespace ProfileServerProtocolTests.Tests
 
         // Step 1
         await client.ConnectAsync(ServerIp, ClNonCustomerPort, true);
-        bool establishHomeNodeOk = await client.EstablishHostingAsync();
+        bool establishHostingOk = await client.EstablishHostingAsync();
 
         // Step 1 Acceptance
-        bool step1Ok = establishHomeNodeOk;
+        bool step1Ok = establishHostingOk;
         client.CloseConnection();
 
 
@@ -76,7 +76,7 @@ namespace ProfileServerProtocolTests.Tests
 
         bool idOk = responseMessage.Id == requestMessage.Id;
         bool statusOk = responseMessage.Response.Status == Status.ErrorInvalidValue;
-        bool detailsOk = responseMessage.Response.Details == "newHomeNodeNetworkId";
+        bool detailsOk = responseMessage.Response.Details == "newProfileServerNetworkId";
 
         bool cancelAgreementOk = idOk && statusOk && detailsOk;
 

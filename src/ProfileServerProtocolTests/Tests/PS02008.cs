@@ -14,8 +14,8 @@ using System.Threading.Tasks;
 namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
-  /// PS02008 - Home Node Request - Quota Exceeded
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS02.md#ps02008---home-node-request---already-exists
+  /// PS02008 - Register Hosting Request - Already Exists
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS02.md#ps02008---register-hosting-request---already-exists
   /// </summary>
   public class PS02008 : ProtocolTest
   {

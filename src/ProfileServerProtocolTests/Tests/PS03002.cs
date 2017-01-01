@@ -15,8 +15,8 @@ using System.Threading.Tasks;
 namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
-  /// PS03002 - Home Node Request - Bad Role
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS03.md#ps03002---home-node-request---bad-role
+  /// PS03002 - Register Hosting Request - Bad Role
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS03.md#ps03002---register-hosting-request---bad-role
   /// </summary>
   public class PS03002 : ProtocolTest
   {

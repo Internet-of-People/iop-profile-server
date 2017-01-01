@@ -1,4 +1,6 @@
-﻿using ProfileServerProtocol;
+﻿using Google.Protobuf;
+using ProfileServerCrypto;
+using ProfileServerProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -13,12 +15,12 @@ using System.Threading.Tasks;
 namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
-  /// PS01005 - Register Hosting Request - Bad Role
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS01.md#ps01005---register-hosting-request---bad-role
+  /// PS08002 - Neighborhood Initialization Process - No Profiles
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS08.md#ps08002---neighborhood-initialization-process---no-profiles
   /// </summary>
-  public class PS01005 : ProtocolTest
+  public class PS08002 : ProtocolTest
   {
-    public const string TestName = "PS01005";
+    public const string TestName = "PS08002";
     private static NLog.Logger log = NLog.LogManager.GetLogger("Test." + TestName);
 
     public override string Name { get { return TestName; } }
@@ -52,28 +54,49 @@ namespace ProfileServerProtocolTests.Tests
         MessageBuilder mb = client.MessageBuilder;
 
         // Step 1
+        log.Trace("Step 1");
+        // Get port list.
         await client.ConnectAsync(ServerIp, PrimaryPort, false);
+        Dictionary<ServerRoleType, uint> rolePorts = new Dictionary<ServerRoleType, uint>();
+        bool listPortsOk = await client.ListServerPorts(rolePorts);
+        client.CloseConnection();
 
-        Message requestMessage = client.CreateStartConversationRequest();
+        await client.ConnectAsync(ServerIp, (int)rolePorts[ServerRoleType.SrNeighbor], true);
+        bool verifyIdentityOk = await client.VerifyIdentityAsync();
+
+        bool step1Ok = listPortsOk && verifyIdentityOk;
+        log.Trace("Step 1: {0}", step1Ok ? "PASSED" : "FAILED");
+
+
+
+        // Step 2
+        log.Trace("Step 2");
+        Message requestMessage = mb.CreateStartNeighborhoodInitializationRequest(1, 1);
         await client.SendMessageAsync(requestMessage);
-        Message responseMessage = await client.ReceiveMessageAsync();
 
+        Message responseMessage = await client.ReceiveMessageAsync();
         bool idOk = responseMessage.Id == requestMessage.Id;
         bool statusOk = responseMessage.Response.Status == Status.Ok;
-        bool verifyChallengeOk = client.VerifyServerChallengeSignature(responseMessage);
-        bool startConversationOk = idOk && statusOk && verifyChallengeOk;
+        bool startNeighborhoodInitializationOk = idOk && statusOk;
 
-        requestMessage = mb.CreateRegisterHostingRequest(null);
-        await client.SendMessageAsync(requestMessage);
-        responseMessage = await client.ReceiveMessageAsync();
 
-        idOk = responseMessage.Id == requestMessage.Id;
-        statusOk = responseMessage.Response.Status == Status.ErrorBadRole;
-        bool registerHostingOk = idOk && statusOk;
+        Message serverRequestMessage = await client.ReceiveMessageAsync();
+        bool typeOk = serverRequestMessage.MessageTypeCase == Message.MessageTypeOneofCase.Request
+          && serverRequestMessage.Request.ConversationTypeCase == Request.ConversationTypeOneofCase.ConversationRequest
+          && serverRequestMessage.Request.ConversationRequest.RequestTypeCase == ConversationRequest.RequestTypeOneofCase.FinishNeighborhoodInitialization;
 
-        // Step 1 Acceptance
+        Message clientResponseMessage = mb.CreateFinishNeighborhoodInitializationResponse(serverRequestMessage);
+        await client.SendMessageAsync(clientResponseMessage);
 
-        Passed = startConversationOk && registerHostingOk;
+
+        // Step 2 Acceptance
+        bool step2Ok = startNeighborhoodInitializationOk && typeOk;
+
+        log.Trace("Step 2: {0}", step2Ok ? "PASSED" : "FAILED");
+
+
+
+        Passed = step1Ok && step2Ok;
 
         res = true;
       }
@@ -82,6 +105,7 @@ namespace ProfileServerProtocolTests.Tests
         log.Error("Exception occurred: {0}", e.ToString());
       }
       client.Dispose();
+
 
       log.Trace("(-):{0}", res);
       return res;

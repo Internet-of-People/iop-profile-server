@@ -74,14 +74,14 @@ namespace ProfileServerProtocolTests.Tests
 
         await clientCallee.ConnectAsync(ServerIp, PrimaryPort, false);
         Dictionary<ServerRoleType, uint> rolePorts = new Dictionary<ServerRoleType, uint>();
-        bool listPortsOk = await clientCallee.ListNodePorts(rolePorts);
+        bool listPortsOk = await clientCallee.ListServerPorts(rolePorts);
 
         clientCallee.CloseConnection();
 
 
-        // Establish home node for identity 1.
+        // Establish hosting agreement for identity 1.
         await clientCallee.ConnectAsync(ServerIp, (int)rolePorts[ServerRoleType.ClNonCustomer], true);
-        bool establishHomeNodeOk = await clientCallee.EstablishHostingAsync();
+        bool establishHostingOk = await clientCallee.EstablishHostingAsync();
 
         clientCallee.CloseConnection();
 
@@ -95,7 +95,7 @@ namespace ProfileServerProtocolTests.Tests
         clientCallee.CloseConnection();
 
         // Step 1 Acceptance
-        bool step1Ok = listPortsOk && establishHomeNodeOk && checkInOk && initializeProfileOk;
+        bool step1Ok = listPortsOk && establishHostingOk && checkInOk && initializeProfileOk;
 
         log.Trace("Step 1: {0}", step1Ok ? "PASSED" : "FAILED");
 

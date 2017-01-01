@@ -59,12 +59,12 @@ namespace ProfileServerProtocolTests.Tests
         // Get port list.
         await client.ConnectAsync(ServerIp, PrimaryPort, false);
         Dictionary<ServerRoleType, uint> rolePorts = new Dictionary<ServerRoleType, uint>();
-        bool listPortsOk = await client.ListNodePorts(rolePorts);
+        bool listPortsOk = await client.ListServerPorts(rolePorts);
         client.CloseConnection();
 
-        // Establish home node agreement for primary client.
+        // Establish hosting agreement for primary client.
         await client.ConnectAsync(ServerIp, (int)rolePorts[ServerRoleType.ClNonCustomer], true);
-        bool establishHomeNodeOk = await client.EstablishHostingAsync("Primary");
+        bool establishHostingOk = await client.EstablishHostingAsync("Primary");
         client.CloseConnection();
 
         // Check in primary client.
@@ -72,7 +72,7 @@ namespace ProfileServerProtocolTests.Tests
         bool checkInOk = await client.CheckInAsync();
 
         // Step 1 Acceptance
-        bool step1Ok = listPortsOk && establishHomeNodeOk && checkInOk;
+        bool step1Ok = listPortsOk && establishHostingOk && checkInOk;
 
         log.Trace("Step 1: {0}", step1Ok ? "PASSED" : "FAILED");
 
