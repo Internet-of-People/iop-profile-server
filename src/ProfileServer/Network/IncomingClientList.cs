@@ -46,7 +46,7 @@ namespace ProfileServer.Network
 
     /// <summary>
     /// List of online (checked-in) clients mapped by their Identity ID. Only node's clients are in this list.
-    /// A client is an identity for which the node acts as a home node.
+    /// A client is an identity hosted by this server.
     /// </summary>
     private Dictionary<byte[], PeerListItem> clientsByIdentityId = new Dictionary<byte[], PeerListItem>(StructuralEqualityComparer<byte[]>.Default);
 

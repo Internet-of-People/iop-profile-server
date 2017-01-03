@@ -56,7 +56,7 @@ namespace ProfileServerProtocolTests.Tests
 
         // Step 1
         await client.ConnectAsync(ServerIp, ClNonCustomerPort, true);
-        bool establishHomeNodeOk = await client.EstablishHostingAsync();
+        bool establishHostingOk = await client.EstablishHostingAsync();
 
         Message requestMessage = mb.CreateCheckInRequest(client.Challenge);
         await client.SendMessageAsync(requestMessage);
@@ -67,7 +67,7 @@ namespace ProfileServerProtocolTests.Tests
         bool checkInOk = idOk && statusOk;
 
         // Step 1 Acceptance
-        Passed = establishHomeNodeOk && checkInOk;
+        Passed = establishHostingOk && checkInOk;
 
         res = true;
       }

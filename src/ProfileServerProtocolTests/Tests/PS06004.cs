@@ -57,7 +57,7 @@ namespace ProfileServerProtocolTests.Tests
         // Get port list.
         await client.ConnectAsync(ServerIp, PrimaryPort, false);
         Dictionary<ServerRoleType, uint> rolePorts = new Dictionary<ServerRoleType, uint>();
-        bool listPortsOk = await client.ListNodePorts(rolePorts);
+        bool listPortsOk = await client.ListServerPorts(rolePorts);
         client.CloseConnection();
 
         // Start conversation.

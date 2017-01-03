@@ -128,7 +128,7 @@ namespace ProfileServerProtocolTests.Tests
         // Get port list.
         await client.ConnectAsync(ServerIp, PrimaryPort, false);
         Dictionary<ServerRoleType, uint> rolePorts = new Dictionary<ServerRoleType, uint>();
-        bool listPortsOk = await client.ListNodePorts(rolePorts);
+        bool listPortsOk = await client.ListServerPorts(rolePorts);
         client.CloseConnection();
          
         // Radius generation.
@@ -179,7 +179,7 @@ namespace ProfileServerProtocolTests.Tests
               ProtocolClient profileClient = new ProtocolClient();
 
               await profileClient.ConnectAsync(ServerIp, (int)rolePorts[ServerRoleType.ClNonCustomer], true);
-              bool establishHomeNodeOk = await profileClient.EstablishHostingAsync("test");
+              bool establishHostingOk = await profileClient.EstablishHostingAsync("test");
               profileClient.CloseConnection();
 
               await profileClient.ConnectAsync(ServerIp, (int)rolePorts[ServerRoleType.ClCustomer], true);
@@ -187,7 +187,7 @@ namespace ProfileServerProtocolTests.Tests
 
               bool initializeProfileOk = await profileClient.InitializeProfileAsync(name, null, location, null);
 
-              profileInitializationOk = establishHomeNodeOk && checkInOk && initializeProfileOk;
+              profileInitializationOk = establishHostingOk && checkInOk && initializeProfileOk;
               profileClient.Dispose();
 
               if (!profileInitializationOk) break;

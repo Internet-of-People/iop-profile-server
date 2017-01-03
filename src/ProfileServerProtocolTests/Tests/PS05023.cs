@@ -73,14 +73,14 @@ namespace ProfileServerProtocolTests.Tests
 
         await clientCallee.ConnectAsync(ServerIp, PrimaryPort, false);
         Dictionary<ServerRoleType, uint> rolePorts = new Dictionary<ServerRoleType, uint>();
-        bool listPortsOk = await clientCallee.ListNodePorts(rolePorts);
+        bool listPortsOk = await clientCallee.ListServerPorts(rolePorts);
 
         clientCallee.CloseConnection();
 
 
-        // Establish home node for identity 1.
+        // Establish hosting agreement for identity 1.
         await clientCallee.ConnectAsync(ServerIp, (int)rolePorts[ServerRoleType.ClNonCustomer], true);
-        bool establishHomeNodeOk = await clientCallee.EstablishHostingAsync();
+        bool establishHostingOk = await clientCallee.EstablishHostingAsync();
 
         clientCallee.CloseConnection();
 
@@ -98,13 +98,13 @@ namespace ProfileServerProtocolTests.Tests
 
 
 
-        bool firstIdentityOk = listPortsOk && establishHomeNodeOk && checkInOk && initializeProfileOk && addAppServiceOk;
+        bool firstIdentityOk = listPortsOk && establishHostingOk && checkInOk && initializeProfileOk && addAppServiceOk;
 
 
 
-        // Establish home node for identity 2.
+        // Establish hosting agreement for identity 2.
         await clientCaller.ConnectAsync(ServerIp, (int)rolePorts[ServerRoleType.ClNonCustomer], true);
-        establishHomeNodeOk = await clientCaller.EstablishHostingAsync();
+        establishHostingOk = await clientCaller.EstablishHostingAsync();
 
         clientCaller.CloseConnection();
 
@@ -116,7 +116,7 @@ namespace ProfileServerProtocolTests.Tests
         initializeProfileOk = await clientCaller.InitializeProfileAsync("Test Identity", null, new GpsLocation(0, 0), null);
 
 
-        bool secondIdentityOk = establishHomeNodeOk && checkInOk && initializeProfileOk;
+        bool secondIdentityOk = establishHostingOk && checkInOk && initializeProfileOk;
 
 
 

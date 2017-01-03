@@ -38,13 +38,13 @@ namespace ProfileServerProtocolTests
     /// <summary>Client's identity.</summary>
     private KeysEd25519 keys;
 
-    /// <summary>Node's public key received when starting conversation.</summary>
+    /// <summary>Profile server's public key received when starting conversation.</summary>
     public byte[] ServerKey;
 
-    /// <summary>Challenge that the node sent to the client when starting conversation.</summary>
+    /// <summary>Challenge that the profile server sent to the client when starting conversation.</summary>
     public byte[] Challenge;
 
-    /// <summary>Challenge that the client sent to the node when starting conversation.</summary>
+    /// <summary>Challenge that the client sent to the profile server when starting conversation.</summary>
     public byte[] ClientChallenge;
 
     /// <summary>
@@ -205,7 +205,7 @@ namespace ProfileServerProtocolTests
     /// <summary>
     /// Generates client's challenge and creates start conversation request with it.
     /// </summary>
-    /// <returns>StartConversationRequest message that is ready to be sent to the node.</returns>
+    /// <returns>StartConversationRequest message that is ready to be sent to the profile server.</returns>
     public Message CreateStartConversationRequest()
     {
       ClientChallenge = new byte[ProtocolHelper.ChallengeDataSize];
@@ -248,7 +248,7 @@ namespace ProfileServerProtocolTests
 
 
     /// <summary>
-    /// Establishes a home node for the client's identity with specific identity type using the already opened connection to the node.
+    /// Establishes a hosting agreement for the client's identity with specific identity type using the already opened connection to the profile server.
     /// </summary>
     /// <param name="IdentityType">Identity type of the new identity.</param>
     /// <returns>true if the function succeeds, false otherwise.</returns>
@@ -282,7 +282,7 @@ namespace ProfileServerProtocolTests
 
 
     /// <summary>
-    /// Performs a check-in process for the client's identity using the already opened connection to the node.
+    /// Performs a check-in process for the client's identity using the already opened connection to the profile server.
     /// </summary>
     /// <returns>true if the function succeeds, false otherwise.</returns>
     public async Task<bool> CheckInAsync()
@@ -308,7 +308,7 @@ namespace ProfileServerProtocolTests
 
 
     /// <summary>
-    /// Performs an identity verification process for the client's identity using the already opened connection to the node.
+    /// Performs an identity verification process for the client's identity using the already opened connection to the profile server.
     /// </summary>
     /// <returns>true if the function succeeds, false otherwise.</returns>
     public async Task<bool> VerifyIdentityAsync()
@@ -334,11 +334,11 @@ namespace ProfileServerProtocolTests
 
 
     /// <summary>
-    /// Obtains list of node's service ports.
+    /// Obtains list of profile server's service ports.
     /// </summary>
     /// <param name="RolePorts">An empty dictionary that will be filled with mapping of server roles to network ports if the function succeeds.</param>
     /// <returns>true if the function succeeds, false otherwise.</returns>
-    public async Task<bool> ListNodePorts(Dictionary<ServerRoleType, uint> RolePorts)
+    public async Task<bool> ListServerPorts(Dictionary<ServerRoleType, uint> RolePorts)
     {
       log.Trace("()");
 
@@ -367,7 +367,7 @@ namespace ProfileServerProtocolTests
     }
 
     /// <summary>
-    /// Initializes a new identity profile on the node.
+    /// Initializes a new identity profile on the profile server.
     /// </summary>
     /// <param name="Name">Name of the profile.</param>
     /// <param name="Image">Optionally, a profile image data.</param>
@@ -468,7 +468,7 @@ namespace ProfileServerProtocolTests
     /// <summary>
     /// Verifies whether the server successfully signed the correct start conversation challenge.
     /// </summary>
-    /// <param name="StartConversationResponse">StartConversationResponse received from the node.</param>
+    /// <param name="StartConversationResponse">StartConversationResponse received from the profile server.</param>
     /// <returns>true if the signature is valid, false otherwise.</returns>
     public bool VerifyServerChallengeSignature(Message StartConversationResponse)
     {

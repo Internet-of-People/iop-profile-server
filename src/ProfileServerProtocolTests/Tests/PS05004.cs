@@ -150,15 +150,15 @@ namespace ProfileServerProtocolTests.Tests
         {
           // Get port list.
           await clientCallee.ConnectAsync(ServerIp, PrimaryPort, false);
-          bool listPortsOk = await clientCallee.ListNodePorts(rolePorts);
+          bool listPortsOk = await clientCallee.ListServerPorts(rolePorts);
           RolePorts = rolePorts;
 
           clientCallee.CloseConnection();
 
 
-          // Establish home node for identity 1.
+          // Establish hosting agreement for identity 1.
           await clientCallee.ConnectAsync(ServerIp, (int)rolePorts[ServerRoleType.ClNonCustomer], true);
-          bool establishHomeNodeOk = await clientCallee.EstablishHostingAsync();
+          bool establishHostingOk = await clientCallee.EstablishHostingAsync();
 
           clientCallee.CloseConnection();
 
@@ -174,7 +174,7 @@ namespace ProfileServerProtocolTests.Tests
           bool addAppServiceOk = await clientCallee.AddApplicationServicesAsync(new List<string>() { serviceName });
 
           // Step 1 Acceptance
-          step1Ok = listPortsOk && establishHomeNodeOk && checkInOk && initializeProfileOk && addAppServiceOk;
+          step1Ok = listPortsOk && establishHostingOk && checkInOk && initializeProfileOk && addAppServiceOk;
         }
         else
         {

@@ -10,7 +10,7 @@ namespace ProfileServer.Network
   /// <summary>
   /// Implements customer client's application services.
   /// The list of application services is valid only for the currently opened session.
-  /// When the client disconnects from the home node, it has to add all application services again.
+  /// When the client disconnects from the profile server, it has to add all application services again.
   /// </summary>
   public class ApplicationServices
   {

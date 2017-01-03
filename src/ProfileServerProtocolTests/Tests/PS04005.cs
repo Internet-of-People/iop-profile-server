@@ -15,8 +15,8 @@ using System.Threading.Tasks;
 namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
-  /// PS04005 - Cancel Home Node Agreement, Register Again and Check-In
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS04.md#ps04005---cancel-home-node-agreement-register-again-and-checks-in
+  /// PS04005 - Cancel Hosting Agreement, Register Again and Check-In
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS04.md#ps04005---cancel-hosting-agreement-register-again-and-check-in
   /// </summary>
   public class PS04005 : ProtocolTest
   {
@@ -57,10 +57,10 @@ namespace ProfileServerProtocolTests.Tests
 
         // Step 1
         await client.ConnectAsync(ServerIp, ClNonCustomerPort, true);
-        bool establishHomeNodeOk = await client.EstablishHostingAsync();
+        bool establishHostingOk = await client.EstablishHostingAsync();
 
         // Step 1 Acceptance
-        bool step1Ok = establishHomeNodeOk;
+        bool step1Ok = establishHostingOk;
         client.CloseConnection();
 
 
@@ -103,10 +103,10 @@ namespace ProfileServerProtocolTests.Tests
 
         // Step 4
         await client.ConnectAsync(ServerIp, ClNonCustomerPort, true);
-        establishHomeNodeOk = await client.EstablishHostingAsync();
+        establishHostingOk = await client.EstablishHostingAsync();
 
         // Step 4 Acceptance
-        bool step4Ok = establishHomeNodeOk;
+        bool step4Ok = establishHostingOk;
         client.CloseConnection();
 
 

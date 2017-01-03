@@ -558,7 +558,7 @@ namespace ProfileServerProtocol
     /// <summary>
     /// Creates a new RegisterHostingRequest message.
     /// </summary>
-    /// <param name="Contract">Home Node contract for one of the node's plan to base the home node agreement on.</param>
+    /// <param name="Contract">Hosting contract for one of the node's plan to base the hosting agreement on.</param>
     /// <returns>RegisterHostingRequest message that is ready to be sent.</returns>
     public Message CreateRegisterHostingRequest(HostingPlanContract Contract)
     {

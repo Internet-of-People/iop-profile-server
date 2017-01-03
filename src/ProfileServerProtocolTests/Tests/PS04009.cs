@@ -15,8 +15,8 @@ using System.Threading.Tasks;
 namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
-  /// PS04009 - Cancel Home Node Agreement - Redirection
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS04.md#ps04009---cancel-home-node-agreement---redirection
+  /// PS04009 - Cancel Hosting Agreement - Redirection
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS04.md#ps04009---cancel-hosting-agreement---redirection
   /// </summary>
   public class PS04009 : ProtocolTest
   {
@@ -58,10 +58,10 @@ namespace ProfileServerProtocolTests.Tests
 
         // Step 1
         await client.ConnectAsync(ServerIp, ClNonCustomerPort, true);
-        bool establishHomeNodeOk = await client.EstablishHostingAsync();
+        bool establishHostingOk = await client.EstablishHostingAsync();
 
         // Step 1 Acceptance
-        bool step1Ok = establishHomeNodeOk;
+        bool step1Ok = establishHostingOk;
         client.CloseConnection();
 
 
@@ -87,11 +87,11 @@ namespace ProfileServerProtocolTests.Tests
         idOk = responseMessage.Id == requestMessage.Id;
         statusOk = responseMessage.Response.Status == Status.Ok;
         bool isHostedOk = responseMessage.Response.SingleResponse.GetIdentityInformation.IsHosted == false;
-        bool isTargetHomeNodeKnownOk = responseMessage.Response.SingleResponse.GetIdentityInformation.IsTargetProfileServerKnown;
-        byte[] receivedHomeNodeId = responseMessage.Response.SingleResponse.GetIdentityInformation.TargetProfileServerNetworkId.ToByteArray();
-        bool targetHomeNodeIdOk = StructuralComparisons.StructuralComparer.Compare(receivedHomeNodeId, newNodeId) == 0;
+        bool isTargetHostingServerKnownOk = responseMessage.Response.SingleResponse.GetIdentityInformation.IsTargetProfileServerKnown;
+        byte[] receivedHostingServerId = responseMessage.Response.SingleResponse.GetIdentityInformation.TargetProfileServerNetworkId.ToByteArray();
+        bool targetHostingServerIdOk = StructuralComparisons.StructuralComparer.Compare(receivedHostingServerId, newNodeId) == 0;
 
-        bool getIdentityInfoOk = idOk && statusOk && isHostedOk && isTargetHomeNodeKnownOk && targetHomeNodeIdOk;
+        bool getIdentityInfoOk = idOk && statusOk && isHostedOk && isTargetHostingServerKnownOk && targetHostingServerIdOk;
 
         // Step 2 Acceptance
         bool step2Ok = checkInOk && cancelAgreementOk && getIdentityInfoOk;

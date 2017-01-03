@@ -87,12 +87,12 @@ namespace ProfileServer.Data.Models
     [Required]
     public DateTime ValidTo { get; set; }
 
-    /// <summary>Identifier of the home node or empty array if the identity is hosted by this node.</summary>
+    /// <summary>Public key of the issuer of the card.</summary>
     [Required]
     [MaxLength(IdentityBase.MaxPublicKeyLengthBytes)]
     public byte[] IssuerPublicKey { get; set; }
 
-    /// <summary>Identifier of the home node or empty array if the identity is hosted by this node.</summary>
+    /// <summary>Public key of the recipient of the card.</summary>
     [Required]
     [MaxLength(IdentityBase.MaxPublicKeyLengthBytes)]
     public byte[] RecipientPublicKey { get; set; }

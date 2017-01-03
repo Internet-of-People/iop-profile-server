@@ -125,7 +125,7 @@ namespace ProfileServerProtocolTests.Tests
         // Get port list.
         await client.ConnectAsync(ServerIp, PrimaryPort, false);
         Dictionary<ServerRoleType, uint> rolePorts = new Dictionary<ServerRoleType, uint>();
-        bool listPortsOk = await client.ListNodePorts(rolePorts);
+        bool listPortsOk = await client.ListServerPorts(rolePorts);
         client.CloseConnection();
 
         ProfilePublicKeys = new List<byte[]>();
@@ -818,10 +818,10 @@ namespace ProfileServerProtocolTests.Tests
 
 
     /// <summary>
-    /// Verifies contents of list of profiles returned by the node as a result of a search query.
+    /// Verifies contents of list of profiles returned by the profile server as a result of a search query.
     /// </summary>
     /// <param name="ProfileNumbers">Numbers of profiles that are expected to be in the profile list.</param>
-    /// <param name="ProfileList">Profile list returned by the node.</param>
+    /// <param name="ProfileList">Profile list returned by the profile server.</param>
     /// <param name="ExactMatch">If set to true, the profile list is expected to contain only profiles specified in <paramref name="ProfileNumbers"/>.</param>
     /// <param name="NoImages">If set to true, the profile list must not contain images.</param>
     /// <returns>true if the <paramref name="ProfileList"/> contains profiles specified by profile numbers in <paramref name="ProfileNumbers"/>.</returns>

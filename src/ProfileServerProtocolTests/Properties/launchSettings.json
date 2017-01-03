@@ -2,7 +2,7 @@
   "profiles": {
     "ProfileServerProtocolTests": {
       "commandName": "Project",
-      "commandLineArgs": "PS04006 127.0.0.1 16988 16988"
+      "commandLineArgs": "PS08003 127.0.0.1 16987"
     }
   }
 }

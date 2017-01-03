@@ -14,8 +14,8 @@ using System.Threading.Tasks;
 namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
-  /// PS02006 - Home Node Request - Bad Conversation Status
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS02.md#ps02006---home-node-request---bad-conversation-status
+  /// PS02006 - Register Hosting Request - Bad Conversation Status
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS02.md#ps02006---register-hosting-request---bad-conversation-status
   /// </summary>
   public class PS02006 : ProtocolTest
   {
