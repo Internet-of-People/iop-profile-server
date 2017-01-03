@@ -191,6 +191,7 @@ namespace ProfileServerProtocolTestsExecutor
 
       new Test("PS08001", "ProfileServer-default.conf",          new string[] { "127.0.0.1", "16988" }, false),
       new Test("PS08002", "ProfileServer-default.conf",          new string[] { "127.0.0.1", "16987" }, false),
+      new Test("PS08003", "ProfileServer-default.conf",          new string[] { "127.0.0.1", "16987" }, false),
     };
 
 
