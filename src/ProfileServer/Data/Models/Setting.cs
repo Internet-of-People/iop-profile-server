@@ -22,10 +22,18 @@ namespace ProfileServer.Data.Models
     /// <summary>
     /// Parameterless constructor creates invalid entry.
     /// </summary>
-    public Setting()
+    public Setting() : 
+      this("INVALID")
     {
-      this.Name = "INVALID";
-      this.Value = "";
+    }
+
+    /// <summary>
+    /// Constructor to create empty value.
+    /// </summary>
+    /// <param name="Name">Setting/key name.</param>
+    public Setting(string Name) :
+      this(Name, "")
+    {
     }
 
     /// <summary>
@@ -44,10 +52,9 @@ namespace ProfileServer.Data.Models
     /// </summary>
     /// <param name="Name">Setting/key name.</param>
     /// <param name="Value">Integer value.</param>
-    public Setting(string Name, int Value)
+    public Setting(string Name, int Value) : 
+      this(Name, Value.ToString())
     {
-      this.Name = Name;
-      this.Value = Value.ToString();
     }
   }
 }

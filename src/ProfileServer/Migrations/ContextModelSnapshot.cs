@@ -51,6 +51,8 @@ namespace ProfileServer.Migrations
                     b.Property<int>("DbId")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<byte[]>("CanObjectHash");
+
                     b.Property<DateTime?>("ExpirationDate");
 
                     b.Property<string>("ExtraData")
@@ -214,8 +216,6 @@ namespace ProfileServer.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(64);
-
-                    b.Property<byte[]>("ProfileImage");
 
                     b.Property<byte[]>("PublicKey")
                         .IsRequired()

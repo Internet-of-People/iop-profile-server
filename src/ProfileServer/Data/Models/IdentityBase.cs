@@ -27,9 +27,6 @@ namespace ProfileServer.Data.Models
     /// <summary>Maximum number of bytes that identity type can occupy.</summary>
     public const int MaxProfileTypeLengthBytes = 64;
 
-    /// <summary>Maximum number of bytes that profile image can occupy.</summary>
-    public const int MaxProfileImageLengthBytes = 20 * 1024;
-
     /// <summary>Maximum number of bytes that thumbnail image can occupy.</summary>
     public const int MaxThumbnailImageLengthBytes = 5 * 1024;
 
@@ -105,70 +102,38 @@ namespace ProfileServer.Data.Models
     [MaxLength(200)]
     public string ExtraData { get; set; }
 
+
     /// <summary>
-    /// Expiration date after which this whole record can be deleted.
+    /// Expiration date after which this whole record can be deleted. 
+    /// It is used only in HostedIdentity class.
     /// 
     /// <para>
-    /// In the HostedIdentityRepository, this is used when the profile server clients change their profile server
-    /// and the server holds the redirection information to their new hosting server. The redirect is maintained 
-    /// only until the expiration date.
+    /// This is used when the profile server clients change their profile server and the server holds 
+    /// the redirection information to their new hosting server. The redirect is maintained only until 
+    /// the expiration date.
     /// </para>
     /// 
     /// <para>
-    /// In the HostedIdentityRepository, if ExpirationDate is null, the identity's contract is valid. 
-    /// If it is not null, it has been cancelled.
+    /// If ExpirationDate is null, the identity's contract is valid. If it is not null, it has been cancelled.
     /// </para>
     /// 
-    /// <para>
-    /// In the NeighborIdentityRepository, ExpirationDate is not used. Instead, Neighbor.LastRefreshTime is used 
-    /// to track when the identities shared by a neighbor should expire.
-    /// </para>
     /// </summary>
-    /// <remarks>This is index in HostedIdentityRepository - see ProfileServer.Data.Context.OnModelCreating.</remarks>
+    /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
     public DateTime? ExpirationDate { get; set; }
 
 
-
-
-    // Profile images are stored on the disk and it can rarely happen that these images 
-    // are not deleted with the identity record that used them. If this is a problem, 
-    // we should implement a garbage collector for these files, which would first create 
-    // a snapshot of all image files in the images folder and then get the list of images 
-    // of all identities in the database. Image files that are not referenced from database 
-    // can be deleted. This is not implemented at this moment. An alternative solution to that 
-    // garbage collector approach would be to ensure deletion of the images. However, 
-    // the additional complexity would probably not justify the rare frequency of occurance
-    // of this problem.
-
-    /// <summary>SHA256 hash of profile image data, which is stored on disk, or null if the identity has no profile image.</summary>
-    public byte[] ProfileImage { get; set; }
 
     /// <summary>SHA256 hash of thumbnail image data, which is stored on disk, or null if the identity has no thumbnail image.</summary>
     public byte[] ThumbnailImage { get; set; }
 
 
 
-    /// <summary>Profile image binary data that are not stored into database.</summary>
-    private byte[] profileImageData { get; set; }
-    
+   
     /// <summary>Thumbnail image binary data that are not stored into database.</summary>
     private byte[] thumbnailImageData { get; set; }
 
 
 
-
-    /// <summary>
-    /// Loads profile image data to profileImageData field.
-    /// </summary>
-    /// <returns>true if the function succeeds, false otherwise.</returns>
-    public async Task<bool> LoadProfileImageDataAsync()
-    {
-      if (ProfileImage == null)
-        return false;
-
-      profileImageData = await ImageManager.GetImageDataAsync(ProfileImage);
-      return profileImageData != null;
-    }
 
     /// <summary>
     /// Loads thumbnail image data to thumbnailImageData field.
@@ -184,24 +149,7 @@ namespace ProfileServer.Data.Models
     }
 
 
-    /// <summary>
-    /// Returns profile image data if it exists. If it is not loaded, the data is loaded from disk.
-    /// </summary>
-    /// <returns>Profile image data if it exists, or null if the identity has no profile image set.</returns>
-    public async Task<byte[]> GetProfileImageDataAsync()
-    {
-      // If no profile image is set for the identity, return null.
-      if (ProfileImage == null)
-        return null;
 
-      // If the image data is loaded, return it.
-      if (profileImageData != null)
-        return profileImageData;
-
-      // Otherwise load the image data and return it.
-      await LoadProfileImageDataAsync();
-      return profileImageData;
-    }
 
 
     /// <summary>
@@ -221,21 +169,6 @@ namespace ProfileServer.Data.Models
       // Otherwise load the image data and return it.
       await LoadThumbnailImageDataAsync();
       return thumbnailImageData;
-    }
-
-
-    /// <summary>
-    /// Sets and saves profile image data to a file provided.
-    /// </summary>
-    /// <param name="Data">Binary image data to set and save.</param>
-    /// <returns>true if the function succeeds, false otherwise.</returns>
-    public async Task<bool> SaveProfileImageDataAsync(byte[] Data)
-    {
-      if (ProfileImage == null)
-        return false;
-
-      profileImageData = Data;
-      return await ImageManager.SaveImageDataAsync(ProfileImage, profileImageData);
     }
 
 

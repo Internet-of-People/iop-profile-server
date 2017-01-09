@@ -9,6 +9,8 @@ using System.Net;
 using System.IO;
 using ProfileServer.Network;
 using ProfileServer.Utils;
+using System.Globalization;
+using ProfileServerProtocol.Multiformats;
 
 namespace ProfileServer.Config
 {
@@ -96,6 +98,9 @@ namespace ProfileServer.Config
     /// <summary>End point of the Location Based Network server.</summary>
     public IPEndPoint LbnEndPoint;
 
+    /// <summary>End point of the Content Address Network server.</summary>
+    public IPEndPoint CanEndPoint;
+
     /// <summary>Cryptographic keys of the node that can be used for signing messages and verifying signatures.</summary>
     public KeysEd25519 Keys;
 
@@ -114,6 +119,16 @@ namespace ProfileServer.Config
 
     /// <summary>Maximum number of follower servers the profile server is willing to share its database with.</summary>
     public int MaxFollowerServersCount;
+
+
+    /// <summary>Last sequence number used for IPNS record.</summary>
+    public UInt64 CanIpnsLastSequenceNumber;
+
+    /// <summary>CAN hash of profile server's contact information object in CAN.</summary>
+    public byte[] CanProfileServerContactInformationHash;
+
+    /// <summary>True if the profile server's contact information loaded from the database differs from the one loaded from the configuration file.</summary>
+    public bool CanProfileServerContactInformationChanged;
 
 
     public override bool Init()
@@ -205,7 +220,9 @@ namespace ProfileServer.Config
         int maxIdentityRelations = 0;
         int neighborhoodInitializationParallelism = 0;
         int lbnPort = 0;
+        int canPort = 0;
         IPEndPoint lbnEndPoint = null;
+        IPEndPoint canEndPoint = null;
         int neighborProfilesExpirationTimeSeconds = 0;
         int followerRefreshTimeSeconds = 0;
         int maxNeighborhoodSize = 0;
@@ -230,6 +247,7 @@ namespace ProfileServer.Config
           { "max_identity_relations",                  ConfigValueType.Int            },
           { "neighborhood_initialization_parallelism", ConfigValueType.Int            },
           { "lbn_port",                                ConfigValueType.Port           },
+          { "can_api_port",                            ConfigValueType.Port           },
           { "neighbor_profiles_expiration_time",       ConfigValueType.Int            },
           { "max_neighborhood_size",                   ConfigValueType.Int            },
           { "max_follower_servers_count",              ConfigValueType.Int            },
@@ -255,6 +273,7 @@ namespace ProfileServer.Config
           neighborhoodInitializationParallelism = (int)nameVal["neighborhood_initialization_parallelism"];
 
           lbnPort = (int)nameVal["lbn_port"];
+          canPort = (int)nameVal["can_api_port"];
 
           neighborProfilesExpirationTimeSeconds = (int)nameVal["neighbor_profiles_expiration_time"];
           followerRefreshTimeSeconds = (int)nameVal["follower_refresh_time"];
@@ -263,7 +282,7 @@ namespace ProfileServer.Config
           maxFollowerServersCount = (int)nameVal["max_follower_servers_count"];
 
 
-          serverRoles = new ServerRolesConfig();
+          serverRoles = new ServerRolesConfig();          
           error = !(serverRoles.AddRoleServer(primaryInterfacePort, ServerRole.Primary)
                  && serverRoles.AddRoleServer(serverNeighborInterfacePort, ServerRole.ServerNeighbor)
                  && serverRoles.AddRoleServer(clientNonCustomerInterfacePort, ServerRole.ClientNonCustomer)
@@ -387,6 +406,28 @@ namespace ProfileServer.Config
 
         if (!error)
         {
+          foreach (RoleServerConfiguration rsc in serverRoles.RoleServers.Values)
+          {
+            if (canPort == rsc.Port)
+            {
+              log.Error("can_api_port {0} collides with port of server role {1}.", canPort, rsc.Roles);
+              error = true;
+              break;
+            }
+          }
+
+          if (canPort == lbnPort)
+          {
+            log.Error("can_api_port {0} collides with lbn_port.", canPort);
+            error = true;
+          }
+
+          if (!error)
+            canEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), canPort);
+        }
+
+        if (!error)
+        {
           if (!testModeEnabled && (neighborProfilesExpirationTimeSeconds < Neighbor.MinNeighborhoodExpirationTimeSeconds))
           {
             log.Error("neighbor_profiles_expiration_time must be an integer number greater or equal to {0}.", Neighbor.MinNeighborhoodExpirationTimeSeconds);
@@ -435,6 +476,7 @@ namespace ProfileServer.Config
           MaxIdenityRelations = maxIdentityRelations;
           NeighborhoodInitializationParallelism = neighborhoodInitializationParallelism;
           LbnEndPoint = lbnEndPoint;
+          CanEndPoint = canEndPoint;
           NeighborProfilesExpirationTimeSeconds = neighborProfilesExpirationTimeSeconds;
           FollowerRefreshTimeSeconds = followerRefreshTimeSeconds;
           MaxNeighborhoodSize = maxNeighborhoodSize;
@@ -609,46 +651,122 @@ namespace ProfileServer.Config
 
       bool res = false;
 
+      CanIpnsLastSequenceNumber = 0;
+      CanProfileServerContactInformationChanged = false;
+
       using (UnitOfWork unitOfWork = new UnitOfWork())
       {
         log.Trace("Loading database settings.");
-        Setting privateKeyHex = unitOfWork.SettingsRepository.Get(s => s.Name == "PrivateKeyHex").FirstOrDefault();
-        Setting publicKeyHex = unitOfWork.SettingsRepository.Get(s => s.Name == "PublicKeyHex").FirstOrDefault();
-        Setting expandedPrivateKeyHex = unitOfWork.SettingsRepository.Get(s => s.Name == "ExpandedPrivateKeyHex").FirstOrDefault();
-
-        if ((privateKeyHex != null) && (!string.IsNullOrEmpty(privateKeyHex.Value))
-          && (publicKeyHex != null) && (!string.IsNullOrEmpty(publicKeyHex.Value))
-          && (expandedPrivateKeyHex != null) && (!string.IsNullOrEmpty(expandedPrivateKeyHex.Value)))
+        Setting initialized = unitOfWork.SettingsRepository.Get(s => s.Name == "Initialized").FirstOrDefault();
+        if ((initialized != null) && (!string.IsNullOrEmpty(initialized.Value)) && (initialized.Value == "true"))
         {
-          Keys = new KeysEd25519();
-          Keys.PrivateKeyHex = privateKeyHex.Value;
-          Keys.PrivateKey = Crypto.FromHex(Keys.PrivateKeyHex);
+          Setting privateKeyHex = unitOfWork.SettingsRepository.Get(s => s.Name == "PrivateKeyHex").FirstOrDefault();
+          Setting publicKeyHex = unitOfWork.SettingsRepository.Get(s => s.Name == "PublicKeyHex").FirstOrDefault();
+          Setting expandedPrivateKeyHex = unitOfWork.SettingsRepository.Get(s => s.Name == "ExpandedPrivateKeyHex").FirstOrDefault();
+          Setting networkInterface = unitOfWork.SettingsRepository.Get(s => s.Name == "NetworkInterface").FirstOrDefault();
+          Setting primaryPort = unitOfWork.SettingsRepository.Get(s => s.Name == "PrimaryPort").FirstOrDefault();
+          Setting canIpnsLastSequenceNumber = unitOfWork.SettingsRepository.Get(s => s.Name == "CanIpnsLastSequenceNumber").FirstOrDefault();
+          Setting canProfileServerContactInformationHash = unitOfWork.SettingsRepository.Get(s => s.Name == "CanProfileServerContactInformationHash").FirstOrDefault();
 
-          Keys.PublicKeyHex = publicKeyHex.Value;
-          Keys.PublicKey = Crypto.FromHex(Keys.PublicKeyHex);
+          if ((privateKeyHex != null) && (!string.IsNullOrEmpty(privateKeyHex.Value))
+            && (publicKeyHex != null) && (!string.IsNullOrEmpty(publicKeyHex.Value))
+            && (expandedPrivateKeyHex != null) && (!string.IsNullOrEmpty(expandedPrivateKeyHex.Value))
+            && (primaryPort != null)
+            && (networkInterface != null) && (!string.IsNullOrEmpty(networkInterface.Value))
+            && (canIpnsLastSequenceNumber != null)
+            && (canProfileServerContactInformationHash != null) && (!string.IsNullOrEmpty(canProfileServerContactInformationHash.Value)))
+          {
+            Keys = new KeysEd25519();
+            Keys.PrivateKeyHex = privateKeyHex.Value;
+            Keys.PrivateKey = Crypto.FromHex(Keys.PrivateKeyHex);
 
-          Keys.ExpandedPrivateKeyHex = expandedPrivateKeyHex.Value;
-          Keys.ExpandedPrivateKey = Crypto.FromHex(Keys.ExpandedPrivateKeyHex);
+            Keys.PublicKeyHex = publicKeyHex.Value;
+            Keys.PublicKey = Crypto.FromHex(Keys.PublicKeyHex);
 
-          res = true;
+            Keys.ExpandedPrivateKeyHex = expandedPrivateKeyHex.Value;
+            Keys.ExpandedPrivateKey = Crypto.FromHex(Keys.ExpandedPrivateKeyHex);
+
+            bool error = false; 
+            if (!UInt64.TryParse(canIpnsLastSequenceNumber.Value, out CanIpnsLastSequenceNumber))
+            {
+              log.Error("Invalid CanIpnsLastSequenceNumber value '{0}' in the database.", canIpnsLastSequenceNumber.Value);
+              error = true;
+            }
+
+            if (!error)
+            {
+              CanProfileServerContactInformationHash = Base58Encoding.Encoder.DecodeRaw(canProfileServerContactInformationHash.Value);
+              if (CanProfileServerContactInformationHash == null)
+              {
+                log.Error("Invalid CanProfileServerContactInformationHash value '{0}' in the database.", canProfileServerContactInformationHash.Value);
+                error = true;
+              }
+            }
+
+            if (!error)
+            {
+              // Database settings contain information on previous network interface and primary port values.
+              // If they are different to what was found in the configuration file, it means the contact 
+              // information of the profile server changed. Such a change must be propagated to profile server's 
+              // CAN records.
+              string configNetworkInterface = ServerInterface.ToString();
+              if (configNetworkInterface != networkInterface.Value)
+              {
+                log.Info("Network interface address in configuration file is different from the database value.");
+
+                CanProfileServerContactInformationChanged = true;
+              }
+
+              string configPrimaryPort = ServerRoles.GetRolePort(ServerRole.Primary).ToString();
+              if (configPrimaryPort != primaryPort.Value)
+              {
+                log.Info("Primary port in configuration file is different from the database value.");
+
+                CanProfileServerContactInformationChanged = true;
+              }
+            }
+
+            res = !error;
+          }
+          else log.Error("Database settings are corrupted, DB has to be reinitialized.");
         }
-        else
+
+        if (!res)
         {
           log.Info("Database settings are not initialized, initializing now ...");
+
+          unitOfWork.SettingsRepository.Clear();
+          unitOfWork.Save();
 
           Keys = Ed25519.GenerateKeys();
 
           Setting privateKey = new Setting("PrivateKeyHex", Keys.PrivateKeyHex);
-          Setting publicKey = new Setting("PublicKeyHex", Keys.PublicKeyHex);
-          Setting expandedPrivateKey = new Setting("ExpandedPrivateKeyHex", Keys.ExpandedPrivateKeyHex);
-
           unitOfWork.SettingsRepository.Insert(privateKey);
+
+          Setting publicKey = new Setting("PublicKeyHex", Keys.PublicKeyHex);
           unitOfWork.SettingsRepository.Insert(publicKey);
+
+          Setting expandedPrivateKey = new Setting("ExpandedPrivateKeyHex", Keys.ExpandedPrivateKeyHex);
           unitOfWork.SettingsRepository.Insert(expandedPrivateKey);
+
+          Setting networkInterface = new Setting("NetworkInterface", ServerInterface.ToString());
+          unitOfWork.SettingsRepository.Insert(networkInterface);
+
+          Setting primaryPort = new Setting("PrimaryPort", ServerRoles.GetRolePort(ServerRole.Primary).ToString());
+          unitOfWork.SettingsRepository.Insert(primaryPort);
+
+          Setting canIpnsLastSequenceNumber = new Setting("CanIpnsLastSequenceNumber", "0");
+          unitOfWork.SettingsRepository.Insert(canIpnsLastSequenceNumber);
+
+          initialized = new Setting("Initialized", "true");
+          unitOfWork.SettingsRepository.Insert(initialized);
+
 
           if (unitOfWork.Save())
           {
             log.Info("Database initialized successfully.");
+
+            CanProfileServerContactInformationChanged = true;
             res = true;
           }
           else log.Error("Unable to save settings to DB.");
@@ -659,6 +777,8 @@ namespace ProfileServer.Config
       {
         log.Debug("Server public key hex is '{0}'.", Keys.PublicKeyHex);
         log.Debug("Server network ID is '{0}'.", Crypto.Sha256(Keys.PublicKey).ToHex());
+        log.Debug("Server network ID in CAN endoing is '{0}'.", Network.CAN.CanApi.PublicKeyToId(Keys.PublicKey).ToBase58());
+        log.Debug("Server primary interface is '{0}:{1}'.", ServerInterface, ServerRoles.GetRolePort(ServerRole.Primary));
       }
 
       log.Trace("(-):{0}", res);

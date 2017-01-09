@@ -62,7 +62,7 @@ to initialize the Profile Server's database.
 ### Generate TLS Certificate
 You will need to generate a TLS certificate and then modify the configuration file.
 
-To generate PFX certificate, you can use OpenSSL:
+To generate PFX certificate, you can use OpenSSL as follows. Make sure that the final certificate is NOT password protected.
 ```
 openssl req -x509 -newkey rsa:4096 -keyout ProfileServer.key -out ProfileServer.cer -days 365000
 openssl pkcs12 -export -out ProfileServer.pfx -inkey ProfileServer.key -in ProfileServer.cer
@@ -84,7 +84,7 @@ server_interface = 198.51.100.53
 
 ### Add Logging Configuration
 
-Copy logging configuration file `$InstDir\src\ProfileServer\ProfileServer.conf` to your `$BinDir`.
+Copy logging configuration file `$InstDir\src\ProfileServer\Nlog.conf` to your `$BinDir`.
 
 
 

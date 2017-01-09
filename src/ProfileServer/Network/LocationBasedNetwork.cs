@@ -779,7 +779,7 @@ namespace ProfileServer.Network
             LocationLongitude = location.Longitude,
             LastRefreshTime = null
           };
-          UnitOfWork.NeighborRepository.Insert(neighbor);
+          await UnitOfWork.NeighborRepository.InsertAsync(neighbor);
           res.NeighborhoodSize++;
 
           // This action will cause our profile server to contact the new neighbor server and ask it to share its profile database,
@@ -796,7 +796,7 @@ namespace ProfileServer.Network
             TargetIdentityId = null,
             AdditionalData = null,            
           };
-          UnitOfWork.NeighborhoodActionRepository.Insert(action);
+          await UnitOfWork.NeighborhoodActionRepository.InsertAsync(action);
 
           res.SignalActionProcessor = true;
           res.SaveDb = true;
@@ -933,7 +933,7 @@ namespace ProfileServer.Network
                         TargetIdentityId = null,
                         AdditionalData = null
                       };
-                      unitOfWork.NeighborhoodActionRepository.Insert(action);
+                      await unitOfWork.NeighborhoodActionRepository.InsertAsync(action);
 
                       signalActionProcessor = true;
                       saveDb = true;

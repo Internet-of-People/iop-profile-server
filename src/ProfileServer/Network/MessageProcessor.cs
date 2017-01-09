@@ -16,6 +16,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using ProfileServer.Network.CAN;
 
 namespace ProfileServer.Network
 {
@@ -205,6 +206,14 @@ namespace ProfileServer.Network
 
                       case ConversationRequest.RequestTypeOneofCase.StopNeighborhoodUpdates:
                         responseMessage = await ProcessMessageStopNeighborhoodUpdatesRequest(Client, IncomingMessage);
+                        break;
+
+                      case ConversationRequest.RequestTypeOneofCase.CanStoreData:
+                        responseMessage = await ProcessMessageCanStoreDataRequest(Client, IncomingMessage);
+                        break;
+
+                      case ConversationRequest.RequestTypeOneofCase.CanPublishIpnsRecord:
+                        responseMessage = await ProcessMessageCanPublishIpnsRecordRequest(Client, IncomingMessage);
                         break;
 
                       default:
@@ -833,7 +842,7 @@ namespace ProfileServer.Network
                 identity.ExtraData = "";
                 identity.ExpirationDate = null;
 
-                if (existingIdentity == null) unitOfWork.HostedIdentityRepository.Insert(identity);
+                if (existingIdentity == null) await unitOfWork.HostedIdentityRepository.InsertAsync(identity);
                 else unitOfWork.HostedIdentityRepository.Update(identity);
 
                 await unitOfWork.SaveThrowAsync();
@@ -1292,7 +1301,7 @@ namespace ProfileServer.Network
 
           // Profile image must be PNG or JPEG image, no bigger than Identity.MaxProfileImageLengthBytes.
           bool eraseImage = image.Length == 0;
-          bool imageValid = (image.Length <= IdentityBase.MaxProfileImageLengthBytes) && (eraseImage || ImageManager.ValidateImageFormat(image));
+          bool imageValid = (image.Length <= HostedIdentity.MaxProfileImageLengthBytes) && (eraseImage || ImageManager.ValidateImageFormat(image));
           if (!imageValid)
           {
             log.Debug("Invalid image.");
@@ -2360,7 +2369,7 @@ namespace ProfileServer.Network
                 RelatedIdentity existingRelation = (await unitOfWork.RelatedIdentityRepository.GetAsync(ri => (ri.IdentityId == Client.IdentityId) && (ri.ApplicationId == applicationId))).FirstOrDefault();
                 if (existingRelation == null)
                 {
-                  unitOfWork.RelatedIdentityRepository.Insert(newRelation);
+                  await unitOfWork.RelatedIdentityRepository.InsertAsync(newRelation);
                   await unitOfWork.SaveThrowAsync();
                   transaction.Commit();
                   success = true;
@@ -2737,7 +2746,7 @@ namespace ProfileServer.Network
             Type = ActionType,
             AdditionalData = AdditionalData
           };
-          UnitOfWork.NeighborhoodActionRepository.Insert(neighborhoodAction);
+          await UnitOfWork.NeighborhoodActionRepository.InsertAsync(neighborhoodAction);
 
           res = true;
           log.Trace("Add profile action with identity ID '{0}' added for follower ID '{1}'.", IdentityId.ToHex(), follower.FollowerId.ToHex());
@@ -2820,7 +2829,7 @@ namespace ProfileServer.Network
                         LastRefreshTime = null
                       };
 
-                      unitOfWork.FollowerRepository.Insert(follower);
+                      await unitOfWork.FollowerRepository.InsertAsync(follower);
                       await unitOfWork.SaveThrowAsync();
                       transaction.Commit();
                       success = true;
@@ -2958,7 +2967,7 @@ namespace ProfileServer.Network
           // This will cause other actions to this follower to be postponed for 20 minutes from now.
           ExecuteAfter = DateTime.UtcNow.AddMinutes(20)
         };
-        UnitOfWork.NeighborhoodActionRepository.Insert(action);
+        await UnitOfWork.NeighborhoodActionRepository.InsertAsync(action);
         await UnitOfWork.SaveThrowAsync();
         res = action.Id;
       }
@@ -3401,14 +3410,13 @@ namespace ProfileServer.Network
                 InitialLocationLatitude = location.Latitude,
                 InitialLocationLongitude = location.Longitude,
                 ExtraData = addItem.ExtraData,
-                ProfileImage = null,
                 ThumbnailImage = ItemImageHash,
                 ExpirationDate = null
               };
 
               res.ItemImageUsed = ItemImageHash != null;
 
-              UnitOfWork.NeighborIdentityRepository.Insert(newIdentity);
+              await UnitOfWork.NeighborIdentityRepository.InsertAsync(newIdentity);
               res.SaveDb = true;
             }
             else
@@ -4050,6 +4058,207 @@ namespace ProfileServer.Network
 
       log.Trace("(-):{0}", res);
       return res;
-    }    
+    }
+
+
+    /// <summary>
+    /// Processes CanStoreDataRequest message from client.
+    /// <para>Uploads client's data object to CAN and returns CAN hash of it.</para>
+    /// </summary>
+    /// <param name="Client">Client that sent the request.</param>
+    /// <param name="RequestMessage">Full request message.</param>
+    /// <returns>Response message to be sent to the client.</returns>
+    public async Task<Message> ProcessMessageCanStoreDataRequest(IncomingClient Client, Message RequestMessage)
+    {
+      log.Trace("()");
+
+      Message res = null;
+      if (!CheckSessionConditions(Client, RequestMessage, ServerRole.ClientCustomer, ClientConversationStatus.Authenticated, out res))
+      {
+        log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+        return res;
+      }
+
+      MessageBuilder messageBuilder = Client.MessageBuilder;
+      CanStoreDataRequest canStoreDataRequest = RequestMessage.Request.ConversationRequest.CanStoreData;
+
+      // First check whether the new object is valid.
+      CanIdentityData identityData = canStoreDataRequest.Data;
+      bool uploadNew = identityData != null;
+      if (uploadNew)
+      {
+        byte[] claimedServerId = identityData.HostingServerId.ToByteArray();
+        byte[] realServerId = serverComponent.ServerId;
+
+        if (!StructuralEqualityComparer<byte[]>.Default.Equals(claimedServerId, realServerId))
+        {
+          log.Debug("Identity data object from client contains invalid hostingServerId.");
+          res = messageBuilder.CreateErrorInvalidValueResponse(RequestMessage, "data.hostingServerId");
+        }
+      }
+
+      using (UnitOfWork unitOfWork = new UnitOfWork())
+      {
+        CanApi canApi = (CanApi)Base.ComponentDictionary["Network.ContentAddressNetwork.CanApi"];
+        
+        // Then delete old object if there is any.
+        if (res == null)
+        {
+          res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
+
+          byte[] canOldObjectHash = await unitOfWork.HostedIdentityRepository.GetCanObjectHashAsync(Client.IdentityId);
+          bool deleteOldObjectFromDb = false;
+          if (canOldObjectHash != null)
+          {
+            string objectPath = CanApi.CreateIpfsPathFromHash(canOldObjectHash);
+
+            CanDeleteResult cres = await canApi.CanDeleteObject(objectPath);
+            if (cres.Success)
+            {
+              log.Debug("Old CAN object hash '{0}' of client identity ID '{1}' deleted.", Base.Configuration.CanProfileServerContactInformationHash.ToBase58(), Client.IdentityId.ToHex());
+              deleteOldObjectFromDb = true;
+            }
+            else
+            {
+              log.Warn("Failed to delete old CAN object hash '{0}', error message '{1}'.", Base.Configuration.CanProfileServerContactInformationHash.ToBase58(), cres.Message);
+              res = messageBuilder.CreateErrorRejectedResponse(RequestMessage, cres.Message);
+            }
+          }
+          else res = null;
+
+          if (deleteOldObjectFromDb)
+          {
+            // Object was successfully deleted from CAN, remove it from DB.
+            if (await unitOfWork.HostedIdentityRepository.SetCanObjectHashAsync(unitOfWork, Client.IdentityId, null))
+            {
+              log.Debug("Old CAN object of client identity ID '{0}' has been deleted from database.", Client.IdentityId.ToHex());
+              res = null;
+            }
+          }
+        }
+
+        if (res == null)
+        {
+          res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
+
+          // Now upload the new object if any.
+          if (uploadNew)
+          {
+            byte[] canObject = identityData.ToByteArray();
+            CanUploadResult cres = await canApi.CanUploadObject(canObject);
+            if (cres.Success)
+            {
+              byte[] canHash = cres.Hash;
+              log.Info("New CAN object hash '{0}' added for client identity ID '{1}'.", canHash.ToBase58(), Client.IdentityId.ToHex());
+
+              if (await unitOfWork.HostedIdentityRepository.SetCanObjectHashAsync(unitOfWork, Client.IdentityId, canHash))
+              {
+                res = messageBuilder.CreateCanStoreDataResponse(RequestMessage, canHash);
+              }
+              else
+              {
+                // Unable to save the new can hash to DB, so delete the object from CAN as well.
+                string objectPath = CanApi.CreateIpfsPathFromHash(canHash);
+                CanDeleteResult delRes = await canApi.CanDeleteObject(objectPath);
+                if (delRes.Success) log.Debug("CAN object hash '{0}' deleted.", canHash.ToBase58());
+                else log.Debug("Failed to delete CAN object hash '{0}'.", canHash.ToBase58());
+              }
+            }
+            else
+            {
+              res = messageBuilder.CreateErrorRejectedResponse(RequestMessage, cres.Message);
+            }
+          }
+          else
+          {
+            log.Debug("No new object to upload.");
+            res = messageBuilder.CreateCanStoreDataResponse(RequestMessage, null);
+          }
+        }
+      }
+
+      log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+      return res;
+    }
+
+
+
+    /// <summary>
+    /// Processes CanPublishIpnsRecordRequest message from client.
+    /// <para>Uploads client's IPNS record to CAN.</para>
+    /// </summary>
+    /// <param name="Client">Client that sent the request.</param>
+    /// <param name="RequestMessage">Full request message.</param>
+    /// <returns>Response message to be sent to the client.</returns>
+    public async Task<Message> ProcessMessageCanPublishIpnsRecordRequest(IncomingClient Client, Message RequestMessage)
+    {
+      log.Trace("()");
+
+      Message res = null;
+      if (!CheckSessionConditions(Client, RequestMessage, ServerRole.ClientCustomer, ClientConversationStatus.Authenticated, out res))
+      {
+        log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+        return res;
+      }
+
+      MessageBuilder messageBuilder = Client.MessageBuilder;
+      CanPublishIpnsRecordRequest canPublishIpnsRecordRequest = RequestMessage.Request.ConversationRequest.CanPublishIpnsRecord;
+
+      if (canPublishIpnsRecordRequest.Record == null)
+        res = messageBuilder.CreateErrorInvalidValueResponse(RequestMessage, "record");
+
+      if (res == null)
+      {
+        using (UnitOfWork unitOfWork = new UnitOfWork())
+        {
+          HostedIdentity identity = await unitOfWork.HostedIdentityRepository.GetHostedIdentityByIdAsync(Client.IdentityId);
+          if (identity != null)
+          {
+            byte[] canObjectHash = identity.CanObjectHash;
+            if (canObjectHash != null)
+            {
+              string objectPath = CanApi.CreateIpfsPathFromHash(Base.Configuration.CanProfileServerContactInformationHash);
+              try
+              {
+                string value = Encoding.UTF8.GetString(canPublishIpnsRecordRequest.Record.Value.ToByteArray());
+                if (value != objectPath)
+                {
+                  log.Trace("IPNS record value does not point to the path of the identity client ID '{0}' CAN object.", Client.IdentityId.ToHex());
+                  res = messageBuilder.CreateErrorInvalidValueResponse(RequestMessage, "record.value");
+                }
+              }
+              catch
+              {
+                log.Trace("IPNS record value does not contain a valid CAN object path.");
+                res = messageBuilder.CreateErrorInvalidValueResponse(RequestMessage, "record.value");
+              }
+            }
+            else
+            {
+              log.Trace("Identity client ID '{0}' has no CAN object.", Client.IdentityId.ToHex());
+              res = messageBuilder.CreateErrorNotFoundResponse(RequestMessage);
+            }
+
+#warning TODO: Check that canPublishIpnsRecordRequest.Record.Validity does not exceed the identity's hosting plan expiration time. This will be possible once we implement hosting contracts.
+          }
+          else
+          {
+            log.Error("Identity ID '{0}' not found.", Client.IdentityId.ToHex());
+            res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
+          }
+        }
+      }
+
+      if (res == null)
+      {
+        CanApi canApi = (CanApi)Base.ComponentDictionary["Network.ContentAddressNetwork.CanApi"];
+        CanRefreshIpnsResult cres = await canApi.RefreshIpnsRecord(canPublishIpnsRecordRequest.Record, Client.PublicKey);
+        if (cres.Success) res = messageBuilder.CreateCanPublishIpnsRecordResponse(RequestMessage);
+        else res = messageBuilder.CreateErrorRejectedResponse(RequestMessage, cres.Message);
+      }
+
+      log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+      return res;
+    }
   }
 }

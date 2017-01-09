@@ -89,7 +89,7 @@ namespace ProfileServer.Network
 
 
 
-    /// <summary>Event that is set when maintenanceThread is not running.</summary>
+    /// <summary>Event that is set when executiveThread is not running.</summary>
     private ManualResetEvent executiveThreadFinished = new ManualResetEvent(true);
 
     /// <summary>Thread that is waiting for signals to perform checks.</summary>
