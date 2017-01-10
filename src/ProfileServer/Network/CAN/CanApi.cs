@@ -74,7 +74,7 @@ namespace ProfileServer.Network.CAN
     /// <param name="FileToUploadParamName">Name of the file parameter, or null if no file is being uploaded.</param>
     /// <param name="FileToUploadName">Name of the file being uploaded, or null if no file is being uploaded.</param>
     /// <param name="FileToUploadData">Binary data of the file being uploaded, or null if no file is being uploaded.</param>
-    /// <returns></returns>
+    /// <returns>Structure describing whether the function succeeded and response provided by CAN server.</returns>
     private async Task<CanApiResult> SendRequest(string Action, NameValueCollection Params, string FileToUploadParamName = null, string FileToUploadName = null, byte[] FileToUploadData = null)
     {
       log.Trace("(Action:'{0}',FileToUploadParamName:'{1}')", Action, FileToUploadParamName);
@@ -108,25 +108,35 @@ namespace ProfileServer.Network.CAN
               content.Add(fileContent, FileToUploadParamName, FileToUploadName);
             }
 
-            using (HttpResponseMessage message = await client.PostAsync(url, content))
+            using (HttpResponseMessage message = await client.PostAsync(url, content, ShutdownSignaling.ShutdownCancellationTokenSource.Token))
             {
               res.Success = message.IsSuccessStatusCode;
-              string data = await message.Content.ReadAsStringAsync();
+              byte[] data = await message.Content.ReadAsByteArrayAsync();
+              string dataStr = null;
+              try
+              {
+                dataStr = Encoding.UTF8.GetString(data);
+              }
+              catch
+              {
+              }
 
               if (res.Success)
               {
                 res.Data = data;
+                res.DataStr = dataStr;
               }
               else
               {
                 try
                 {
-                  CanErrorResponse cer = JsonConvert.DeserializeObject<CanErrorResponse>(data);
+                  dataStr = Encoding.UTF8.GetString(data);
+                  CanErrorResponse cer = JsonConvert.DeserializeObject<CanErrorResponse>(dataStr);
                   res.Message = cer.Message;
                 }
                 catch
                 {
-                  res.Message = data;
+                  res.Message = dataStr != null ? dataStr : "Invalid response.";
                 }
                 res.IsCanError = true;
               }
@@ -136,10 +146,16 @@ namespace ProfileServer.Network.CAN
       }
       catch (Exception e)
       {
-        log.Warn("Exception occurred: {0}", e.ToString());
+        if (e is OperationCanceledException)
+        {
+          log.Debug("Shutdown detected.");
+          res.IsCanError = false;
+          res.Message = "Shutdown";
+        }
+        else log.Warn("Exception occurred: {0}", e.ToString());
       }
 
-      if (res.Success) log.Trace("(-):*.Success={0},*.Data:\n{1}", res.Success, res.Data != null ? res.Data.SubstrMax() : "");
+      if (res.Success) log.Trace("(-):*.Success={0},*.Data:\n{1}", res.Success, res.DataStr != null ? res.DataStr.SubstrMax() : "n/a");
       else log.Trace("(-):*.Success={0},*.IsCanError={1},*.Message:\n{2}", res.Success, res.IsCanError, res.Message != null ? res.Message.SubstrMax(512) : "");
       return res;
     }
@@ -150,7 +166,7 @@ namespace ProfileServer.Network.CAN
     /// Uploads CAN object to CAN server.
     /// </summary>
     /// <param name="ObjectData">CAN object to upload.</param>
-    /// <returns>Structure with CAN hash of the uploaded object if the the function succeeded, and error if the function fails.</returns>
+    /// <returns>Structure describing whether the function succeeded and response provided by CAN server.</returns>
     public async Task<CanUploadResult> CanUploadObject(byte[] ObjectData)
     {
       log.Trace("(ObjectData.Length:{0})", ObjectData.Length);
@@ -168,7 +184,7 @@ namespace ProfileServer.Network.CAN
     /// Deletes CAN object from CAN server.
     /// </summary>
     /// <param name="ObjectPath">CAN path to the object.</param>
-    /// <returns>true if the function succeeded, false otherwise.</returns>
+    /// <returns>Structure describing whether the function succeeded and response provided by CAN server.</returns>
     public async Task<CanDeleteResult> CanDeleteObject(string ObjectPath)
     {
       log.Trace("(ObjectPath:'{0}')", ObjectPath);
@@ -188,7 +204,7 @@ namespace ProfileServer.Network.CAN
     /// </summary>
     /// <param name="IpnsRecord">IPNS record to refresh.</param>
     /// <param name="PublicKey">Public key of the IPNS record owner.</param>
-    /// <returns>true if the function succeeds, false otherwise.</returns>
+    /// <returns>Structure describing whether the function succeeded and response provided by CAN server.</returns>
     public async Task<CanRefreshIpnsResult> RefreshIpnsRecord(CanIpnsEntry IpnsRecord, byte[] PublicKey)
     {
       log.Trace("(PublicKey:'{0}')", PublicKey.ToHex());
@@ -334,7 +350,7 @@ namespace ProfileServer.Network.CAN
         bool error = false;
         try
         {
-          CanUploadObjectResponse response = JsonConvert.DeserializeObject<CanUploadObjectResponse>(res.Data);
+          CanUploadObjectResponse response = JsonConvert.DeserializeObject<CanUploadObjectResponse>(res.DataStr);
           if (!string.IsNullOrEmpty(response.Hash))
           {
             res.Hash = Base58Encoding.Encoder.DecodeRaw(response.Hash);
@@ -396,6 +412,8 @@ namespace ProfileServer.Network.CAN
     {
     }
 
+    /// <summary>List of removed pins.</summary>
+    public string[] Pins;
 
     /// <summary>
     /// Creates a new object based on a result from CAN API including validation checks.
@@ -412,7 +430,8 @@ namespace ProfileServer.Network.CAN
         bool error = false;
         try
         {
-          CanDeleteObjectResponse response = JsonConvert.DeserializeObject<CanDeleteObjectResponse>(res.Data);
+          CanDeleteObjectResponse response = JsonConvert.DeserializeObject<CanDeleteObjectResponse>(res.DataStr);
+          res.Pins = response.Pins;
 
           // If the object was deleted previously, we might have empty Pins in response.
           // We are thus OK if we receive success response and no more validation is done.
@@ -429,6 +448,11 @@ namespace ProfileServer.Network.CAN
           res.Message = "Invalid CAN response.";
           res.IsCanError = false;
         }
+      }
+      else if (res.Message.ToLowerInvariant() == "not pinned")
+      {
+        res.Success = true;
+        res.Pins = null;
       }
 
       log.Trace("(-)");
@@ -488,7 +512,7 @@ namespace ProfileServer.Network.CAN
         bool error = false;
         try
         {
-          CanRefreshIpnsResponse response = JsonConvert.DeserializeObject<CanRefreshIpnsResponse>(res.Data);
+          CanRefreshIpnsResponse response = JsonConvert.DeserializeObject<CanRefreshIpnsResponse>(res.DataStr);
           res.Details = response;
         }
         catch (Exception e)
@@ -521,7 +545,10 @@ namespace ProfileServer.Network.CAN
     public bool Success;
 
     /// <summary>If Success is true, this contains response data.</summary>
-    public string Data;
+    public byte[] Data;
+
+    /// <summary>String representation of Data, or null if Data does not hold a string.</summary>
+    public string DataStr;
 
     /// <summary>
     /// If Success is false and IsCanError is true, this is an error message from CAN server.
@@ -539,6 +566,7 @@ namespace ProfileServer.Network.CAN
     {
       Success = false;
       Data = null;
+      DataStr = null;
       Message = "Internal error.";
       IsCanError = false;
     }
@@ -551,6 +579,7 @@ namespace ProfileServer.Network.CAN
     {
       Success = ApiResult.Success;
       Data = ApiResult.Data;
+      DataStr = ApiResult.DataStr;
       Message = ApiResult.Message;
       IsCanError = ApiResult.IsCanError;
     }

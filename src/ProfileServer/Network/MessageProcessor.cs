@@ -4115,12 +4115,12 @@ namespace ProfileServer.Network
             CanDeleteResult cres = await canApi.CanDeleteObject(objectPath);
             if (cres.Success)
             {
-              log.Debug("Old CAN object hash '{0}' of client identity ID '{1}' deleted.", Base.Configuration.CanProfileServerContactInformationHash.ToBase58(), Client.IdentityId.ToHex());
+              log.Debug("Old CAN object hash '{0}' of client identity ID '{1}' deleted.", canOldObjectHash.ToBase58(), Client.IdentityId.ToHex());
               deleteOldObjectFromDb = true;
             }
             else
             {
-              log.Warn("Failed to delete old CAN object hash '{0}', error message '{1}'.", Base.Configuration.CanProfileServerContactInformationHash.ToBase58(), cres.Message);
+              log.Warn("Failed to delete old CAN object hash '{0}', error message '{1}'.", canOldObjectHash, cres.Message);
               res = messageBuilder.CreateErrorRejectedResponse(RequestMessage, cres.Message);
             }
           }
@@ -4217,7 +4217,7 @@ namespace ProfileServer.Network
             byte[] canObjectHash = identity.CanObjectHash;
             if (canObjectHash != null)
             {
-              string objectPath = CanApi.CreateIpfsPathFromHash(Base.Configuration.CanProfileServerContactInformationHash);
+              string objectPath = CanApi.CreateIpfsPathFromHash(canObjectHash);
               try
               {
                 string value = Encoding.UTF8.GetString(canPublishIpnsRecordRequest.Record.Value.ToByteArray());

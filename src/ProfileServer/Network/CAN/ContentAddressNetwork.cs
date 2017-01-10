@@ -121,11 +121,11 @@ namespace ProfileServer.Network.CAN
 
       ShutdownSignaling.SignalShutdown();
 
-      if ((initThread != null) && !initThreadFinished.WaitOne(10000))
-        log.Error("Init thread did not terminated in 10 seconds.");
-
       if (ipnsRecordRefreshTimer != null) ipnsRecordRefreshTimer.Dispose();
       ipnsRecordRefreshTimer = null;
+
+      if ((initThread != null) && !initThreadFinished.WaitOne(10000))
+        log.Error("Init thread did not terminated in 10 seconds.");
 
       log.Info("(-)");
     }
@@ -163,7 +163,7 @@ namespace ProfileServer.Network.CAN
           unitOfWork.ReleaseLock(UnitOfWork.SettingsLock);
         }
       }
-      else log.Error("Failed to refresh profile server's IPNS record.");
+      else if (cres.Message != "Shutdown") log.Error("Failed to refresh profile server's IPNS record.");
 
       log.Trace("(-)");
     }
