@@ -284,7 +284,21 @@ namespace ProfileServerProtocolTests.Tests
 
 
 
-        Passed = step1Ok && step2Ok && step3Ok && step4Ok && step5Ok && step6Ok && step7Ok;
+        // Step 8
+        log.Trace("Step 8");
+
+        canDeleteResult = await client.CanDeleteObject(canEndPoint, objectPath1);
+        pinsOk = (canDeleteResult.Pins == null) || (canDeleteResult.Pins.Length == 0);
+        deleteOk = canDeleteResult.Success && pinsOk;
+
+        // Step 8 Acceptance
+        bool step8Ok = deleteOk;
+
+        log.Trace("Step 8: {0}", step8Ok ? "PASSED" : "FAILED");
+
+
+
+        Passed = step1Ok && step2Ok && step3Ok && step4Ok && step5Ok && step6Ok && step7Ok && step8Ok;
 
         res = true;
       }

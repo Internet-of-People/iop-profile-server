@@ -237,6 +237,7 @@ namespace ProfileServerNetworkSimulator
         config = config.Replace("$max_neighborhood_size", "105");
         config = config.Replace("$max_follower_servers_count", "200");
         config = config.Replace("$follower_refresh_time", "43200");
+        config = config.Replace("$can_api_port", "15001");
 
         File.WriteAllText(FinalConfigFile, config);
         res = true;
@@ -740,7 +741,7 @@ namespace ProfileServerNetworkSimulator
         for (int i = 0; i < lines.Length; i++)
         {
           string line = lines[i];
-          if (line.Contains("] ERROR:"))
+          if (line.Contains("] ERROR:") && (!line.Contains("Failed to refresh profile server's IPNS record")))
             errors++;
 
           if (line.Contains("] WARN:") && (!line.Contains("WARN: ProfileServer.Utils.DbLogger.Log Sensitive data logging is enabled")))
@@ -895,15 +896,11 @@ namespace ProfileServerNetworkSimulator
       res.lbnServer = new LbnServer(res);
 
       byte[] ipBytes = res.ipAddress.GetAddressBytes();
-      Iop.Locnet.Contact contact = new Iop.Locnet.Contact();
-      Iop.Locnet.IpAddress ipAddress = new Iop.Locnet.IpAddress()
+      Iop.Locnet.Contact contact = new Iop.Locnet.Contact()
       {
-        Host = ProtocolHelper.ByteArrayToByteString(ipBytes),
+        IpAddress = ProtocolHelper.ByteArrayToByteString(ipBytes),
         Port = (uint)res.primaryInterfacePort
       };
-
-      if (res.ipAddress.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork) contact.Ipv4 = ipAddress;
-      else contact.Ipv6 = ipAddress;
 
       res.nodeProfile = new Iop.Locnet.NodeProfile()
       {
