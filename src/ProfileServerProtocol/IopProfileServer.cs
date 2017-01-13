@@ -16483,7 +16483,7 @@ namespace Iop.Profileserver {
     public const int HashFieldNumber = 1;
     private pb::ByteString hash_ = pb::ByteString.Empty;
     /// <summary>
-    ///  Hash of 'CanStoreDataRequest.data' received from CAN, or empty array if 'CanStoreDataRequest.data' was null.
+    ///  Hash of 'CanStoreDataRequest.data' received from CAN in multihash binary format, or empty array if 'CanStoreDataRequest.data' was null.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public pb::ByteString Hash {
@@ -16848,7 +16848,7 @@ namespace Iop.Profileserver {
     public const int ValueFieldNumber = 1;
     private pb::ByteString value_ = pb::ByteString.Empty;
     /// <summary>
-    ///  IPFS path converted to byte array.
+    ///  IPFS path string converted to byte array. The path string has to be "/ipfs/$objectHashEncoded",
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public pb::ByteString Value {
@@ -16862,7 +16862,8 @@ namespace Iop.Profileserver {
     public const int SignatureFieldNumber = 2;
     private pb::ByteString signature_ = pb::ByteString.Empty;
     /// <summary>
-    ///  Signature of the IPNS record by its owner's private key.
+    ///  where $objectHashEncoded is base58 encoded hash of the CAN object that the client received as `CanStoreDataResponse.hash`.
+    ///  The base58 encoding must be used without the multibase prefix - for example "/ipfs/QmaRvpLT4RgBDVY6cQKwqQGQNtbM31KSqh8TxvQgFoEUus".
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public pb::ByteString Signature {
@@ -16918,7 +16919,7 @@ namespace Iop.Profileserver {
     public const int TtlFieldNumber = 6;
     private ulong ttl_;
     /// <summary>
-    ///  Time to live of the IPNS record in cache.
+    ///  Time to live of the IPNS record in cache in nanoseconds.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public ulong Ttl {
