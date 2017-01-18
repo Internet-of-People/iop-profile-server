@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using ProfileServerProtocol;
 using ProfileServer.Network;
 using ProfileServer.Utils;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace ProfileServer.Data.Repositories
 {
@@ -43,44 +44,108 @@ namespace ProfileServer.Data.Repositories
       log.Trace("(FollowerId:'{0}',ActionId:{1})", FollowerId.ToHex(), ActionId);
 
       Status res = Status.ErrorInternal;
+      bool dbSuccess = false;
       DatabaseLock[] lockObjects = new DatabaseLock[] { UnitOfWork.FollowerLock, UnitOfWork.NeighborhoodActionLock };
-      await UnitOfWork.AcquireLockAsync(lockObjects);
-      try
+      using (IDbContextTransaction transaction = await UnitOfWork.BeginTransactionWithLockAsync(lockObjects))
       {
-        Follower existingFollower = (await UnitOfWork.FollowerRepository.GetAsync(f => f.FollowerId == FollowerId)).FirstOrDefault();
-        if (existingFollower != null)
-        { 
-          UnitOfWork.FollowerRepository.Delete(existingFollower);
-
-          List<NeighborhoodAction> actions = (await UnitOfWork.NeighborhoodActionRepository.GetAsync(a => (a.ServerId == FollowerId) && (a.Id != ActionId))).ToList();
-          if (actions.Count > 0)
+        try
+        {
+          Follower existingFollower = (await UnitOfWork.FollowerRepository.GetAsync(f => f.FollowerId == FollowerId)).FirstOrDefault();
+          if (existingFollower != null)
           {
-            foreach (NeighborhoodAction action in actions)
+            UnitOfWork.FollowerRepository.Delete(existingFollower);
+
+            List<NeighborhoodAction> actions = (await UnitOfWork.NeighborhoodActionRepository.GetAsync(a => (a.ServerId == FollowerId) && (a.Id != ActionId))).ToList();
+            if (actions.Count > 0)
             {
-              if (action.IsProfileAction())
+              foreach (NeighborhoodAction action in actions)
               {
-                log.Debug("Action ID {0}, type {1}, serverId '{2}' will be removed from the database.", action.Id, action.Type, FollowerId.ToHex());
-                UnitOfWork.NeighborhoodActionRepository.Delete(action);
+                if (action.IsProfileAction())
+                {
+                  log.Debug("Action ID {0}, type {1}, serverId '{2}' will be removed from the database.", action.Id, action.Type, FollowerId.ToHex());
+                  UnitOfWork.NeighborhoodActionRepository.Delete(action);
+                }
               }
             }
+            else log.Debug("No neighborhood actions for follower ID '{0}' found.", FollowerId.ToHex());
+
+            await UnitOfWork.SaveThrowAsync();
+            transaction.Commit();
+            res = Status.Ok;
           }
-          else log.Debug("No neighborhood actions for follower ID '{0}' found.", FollowerId.ToHex());
+          else
+          {
+            log.Warn("Follower ID '{0}' not found.", FollowerId.ToHex());
+            res = Status.ErrorNotFound;
+          }
 
-          await UnitOfWork.SaveThrowAsync();
-          res = Status.Ok;
+          dbSuccess = true;
         }
-        else
+        catch (Exception e)
         {
-          log.Warn("Follower ID '{0}' not found.", FollowerId.ToHex());
-          res = Status.ErrorNotFound;
+          log.Error("Exception occurred: {0}", e.ToString());
         }
-      }
-      catch (Exception e)
-      {
-        log.Error("Exception occurred: {0}", e.ToString());
+
+
+        if (!dbSuccess)
+        {
+          log.Warn("Rolling back transaction.");
+          UnitOfWork.SafeTransactionRollback(transaction);
+        }
+
+        UnitOfWork.ReleaseLock(lockObjects);
       }
 
-      UnitOfWork.ReleaseLock(lockObjects);
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+
+
+    /// <summary>
+    /// Sets srNeighborPort of a follower to null.
+    /// </summary>
+    /// <param name="UnitOfWork">Unit of work instance.</param>
+    /// <param name="FollowerId">Identifier of the follower server.</param>
+    /// <returns>true if the function succeeds, false otherwise.</returns>
+    public async Task<bool> ResetSrNeighborPort(UnitOfWork UnitOfWork, byte[] FollowerId)
+    {
+      log.Trace("(FollowerId:'{0}')", FollowerId.ToHex());
+
+      bool res = false;
+      bool dbSuccess = false;
+      DatabaseLock lockObject = UnitOfWork.FollowerLock;
+      using (IDbContextTransaction transaction = await UnitOfWork.BeginTransactionWithLockAsync(lockObject))
+      {
+        try
+        {
+          Follower follower = (await GetAsync(f => f.FollowerId == FollowerId)).FirstOrDefault();
+          if (follower != null)
+          {
+            follower.SrNeighborPort = null;
+            Update(follower);
+
+            await UnitOfWork.SaveThrowAsync();
+            transaction.Commit();
+            res = true;
+          }
+          else log.Error("Unable to find follower ID '{0}'.", FollowerId.ToHex());
+
+          dbSuccess = true;
+        }
+        catch (Exception e)
+        {
+          log.Error("Exception occurred: {0}", e.ToString());
+        }
+
+        if (!dbSuccess)
+        {
+          log.Warn("Rolling back transaction.");
+          UnitOfWork.SafeTransactionRollback(transaction);
+        }
+
+        UnitOfWork.ReleaseLock(lockObject);
+      }
 
       log.Trace("(-):{0}", res);
       return res;

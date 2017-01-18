@@ -335,7 +335,7 @@ namespace ProfileServer.Network
                 }
                 else
                 {
-                  log.Warn("Message type of the response ID {0} does not match the message type of the request ID {1}, the connection will be closed.", IncomingMessage.Id);
+                  log.Warn("Message type of the response ID {0} does not match the message type of the request ID {1}, the connection will be closed.", IncomingMessage.Id, unfinishedRequest.RequestMessage.Id);
                   // Connection will be closed in ReceiveMessageLoop.
                 }
               }

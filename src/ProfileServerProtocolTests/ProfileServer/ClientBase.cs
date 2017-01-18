@@ -1,6 +1,4 @@
 ﻿using Iop.Profileserver;
-using ProfileServer.Kernel;
-using ProfileServer.Utils;
 using ProfileServerProtocol;
 using System;
 using System.Collections.Generic;
@@ -14,14 +12,14 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ProfileServer.Network
+namespace ProfileServerProtocolTests
 {
   /// <summary>
   /// Base class for TCP clients following IoP message protocol.
   /// </summary>
   public abstract class ClientBase : IDisposable
   {
-    protected PrefixLogger log;
+    protected NLog.Logger log;
 
     /// <summary>IP address and port of the other end point of the connection.</summary>
     private IPEndPoint remoteEndPoint;
@@ -59,28 +57,13 @@ namespace ProfileServer.Network
 
 
     /// <summary>
-    /// Initiates the instance of the TCP client using information about the targer peer it is going to connect to.
-    /// </summary>
-    /// <param name="RemoteEndPoint">End point of the target peer the client is going to connect to.</param>
-    /// <param name="UseTls">true if TLS should be used, false otherwise.</param>
-    /// <param name="IdBase">Number to start message identifier series with.</param>
-    public ClientBase(IPEndPoint RemoteEndPoint, bool UseTls, uint IdBase = 0)
-    {
-      useTls = UseTls;
-      remoteEndPoint = RemoteEndPoint;
-      messageBuilder = new MessageBuilder(IdBase, new List<SemVer>() { SemVer.V100 }, Base.Configuration.Keys);
-      tcpClient = new TcpClient();
-      tcpClient.LingerState = new LingerOption(true, 0);
-      tcpClient.NoDelay = true;
-    }
-
-    /// <summary>
     /// Initiates the instance of the TCP client from existing and already connected TcpClient.
     /// </summary>
     /// <param name="Client">TCP client that is already connected to the other peer.</param>
     /// <param name="UseTls">true if TLS should be used, false otherwise.</param>
     /// <param name="IdBase">Number to start message identifier series with.</param>
-    public ClientBase(TcpClient Client, bool UseTls, uint IdBase = 0)
+    /// <param name="Keys">Cryptographic keys of the server.</param>
+    public ClientBase(TcpClient Client, bool UseTls, uint IdBase, ProfileServerCrypto.KeysEd25519 Keys)
     {
       tcpClient = Client;
       tcpClient.LingerState = new LingerOption(true, 0);
@@ -93,7 +76,7 @@ namespace ProfileServer.Network
       if (useTls)
         stream = new SslStream(stream, false, PeerCertificateValidationCallback);
 
-      messageBuilder = new MessageBuilder(IdBase, new List<SemVer>() { SemVer.V100 }, Base.Configuration.Keys);
+      messageBuilder = new MessageBuilder(IdBase, new List<SemVer>() { SemVer.V100 }, Keys);
     }
 
 
@@ -110,7 +93,7 @@ namespace ProfileServer.Network
       bool res = false;
       try
       {
-        await TcpClient.ConnectAsync(remoteEndPoint.Address, remoteEndPoint.Port);
+        await TcpClient.ConnectAsync(RemoteEndPoint.Address, RemoteEndPoint.Port);
         stream = TcpClient.GetStream();
         if (UseTls)
         {
@@ -122,7 +105,7 @@ namespace ProfileServer.Network
       }
       catch (Exception e)
       {
-        log.Debug("Unable to connect to {0}, error exception: {1}", remoteEndPoint, e.ToString());
+        log.Debug("Unable to connect to {0}, error exception: {1}", RemoteEndPoint, e.ToString());
       }
 
 
@@ -145,7 +128,7 @@ namespace ProfileServer.Network
       {
         res = MessageWithHeader.Parser.ParseFrom(Data).Body;
         string msgStr = res.ToString();
-        log.Trace("Received message:\n{0}", msgStr.SubstrMax(512));
+        log.Trace("Received message:\n{0}", msgStr);
       }
       catch (Exception e)
       {
@@ -193,7 +176,7 @@ namespace ProfileServer.Network
       bool res = false;
 
       string msgStr = Message.ToString();
-      log.Trace("Sending message:\n{0}", msgStr.SubstrMax(512));
+      log.Trace("Sending message:\n{0}", msgStr);
       byte[] messageBytes = ProtocolHelper.GetMessageBytes(Message);
 
       await streamWriteLock.WaitAsync();
@@ -285,7 +268,7 @@ namespace ProfileServer.Network
       log.Trace("(-)");
     }
 
-    
+
     /// <summary>
     /// Closes connection if it is opened and frees used resources, assuming StreamWriteLock is acquired.
     /// </summary>
@@ -303,25 +286,6 @@ namespace ProfileServer.Network
 
       log.Trace("(-)");
     }
-
-
-    /// <summary>
-    /// Sets a new value to client's end point and allows it to connect to different end point.
-    /// </summary>
-    /// <param name="EndPoint">New target end point.</param>
-    public void SetRemoteEndPoint(IPEndPoint EndPoint)
-    {
-      log.Trace("()");
-
-      CloseConnection();
-      remoteEndPoint = EndPoint;
-      tcpClient = new TcpClient();
-      tcpClient.LingerState = new LingerOption(true, 0);
-      tcpClient.NoDelay = true;
-
-      log.Trace("(-)");
-    }
-
 
 
     /// <summary>

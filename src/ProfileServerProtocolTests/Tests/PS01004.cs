@@ -73,7 +73,7 @@ namespace ProfileServerProtocolTests.Tests
         HashSet<uint> encryptedPorts = new HashSet<uint>();
         HashSet<uint> unencryptedPorts = new HashSet<uint>();
 
-        foreach (ServerRole serverRole in responseMessage.Response.SingleResponse.ListRoles.Roles)
+        foreach (Iop.Profileserver.ServerRole serverRole in responseMessage.Response.SingleResponse.ListRoles.Roles)
         {
           switch (serverRole.Role)
           {

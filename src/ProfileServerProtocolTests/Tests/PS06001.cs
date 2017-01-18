@@ -90,12 +90,12 @@ namespace ProfileServerProtocolTests.Tests
     /// <summary>Test identities profile image file names.</summary>
     public static List<string> ProfileImages = new List<string>()
     {
-      "images/PS06001.jpg",
-      "images/PS06001.jpg",
+      Path.Combine("images", "PS06001.jpg"),
+      Path.Combine("images", "PS06001.jpg"),
       null,
-      "images/PS06001.jpg",
+      Path.Combine("images", "PS06001.jpg"),
       null,
-      "images/PS06001.jpg",
+      Path.Combine("images", "PS06001.jpg"),
       null      
     };
 

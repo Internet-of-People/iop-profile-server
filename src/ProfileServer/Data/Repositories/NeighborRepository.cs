@@ -10,6 +10,7 @@ using ProfileServerProtocol;
 using ProfileServer.Network;
 using ProfileServer.Utils;
 using ProfileServer.Kernel;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace ProfileServer.Data.Repositories
 {
@@ -154,6 +155,57 @@ namespace ProfileServer.Data.Repositories
 
         foreach (byte[] hash in imagesToDelete)
           imageManager.RemoveImageReference(hash);
+      }
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+
+
+    /// <summary>
+    /// Sets srNeighborPort of a neighbor to null.
+    /// </summary>
+    /// <param name="UnitOfWork">Unit of work instance.</param>
+    /// <param name="NeighborId">Identifier of the neighbor server.</param>
+    /// <returns>true if the function succeeds, false otherwise.</returns>
+    public async Task<bool> ResetSrNeighborPort(UnitOfWork UnitOfWork, byte[] NeighborId)
+    {
+      log.Trace("(NeighborId:'{0}')", NeighborId.ToHex());
+
+      bool res = false;
+      bool dbSuccess = false;
+      DatabaseLock lockObject = UnitOfWork.FollowerLock;
+      using (IDbContextTransaction transaction = await UnitOfWork.BeginTransactionWithLockAsync(lockObject))
+      {
+        try
+        {
+          Neighbor neighbor = (await GetAsync(f => f.NeighborId == NeighborId)).FirstOrDefault();
+          if (neighbor != null)
+          {
+            neighbor.SrNeighborPort = null;
+            Update(neighbor);
+
+            await UnitOfWork.SaveThrowAsync();
+            transaction.Commit();
+            res = true;
+          }
+          else log.Error("Unable to find follower ID '{0}'.", NeighborId.ToHex());
+
+          dbSuccess = true;
+        }
+        catch (Exception e)
+        {
+          log.Error("Exception occurred: {0}", e.ToString());
+        }
+
+        if (!dbSuccess)
+        {
+          log.Warn("Rolling back transaction.");
+          UnitOfWork.SafeTransactionRollback(transaction);
+        }
+
+        UnitOfWork.ReleaseLock(lockObject);
       }
 
       log.Trace("(-):{0}", res);

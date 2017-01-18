@@ -22,6 +22,9 @@ namespace ProfileServer.Network
   /// </summary>
   public class OutgoingClient : ClientBase, IDisposable
   {
+    /// <summary>Special value for LastResponseDetails to indicate connection failure.</summary>
+    public const string LastResponseDetailsConnectionFailed = "<ConnectionFailed>";
+
     /// <summary>Server's public key received when starting conversation.</summary>
     private byte[] serverKey;
     /// <summary>Server's public key received when starting conversation.</summary>
@@ -271,7 +274,11 @@ namespace ProfileServer.Network
       {
         res = await VerifyIdentityAsync();
       }
-      else log.Debug("Unable to connect to {0}.", RemoteEndPoint);
+      else
+      {
+        lastResponseDetails = LastResponseDetailsConnectionFailed;
+        log.Debug("Unable to connect to {0}, setting lastResponseDetails to '{1}'.", RemoteEndPoint, lastResponseDetails);
+      }
 
       log.Trace("(-):{0}", res);
       return res;

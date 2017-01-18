@@ -90,12 +90,12 @@ namespace ProfileServerProtocolTests.Tests
     /// <summary>Test identities profile image file names.</summary>
     public static List<string> ProfileImages = new List<string>()
     {
-      "images/PS08003.jpg",
-      "images/PS08003.jpg",
+      Path.Combine("images", "PS08003.jpg"),
+      Path.Combine("images", "PS08003.jpg"),
       null,
-      "images/PS08003.jpg",
+      Path.Combine("images", "PS08003.jpg"),
       null,
-      "images/PS08003.jpg",
+      Path.Combine("images", "PS08003.jpg"),
       null
     };
 
@@ -223,7 +223,7 @@ namespace ProfileServerProtocolTests.Tests
     /// Verifies contents of list of profiles sent by the profile server in an update message.
     /// </summary>
     /// <param name="ProfileList">Profile list returned by the profile server.</param>
-    /// <returns>true if the <paramref name="ItemList"/> contains all existing test profiles.</returns>
+    /// <returns>true if the <paramref name="ProfileList"/> contains all existing test profiles.</returns>
     public bool CheckProfileList(IEnumerable<SharedProfileUpdateItem> ProfileList)
     {
       log.Trace("()");

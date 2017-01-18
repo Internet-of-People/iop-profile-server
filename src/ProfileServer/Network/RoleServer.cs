@@ -407,9 +407,7 @@ namespace ProfileServer.Network
     /// Handler for each client that connects to the TCP server.
     /// </summary>
     /// <param name="Client">Client that is connected to TCP server.</param>
-    /// <remarks>The client is being handled in the processing loop until the connection to it 
-    /// is terminated by either side. This function implements reading the message from the network stream,
-    /// which includes reading the message length prefix followed by the entire message.</remarks>
+    /// <remarks>The client is being handled in the processing loop until the connection to it is terminated by either side.</remarks>
     private async void ClientHandlerAsync(IncomingClient Client)
     {
       LogDiagnosticContext.Start();
