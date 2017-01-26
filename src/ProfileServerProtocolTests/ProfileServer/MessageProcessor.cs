@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace ProfileServerProtocolTests
 {
   /// <summary>
-  /// Implements the logic behind processing incoming messages to the node.
+  /// Implements the logic behind processing incoming messages to the profile server.
   /// </summary>
   public class MessageProcessor
   {
@@ -51,8 +51,6 @@ namespace ProfileServerProtocolTests
 
       bool res = false;
       log.Debug("()");
-
-      profileServer.AddMessage(IncomingMessage, Client.ServerRole);
 
       try
       {
@@ -112,24 +110,23 @@ namespace ProfileServerProtocolTests
                       case ConversationRequest.RequestTypeOneofCase.VerifyIdentity:
                         responseMessage = ProcessMessageVerifyIdentityRequest(Client, IncomingMessage);
                         break;
-
-                        /*
+                        
                       case ConversationRequest.RequestTypeOneofCase.StartNeighborhoodInitialization:
-                        responseMessage = await ProcessMessageStartNeighborhoodInitializationRequestAsync(Client, IncomingMessage);
+                        responseMessage = ProcessMessageStartNeighborhoodInitializationRequest(Client, IncomingMessage);
                         break;
-
+                        
                       case ConversationRequest.RequestTypeOneofCase.FinishNeighborhoodInitialization:
                         responseMessage = ProcessMessageFinishNeighborhoodInitializationRequest(Client, IncomingMessage);
                         break;
-                        */
+                        
                       case ConversationRequest.RequestTypeOneofCase.NeighborhoodSharedProfileUpdate:
                         responseMessage = ProcessMessageNeighborhoodSharedProfileUpdateRequest(Client, IncomingMessage);
                         break;
-                        /*
+                        
                       case ConversationRequest.RequestTypeOneofCase.StopNeighborhoodUpdates:
-                        responseMessage = await ProcessMessageStopNeighborhoodUpdatesRequest(Client, IncomingMessage);
+                        responseMessage = ProcessMessageStopNeighborhoodUpdatesRequest(Client, IncomingMessage);
                         break;
-                        */
+                        
                       default:
                         log.Warn("Invalid request type '{0}'.", conversationRequest.RequestTypeCase);
                         // Connection will be closed in ReceiveMessageLoop.
@@ -217,13 +214,13 @@ namespace ProfileServerProtocolTests
                         ConversationRequest conversationRequest = request.ConversationRequest;
                         switch (conversationRequest.RequestTypeCase)
                         {
-                          /*case ConversationRequest.RequestTypeOneofCase.NeighborhoodSharedProfileUpdate:
-                            res = await ProcessMessageNeighborhoodSharedProfileUpdateResponseAsync(Client, IncomingMessage, unfinishedRequest);
+                          case ConversationRequest.RequestTypeOneofCase.NeighborhoodSharedProfileUpdate:
+                            res = ProcessMessageNeighborhoodSharedProfileUpdateResponse(Client, IncomingMessage, unfinishedRequest);
                             break;
-
+                            
                           case ConversationRequest.RequestTypeOneofCase.FinishNeighborhoodInitialization:
-                            res = await ProcessMessageFinishNeighborhoodInitializationResponseAsync(Client, IncomingMessage, unfinishedRequest);
-                            break;*/
+                            res = ProcessMessageFinishNeighborhoodInitializationResponse(Client, IncomingMessage, unfinishedRequest);
+                            break;
 
                           default:
                             log.Warn("Invalid type '{0}' of the corresponding request.", conversationRequest.RequestTypeCase);
@@ -273,6 +270,8 @@ namespace ProfileServerProtocolTests
         log.Debug("Connection to the client will be forcefully closed.");
         res = false;
       }
+
+      profileServer.AddMessage(IncomingMessage, Client.ServerRole, res ? Client : null);
 
       log.Debug("(-):{0}", res);
       return res;
@@ -531,174 +530,28 @@ namespace ProfileServerProtocolTests
 
 
 
-    /*
+    
     /// <summary>
     /// Processes StartNeighborhoodInitializationRequest message from client.
-    /// <para>If the server is not overloaded it accepts the neighborhood initialization request, 
-    /// adds the client to the list of server for which the profile server acts as a neighbor,
-    /// and starts sharing its profile database.</para>
     /// </summary>
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client, or null if no response is to be sent by the calling function.</returns>
-    public async Task<Message> ProcessMessageStartNeighborhoodInitializationRequestAsync(IncomingClient Client, Message RequestMessage)
+    public Message ProcessMessageStartNeighborhoodInitializationRequest(IncomingClient Client, Message RequestMessage)
     {
       log.Trace("()");
 
-      Message res = null;
-
       MessageBuilder messageBuilder = Client.MessageBuilder;
-      StartNeighborhoodInitializationRequest startNeighborhoodInitializationRequest = RequestMessage.Request.ConversationRequest.StartNeighborhoodInitialization;
-      int primaryPort = (int)startNeighborhoodInitializationRequest.PrimaryPort;
-      int srNeighborPort = (int)startNeighborhoodInitializationRequest.SrNeighborPort;
-      byte[] followerId = Client.IdentityId;
-
-      res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
-      
-      bool success = false;
-
-      NeighborhoodInitializationProcessContext nipContext = null;
-
-      bool primaryPortValid = (0 < primaryPort) && (primaryPort <= 65535);
-      bool srNeighborPortValid = (0 < srNeighborPort) && (srNeighborPort <= 65535);
-      if (primaryPortValid && srNeighborPortValid)
+      Message res = messageBuilder.CreateErrorBadRoleResponse(RequestMessage);
+      if ((Client.ServerRole != ServerRole.ServerNeighbor) && (Client.ServerRole != ServerRole.ClientNonCustomer))
       {
-        using (UnitOfWork unitOfWork = new UnitOfWork())
-        {
-          int blockActionId = await InstallInitializationProcessInProgress(unitOfWork, followerId);
-          if (blockActionId != -1)
-          {
-            DatabaseLock[] lockObjects = new DatabaseLock[] { UnitOfWork.HostedIdentityLock, UnitOfWork.FollowerLock };
-            using (IDbContextTransaction transaction = await unitOfWork.BeginTransactionWithLockAsync(lockObjects))
-            {
-              try
-              {
-                int followerCount = await unitOfWork.FollowerRepository.CountAsync();
-                if (followerCount < Base.Configuration.MaxFollowerServersCount)
-                {
-                  int neighborhoodInitializationsInProgress = await unitOfWork.FollowerRepository.CountAsync(f => f.LastRefreshTime == null);
-                  if (neighborhoodInitializationsInProgress < Base.Configuration.NeighborhoodInitializationParallelism)
-                  {
-                    Follower existingFollower = (await unitOfWork.FollowerRepository.GetAsync(f => f.FollowerId == followerId)).FirstOrDefault();
-                    if (existingFollower == null)
-                    {
-                      // Take snapshot of all our identities.
-                      byte[] invalidVersion = SemVer.Invalid.ToByteArray();
-                      List<HostedIdentity> allHostedIdentities = (await unitOfWork.HostedIdentityRepository.GetAsync(i => (i.ExpirationDate == null) && (i.Version != invalidVersion), null, true)).ToList();
-
-                      // Create new follower.
-                      Follower follower = new Follower()
-                      {
-                        FollowerId = followerId,
-                        IpAddress = Client.RemoteEndPoint.Address.ToString(),
-                        PrimaryPort = primaryPort,
-                        SrNeighborPort = srNeighborPort,
-                        LastRefreshTime = null
-                      };
-
-                      await unitOfWork.FollowerRepository.InsertAsync(follower);
-                      await unitOfWork.SaveThrowAsync();
-                      transaction.Commit();
-                      success = true;
-
-                      // Set the client to be in the middle of neighbor initialization process.
-                      Client.NeighborhoodInitializationProcessInProgress = true;
-                      nipContext = new NeighborhoodInitializationProcessContext()
-                      {
-                        HostedIdentities = allHostedIdentities,
-                        IdentitiesDone = 0
-                      };
-                    }
-                    else
-                    {
-                      log.Warn("Follower ID '{0}' already exists in the database.", followerId.ToHex());
-                      res = messageBuilder.CreateErrorAlreadyExistsResponse(RequestMessage);
-                    }
-                  }
-                  else
-                  {
-                    log.Warn("Maximal number of neighborhood initialization processes {0} in progress has been reached.", Base.Configuration.NeighborhoodInitializationParallelism);
-                    res = messageBuilder.CreateErrorBusyResponse(RequestMessage);
-                  }
-                }
-                else
-                {
-                  log.Warn("Maximal number of follower servers {0} has been reached already. Will not accept another follower.", Base.Configuration.MaxFollowerServersCount);
-                  res = messageBuilder.CreateErrorRejectedResponse(RequestMessage);
-                }
-              }
-              catch (Exception e)
-              {
-                log.Error("Exception occurred: {0}", e.ToString());
-              }
-
-              if (!success)
-              {
-                log.Warn("Rolling back transaction.");
-                unitOfWork.SafeTransactionRollback(transaction);
-              }
-
-              unitOfWork.ReleaseLock(lockObjects);
-            }
-
-            if (!success)
-            {
-              // It may happen that due to power failure, this will not get executed but when the server runs next time, 
-              // Data.Database.DeleteInvalidNeighborhoodActions will be executed during the startup and will delete the blocking action.
-              if (!await UninstallInitializationProcessInProgress(unitOfWork, blockActionId))
-                log.Error("Unable to uninstall blocking neighborhood action ID {0} for follower ID '{1}'.", blockActionId, followerId.ToHex());
-            }
-          }
-          else log.Error("Unable to install blocking neighborhood action for follower ID '{0}'.", followerId.ToHex());
-        }
-      }
-      else
-      {
-        if (primaryPortValid) res = messageBuilder.CreateErrorInvalidValueResponse(RequestMessage, "srNeighborPort");
-        else res = messageBuilder.CreateErrorInvalidValueResponse(RequestMessage, "primaryPort");
+        log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+        return res;
       }
 
-      if (success)
-      {
-        log.Info("New follower ID '{0}' added to the database.", followerId.ToHex());
+      res = messageBuilder.CreateStartNeighborhoodInitializationResponse(RequestMessage);
 
-        Message responseMessage = messageBuilder.CreateStartNeighborhoodInitializationResponse(RequestMessage);
-        if (await Client.SendMessageAsync(responseMessage))
-        {
-          if (nipContext.HostedIdentities.Count > 0)
-          {
-            log.Trace("Sending first batch of our {0} hosted identities.", nipContext.HostedIdentities.Count);
-            Message updateMessage = await BuildNeighborhoodSharedProfileUpdateRequest(Client, nipContext);
-            if (!await Client.SendMessageAndSaveUnfinishedRequestAsync(updateMessage, nipContext))
-            {
-              log.Warn("Unable to send first update message to the client.");
-              Client.ForceDisconnect = true;
-            }
-          }
-          else
-          {
-            log.Trace("No hosted identities to be shared, finishing neighborhood initialization process.");
-
-            // If the profile server hosts no identities, simply finish initialization process.
-            Message finishMessage = messageBuilder.CreateFinishNeighborhoodInitializationRequest();
-            if (!await Client.SendMessageAndSaveUnfinishedRequestAsync(finishMessage, null))
-            {
-              log.Warn("Unable to send finish message to the client.");
-              Client.ForceDisconnect = true;
-            }
-          }
-        }
-        else
-        {
-          log.Warn("Unable to send reponse message to the client.");
-          Client.ForceDisconnect = true;
-        }
-
-        res = null;
-      }
-
-      if (res != null) log.Trace("(-):*.Response.Status={0}", res.Response.Status);
-      else log.Trace("(-):null");
+      log.Trace("(-):*.Response.Status={0}", res.Response.Status);
       return res;
     }
     
@@ -706,8 +559,6 @@ namespace ProfileServerProtocolTests
 
     /// <summary>
     /// Processes FinishNeighborhoodInitializationRequest message from client.
-    /// <para>This message should never come here from a protocol conforming client,
-    /// hence the only thing we can do is return an error.</para>
     /// </summary>
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
@@ -722,7 +573,7 @@ namespace ProfileServerProtocolTests
 
       log.Trace("(-):*.Response.Status={0}", res.Response.Status);
       return res;
-    }*/
+    }
 
 
 
@@ -745,6 +596,13 @@ namespace ProfileServerProtocolTests
         return res;
       }
 
+      if (profileServer.RejectNeighborhoodSharedProfileUpdate)
+      {
+        res = messageBuilder.CreateErrorRejectedResponse(RequestMessage);
+        log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+        return res;
+      }
+
       // Simply send OK to the neighbor server.
       res = messageBuilder.CreateNeighborhoodSharedProfileUpdateResponse(RequestMessage);
 
@@ -754,7 +612,7 @@ namespace ProfileServerProtocolTests
 
 
 
-    /*
+    
     /// <summary>
     /// Processes StopNeighborhoodUpdatesRequest message from client.
     /// <para>Removes follower server from the database and also removes all pending actions to the follower.</para>
@@ -762,86 +620,41 @@ namespace ProfileServerProtocolTests
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public async Task<Message> ProcessMessageStopNeighborhoodUpdatesRequest(IncomingClient Client, Message RequestMessage)
+    public Message ProcessMessageStopNeighborhoodUpdatesRequest(IncomingClient Client, Message RequestMessage)
     {
       log.Trace("()");
 
-      Message res = null;
       MessageBuilder messageBuilder = Client.MessageBuilder;
-      StopNeighborhoodUpdatesRequest stopNeighborhoodUpdatesRequest = RequestMessage.Request.ConversationRequest.StopNeighborhoodUpdates;
-      
-      
-      byte[] followerId = Client.IdentityId;
-
-      using (UnitOfWork unitOfWork = new UnitOfWork())
+      Message res = messageBuilder.CreateErrorBadRoleResponse(RequestMessage);
+      if (Client.ServerRole != ServerRole.ServerNeighbor)
       {
-        Status status = await unitOfWork.FollowerRepository.DeleteFollower(unitOfWork, followerId);
-
-        if (status == Status.Ok) res = messageBuilder.CreateStopNeighborhoodUpdatesResponse(RequestMessage);
-        else if (status == Status.ErrorNotFound) res = messageBuilder.CreateErrorNotFoundResponse(RequestMessage);
-        else res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
+        log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+        return res;
       }
-      
 
-    log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+      res = messageBuilder.CreateStopNeighborhoodUpdatesResponse(RequestMessage);
+
+      log.Trace("(-):*.Response.Status={0}", res.Response.Status);
       return res;
-    }*/
+    }
 
-      /*
+    
     /// <summary>
     /// Processes NeighborhoodSharedProfileUpdateResponse message from client.
-    /// <para>This response is received when the follower server accepted a batch of profiles and is ready to receive next batch.</para>
     /// </summary>
     /// <param name="Client">Client that sent the response.</param>
     /// <param name="ResponseMessage">Full response message.</param>
     /// <param name="Request">Unfinished request message that corresponds to the response message.</param>
     /// <returns>true if the connection to the client that sent the response should remain open, false if the client should be disconnected.</returns>
-    public async Task<bool> ProcessMessageNeighborhoodSharedProfileUpdateResponseAsync(IncomingClient Client, Message ResponseMessage, UnfinishedRequest Request)
+    public bool ProcessMessageNeighborhoodSharedProfileUpdateResponse(IncomingClient Client, Message ResponseMessage, UnfinishedRequest Request)
     {
       log.Trace("()");
 
-      bool res = false;
-      
-      MessageBuilder messageBuilder = Client.MessageBuilder;
-      if (Client.NeighborhoodInitializationProcessInProgress)
-      {
-        if (ResponseMessage.Response.Status == Status.Ok)
-        {
-          NeighborhoodInitializationProcessContext nipContext = (NeighborhoodInitializationProcessContext)Request.Context;
-          if (nipContext.IdentitiesDone < nipContext.HostedIdentities.Count)
-          {
-            Message updateMessage = await BuildNeighborhoodSharedProfileUpdateRequest(Client, nipContext);
-            if (await Client.SendMessageAndSaveUnfinishedRequestAsync(updateMessage, nipContext))
-            {
-              res = true;
-            }
-            else log.Warn("Unable to send update message to the client.");
-          }
-          else
-          {
-            // If all hosted identities were sent, finish initialization process.
-            Message finishMessage = messageBuilder.CreateFinishNeighborhoodInitializationRequest();
-            if (await Client.SendMessageAndSaveUnfinishedRequestAsync(finishMessage, null))
-            {
-              res = true;
-            }
-            else log.Warn("Unable to send finish message to the client.");
-          }
-        }
-        else
-        {
-          // We are in the middle of the neighborhood initialization process, but the follower did not accepted our message with profiles.
-          // We should disconnect from the follower and delete it from our follower database.
-          // If it wants to retry later, it can.
-          // Follower will be deleted automatically as the connection terminates in IncomingClient.HandleDisconnect.
-          log.Warn("Client ID '{0}' is follower in the middle of the neighborhood initialization process, but it did not accept our profiles (error code {1}), so we will disconnect it and delete it from our database.", Client.IdentityId.ToHex(), ResponseMessage.Response.Status);
-        }
-      }
-      else log.Error("Client ID '{0}' does not have neighborhood initialization process in progress, client will be disconnected.", Client.IdentityId.ToHex());
-      
+      bool res = true;
+
       log.Trace("(-):{0}", res);
       return res;
-    }*/
+    }
 
 
     /// <summary>
@@ -851,7 +664,7 @@ namespace ProfileServerProtocolTests
     /// <param name="ResponseMessage">Full response message.</param>
     /// <param name="Request">Unfinished request message that corresponds to the response message.</param>
     /// <returns>true if the connection to the client that sent the response should remain open, false if the client should be disconnected.</returns>
-    public bool ProcessMessageFinishNeighborhoodInitializationResponseAsync(IncomingClient Client, Message ResponseMessage, UnfinishedRequest Request)
+    public bool ProcessMessageFinishNeighborhoodInitializationResponse(IncomingClient Client, Message ResponseMessage, UnfinishedRequest Request)
     {
       log.Trace("()");
 

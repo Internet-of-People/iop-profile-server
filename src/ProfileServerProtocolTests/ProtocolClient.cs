@@ -1166,10 +1166,81 @@ namespace ProfileServerProtocolTests
         Longitude = Profile.Location.GetLocationTypeLongitude(),
         IdentityPublicKey = ProtocolHelper.ByteArrayToByteString(Profile.PublicKey),
         SetThumbnailImage = Profile.ThumbnailImage != null,
-        ThumbnailImage = ProtocolHelper.ByteArrayToByteString(Profile.ThumbnailImage != null ? Profile.ThumbnailImage : new byte[0]) 
+        ThumbnailImage = ProtocolHelper.ByteArrayToByteString(Profile.ThumbnailImage != null ? Profile.ThumbnailImage : new byte[0])
       };
       return res;
     }
+
+
+    /// <summary>
+    /// Converts client's profile to SharedProfileUpdateItem structure with filled in Add member.
+    /// </summary>
+    /// <returns>SharedProfileUpdateItem representing the client's profile.</returns>
+    public SharedProfileUpdateItem GetSharedProfileUpdateAddItem()
+    {
+      SharedProfileUpdateItem res = new SharedProfileUpdateItem()
+      {
+        Add = GetSharedProfileAddItem()
+      };
+      return res;
+    }
+
+    /// <summary>
+    /// Converts client's profile to SharedProfileDeleteItem structure.
+    /// </summary>
+    /// <returns>SharedProfileDeleteItem representing the client's profile.</returns>
+    public SharedProfileDeleteItem GetSharedProfileDeleteItem()
+    {
+      SharedProfileDeleteItem res = new SharedProfileDeleteItem()
+      {
+        IdentityNetworkId = ProtocolHelper.ByteArrayToByteString(Crypto.Sha256(Profile.PublicKey))
+      };
+      return res;
+    }
+
+    /// <summary>
+    /// Converts client's profile to SharedProfileUpdateItem structure with filled in Delete member.
+    /// </summary>
+    /// <returns>SharedProfileUpdateItem representing the client's profile.</returns>
+    public SharedProfileUpdateItem GetSharedProfileUpdateDeleteItem()
+    {
+      SharedProfileUpdateItem res = new SharedProfileUpdateItem()
+      {
+        Delete = GetSharedProfileDeleteItem()
+      };
+      return res;
+    }
+
+
+
+    /// <summary>
+    /// Converts client's profile to IdentityNetworkProfileInformation structure.
+    /// </summary>
+    /// <param name="IsHosted">Value for IdentityNetworkProfileInformation.IsHosted field.</param>
+    /// <param name="IsOnline">Value for IdentityNetworkProfileInformation.IsOnline field.</param>
+    /// <param name="HostingProfileServerId">Value for IdentityNetworkProfileInformation.HostingServerNetworkId field.</param>
+    /// <returns>IdentityNetworkProfileInformation representing the client's profile.</returns>
+    public IdentityNetworkProfileInformation GetIdentityNetworkProfileInformation(bool IsHosted, bool IsOnline, byte[] HostingProfileServerId)
+    {
+      IdentityNetworkProfileInformation res = new IdentityNetworkProfileInformation()
+      {
+        IsHosted = IsHosted,
+        IsOnline = IsOnline,
+        Version = Profile.Version.ToByteString(),
+        Name = Profile.Name != null ? Profile.Name : "",
+        Type = Profile.Type,
+        ExtraData = Profile.ExtraData != null ? Profile.ExtraData : "",
+        Latitude = Profile.Location.GetLocationTypeLatitude(),
+        Longitude = Profile.Location.GetLocationTypeLongitude(),
+        IdentityPublicKey = ProtocolHelper.ByteArrayToByteString(Profile.PublicKey),
+        ThumbnailImage = ProtocolHelper.ByteArrayToByteString(Profile.ThumbnailImage != null ? Profile.ThumbnailImage : new byte[0]),
+        HostingServerNetworkId = ProtocolHelper.ByteArrayToByteString(HostingProfileServerId != null ? HostingProfileServerId : new byte[0])        
+      };
+
+      return res;
+    }
+
+
 
 
     /// <summary>
@@ -1264,7 +1335,7 @@ namespace ProfileServerProtocolTests
       log.Trace("()");
 
       bool error = false;
-      Dictionary<string, ProtocolClient> clientList = new Dictionary<string, ProtocolClient>(ExpectedClientList);
+      Dictionary<string, ProtocolClient> clientList = new Dictionary<string, ProtocolClient>(ExpectedClientList, StringComparer.Ordinal);
       foreach (SharedProfileAddItem receivedItem in RealClientList)
       {
         byte[] receivedItemBytes = receivedItem.ToByteArray();
@@ -1368,6 +1439,55 @@ namespace ProfileServerProtocolTests
       log.Trace("(-):{0}", res);
       return res;
     }
+
+
+    /// <summary>
+    /// Checks whether a list of expected clients matches the list received from a neighbor server. This function works with search result list format.
+    /// </summary>
+    /// <param name="ExpectedClientList">List of clients we are expecting to be updated about, mapped by their profile names.</param>
+    /// <param name="RealClientList">List of real clients in form of neighborhood add updates items.</param>
+    /// <param name="IsHosted">true if the expected clients are hosted on the server that was quieried, false otherwise.</param>
+    /// <param name="IsOnline">If <paramref name="IsHosted"/> is true, this value indicates whether the clients are online on the server being queried.</param>
+    /// <param name="HostingProfileServerId">If <paramref name="IsHosted"/> is false, this is network ID of the profile server who hosts the expected clients.</param>
+    /// <param name="IncludeImages">If set to true, images are included in the search results.</param>
+    /// <returns>true if the lists are equal, false otherwise.</returns>
+    public bool CheckProfileListMatchSearchResultItems(Dictionary<string, ProtocolClient> ExpectedClientList, List<IdentityNetworkProfileInformation> RealClientList, bool IsHosted, bool IsOnline, byte[] HostingProfileServerId, bool IncludeImages)
+    {
+      log.Trace("(ExpectedClientList.Count:{0},RealClientList.Count:{1})", ExpectedClientList.Count, RealClientList.Count);
+
+      bool error = false;
+      Dictionary<string, ProtocolClient> clientList = new Dictionary<string, ProtocolClient>(ExpectedClientList, StringComparer.Ordinal);
+      foreach (IdentityNetworkProfileInformation receivedItem in RealClientList)
+      {
+        byte[] receivedItemBytes = receivedItem.ToByteArray();
+        ProtocolClient client;
+        if (!clientList.TryGetValue(receivedItem.Name, out client))
+        {
+          log.Trace("Received item name '{0}' not found among expected items.", receivedItem.Name);
+          error = true;
+          break;
+        }
+
+        IdentityNetworkProfileInformation profileInfo = client.GetIdentityNetworkProfileInformation(IsHosted, IsOnline, HostingProfileServerId);
+        byte[] profileInfoBytes = profileInfo.ToByteArray();
+        if (StructuralComparisons.StructuralComparer.Compare(receivedItemBytes, profileInfoBytes) != 0)
+        {
+          log.Trace("Data of profile name '{0}' do not match.", receivedItem.Name);
+          error = true;
+          break;
+        }
+
+        clientList.Remove(receivedItem.Name);
+      }
+
+      bool res = !error && (clientList.Count == 0);
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+
+
 
     /// <summary>
     /// Callback routine that validates server TLS certificate.

@@ -16,13 +16,14 @@ using System.Linq;
 using ProfileServer.Data.Models;
 using Microsoft.EntityFrameworkCore.Storage;
 using ProfileServerCrypto;
+using Newtonsoft.Json;
 
 namespace ProfileServer.Network
 {
   /// <summary>
-  /// Location based network (LBN) is a part of IoP that the profile server relies on.
-  /// When the node starts, this component connects to LBN and obtains information about the node's neighborhood.
-  /// Then it keep receiving updates from LBN about changes in the neighborhood structure.
+  /// Location based network (LOC) is a part of IoP that the profile server relies on.
+  /// When the profile server starts, this component connects to LOC and obtains information about the server's neighborhood.
+  /// Then it keeps receiving updates from LOC about changes in the neighborhood structure.
   /// The profile server needs to share its database of hosted identities with its neighbors and it also accepts 
   /// requests to share foreign profiles and consider them during its own search queries.
   /// </summary>
@@ -30,28 +31,28 @@ namespace ProfileServer.Network
   {
     private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Network.LocationBasedNetwork");
 
-    /// <summary>Event that is set when LbnConnectionThread is not running.</summary>
-    private ManualResetEvent lbnConnectionThreadFinished = new ManualResetEvent(true);
+    /// <summary>Event that is set when LocConnectionThread is not running.</summary>
+    private ManualResetEvent locConnectionThreadFinished = new ManualResetEvent(true);
 
-    /// <summary>Thread that is responsible for communication with LBN.</summary>
-    private Thread lbnConnectionThread;
+    /// <summary>Thread that is responsible for communication with LOC.</summary>
+    private Thread locConnectionThread;
 
-    /// <summary>TCP client to connect with LBN server.</summary>
+    /// <summary>TCP client to connect with LOC server.</summary>
     private TcpClient client;
 
-    /// <summary>Network stream of the TCP connection to LBN server.</summary>
+    /// <summary>Network stream of the TCP connection to LOC server.</summary>
     private NetworkStream stream;
 
     /// <summary>Lock object for writing to the stream.</summary>
     private SemaphoreSlim streamWriteLock = new SemaphoreSlim(1);
 
-    /// <summary>LBN message builder for the TCP client.</summary>
+    /// <summary>LOC message builder for the TCP client.</summary>
     private MessageBuilderLocNet messageBuilder;
 
-    /// <summary>true if the component received current information about the server's neighborhood from the LBN server.</summary>
-    private bool lbnServerInitialized = false;
-    /// <summary>true if the component received current information about the server's neighborhood from the LBN server.</summary>
-    public bool LbnServerInitialized { get { return lbnServerInitialized; } }
+    /// <summary>true if the component received current information about the server's neighborhood from the LOC server.</summary>
+    private bool locServerInitialized = false;
+    /// <summary>true if the component received current information about the server's neighborhood from the LOC server.</summary>
+    public bool LocServerInitialized { get { return locServerInitialized; } }
 
 
     public override bool Init()
@@ -62,8 +63,8 @@ namespace ProfileServer.Network
 
       try
       {
-        lbnConnectionThread = new Thread(new ThreadStart(LbnConnectionThread));
-        lbnConnectionThread.Start();
+        locConnectionThread = new Thread(new ThreadStart(LocConnectionThread));
+        locConnectionThread.Start();
 
         res = true;
         Initialized = true;
@@ -79,8 +80,8 @@ namespace ProfileServer.Network
 
         CloseClient();
 
-        if ((lbnConnectionThread != null) && !lbnConnectionThreadFinished.WaitOne(10000))
-          log.Error("LBN connection thread did not terminated in 10 seconds.");
+        if ((locConnectionThread != null) && !locConnectionThreadFinished.WaitOne(10000))
+          log.Error("LOC connection thread did not terminated in 10 seconds.");
       }
 
       log.Info("(-):{0}", res);
@@ -96,8 +97,8 @@ namespace ProfileServer.Network
 
       CloseClient();
 
-      if ((lbnConnectionThread != null) && !lbnConnectionThreadFinished.WaitOne(10000))
-        log.Error("LBN connection thread did not terminated in 10 seconds.");
+      if ((locConnectionThread != null) && !locConnectionThreadFinished.WaitOne(10000))
+        log.Error("LOC connection thread did not terminated in 10 seconds.");
 
       log.Info("(-)");
     }
@@ -117,29 +118,29 @@ namespace ProfileServer.Network
 
 
     /// <summary>
-    /// Thread that is responsible for connection to LBN and processing LBN updates.
-    /// If the LBN is not reachable, the thread will wait until it is reachable.
-    /// If connection to LBN is established and closed for any reason, the thread will try to reconnect.
+    /// Thread that is responsible for connection to LOC and processing LOC updates.
+    /// If the LOC is not reachable, the thread will wait until it is reachable.
+    /// If connection to LOC is established and closed for any reason, the thread will try to reconnect.
     /// </summary>
-    private async void LbnConnectionThread()
+    private async void LocConnectionThread()
     {
       LogDiagnosticContext.Start();
 
       log.Info("()");
 
-      lbnConnectionThreadFinished.Reset();
+      locConnectionThreadFinished.Reset();
 
       try
       {
         while (!ShutdownSignaling.IsShutdown)
         {
-          // Connect to LBN server.
+          // Connect to LOC server.
           if (await Connect())
           {
-            // Announce our primary server interface to LBN.
+            // Announce our primary server interface to LOC.
             if (await RegisterPrimaryServerRole())
             {
-              // Ask LBN server about initial set of neighborhood nodes.
+              // Ask LOC server about initial set of neighborhood nodes.
               if (await GetNeighborhoodInformation())
               {
                 // Receive and process updates.
@@ -159,7 +160,7 @@ namespace ProfileServer.Network
       }
 
       CloseClient();
-      lbnConnectionThreadFinished.Set();
+      locConnectionThreadFinished.Set();
 
       log.Info("(-)");
 
@@ -168,7 +169,7 @@ namespace ProfileServer.Network
 
 
     /// <summary>
-    /// Attempts to connect to LBN server in a loop.
+    /// Attempts to connect to LOC server in a loop.
     /// </summary>
     /// <returns>true if the function succeeded, false if connection was established before the component shutdown.</returns>
     private async Task<bool> Connect()
@@ -189,14 +190,14 @@ namespace ProfileServer.Network
       {
         try
         {
-          log.Trace("Connecting to LBN server '{0}'.", Base.Configuration.LbnEndPoint);
-          await client.ConnectAsync(Base.Configuration.LbnEndPoint.Address, Base.Configuration.LbnEndPoint.Port);
+          log.Trace("Connecting to LOC server '{0}'.", Base.Configuration.LocEndPoint);
+          await client.ConnectAsync(Base.Configuration.LocEndPoint.Address, Base.Configuration.LocEndPoint.Port);
           stream = client.GetStream();
           res = true;
         }
         catch
         {
-          log.Warn("Unable to connect to LBN server '{0}', waiting 10 seconds and then retrying.", Base.Configuration.LbnEndPoint);
+          log.Warn("Unable to connect to LOC server '{0}', waiting 10 seconds and then retrying.", Base.Configuration.LocEndPoint);
         }
 
         if (!res)
@@ -217,7 +218,7 @@ namespace ProfileServer.Network
     }
 
     /// <summary>
-    /// Announces profile server's primary server role interface to the LBN server.
+    /// Announces profile server's primary server role interface to the LOC server.
     /// </summary>
     /// <returns>true if the function succeeds, false otherwise.</returns>
     private async Task<bool> RegisterPrimaryServerRole()
@@ -257,14 +258,14 @@ namespace ProfileServer.Network
               && (response.Response.ResponseTypeCase == Response.ResponseTypeOneofCase.LocalService)
               && (response.Response.LocalService.LocalServiceResponseTypeCase == LocalServiceResponse.LocalServiceResponseTypeOneofCase.RegisterService);
 
-            if (res) log.Debug("Primary interface has been registered successfully on LBN server.");
+            if (res) log.Debug("Primary interface has been registered successfully on LOC server.");
             else log.Error("Registration failed, response status is {0}.", response.Response != null ? response.Response.Status.ToString() : "n/a");
           }
-          else log.Error("Invalid message received from LBN server.");
+          else log.Error("Invalid message received from LOC server.");
         }
-        else log.Error("Connection to LBN server has been terminated.");
+        else log.Error("Connection to LOC server has been terminated.");
       }
-      else log.Error("Unable to send register server request to LBN server.");
+      else log.Error("Unable to send register server request to LOC server.");
 
       log.Info("(-):{0}", res);
       return res;
@@ -272,7 +273,7 @@ namespace ProfileServer.Network
 
 
     /// <summary>
-    /// Cancels registration of profile server's primary server role interface on the LBN server.
+    /// Cancels registration of profile server's primary server role interface on the LOC server.
     /// </summary>
     /// <returns>true if the function succeeds, false otherwise.</returns>
     private async Task<bool> DeregisterPrimaryServerRole()
@@ -297,14 +298,14 @@ namespace ProfileServer.Network
               && (response.Response.ResponseTypeCase == Response.ResponseTypeOneofCase.LocalService)
               && (response.Response.LocalService.LocalServiceResponseTypeCase == LocalServiceResponse.LocalServiceResponseTypeOneofCase.DeregisterService);
 
-            if (res) log.Debug("Primary interface has been unregistered successfully on LBN server.");
+            if (res) log.Debug("Primary interface has been unregistered successfully on LOC server.");
             else log.Error("Deregistration failed, response status is {0}.", response.Response != null ? response.Response.Status.ToString() : "n/a");
           }
-          else log.Error("Invalid message received from LBN server.");
+          else log.Error("Invalid message received from LOC server.");
         }
-        else log.Debug("Connection to LBN server has been terminated.");
+        else log.Debug("Connection to LOC server has been terminated.");
       }
-      else log.Debug("Unable to send deregister server request to LBN server.");
+      else log.Debug("Unable to send deregister server request to LOC server.");
 
       log.Info("(-):{0}", res);
       return res;
@@ -312,7 +313,7 @@ namespace ProfileServer.Network
 
 
     /// <summary>
-    /// Sends a request to the LBN server to obtain an initial neighborhood information and then reads the response and processes it.
+    /// Sends a request to the LOC server to obtain an initial neighborhood information and then reads the response and processes it.
     /// </summary>
     /// <returns>true if the function succeeds, false otherwise.</returns>
     private async Task<bool> GetNeighborhoodInformation()
@@ -341,15 +342,15 @@ namespace ProfileServer.Network
 
             if (!responseOk) log.Error("Obtaining neighborhood information failed, response status is {0}.", response.Response != null ? response.Response.Status.ToString() : "n/a");
           }
-          else log.Error("Invalid message received from LBN server.");
+          else log.Error("Invalid message received from LOC server.");
         }
-        else log.Error("Connection to LBN server has been terminated.");
+        else log.Error("Connection to LOC server has been terminated.");
 
         // Process the response if valid and contains neighbors.
         if (responseOk)
           res = await ProcessMessageGetNeighbourNodesByDistanceResponseAsync(response);
       }
-      else log.Error("Unable to send GetNeighbourNodesByDistanceLocalRequest to LBN server.");
+      else log.Error("Unable to send GetNeighbourNodesByDistanceLocalRequest to LOC server.");
 
       log.Info("(-):{0}", res);
       return res;
@@ -598,11 +599,11 @@ namespace ProfileServer.Network
 
 
     /// <summary>
-    /// Processes GetNeighbourNodesByDistanceResponse message received from LBN server.
+    /// Processes GetNeighbourNodesByDistanceResponse message received from LOC server.
     /// <para>This message contains information about profile server's neighbors, with which it should share its profile database.</para>
     /// </summary>
     /// <param name="ResponseMessage">Full response message.</param>
-    /// <returns>true if the connection to the LBN server should remain open, false if it should be closed.</returns>
+    /// <returns>true if the connection to the LOC server should remain open, false if it should be closed.</returns>
     public async Task<bool> ProcessMessageGetNeighbourNodesByDistanceResponseAsync(Message ResponseMessage)
     {
       log.Trace("()");
@@ -671,7 +672,7 @@ namespace ProfileServer.Network
       }
       else
       {
-        log.Debug("No neighbors announced by LBN server.");
+        log.Debug("No neighbors announced by LOC server.");
         res = true;
       }
 
@@ -683,8 +684,8 @@ namespace ProfileServer.Network
 
       if (res)
       {
-        log.Debug("LBN component is now considered in sync with LBN server.");
-        lbnServerInitialized = true;
+        log.Debug("LOC component is now considered in sync with LOC server.");
+        locServerInitialized = true;
       }
 
       log.Trace("(-):{0}", res);
@@ -709,7 +710,7 @@ namespace ProfileServer.Network
     }
 
     /// <summary>
-    /// Processes update received from LBN server that informs the profile server about a new neighbor server or a change in existing neighbor server contact information.
+    /// Processes update received from LOC server that informs the profile server about a new neighbor server or a change in existing neighbor server contact information.
     /// </summary>
     /// <param name="UnitOfWork">Unit of work instance.</param>
     /// <param name="ServerId">Network identifier of the neighbor server.</param>
@@ -731,7 +732,7 @@ namespace ProfileServer.Network
       bool serverIdValid = ServerId.Length == IdentityBase.IdentifierLength;
       if (!serverIdValid)
       {
-        log.Error("Received invalid neighbor server ID '{0}' from LBN server.", ServerId.ToHex());
+        log.Error("Received invalid neighbor server ID '{0}' from LOC server.", ServerId.ToHex());
         res.Error = true;
         log.Trace("(-):*.Error={0},*.SaveDb={1},*.SignalActionProcessor={2},*.NeighborhoodSize={3}", res.Error, res.SaveDb, res.SignalActionProcessor, res.NeighborhoodSize);
         return res;
@@ -740,7 +741,7 @@ namespace ProfileServer.Network
       bool portValid = (0 < Port) && (Port <= 65535);
       if (!portValid)
       {
-        log.Error("Received invalid neighbor server port '{0}' from LBN server.", Port);
+        log.Error("Received invalid neighbor server port '{0}' from LOC server.", Port);
         res.Error = true;
         log.Trace("(-):*.Error={0},*.SaveDb={1},*.SignalActionProcessor={2},*.NeighborhoodSize={3}", res.Error, res.SaveDb, res.SignalActionProcessor, res.NeighborhoodSize);
         return res;
@@ -749,7 +750,7 @@ namespace ProfileServer.Network
       ProfileServerProtocol.GpsLocation location = new ProfileServerProtocol.GpsLocation(Latitude, Longitude);
       if (!location.IsValid())
       {
-        log.Error("Received invalid neighbor server location '{0}' from LBN server.", location);
+        log.Error("Received invalid neighbor server location '{0}' from LOC server.", location);
         res.Error = true;
         log.Trace("(-):*.Error={0},*.SaveDb={1},*.SignalActionProcessor={2},*.NeighborhoodSize={3}", res.Error, res.SaveDb, res.SignalActionProcessor, res.NeighborhoodSize);
         return res;
@@ -776,7 +777,8 @@ namespace ProfileServer.Network
             SrNeighborPort = null,
             LocationLatitude = location.Latitude,
             LocationLongitude = location.Longitude,
-            LastRefreshTime = null
+            LastRefreshTime = null,
+            SharedProfiles = 0
           };
           await UnitOfWork.NeighborRepository.InsertAsync(neighbor);
           res.NeighborhoodSize++;
@@ -832,7 +834,7 @@ namespace ProfileServer.Network
           existingNeighbor.LocationLongitude = Longitude;
         }
 
-        // We consider a fresh LBN info to be accurate, so we do not want to delete the neighbors received here
+        // We consider a fresh LOC info to be accurate, so we do not want to delete the neighbors received here
         // and hence we update their refresh time..
         existingNeighbor.LastRefreshTime = DateTime.UtcNow;
 
@@ -846,7 +848,7 @@ namespace ProfileServer.Network
 
 
     /// <summary>
-    /// Processes NeighbourhoodChangedNotificationRequest message from LBN server.
+    /// Processes NeighbourhoodChangedNotificationRequest message from LOC server.
     /// <para>Adds corresponding neighborhood action to the database.</para>
     /// </summary>
     /// <param name="RequestMessage">Full request message.</param>
@@ -912,7 +914,7 @@ namespace ProfileServer.Network
                     bool serverIdValid = serverId.Length == IdentityBase.IdentifierLength;
                     if (!serverIdValid)
                     {
-                      log.Error("Received invalid neighbor server ID '{0}' from LBN server.", serverId.ToHex());
+                      log.Error("Received invalid neighbor server ID '{0}' from LOC server.", serverId.ToHex());
                       break;
                     }
 
@@ -922,24 +924,52 @@ namespace ProfileServer.Network
                     {
                       log.Trace("Creating neighborhood action to deleting neighbor ID '{0}' from the database.", serverId.ToHex());
 
-                      // This action will cause our profile server to erase all profiles of the neighbor that has been removed.
-                      // As this is a time consuming process, we leave this to a action processor rather than doing it now.
-                      NeighborhoodAction action = new NeighborhoodAction()
-                      {
-                        ServerId = serverId,
-                        Timestamp = DateTime.UtcNow,
-                        Type = NeighborhoodActionType.RemoveNeighbor,
-                        TargetIdentityId = null,
-                        AdditionalData = null
-                      };
-                      await unitOfWork.NeighborhoodActionRepository.InsertAsync(action);
+                      string neighborInfo = JsonConvert.SerializeObject(existingNeighbor);
 
-                      signalActionProcessor = true;
-                      saveDb = true;
+                      // Delete neighbor completely.
+                      // This will cause our profile server to erase all profiles of the neighbor that has been removed.
+                      bool deleted = await unitOfWork.NeighborRepository.DeleteNeighbor(unitOfWork, serverId, -1, true);
+                      if (deleted)
+                      {
+                        // Add action that will contact the neighbor and ask it to stop sending updates.
+                        // Note that the neighbor information will be deleted by the time this action 
+                        // is executed and this is why we have to fill in AdditionalData.
+                        NeighborhoodAction stopUpdatesAction = new NeighborhoodAction()
+                        {
+                          ServerId = serverId,
+                          Type = NeighborhoodActionType.StopNeighborhoodUpdates,
+                          TargetIdentityId = null,
+                          ExecuteAfter = DateTime.UtcNow,
+                          Timestamp = DateTime.UtcNow,
+                          AdditionalData = neighborInfo
+                        };
+                        await unitOfWork.NeighborhoodActionRepository.InsertAsync(stopUpdatesAction);
+
+                        signalActionProcessor = true;
+                        saveDb = true;
+                      }
+                      else
+                      {
+                        log.Error("Failed to remove neighbor ID '{0}' from the database.", serverId.ToHex());
+                        // This is actually bad, we failed to remove a record from the database, which should never happen.
+                        // We try to insert action to remove this neighbor later, but adding the action might fail as well.
+                        NeighborhoodAction action = new NeighborhoodAction()
+                        {
+                          ServerId = serverId,
+                          Timestamp = DateTime.UtcNow,
+                          Type = NeighborhoodActionType.RemoveNeighbor,
+                          TargetIdentityId = null,
+                          AdditionalData = null
+                        };
+                        await unitOfWork.NeighborhoodActionRepository.InsertAsync(action);
+
+                        signalActionProcessor = true;
+                        saveDb = true;
+                      }
                     }
                     else
                     {
-                      log.Error("Neighbor ID '{0}' not found, can not be removed", serverId.ToHex());
+                      log.Warn("Neighbor ID '{0}' not found, can not be removed.", serverId.ToHex());
                       // Nothing bad really happens here if we have profiles of such a neighbor in NeighborIdentity table.
                       // Those entries will expire and will be deleted.
                     }

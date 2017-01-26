@@ -12,8 +12,8 @@ using ProfileServer.Network;
 namespace ProfileServer.Data.Repositories
 {
   /// <summary>
-  /// Generic repository for identities, which is the base for HomeIdentityReposity for identities hosted on this node 
-  /// and NeighborIdentityRepository for identities hosted in this node's neighborhood.
+  /// Generic repository for identities, which is the base for HomeIdentityReposity for identities hosted on this profile server
+  /// and NeighborIdentityRepository for identities hosted in this profile server's neighborhood.
   /// </summary>
   public class IdentityRepository<T> : GenericRepository<T> where T:IdentityBase
   {

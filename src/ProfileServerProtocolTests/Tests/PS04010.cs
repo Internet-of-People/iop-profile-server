@@ -69,8 +69,8 @@ namespace ProfileServerProtocolTests.Tests
         await client.ConnectAsync(ServerIp, ClCustomerPort, true);
         bool checkInOk = await client.CheckInAsync();
 
-        byte[] newNodeId = Encoding.UTF8.GetBytes("test");
-        Message requestMessage = mb.CreateCancelHostingAgreementRequest(newNodeId);
+        byte[] newProfileServerId = Encoding.UTF8.GetBytes("test");
+        Message requestMessage = mb.CreateCancelHostingAgreementRequest(newProfileServerId);
         await client.SendMessageAsync(requestMessage);
         Message responseMessage = await client.ReceiveMessageAsync();
 

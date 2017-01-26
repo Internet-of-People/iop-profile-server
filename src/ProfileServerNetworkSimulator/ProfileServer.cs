@@ -25,9 +25,6 @@ namespace ProfileServerNetworkSimulator
     /// <summary>Maximal number of identities that a single profile server can host.</summary>
     public const int MaxHostedIdentities = 20000;
 
-    /// <summary>Name of the configuration template file.</summary>
-    public const string ConfigFileTemplateName = "ProfileServer-template.conf";
-
     /// <summary>Name of the final configuration file.</summary>
     public const string ConfigFileName = "ProfileServer.conf";
 
@@ -53,10 +50,10 @@ namespace ProfileServerNetworkSimulator
     /// <summary>Base TCP port of the instance, which can use ports between Port and Port + 19.</summary>
     private int basePort;
 
-    /// <summary>Port of LBN server.</summary>
-    private int lbnPort;
-    /// <summary>Port of LBN server.</summary>
-    public int LbnPort { get { return lbnPort; } }
+    /// <summary>Port of LOC server.</summary>
+    private int locPort;
+    /// <summary>Port of LOC server.</summary>
+    public int LocPort { get { return locPort; } }
 
     /// <summary>Port of profile server primary interface.</summary>
     private int primaryInterfacePort;
@@ -91,22 +88,22 @@ namespace ProfileServerNetworkSimulator
     /// <summary>List of hosted customer identities.</summary>
     private List<IdentityClient> hostedIdentities;
 
-    /// <summary>Associated LBN server.</summary>
-    private LbnServer lbnServer;
-    /// <summary>Associated LBN server.</summary>
-    public LbnServer LbnServer { get { return lbnServer; } }
+    /// <summary>Associated LOC server.</summary>
+    private LocServer locServer;
+    /// <summary>Associated LOC server.</summary>
+    public LocServer LocServer { get { return locServer; } }
 
 
     /// <summary>Lock object to protect access to some internal fields.</summary>
     private object internalLock = new object();
 
-    /// <summary>Node profile in LBN.</summary>
+    /// <summary>Node profile in LOC.</summary>
     private Iop.Locnet.NodeProfile nodeProfile;
 
     /// <summary>Network ID of the profile server.</summary>
     private byte[] networkId;
 
-    /// <summary>Node location in LBN.</summary>
+    /// <summary>Node location in LOC.</summary>
     private Iop.Locnet.GpsLocation nodeLocation;
 
     /// <summary>List of profile servers for which this server acts as a neighbor, that are to be informed once this server is initialized.</summary>
@@ -128,7 +125,7 @@ namespace ProfileServerNetworkSimulator
       basePort = Port;
       ipAddress = IPAddress.Parse("127.0.0.1");
 
-      lbnPort = basePort;
+      locPort = basePort;
       primaryInterfacePort = basePort + 1;
       serverNeighborInterfacePort = basePort + 2;
       clientNonCustomerInterfacePort = basePort + 3;
@@ -186,12 +183,11 @@ namespace ProfileServerNetworkSimulator
 
         if (Helpers.DirectoryCopy(CommandProcessor.ProfileServerBinariesDirectory, instanceDirectory))
         {
-          string configTemplate = Path.Combine(new string[] { CommandProcessor.BaseDirectory, CommandProcessor.ProfileServerBinariesDirectory, ConfigFileTemplateName });
           string configFinal = Path.Combine(instanceDirectory, ConfigFileName);
-          if (InitializeConfig(configTemplate, configFinal))
+          if (InitializeConfig(configFinal))
           {
-            lbnServer = new LbnServer(this);
-            res = lbnServer.Start();
+            locServer = new LocServer(this);
+            res = locServer.Start();
           }
           else log.Error("Unable to initialize configuration file '{0}' for server '{1}'.", configFinal, name);
         }
@@ -208,36 +204,37 @@ namespace ProfileServerNetworkSimulator
 
 
     /// <summary>
-    /// Creates a final configuration file from template configuration file.
+    /// Creates a final configuration file for the instance.
     /// </summary>
-    /// <param name="TemplateFile">Name of the template configuration file.</param>
     /// <param name="FinalConfigFile">Name of the final configuration file.</param>
     /// <returns>true if the function succeeds, false otherwise.</returns>
-    public bool InitializeConfig(string TemplateFile, string FinalConfigFile)
+    public bool InitializeConfig(string FinalConfigFile)
     {
-      log.Trace("(TemplateFile:'{0}')", TemplateFile);
+      log.Trace("(FinalConfigFile:'{0}')", FinalConfigFile);
 
       bool res = false;
 
       try
       {
-        string config = File.ReadAllText(TemplateFile);
-
-        config = config.Replace("$test_mode", "on");
-        config = config.Replace("$primary_interface_port", primaryInterfacePort.ToString());
-        config = config.Replace("$server_neighbor_interface_port", serverNeighborInterfacePort.ToString());
-        config = config.Replace("$client_non_customer_interface_port", clientNonCustomerInterfacePort.ToString());
-        config = config.Replace("$client_customer_interface_port", clientCustomerInterfacePort.ToString());
-        config = config.Replace("$client_app_service_interface_port", clientAppServiceInterfacePort.ToString());
-        config = config.Replace("$max_hosted_identities", "10000");
-        config = config.Replace("$max_identity_relations", "100");
-        config = config.Replace("$neighborhood_initialization_parallelism", "10");
-        config = config.Replace("$lbn_port", lbnPort.ToString());
-        config = config.Replace("$neighbor_profiles_expiration_time", "86400");
-        config = config.Replace("$max_neighborhood_size", "105");
-        config = config.Replace("$max_follower_servers_count", "200");
-        config = config.Replace("$follower_refresh_time", "43200");
-        config = config.Replace("$can_api_port", "15001");
+        string config = "test_mode = on\n"
+          + "server_interface = 127.0.0.1\n"
+          + "primary_interface_port = " + primaryInterfacePort.ToString() + "\n"
+          + "server_neighbor_interface_port = " + serverNeighborInterfacePort.ToString() + "\n"
+          + "client_non_customer_interface_port = " + clientNonCustomerInterfacePort.ToString() + "\n"
+          + "client_customer_interface_port = " + clientCustomerInterfacePort.ToString() + "\n"
+          + "client_app_service_interface_port = " + clientAppServiceInterfacePort.ToString() + "\n"
+          + "tls_server_certificate = ProfileServer.pfx\n"
+          + "image_data_folder = images\n"
+          + "tmp_data_folder = tmp\n"
+          + "max_hosted_identities = 10000\n"
+          + "max_identity_relations = 100\n"
+          + "neighborhood_initialization_parallelism = 10\n"
+          + "loc_port = " + locPort.ToString() + "\n"
+          + "neighbor_profiles_expiration_time = 86400\n"
+          + "max_neighborhood_size = 105\n"
+          + "max_follower_servers_count = 200\n"
+          + "follower_refresh_time = 43200\n"
+          + "can_api_port = 15001\n";
 
         File.WriteAllText(FinalConfigFile, config);
         res = true;
@@ -259,7 +256,7 @@ namespace ProfileServerNetworkSimulator
     {
       log.Trace("()");
 
-      lbnServer.Shutdown();
+      locServer.Shutdown();
       Stop();
 
       log.Trace("(-)");
@@ -517,7 +514,7 @@ namespace ProfileServerNetworkSimulator
       {
         log.Debug("Sending neighborhood notification to {0} profile servers.", serversToNotify.Count);
         foreach (ProfileServer ps in serversToNotify)
-          ps.LbnServer.AddNeighborhood(new List<ProfileServer>() { this });
+          ps.LocServer.AddNeighborhood(new List<ProfileServer>() { this });
       }
 
       log.Trace("(-)");
@@ -559,7 +556,7 @@ namespace ProfileServerNetworkSimulator
 
     /// <summary>
     /// Obtains information whether the profile server has been initialized already.
-    /// Initialization means the server has been started and announced its profile to its LBN server.
+    /// Initialization means the server has been started and announced its profile to its LOC server.
     /// </summary>
     /// <returns>true if the server is initialized and its profile is known.</returns>
     public bool IsInitialized()
@@ -795,7 +792,7 @@ namespace ProfileServerNetworkSimulator
 
       if (!IncludeHostedOnly)
       {
-        List<ProfileServer> neighbors = LbnServer.GetNeighbors();
+        List<ProfileServer> neighbors = LocServer.GetNeighbors();
         foreach (ProfileServer neighbor in neighbors)
         {
           ByteString neighborId = ProtocolHelper.ByteArrayToByteString(neighbor.GetNetworkId());
@@ -861,8 +858,8 @@ namespace ProfileServerNetworkSimulator
         HostedIdentities = this.hostedIdentities.Select(i => i.Name).ToList(),
         IpAddress = this.ipAddress.ToString(),
         IsRunning = false,
-        LbnPort = this.lbnPort,
-        LbnServer = this.lbnServer.CreateSnapshot(),
+        LocPort = this.locPort,
+        LocServer = this.locServer.CreateSnapshot(),
         LocationLatitude = this.location.Latitude,
         LocationLongitude = this.location.Longitude,
         Name = this.name,
@@ -888,12 +885,12 @@ namespace ProfileServerNetworkSimulator
       res.clientCustomerInterfacePort = Snapshot.ClientCustomerInterfacePort;
       res.clientNonCustomerInterfacePort = Snapshot.ClientNonCustomerInterfacePort;
       res.ipAddress = IPAddress.Parse(Snapshot.IpAddress);
-      res.lbnPort = Snapshot.LbnPort;
+      res.locPort = Snapshot.LocPort;
       res.networkId = Crypto.FromHex(Snapshot.NetworkId);
       res.primaryInterfacePort = Snapshot.PrimaryInterfacePort;
       res.serverNeighborInterfacePort = Snapshot.ServerNeighborInterfacePort;
       res.instanceDirectory = res.GetInstanceDirectoryName();
-      res.lbnServer = new LbnServer(res);
+      res.locServer = new LocServer(res);
 
       byte[] ipBytes = res.ipAddress.GetAddressBytes();
       Iop.Locnet.Contact contact = new Iop.Locnet.Contact()

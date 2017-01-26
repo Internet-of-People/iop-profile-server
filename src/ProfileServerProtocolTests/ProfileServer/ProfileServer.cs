@@ -8,6 +8,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using Iop.Profileserver;
+using ProfileServerProtocol;
 
 namespace ProfileServerProtocolTests
 {
@@ -44,6 +45,9 @@ namespace ProfileServerProtocolTests
 
     /// <summary>Received message itself.</summary>
     public Message IncomingMessage;
+
+    /// <summary>Connected client that sent the message or null if the client has been disconnected.</summary>
+    public IncomingClient Client;
   }
 
   /// <summary>
@@ -121,6 +125,12 @@ namespace ProfileServerProtocolTests
     private List<IncomingServerMessage> messageList;
 
 
+    /// <summary>If true, the profile server rejects NeighborhoodSharedProfileUpdateRequest requests.</summary>
+    public bool RejectNeighborhoodSharedProfileUpdate = false;
+
+    /// <summary>GPS location of the profile server.</summary>
+    private GpsLocation location;
+
     /// <summary>
     /// Initializes an instance of a profile server simulator.
     /// </summary>
@@ -128,12 +138,14 @@ namespace ProfileServerProtocolTests
     /// <param name="IpAddress">IP address on which this server will listen.</param>
     /// <param name="BasePort">Base port from which specific interface port numbers are calculated.</param>
     /// <param name="Keys">Cryptographic keys of this server instance, or null if they should be generated.</param>
-    public ProfileServer(string Name, IPAddress IpAddress, int BasePort, KeysEd25519 Keys = null)
+    /// <param name="Location">Location of the profile server.</param>
+    public ProfileServer(string Name, IPAddress IpAddress, int BasePort, KeysEd25519 Keys = null, GpsLocation Location = null)
     {
       log = NLog.LogManager.GetLogger("Test.ProfileServer." + Name);
       log.Trace("(IpAddress:'{0}',BasePort:{1})", IpAddress, BasePort);
 
       keys = Keys != null ? Keys : Ed25519.GenerateKeys();
+      location = Location != null ? Location : new GpsLocation(0, 0);
 
       name = Name;
       ipAddress = IpAddress;
@@ -367,14 +379,15 @@ namespace ProfileServerProtocolTests
     /// Adds a new message to the message list.
     /// </summary>
     /// <param name="IncomingMessage">New message to add to the message list.</param>
-    public void AddMessage(Message IncomingMessage, ServerRole Role)
+    public void AddMessage(Message IncomingMessage, ServerRole Role, IncomingClient Client)
     {
       log.Trace("()");
 
       IncomingServerMessage msg = new IncomingServerMessage()
       {
         Role = Role,
-        IncomingMessage = IncomingMessage
+        IncomingMessage = IncomingMessage,
+        Client = Client
       };
 
       lock (messageListLock)
@@ -385,5 +398,178 @@ namespace ProfileServerProtocolTests
       log.Trace("(-)");
     }
 
+
+    /// <summary>
+    /// Returns location network node information.
+    /// </summary>
+    /// <returns>NodeInfo structure describing the server in location network.</returns>
+    public Iop.Locnet.NodeInfo GetNodeInfo()
+    {
+      Iop.Locnet.NodeInfo res = new Iop.Locnet.NodeInfo()
+      {
+        Location = new Iop.Locnet.GpsLocation()
+        {
+          Latitude = location.GetLocationTypeLatitude(),
+          Longitude = location.GetLocationTypeLongitude()
+        },
+        Profile = new Iop.Locnet.NodeProfile()
+        {
+          NodeId = ProtocolHelper.ByteArrayToByteString(Crypto.Sha256(keys.PublicKey)),
+          Contact = new Iop.Locnet.Contact()
+          {
+            IpAddress = ProtocolHelper.ByteArrayToByteString(ipAddress.GetAddressBytes()),
+            Port = (uint)primaryPort
+          }
+        }
+      };
+      return res;
+    }
+
+
+    /// <summary>
+    /// Waits until the profile server receives a conversation request message of certain type.
+    /// </summary>
+    /// <param name="Role">Specifies the role of the server to which the message had to arrive to be accepted by this wait function.</param>
+    /// <param name="RequestType">Type of the conversation request to wait for.</param>
+    /// <param name="ClearMessageList">If set to true, the message list will be cleared once the wait is finished.</param>
+    /// <returns>Message the profile server received.</returns>
+    public async Task<IncomingServerMessage> WaitForConversationRequest(ServerRole Role, ConversationRequest.RequestTypeOneofCase RequestType, bool ClearMessageList = true)
+    {
+      log.Trace("()");
+      IncomingServerMessage res = null;
+      bool done = false;
+      while (!done)
+      {
+        lock (messageListLock)
+        {
+          foreach (IncomingServerMessage ism in messageList)
+          {
+            if (!Role.HasFlag(ism.Role)) continue;
+
+            Message message = ism.IncomingMessage;
+            if (message.MessageTypeCase != Message.MessageTypeOneofCase.Request) continue;
+
+            Request request = message.Request;
+            if (request.ConversationTypeCase != Request.ConversationTypeOneofCase.ConversationRequest) continue;
+
+            ConversationRequest conversationRequest = request.ConversationRequest;
+            if (conversationRequest.RequestTypeCase != RequestType) continue;
+
+            res = ism;
+            done = true;
+            break;
+          }
+
+          if (done && ClearMessageList)
+            messageList.Clear();
+        }
+
+        if (!done)
+        {
+          try
+          {
+            await Task.Delay(1000, shutdownCancellationTokenSource.Token);
+          }
+          catch
+          {
+          }
+        }
+      }
+
+      log.Trace("(-)");
+      return res;
+    }
+
+
+
+    /// <summary>
+    /// Waits until the profile server receives a response message to the specific request message.
+    /// </summary>
+    /// <param name="Role">Specifies the role of the server to which the message had to arrive to be accepted by this wait function.</param>
+    /// <param name="RequestMessage">Request message for which corresponding response we are waiting for.</param>
+    /// <param name="ClearMessageList">If set to true, the message list will be cleared once the wait is finished.</param>
+    /// <returns>Message the profile server received.</returns>
+    public async Task<IncomingServerMessage> WaitForResponse(ServerRole Role, Message RequestMessage, bool ClearMessageList = true)
+    {
+      log.Trace("()");
+      IncomingServerMessage res = null;
+      bool done = false;
+      while (!done)
+      {
+        lock (messageListLock)
+        {
+          foreach (IncomingServerMessage ism in messageList)
+          {
+            if (!Role.HasFlag(ism.Role)) continue;
+
+            Message message = ism.IncomingMessage;
+            if (message.MessageTypeCase != Message.MessageTypeOneofCase.Response) continue;
+
+            if (message.Id != RequestMessage.Id) continue;
+
+            res = ism;
+            done = true;
+            break;
+          }
+
+          if (done && ClearMessageList)
+            messageList.Clear();
+        }
+
+        if (!done)
+        {
+          try
+          {
+            await Task.Delay(1000, shutdownCancellationTokenSource.Token);
+          }
+          catch
+          {
+          }
+        }
+      }
+
+      log.Trace("(-)");
+      return res;
+    }
+
+
+    /// <summary>
+    /// Sends FinishNeighborhoodInitializationRequest message to the connected client of the profile server.
+    /// </summary>
+    /// <param name="Client">Client connected to the profile server, to which the message should be sent.</param>
+    /// <returns>Message that was sent to the profile server, or null if the function failed.</returns>
+    public async Task<Message> SendFinishNeighborhoodInitializationRequest(IncomingClient Client)
+    {
+      log.Trace("()");
+
+      Message res = null;
+      Message request = Client.MessageBuilder.CreateFinishNeighborhoodInitializationRequest();
+      if (await Client.SendMessageAndSaveUnfinishedRequestAsync(request, null))
+        res = request;
+
+      if (res != null) log.Trace("(-):*.Id", res.Id);
+      else log.Trace("(-):null");
+      return res;
+    }
+
+    /// <summary>
+    /// Sends NeighborhoodSharedProfileUpdateRequest message to the connected client of the profile server.
+    /// </summary>
+    /// <param name="Client">Client connected to the profile server, to which the message should be sent.</param>
+    /// <param name="UpdateItems">List of update items to send to the client.</param>
+    /// <returns>Message that was sent to the profile server, or null if the function failed.</returns>
+    public async Task<Message> SendNeighborhoodSharedProfileUpdateRequest(IncomingClient Client, List<SharedProfileUpdateItem> UpdateItems)
+    {
+      log.Trace("()");
+
+      Message res = null;
+      Message request = Client.MessageBuilder.CreateNeighborhoodSharedProfileUpdateRequest(UpdateItems);
+      if (await Client.SendMessageAndSaveUnfinishedRequestAsync(request, null))
+        res = request;
+
+      if (res != null) log.Trace("(-):*.Id", res.Id);
+      else log.Trace("(-):null");
+      return res;
+    }
   }
 }

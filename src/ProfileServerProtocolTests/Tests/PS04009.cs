@@ -69,8 +69,8 @@ namespace ProfileServerProtocolTests.Tests
         await client.ConnectAsync(ServerIp, ClCustomerPort, true);
         bool checkInOk = await client.CheckInAsync();
 
-        byte[] newNodeId = Crypto.Sha256(Encoding.UTF8.GetBytes("test"));
-        Message requestMessage = mb.CreateCancelHostingAgreementRequest(newNodeId);
+        byte[] newProfileServerId = Crypto.Sha256(Encoding.UTF8.GetBytes("test"));
+        Message requestMessage = mb.CreateCancelHostingAgreementRequest(newProfileServerId);
         await client.SendMessageAsync(requestMessage);
         Message responseMessage = await client.ReceiveMessageAsync();
 
@@ -89,7 +89,7 @@ namespace ProfileServerProtocolTests.Tests
         bool isHostedOk = responseMessage.Response.SingleResponse.GetIdentityInformation.IsHosted == false;
         bool isTargetHostingServerKnownOk = responseMessage.Response.SingleResponse.GetIdentityInformation.IsTargetProfileServerKnown;
         byte[] receivedHostingServerId = responseMessage.Response.SingleResponse.GetIdentityInformation.TargetProfileServerNetworkId.ToByteArray();
-        bool targetHostingServerIdOk = StructuralComparisons.StructuralComparer.Compare(receivedHostingServerId, newNodeId) == 0;
+        bool targetHostingServerIdOk = StructuralComparisons.StructuralComparer.Compare(receivedHostingServerId, newProfileServerId) == 0;
 
         bool getIdentityInfoOk = idOk && statusOk && isHostedOk && isTargetHostingServerKnownOk && targetHostingServerIdOk;
 

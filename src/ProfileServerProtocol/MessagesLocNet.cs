@@ -247,7 +247,7 @@ namespace ProfileServerProtocol
     /// <summary>
     /// Creates a new GetNeighbourNodesByDistanceLocalRequest message.
     /// </summary>
-    /// <param name="KeepAlive">If set to true, the LBN server will send neighborhood updates over the open connection.</param>
+    /// <param name="KeepAlive">If set to true, the LOC server will send neighborhood updates over the open connection.</param>
     /// <returns>GetNeighbourNodesByDistanceLocalRequest message that is ready to be sent.</returns>
     public Message CreateGetNeighbourNodesByDistanceLocalRequest(bool KeepAlive = true)
     {

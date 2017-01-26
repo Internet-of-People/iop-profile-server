@@ -37,7 +37,7 @@ namespace ProfileServerProtocolTests.Tests
 
 
     /// <summary>Generated test profiles mapped by their name.</summary>
-    public static Dictionary<string, ProtocolClient> TestProfiles = new Dictionary<string, ProtocolClient>();
+    public static Dictionary<string, ProtocolClient> TestProfiles = new Dictionary<string, ProtocolClient>(StringComparer.Ordinal);
 
     /// <summary>Random number generator.</summary>
     public static Random Rng = new Random();
@@ -121,7 +121,7 @@ namespace ProfileServerProtocolTests.Tests
         log.Trace("Step 3");
 
         // Add 15 more identities.
-        Dictionary<string, ProtocolClient> newProfiles = new Dictionary<string, ProtocolClient>();
+        Dictionary<string, ProtocolClient> newProfiles = new Dictionary<string, ProtocolClient>(StringComparer.Ordinal);
         profileInitializationOk = true;
         profileCount = 15;
         for (int i = 0; i < profileCount; i++)

@@ -36,7 +36,7 @@ namespace ProfileServerProtocolTests.Tests
 
 
     /// <summary>Generated test profiles mapped by their name.</summary>
-    public static Dictionary<string, ProtocolClient> TestProfiles = new Dictionary<string, ProtocolClient>();
+    public static Dictionary<string, ProtocolClient> TestProfiles = new Dictionary<string, ProtocolClient>(StringComparer.Ordinal);
 
     /// <summary>Random number generator.</summary>
     public static Random Rng = new Random();
@@ -62,6 +62,7 @@ namespace ProfileServerProtocolTests.Tests
 
         // Step 1
         log.Trace("Step 1");
+
         // Get port list.
         await client.ConnectAsync(ServerIp, PrimaryPort, false);
         Dictionary<ServerRoleType, uint> rolePorts = new Dictionary<ServerRoleType, uint>();

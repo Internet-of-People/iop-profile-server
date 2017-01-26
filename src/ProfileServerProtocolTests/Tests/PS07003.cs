@@ -35,7 +35,7 @@ namespace ProfileServerProtocolTests.Tests
     public override List<ProtocolTestArgument> ArgumentDescriptions { get { return argumentDescriptions; } }
 
 
-    /// <summary>Total add relation requests to be sent to the node.</summary>
+    /// <summary>Total add relation requests to be sent to the profile server.</summary>
     public const int RequestCount = 101;
 
     /// <summary>

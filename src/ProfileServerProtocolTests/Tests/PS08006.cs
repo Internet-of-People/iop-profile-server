@@ -36,7 +36,7 @@ namespace ProfileServerProtocolTests.Tests
 
 
     /// <summary>Generated test profiles mapped by their name.</summary>
-    public static Dictionary<string, ProtocolClient> TestProfiles = new Dictionary<string, ProtocolClient>();
+    public static Dictionary<string, ProtocolClient> TestProfiles = new Dictionary<string, ProtocolClient>(StringComparer.Ordinal);
 
     /// <summary>Random number generator.</summary>
     public static Random Rng = new Random();

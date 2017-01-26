@@ -37,7 +37,7 @@ namespace ProfileServer.Kernel
       Components = new ComponentManager();
 
       Configuration = new Config.Config();
-      ComponentDictionary = new Dictionary<string, Component>()
+      ComponentDictionary = new Dictionary<string, Component>(StringComparer.Ordinal)
       {
         { "Config.Config", Configuration },
         { "Data.Database", new Data.Database() },

@@ -79,8 +79,5 @@ namespace ProfileServer.Data.Models
       profileImageData = Data;
       return await ImageManager.SaveImageDataAsync(ProfileImage, profileImageData);
     }
-
-
-
   }
 }

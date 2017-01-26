@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace ProfileServer.Data.Models
 {
   /// <summary>
-  /// Database representation of IoP Identity profile that is hosted in the node's neighborhood.
+  /// Database representation of IoP Identity profile that is hosted in the profile server's neighborhood.
   /// </summary>
   public class NeighborIdentity : IdentityBase
   {

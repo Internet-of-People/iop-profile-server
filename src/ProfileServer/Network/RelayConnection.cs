@@ -72,7 +72,7 @@ namespace ProfileServer.Network
 
 
   /// <summary>
-  /// Implementation of client to client network channel over the node bridge.
+  /// Implementation of client to client network channel over the profile server bridge.
   /// </summary>
   public class RelayConnection : IDisposable
   {
@@ -211,7 +211,7 @@ namespace ProfileServer.Network
     /// connects to clAppService port and sends its initialization message within a reasonable time.
     /// </para>
     /// <para>
-    /// Then if relay status is WaitingForSecondInitMessage, the node receives a message from the first client 
+    /// Then if relay status is WaitingForSecondInitMessage, the profile server receives a message from the first client 
     /// on clAppService port, it starts the timer again, which now expires if the second client does not connect 
     /// and send its initial message within a reasonable time. 
     /// </para>
@@ -792,7 +792,7 @@ namespace ProfileServer.Network
             if (isCallee)
             {
               // The client is callee in a relay that is being initialized. The caller is waiting for callee's response and the callee has just disconnected
-              // from the node. This is situation 1) from the comment in ProcessMessageCallIdentityApplicationServiceRequestAsync.
+              // from the profile server. This is situation 1) from the comment in ProcessMessageCallIdentityApplicationServiceRequestAsync.
               // We have to send ERROR_NOT_AVAILABLE to the caller and destroy the relay.
               log.Trace("Callee disconnected from clCustomer port of relay '{0}', message will be sent to the caller and relay destroyed.", id);
               clientToSendMessages = caller;
@@ -867,7 +867,7 @@ namespace ProfileServer.Network
               clientToClose = otherClient;
 
               // Find all unfinished requests from this relay.
-              // When a client sends ApplicationServiceSendMessageRequest, the node creates ApplicationServiceReceiveMessageNotificationRequest 
+              // When a client sends ApplicationServiceSendMessageRequest, the profile server creates ApplicationServiceReceiveMessageNotificationRequest 
               // and adds it as an unfinished request with context set to RelayMessageContext, which contains the sender's ApplicationServiceSendMessageRequest.
               // This unfinished message is in the list of unfinished message of the recipient.
               List<UnfinishedRequest> unfinishedRelayRequests = Client.GetAndRemoveUnfinishedRequests();

@@ -40,8 +40,8 @@ namespace ProfileServer.Network
     /// <summary>
     /// How quickly in milliseconds after the component start will checkExpiredNeighborIdentitiesRefreshTimer signal for the first time.
     /// <para>
-    /// We want a certain delay here after the start of the server to allow getting fresh neighborhood information from the LBN server.
-    /// But if LBN server is not initialized by then, it does not matter, cleanup will be postponed.
+    /// We want a certain delay here after the start of the server to allow getting fresh neighborhood information from the LOC server.
+    /// But if LOC server is not initialized by then, it does not matter, cleanup will be postponed.
     /// </para>
     /// </summary>
     private const int CheckExpiredNeighborIdentitiesTimerStartDelay = 5 * 60 * 1000;
@@ -208,11 +208,11 @@ namespace ProfileServer.Network
           log.Trace("checkExpiredNeighborIdentitiesEvent activated.");
 
           LocationBasedNetwork locationBasedNetwork = (LocationBasedNetwork)Base.ComponentDictionary["Network.LocationBasedNetwork"];
-          if (locationBasedNetwork.LbnServerInitialized)
+          if (locationBasedNetwork.LocServerInitialized)
           {
             CheckExpiredNeighborIdentities();
           }
-          else log.Debug("LBN component is not in sync with the LBN server yet, checking expired neighbors will not be executed now.");
+          else log.Debug("LOC component is not in sync with the LOC server yet, checking expired neighbors will not be executed now.");
         } 
         else if (handles[index] == checkUnusedImagesEvent)
         {

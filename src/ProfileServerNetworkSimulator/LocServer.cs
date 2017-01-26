@@ -12,10 +12,10 @@ using System.Threading.Tasks;
 namespace ProfileServerNetworkSimulator
 {
   /// <summary>
-  /// Simulator of LBN server. With each profile server we spawn a LBN server 
+  /// Simulator of LOC server. With each profile server we spawn a LOC server 
   /// which will provide information about the neighborhood to the profile server.
   /// </summary>
-  public class LbnServer
+  public class LocServer
   {
     private PrefixLogger log;
 
@@ -65,17 +65,17 @@ namespace ProfileServerNetworkSimulator
     private SemaphoreSlim StreamWriteLock = new SemaphoreSlim(1);
 
     /// <summary>
-    /// Initializes the LBN server instance.
+    /// Initializes the LOC server instance.
     /// </summary>
     /// <param name="ProfileServer">Associated profile server.</param>
-    public LbnServer(ProfileServer ProfileServer)
+    public LocServer(ProfileServer ProfileServer)
     {
-      log = new PrefixLogger("ProfileServerSimulator.LbnServer", "[" + ProfileServer.Name + "] ");
+      log = new PrefixLogger("ProfileServerSimulator.LocServer", "[" + ProfileServer.Name + "] ");
       log.Trace("()");
 
       this.profileServer = ProfileServer;
       ipAddress = ProfileServer.IpAddress;
-      port = ProfileServer.LbnPort;
+      port = ProfileServer.LocPort;
 
       listener = new TcpListener(ipAddress, port);
       listener.Server.LingerState = new LingerOption(true, 0);
@@ -144,7 +144,7 @@ namespace ProfileServerNetworkSimulator
 
 
     /// <summary>
-    /// Frees resources used by the LBN server.
+    /// Frees resources used by the LOC server.
     /// </summary>
     public void Shutdown()
     {
@@ -381,7 +381,7 @@ namespace ProfileServerNetworkSimulator
                 if (setKeepAlive)
                 {
                   connectedProfileServerWantsUpdates = true;
-                  log.Debug("Profile server '{0}' is now connected to is LBN server and waiting for updates.", profileServer.Name);
+                  log.Debug("Profile server '{0}' is now connected to is LOC server and waiting for updates.", profileServer.Name);
                 }
               }
               else
@@ -780,12 +780,12 @@ namespace ProfileServerNetworkSimulator
     }
 
     /// <summary>
-    /// Creates LBN server's snapshot.
+    /// Creates LOC server's snapshot.
     /// </summary>
-    /// <returns>LBN server's snapshot.</returns>
-    public LbnServerSnapshot CreateSnapshot()
+    /// <returns>LOC server's snapshot.</returns>
+    public LocServerSnapshot CreateSnapshot()
     {
-      LbnServerSnapshot res = new LbnServerSnapshot()
+      LocServerSnapshot res = new LocServerSnapshot()
       {
         IpAddress = this.ipAddress.ToString(),
         NeighborsNames = this.neighbors.Keys.ToList(),

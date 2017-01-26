@@ -21,7 +21,7 @@ using ProfileServer.Network.CAN;
 namespace ProfileServer.Network
 {
   /// <summary>
-  /// Implements the logic behind processing incoming messages to the node.
+  /// Implements the logic behind processing incoming messages to the profile server.
   /// </summary>
   public class MessageProcessor
   {
@@ -205,15 +205,15 @@ namespace ProfileServer.Network
                         break;
 
                       case ConversationRequest.RequestTypeOneofCase.StopNeighborhoodUpdates:
-                        responseMessage = await ProcessMessageStopNeighborhoodUpdatesRequest(Client, IncomingMessage);
+                        responseMessage = await ProcessMessageStopNeighborhoodUpdatesRequestAsync(Client, IncomingMessage);
                         break;
 
                       case ConversationRequest.RequestTypeOneofCase.CanStoreData:
-                        responseMessage = await ProcessMessageCanStoreDataRequest(Client, IncomingMessage);
+                        responseMessage = await ProcessMessageCanStoreDataRequestAsync(Client, IncomingMessage);
                         break;
 
                       case ConversationRequest.RequestTypeOneofCase.CanPublishIpnsRecord:
-                        responseMessage = await ProcessMessageCanPublishIpnsRecordRequest(Client, IncomingMessage);
+                        responseMessage = await ProcessMessageCanPublishIpnsRecordRequestAsync(Client, IncomingMessage);
                         break;
 
                       default:
@@ -607,7 +607,7 @@ namespace ProfileServer.Network
 
     /// <summary>
     /// Processes GetIdentityInformationRequest message from client.
-    /// <para>Obtains information about identity that is hosted by the node.</para>
+    /// <para>Obtains information about identity that is hosted by the profile server.</para>
     /// </summary>
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
@@ -677,7 +677,7 @@ namespace ProfileServer.Network
           }
           else
           {
-            log.Trace("Identity ID '{0}' is not hosted by this node.", identityId.ToHex());
+            log.Trace("Identity ID '{0}' is not hosted by this profile server.", identityId.ToHex());
             res = messageBuilder.CreateErrorNotFoundResponse(RequestMessage);
           }
         }
@@ -768,8 +768,8 @@ namespace ProfileServer.Network
 
     /// <summary>
     /// Processes RegisterHostingRequest message from client.
-    /// <para>Registers a new customer client identity. The identity must not be hosted by the node already 
-    /// and the node must not have reached the maximal number of hosted clients. The newly created profile 
+    /// <para>Registers a new customer client identity. The identity must not be hosted by the profile server already 
+    /// and the profile server must not have reached the maximal number of hosted clients. The newly created profile 
     /// is empty and has to be initialized by the identity using UpdateProfileRequest.</para>
     /// </summary>
     /// <param name="Client">Client that sent the request.</param>
@@ -822,7 +822,7 @@ namespace ProfileServer.Network
                 // We do not have the identity in our client's database,
                 // OR we do have the identity in our client's database, but it's contract has been cancelled.
                 if (existingIdentity != null)
-                  log.Debug("Identity ID '{0}' is already a client of this node, but its contract has been cancelled.", Client.IdentityId.ToHex());
+                  log.Debug("Identity ID '{0}' is already a client of this profile server, but its contract has been cancelled.", Client.IdentityId.ToHex());
 
                 HostedIdentity identity = existingIdentity == null ? new HostedIdentity() : existingIdentity;
 
@@ -852,7 +852,7 @@ namespace ProfileServer.Network
               else
               {
                 // We have the identity in our client's database with an active contract.
-                log.Debug("Identity ID '{0}' is already a client of this node.", Client.IdentityId.ToHex());
+                log.Debug("Identity ID '{0}' is already a client of this profile server.", Client.IdentityId.ToHex());
                 res = messageBuilder.CreateErrorAlreadyExistsResponse(RequestMessage);
               }
             }
@@ -895,7 +895,7 @@ namespace ProfileServer.Network
     /// <summary>
     /// Processes CheckInRequest message from client.
     /// <para>It verifies the identity's public key against the signature of the challenge provided during the start of the conversation. 
-    /// The identity must be hosted on this node. If everything is OK, the identity is checked-in and the status of the conversation
+    /// The identity must be hosted on this profile server. If everything is OK, the identity is checked-in and the status of the conversation
     /// is upgraded to Authenticated.</para>
     /// </summary>
     /// <param name="Client">Client that sent the request.</param>
@@ -942,7 +942,7 @@ namespace ProfileServer.Network
               }
               else
               {
-                log.Debug("Identity '{0}' is not a client of this node.", Client.IdentityId.ToHex());
+                log.Debug("Identity '{0}' is not a client of this profile server.", Client.IdentityId.ToHex());
                 res = messageBuilder.CreateErrorNotFoundResponse(RequestMessage);
               }
             }
@@ -967,7 +967,7 @@ namespace ProfileServer.Network
       }
       else
       {
-        log.Warn("Challenge provided in the request does not match the challenge created by the node.");
+        log.Warn("Challenge provided in the request does not match the challenge created by the profile server.");
         res = messageBuilder.CreateErrorInvalidValueResponse(RequestMessage, "challenge");
       }
 
@@ -1016,7 +1016,7 @@ namespace ProfileServer.Network
       }
       else
       {
-        log.Warn("Challenge provided in the request does not match the challenge created by the node.");
+        log.Warn("Challenge provided in the request does not match the challenge created by the profile server.");
         res = messageBuilder.CreateErrorInvalidValueResponse(RequestMessage, "challenge");
       }
 
@@ -1035,12 +1035,10 @@ namespace ProfileServer.Network
     /// <returns>Response message to be sent to the client.</returns>
     /// <remarks>If a profile image or a thumbnail image is changed during this process, 
     /// the old files are deleted. It may happen that if the machine loses a power during 
-    /// this process just before old files are to be deleted, they will remain 
-    /// on the disk without any reference from the database, thus possibly creates a resource leak.
-    /// As this should not occur very often, we the implementation is left unsafe 
-    /// and if this is a problem for a long term existance of the node, 
-    /// the unreferenced files can be cleaned using some kind of maintanence process that will 
-    /// delete all image files unreferenced from the database.</remarks>
+    /// this process just before old files are to be deleted, they will remain on the disk 
+    /// without any reference from the database, thus possibly creates a resource leak.
+    /// This is solved by cleanup routines during the profile server start - see 
+    /// ProfileServer.Data.ImageManager.DeleteUnusedImages.</remarks>
     public async Task<Message> ProcessMessageUpdateProfileRequestAsync(IncomingClient Client, Message RequestMessage)
     {
       log.Trace("()");
@@ -1163,7 +1161,7 @@ namespace ProfileServer.Network
                   }
                   else
                   {
-                    log.Debug("Identity '{0}' is not a client of this node.", Client.IdentityId.ToHex());
+                    log.Debug("Identity '{0}' is not a client of this profile server.", Client.IdentityId.ToHex());
                     res = messageBuilder.CreateErrorNotFoundResponse(RequestMessage);
                   }
                 }
@@ -1203,7 +1201,7 @@ namespace ProfileServer.Network
           }
           else
           {
-            log.Debug("Identity '{0}' is not a client of this node.", Client.IdentityId.ToHex());
+            log.Debug("Identity '{0}' is not a client of this profile server.", Client.IdentityId.ToHex());
             res = messageBuilder.CreateErrorNotFoundResponse(RequestMessage);
           }
         }
@@ -1430,7 +1428,7 @@ namespace ProfileServer.Network
               }
               else
               {
-                log.Debug("Identity '{0}' is not a client of this node.", Client.IdentityId.ToHex());
+                log.Debug("Identity '{0}' is not a client of this profile server.", Client.IdentityId.ToHex());
                 res = messageBuilder.CreateErrorNotFoundResponse(RequestMessage);
               }
             }
@@ -1452,7 +1450,7 @@ namespace ProfileServer.Network
 
           if (success)
           {
-            if (cancelHostingAgreementRequest.RedirectToNewProfileServer) log.Debug("Identity '{0}' hosting agreement cancelled and redirection set to node '{1}'.", Client.IdentityId.ToHex(), cancelHostingAgreementRequest.NewProfileServerNetworkId.ToByteArray().ToHex());
+            if (cancelHostingAgreementRequest.RedirectToNewProfileServer) log.Debug("Identity '{0}' hosting agreement cancelled and redirection set to profile server ID '{1}'.", Client.IdentityId.ToHex(), cancelHostingAgreementRequest.NewProfileServerNetworkId.ToByteArray().ToHex());
             else log.Debug("Identity '{0}' hosting agreement cancelled and no redirection set.", Client.IdentityId.ToHex());
 
             res = messageBuilder.CreateCancelHostingAgreementResponse(RequestMessage);
@@ -1635,7 +1633,7 @@ namespace ProfileServer.Network
         IncomingClient callee = clientList.GetCheckedInClient(calleeIdentityId);
         if (callee != null)
         {
-          // The callee is hosted on the node, it is online and its profile is initialized.
+          // The callee is hosted on this profile server, it is online and its profile is initialized.
           if (callee.ApplicationServices.ContainsService(serviceName))
           {
             // All OK, create network relay and inform callee.
@@ -1787,7 +1785,7 @@ namespace ProfileServer.Network
 
     /// <summary>
     /// Processes ProfileStatsRequest message from client.
-    /// <para>Obtains identity profiles statistics from the node.</para>
+    /// <para>Obtains identity profiles statistics from the profile server.</para>
     /// </summary>
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
@@ -1852,16 +1850,17 @@ namespace ProfileServer.Network
     /// <summary>Maximum amount of time in milliseconds that we want to spend on regular expression matching of extraData of a single profile.</summary>
     public const int ProfileSearchMaxExtraDataMatchingTimeSingleMs = 25;
 
-    /// <summary>Maximum number of results the node can send in the response if images are included.</summary>
+    /// <summary>Maximum number of results the profile server can send in the response if images are included.</summary>
     public const int ProfileSearchMaxResponseRecordsWithImage = 100;
 
-    /// <summary>Maximum number of results the node can send in the response if images are not included.</summary>
+    /// <summary>Maximum number of results the profile server can send in the response if images are not included.</summary>
     public const int ProfileSearchMaxResponseRecordsWithoutImage = 1000;
 
 
     /// <summary>
     /// Processes ProfileSearchRequest message from client.
-    /// <para>Performs a search operation to find all matching identities that this node hosts, possibly including identities hosted in the node's neighborhood.</para>
+    /// <para>Performs a search operation to find all matching identities that this profile server hosts, 
+    /// possibly including identities hosted in the profile server's neighborhood.</para>
     /// </summary>
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
@@ -1902,14 +1901,14 @@ namespace ProfileServer.Network
 
             watch.Start();
 
-            // First, we try to find enough results among identities hosted on this node.
+            // First, we try to find enough results among identities hosted on this profile server.
             List<IdentityNetworkProfileInformation> searchResultsNeighborhood = new List<IdentityNetworkProfileInformation>();
             List<IdentityNetworkProfileInformation> searchResultsLocal = await ProfileSearch(unitOfWork.HostedIdentityRepository, maxResults, typeFilter, nameFilter, locationFilter, radius, extraDataFilter, includeImages, watch);
             if (searchResultsLocal != null)
             {
               bool localServerOnly = true;
               bool error = false;
-              // If possible and needed we try to find more results among identities hosted in this node's neighborhood.
+              // If possible and needed we try to find more results among identities hosted in this profile server's neighborhood.
               if (!profileSearchRequest.IncludeHostedOnly && (searchResultsLocal.Count < maxResults))
               {
                 localServerOnly = false;
@@ -1942,8 +1941,8 @@ namespace ProfileServer.Network
                   responseResults.AddRange(allResults.GetRange(0, (int)maxResponseResults));
                 }
 
-                List<byte[]> coveredNodes = await ProfileSearchGetCoveredNodes(unitOfWork, localServerOnly);
-                res = messageBuilder.CreateProfileSearchResponse(RequestMessage, (uint)allResults.Count, maxResponseResults, coveredNodes, responseResults);
+                List<byte[]> coveredServers = await ProfileSearchGetCoveredServers(unitOfWork, localServerOnly);
+                res = messageBuilder.CreateProfileSearchResponse(RequestMessage, (uint)allResults.Count, maxResponseResults, coveredServers, responseResults);
               }
             }
             else log.Error("Profile search among hosted identities failed.");
@@ -1964,16 +1963,16 @@ namespace ProfileServer.Network
 
 
     /// <summary>
-    /// Obtains list of covered nodes for a profile search query.
-    /// <para>If the search used the local profile server database only, the result is simply ID of the local profile server.
+    /// Obtains list of covered profile servers for a profile search query.
+    /// <para>If the search used the local profile server database only, the result is simply ID of the local profile server. 
     /// Otherwise, it is its ID and a list of all its neighbors' IDs.</para>
     /// </summary>
     /// <param name="UnitOfWork">Unit of work instance.</param>
     /// <param name="LocalServerOnly">true if the search query only used the local profile server, false otherwise.</param>
     /// <returns>List of network IDs of profile servers whose database could be used to create the result.</returns>
-    /// <remarks>Note that the covered nodes list is not guaranteed to be accurate. The search query processing is not atomic 
+    /// <remarks>Note that the covered profile server list is not guaranteed to be accurate. The search query processing is not atomic 
     /// and during the process it may happen that a neighbor server can be added or removed from the list of neighbors.</remarks>
-    private async Task<List<byte[]>> ProfileSearchGetCoveredNodes(UnitOfWork UnitOfWork, bool LocalServerOnly)
+    private async Task<List<byte[]>> ProfileSearchGetCoveredServers(UnitOfWork UnitOfWork, bool LocalServerOnly)
     {
       log.Trace("()");
 
@@ -3143,7 +3142,8 @@ namespace ProfileServer.Network
       bool error = false;
       byte[] neighborId = Client.IdentityId;
 
-      // First, we verify that the client is our neighbor.
+      int sharedProfilesCount = 0;
+      // First, we verify that the client is our neighbor and how many profiles it shares with us.
       using (UnitOfWork unitOfWork = new UnitOfWork())
       {
         Neighbor neighbor = (await unitOfWork.NeighborRepository.GetAsync(n => n.NeighborId == neighborId)).FirstOrDefault();
@@ -3158,6 +3158,10 @@ namespace ProfileServer.Network
           log.Warn("Share profile update request came from client ID '{0}', who is our neighbor, but we have not finished the initialization process with it yet.", neighborId.ToHex());
           res = messageBuilder.CreateErrorRejectedResponse(RequestMessage);
           error = true;
+        } else
+        {
+          sharedProfilesCount = neighbor.SharedProfiles;
+          log.Trace("Neighbor ID {0} currently shares {1} profiles with the profile server.", sharedProfilesCount, neighborId.ToHex());
         }
       }
 
@@ -3180,15 +3184,27 @@ namespace ProfileServer.Network
 
       // doRefresh is true, if at least one of the update items is of type Refresh.
       bool doRefresh = false;
+
+      // List of network IDs of profiles that were validated in this batch already.
+      // It is used to find multiple updates within the batch that work with the same profile, which is not allowed.
+      HashSet<byte[]> usedProfileIdsInBatch = new HashSet<byte[]>(StructuralEqualityComparer<byte[]>.Default);
+
       while (itemIndex < neighborhoodSharedProfileUpdateRequest.Items.Count)
       {
         SharedProfileUpdateItem updateItem = neighborhoodSharedProfileUpdateRequest.Items[itemIndex];
         Message errorResponse;
-        if (ValidateSharedProfileUpdateItem(updateItem, itemIndex, Client.MessageBuilder, RequestMessage, out errorResponse))
+        if (ValidateSharedProfileUpdateItem(updateItem, itemIndex, sharedProfilesCount, usedProfileIdsInBatch, Client.MessageBuilder, RequestMessage, out errorResponse))
         {
+          // Modify sharedProfilesCount to reflect the item we just validated.
+          // In case of delete operation, we have not checked the existence yet, 
+          // but it will be checked prior any problem could be caused by that.
+          if (updateItem.ActionTypeCase == SharedProfileUpdateItem.ActionTypeOneofCase.Add) sharedProfilesCount++;
+          else if (updateItem.ActionTypeCase == SharedProfileUpdateItem.ActionTypeOneofCase.Delete) sharedProfilesCount--;
+
+          // Is new image being transferred?
           byte[] newImageData = null;
           if (updateItem.ActionTypeCase == SharedProfileUpdateItem.ActionTypeOneofCase.Add && updateItem.Add.SetThumbnailImage) newImageData = updateItem.Add.ThumbnailImage.ToByteArray();
-          else if (updateItem.ActionTypeCase == SharedProfileUpdateItem.ActionTypeOneofCase.Add && updateItem.Add.SetThumbnailImage) newImageData = updateItem.Change.ThumbnailImage.ToByteArray();
+          else if (updateItem.ActionTypeCase == SharedProfileUpdateItem.ActionTypeOneofCase.Change && updateItem.Change.SetThumbnailImage) newImageData = updateItem.Change.ThumbnailImage.ToByteArray();
 
           if ((newImageData != null) && (newImageData.Length != 0))
           {
@@ -3227,7 +3243,7 @@ namespace ProfileServer.Network
       // But if we detect duplicity of identity with Add operation, or we can not find identity 
       // with Change or Delete action, we end earlier.
       // We will process the data in batches of max 100 items, not to occupy the database locks for too long.
-      log.Trace("Saving {0} valid profiles.", itemIndex);
+      log.Trace("Saving {0} valid profiles changes.", itemIndex);
 
       // imagesToDelete is a list of image hashes that were replaced and the corresponding image files should be deleted.
       List<byte[]> imagesToDelete = new List<byte[]>();
@@ -3251,34 +3267,50 @@ namespace ProfileServer.Network
           // List of item image hashes of images that were removed during this batch.
           List<byte[]> batchDeletedImageHashes = new List<byte[]>();
 
-          DatabaseLock lockObject = UnitOfWork.NeighborIdentityLock;
-          using (IDbContextTransaction transaction = await unitOfWork.BeginTransactionWithLockAsync(lockObject))
+          DatabaseLock[] lockObjects = new DatabaseLock[] { UnitOfWork.NeighborIdentityLock, UnitOfWork.NeighborLock };
+          using (IDbContextTransaction transaction = await unitOfWork.BeginTransactionWithLockAsync(lockObjects))
           {
             bool success = false;
             bool saveDb = false;
             try
             {
-              for (int loopIndex = 0; loopIndex < 100; loopIndex++)
+              Neighbor neighbor = (await unitOfWork.NeighborRepository.GetAsync(n => n.NeighborId == neighborId)).FirstOrDefault();
+              if (neighbor != null)
               {
-                SharedProfileUpdateItem updateItem = neighborhoodSharedProfileUpdateRequest.Items[index];
+                int oldSharedProfilesCount = neighbor.SharedProfiles;
+                for (int loopIndex = 0; loopIndex < 100; loopIndex++)
+                {
+                  SharedProfileUpdateItem updateItem = neighborhoodSharedProfileUpdateRequest.Items[index];
 
-                byte[] itemImageHash = null;
-                if (!itemsImageHashes.TryGetValue(index, out itemImageHash))
-                  itemImageHash = null;
+                  byte[] itemImageHash = null;
+                  if (!itemsImageHashes.TryGetValue(index, out itemImageHash))
+                    itemImageHash = null;
 
-                StoreSharedProfileUpdateResult storeResult = await StoreSharedProfileUpdateToDatabase(unitOfWork, updateItem, index, neighborId, itemImageHash, messageBuilder, RequestMessage);
-                if (storeResult.SaveDb) saveDb = true;
-                if (storeResult.Error) error = true;
-                if (storeResult.ErrorResponse != null) res = storeResult.ErrorResponse;
-                if (storeResult.ImageToDelete != null) batchDeletedImageHashes.Add(storeResult.ImageToDelete);
-                if (storeResult.ItemImageUsed) batchUsedImageItemIndexes.Add(index);
+                  StoreSharedProfileUpdateResult storeResult = await StoreSharedProfileUpdateToDatabase(unitOfWork, updateItem, index, neighbor, itemImageHash, messageBuilder, RequestMessage);
+                  if (storeResult.SaveDb) saveDb = true;
+                  if (storeResult.Error) error = true;
+                  if (storeResult.ErrorResponse != null) res = storeResult.ErrorResponse;
+                  if (storeResult.ImageToDelete != null) batchDeletedImageHashes.Add(storeResult.ImageToDelete);
+                  if (storeResult.ItemImageUsed) batchUsedImageItemIndexes.Add(index);
 
-                // Error here means that we want to save all already processed items to the database
-                // and quite the loop right after that, the response is filled with error response already.
-                if (error) break;
+                  // Error here means that we want to save all already processed items to the database
+                  // and quite the loop right after that, the response is filled with error response already.
+                  if (error) break;
 
-                index++;
-                if (index >= itemIndex) break;
+                  index++;
+                  if (index >= itemIndex) break;
+                }
+
+                if (oldSharedProfilesCount != neighbor.SharedProfiles)
+                {
+                  unitOfWork.NeighborRepository.Update(neighbor);
+                  saveDb = true;
+                }
+              }
+              else
+              {
+                log.Error("Unable to find neighbor ID '{0}', sending ERROR_REJECTED response.", neighborId.ToHex());
+                res = messageBuilder.CreateErrorRejectedResponse(RequestMessage);
               }
 
               if (saveDb)
@@ -3315,7 +3347,7 @@ namespace ProfileServer.Network
               unitOfWork.SafeTransactionRollback(transaction);
             }
 
-            unitOfWork.ReleaseLock(lockObject);
+            unitOfWork.ReleaseLock(lockObjects);
           }
 
           if (error) break;
@@ -3368,15 +3400,15 @@ namespace ProfileServer.Network
     /// <param name="UnitOfWork">Instance of unit of work.</param>
     /// <param name="UpdateItem">Update item that is to be processed.</param>
     /// <param name="UpdateItemIndex">Index of the item within the request.</param>
-    /// <param name="NeighborId">Identifier of the neighbor that sent the request.</param>
+    /// <param name="Neighbor">Identifier of the neighbor that sent the request.</param>
     /// <param name="ItemImageHash">Hash of the image related to this item, or null if this item does not have a related image.</param>
     /// <param name="MessageBuilder">Neighbor client's message builder.</param>
     /// <param name="RequestMessage">Original request message sent by the neighbor.</param>
     /// <returns>Result described by StoreSharedProfileUpdateResult class.</returns>
     /// <remarks>The caller of this function is responsible to call this function within a database transaction with acquired NeighborIdentityLock.</remarks>
-    private async Task<StoreSharedProfileUpdateResult> StoreSharedProfileUpdateToDatabase(UnitOfWork UnitOfWork, SharedProfileUpdateItem UpdateItem, int UpdateItemIndex, byte[] NeighborId, byte[] ItemImageHash, MessageBuilder MessageBuilder, Message RequestMessage)
+    private async Task<StoreSharedProfileUpdateResult> StoreSharedProfileUpdateToDatabase(UnitOfWork UnitOfWork, SharedProfileUpdateItem UpdateItem, int UpdateItemIndex, Neighbor Neighbor, byte[] ItemImageHash, MessageBuilder MessageBuilder, Message RequestMessage)
     {
-      log.Trace("(UpdateItemIndex:{0})", UpdateItemIndex);
+      log.Trace("(UpdateItemIndex:{0},Neighbor.SharedProfiles:{1})", UpdateItemIndex, Neighbor.SharedProfiles);
 
       StoreSharedProfileUpdateResult res = new StoreSharedProfileUpdateResult()
       {
@@ -3390,19 +3422,27 @@ namespace ProfileServer.Network
       {
         case SharedProfileUpdateItem.ActionTypeOneofCase.Add:
           {
+            if (Neighbor.SharedProfiles >= IdentityBase.MaxHostedIdentities)
+            {
+              log.Error("Neighbor ID '{0}' already shares the maximum number of profiles.", Neighbor.NeighborId.ToHex());
+              res.ErrorResponse = MessageBuilder.CreateErrorInvalidValueResponse(RequestMessage, UpdateItemIndex + ".add");
+              res.Error = true;
+              break;
+            }
+
             SharedProfileAddItem addItem = UpdateItem.Add;
             byte[] pubKey = addItem.IdentityPublicKey.ToByteArray();
             byte[] identityId = Crypto.Sha256(pubKey);
 
             // Identity already exists if there exists a NeighborIdentity with same identity ID and the same hosting server ID.
-            NeighborIdentity existingIdentity = (await UnitOfWork.NeighborIdentityRepository.GetAsync(i => (i.IdentityId == identityId) && (i.HostingServerId == NeighborId))).FirstOrDefault();
+            NeighborIdentity existingIdentity = (await UnitOfWork.NeighborIdentityRepository.GetAsync(i => (i.IdentityId == identityId) && (i.HostingServerId == Neighbor.NeighborId))).FirstOrDefault();
             if (existingIdentity == null)
             {
               GpsLocation location = new GpsLocation(addItem.Latitude, addItem.Longitude);
               NeighborIdentity newIdentity = new NeighborIdentity()
               {
                 IdentityId = identityId,
-                HostingServerId = NeighborId,
+                HostingServerId = Neighbor.NeighborId,
                 PublicKey = pubKey,
                 Version = addItem.Version.ToByteArray(),
                 Name = addItem.Name,
@@ -3417,11 +3457,12 @@ namespace ProfileServer.Network
               res.ItemImageUsed = ItemImageHash != null;
 
               await UnitOfWork.NeighborIdentityRepository.InsertAsync(newIdentity);
+              Neighbor.SharedProfiles++;
               res.SaveDb = true;
             }
             else
             {
-              log.Error("Identity ID '{0}' already exists with hosting server ID '{1}'.", identityId.ToHex(), NeighborId.ToHex());
+              log.Error("Identity ID '{0}' already exists with hosting server ID '{1}'.", identityId.ToHex(), Neighbor.NeighborId.ToHex());
               res.ErrorResponse = MessageBuilder.CreateErrorInvalidValueResponse(RequestMessage, UpdateItemIndex + ".add.identityPublicKey");
               res.Error = true;
             }
@@ -3435,7 +3476,7 @@ namespace ProfileServer.Network
             byte[] identityId = changeItem.IdentityNetworkId.ToByteArray();
 
             // Identity already exists if there exists a NeighborIdentity with same identity ID and the same hosting server ID.
-            NeighborIdentity existingIdentity = (await UnitOfWork.NeighborIdentityRepository.GetAsync(i => (i.IdentityId == identityId) && (i.HostingServerId == NeighborId))).FirstOrDefault();
+            NeighborIdentity existingIdentity = (await UnitOfWork.NeighborIdentityRepository.GetAsync(i => (i.IdentityId == identityId) && (i.HostingServerId == Neighbor.NeighborId))).FirstOrDefault();
             if (existingIdentity != null)
             {
               if (changeItem.SetVersion) existingIdentity.Version = changeItem.Version.ToByteArray();
@@ -3462,7 +3503,7 @@ namespace ProfileServer.Network
             }
             else
             {
-              log.Error("Identity ID '{0}' does exists with hosting server ID '{1}'.", identityId.ToHex(), NeighborId.ToHex());
+              log.Error("Identity ID '{0}' does exists with hosting server ID '{1}'.", identityId.ToHex(), Neighbor.NeighborId.ToHex());
               res.ErrorResponse = MessageBuilder.CreateErrorInvalidValueResponse(RequestMessage, UpdateItemIndex + ".change.identityNetworkId");
               res.Error = true;
             }
@@ -3476,17 +3517,18 @@ namespace ProfileServer.Network
             byte[] identityId = deleteItem.IdentityNetworkId.ToByteArray();
 
             // Identity already exists if there exists a NeighborIdentity with same identity ID and the same hosting server ID.
-            NeighborIdentity existingIdentity = (await UnitOfWork.NeighborIdentityRepository.GetAsync(i => (i.IdentityId == identityId) && (i.HostingServerId == NeighborId))).FirstOrDefault();
+            NeighborIdentity existingIdentity = (await UnitOfWork.NeighborIdentityRepository.GetAsync(i => (i.IdentityId == identityId) && (i.HostingServerId == Neighbor.NeighborId))).FirstOrDefault();
             if (existingIdentity != null)
             {
               res.ImageToDelete = existingIdentity.ThumbnailImage;
 
               UnitOfWork.NeighborIdentityRepository.Delete(existingIdentity);
+              Neighbor.SharedProfiles--;
               res.SaveDb = true;
             }
             else
             {
-              log.Error("Identity ID '{0}' does exists with hosting server ID '{1}'.", identityId.ToHex(), NeighborId.ToHex());
+              log.Error("Identity ID '{0}' does exists with hosting server ID '{1}'.", identityId.ToHex(), Neighbor.NeighborId.ToHex());
               res.ErrorResponse = MessageBuilder.CreateErrorInvalidValueResponse(RequestMessage, UpdateItemIndex + ".delete.identityNetworkId");
               res.Error = true;
             }
@@ -3547,13 +3589,15 @@ namespace ProfileServer.Network
     /// </summary>
     /// <param name="UpdateItem">Update item to validate.</param>
     /// <param name="Index">Item index in the update message.</param>
+    /// <param name="SharedProfilesCount">Number of profiles the neighbor already shares with the profile server.</param>
+    /// <param name="UsedProfileIdsInBatch">List of profile network IDs of already validated items of this batch.</param>
     /// <param name="MessageBuilder">Client's network message builder.</param>
     /// <param name="RequestMessage">Full request message received by the client.</param>
     /// <param name="ErrorResponse">If the validation fails, this is filled with response message to be sent to the neighbor.</param>
     /// <returns>true if the validation is successful, false otherwise.</returns>
-    public bool ValidateSharedProfileUpdateItem(SharedProfileUpdateItem UpdateItem, int Index, MessageBuilder MessageBuilder, Message RequestMessage, out Message ErrorResponse)
+    public bool ValidateSharedProfileUpdateItem(SharedProfileUpdateItem UpdateItem, int Index, int SharedProfilesCount, HashSet<byte[]> UsedProfileIdsInBatch, MessageBuilder MessageBuilder, Message RequestMessage, out Message ErrorResponse)
     {
-      log.Trace("(Index:{0})", Index);
+      log.Trace("(Index:{0},SharedProfilesCount:{1})", Index, SharedProfilesCount);
 
       bool res = false;
       ErrorResponse = null;
@@ -3561,15 +3605,15 @@ namespace ProfileServer.Network
       switch (UpdateItem.ActionTypeCase)
       {
         case SharedProfileUpdateItem.ActionTypeOneofCase.Add:
-          res = ValidateSharedProfileAddItem(UpdateItem.Add, Index, MessageBuilder, RequestMessage, out ErrorResponse);
+          res = ValidateSharedProfileAddItem(UpdateItem.Add, Index, SharedProfilesCount, UsedProfileIdsInBatch, MessageBuilder, RequestMessage, out ErrorResponse);
           break;
 
         case SharedProfileUpdateItem.ActionTypeOneofCase.Change:
-          res = ValidateSharedProfileChangeItem(UpdateItem.Change, Index, MessageBuilder, RequestMessage, out ErrorResponse);
+          res = ValidateSharedProfileChangeItem(UpdateItem.Change, Index, UsedProfileIdsInBatch, MessageBuilder, RequestMessage, out ErrorResponse);
           break;
 
         case SharedProfileUpdateItem.ActionTypeOneofCase.Delete:
-          res = ValidateSharedProfileDeleteItem(UpdateItem.Delete, Index, MessageBuilder, RequestMessage, out ErrorResponse);
+          res = ValidateSharedProfileDeleteItem(UpdateItem.Delete, Index, UsedProfileIdsInBatch, MessageBuilder, RequestMessage, out ErrorResponse);
           break;
 
         case SharedProfileUpdateItem.ActionTypeOneofCase.Refresh:
@@ -3592,34 +3636,57 @@ namespace ProfileServer.Network
     /// </summary>
     /// <param name="AddItem">Add item to validate.</param>
     /// <param name="Index">Item index in the update message.</param>
+    /// <param name="SharedProfilesCount">Number of profiles the neighbor already shares with the profile server.</param>
+    /// <param name="UsedProfileIdsInBatch">List of profile network IDs of already validated items of this batch.</param>
     /// <param name="MessageBuilder">Client's network message builder.</param>
     /// <param name="RequestMessage">Full request message received by the client.</param>
     /// <param name="ErrorResponse">If the validation fails, this is filled with response message to be sent to the neighbor.</param>
     /// <returns>true if the validation is successful, false otherwise.</returns>
-    public bool ValidateSharedProfileAddItem(SharedProfileAddItem AddItem, int Index, MessageBuilder MessageBuilder, Message RequestMessage, out Message ErrorResponse)
+    public bool ValidateSharedProfileAddItem(SharedProfileAddItem AddItem, int Index, int SharedProfilesCount, HashSet<byte[]> UsedProfileIdsInBatch, MessageBuilder MessageBuilder, Message RequestMessage, out Message ErrorResponse)
     {
-      log.Trace("(Index:{0})", Index);
+      log.Trace("(Index:{0},SharedProfilesCount:{1})", Index, SharedProfilesCount);
 
       bool res = false;
       ErrorResponse = null;
 
       string details = null;
 
-      SemVer version = new SemVer(AddItem.Version);
-      // Currently only supported version is 1.0.0.
-      if (!version.Equals(SemVer.V100))
+      if (SharedProfilesCount >= IdentityBase.MaxHostedIdentities)
       {
-        log.Debug("Unsupported version '{0}'.", version);
-        details = "add.version";
+        log.Debug("Target server already sent too many profiles.");
+        details = "add";
       }
 
+      if (details == null)
+      {
+        SemVer version = new SemVer(AddItem.Version);
+        // Currently only supported version is 1.0.0.
+        if (!version.Equals(SemVer.V100))
+        {
+          log.Debug("Unsupported version '{0}'.", version);
+          details = "add.version";
+        }
+      }
 
       if (details == null)
       {
         // We do not verify identity duplicity here, that is being done in ProcessMessageNeighborhoodSharedProfileUpdateRequestAsync.
         byte[] pubKey = AddItem.IdentityPublicKey.ToByteArray();
         bool pubKeyValid = (0 < pubKey.Length) && (pubKey.Length <= IdentityBase.MaxPublicKeyLengthBytes);
-        if (!pubKeyValid)
+        if (pubKeyValid)
+        {
+          byte[] identityId = Crypto.Sha256(pubKey);
+          if (!UsedProfileIdsInBatch.Contains(identityId))
+          {
+            UsedProfileIdsInBatch.Add(identityId);
+          }
+          else
+          {
+            log.Debug("ID '{0}' (public key '{1}') already processed in this request.", identityId.ToHex(), pubKey.ToHex());
+            details = "add.identityPublicKey";
+          }
+        }
+        else 
         {
           log.Debug("Invalid public key length '{0}'.", pubKey.Length);
           details = "add.identityPublicKey";
@@ -3640,7 +3707,7 @@ namespace ProfileServer.Network
       if (details == null)
       {
         int typeSize = Encoding.UTF8.GetByteCount(AddItem.Type);
-        bool typeValid = typeSize <= IdentityBase.MaxProfileTypeLengthBytes;
+        bool typeValid = (0 < typeSize) && (typeSize <= IdentityBase.MaxProfileTypeLengthBytes);
         if (!typeValid)
         {
           log.Debug("Invalid type size in bytes {0}.", typeSize);
@@ -3672,11 +3739,11 @@ namespace ProfileServer.Network
 
       if (details == null)
       {
-        GpsLocation locLon = new GpsLocation(AddItem.Longitude, 0);
+        GpsLocation locLon = new GpsLocation(0, AddItem.Longitude);
         if (!locLon.IsValid())
         {
           log.Debug("Invalid longitude {0}.", AddItem.Longitude);
-          details = "add.latitude";
+          details = "add.longitude";
         }
       }
 
@@ -3708,11 +3775,12 @@ namespace ProfileServer.Network
     /// </summary>
     /// <param name="ChangeItem">Change item to validate.</param>
     /// <param name="Index">Item index in the update message.</param>
+    /// <param name="UsedProfileIdsInBatch">List of profile network IDs of already validated items of this batch.</param>
     /// <param name="MessageBuilder">Client's network message builder.</param>
     /// <param name="RequestMessage">Full request message received by the client.</param>
     /// <param name="ErrorResponse">If the validation fails, this is filled with response message to be sent to the neighbor.</param>
     /// <returns>true if the validation is successful, false otherwise.</returns>
-    public bool ValidateSharedProfileChangeItem(SharedProfileChangeItem ChangeItem, int Index, MessageBuilder MessageBuilder, Message RequestMessage, out Message ErrorResponse)
+    public bool ValidateSharedProfileChangeItem(SharedProfileChangeItem ChangeItem, int Index, HashSet<byte[]> UsedProfileIdsInBatch, MessageBuilder MessageBuilder, Message RequestMessage, out Message ErrorResponse)
     {
       log.Trace("(Index:{0})", Index);
 
@@ -3724,7 +3792,19 @@ namespace ProfileServer.Network
       byte[] identityId = ChangeItem.IdentityNetworkId.ToByteArray();
       // We do not verify identity existence here, that is being done in ProcessMessageNeighborhoodSharedProfileUpdateRequestAsync.
       bool identityIdValid = identityId.Length == IdentityBase.IdentifierLength;
-      if (!identityIdValid)
+      if (identityIdValid)
+      {
+        if (!UsedProfileIdsInBatch.Contains(identityId))
+        {
+          UsedProfileIdsInBatch.Add(identityId);
+        }
+        else
+        {
+          log.Debug("ID '{0}' already processed in this request.", identityId.ToHex());
+          details = "change.identityNetworkId";
+        }
+      }
+      else 
       {
         log.Debug("Invalid identity ID length '{0}'.", identityId.Length);
         details = "change.identityNetworkId";
@@ -3792,11 +3872,11 @@ namespace ProfileServer.Network
 
       if ((details == null) && ChangeItem.SetLocation)
       {
-        GpsLocation locLon = new GpsLocation(ChangeItem.Longitude, 0);
+        GpsLocation locLon = new GpsLocation(0, ChangeItem.Longitude);
         if (!locLon.IsValid())
         {
           log.Debug("Invalid longitude {0}.", ChangeItem.Longitude);
-          details = "change.latitude";
+          details = "change.longitude";
         }
       }
 
@@ -3829,11 +3909,12 @@ namespace ProfileServer.Network
     /// </summary>
     /// <param name="DeleteItem">Delete item to validate.</param>
     /// <param name="Index">Item index in the update message.</param>
+    /// <param name="UsedProfileIdsInBatch">List of profile network IDs of already validated items of this batch.</param>
     /// <param name="MessageBuilder">Client's network message builder.</param>
     /// <param name="RequestMessage">Full request message received by the client.</param>
     /// <param name="ErrorResponse">If the validation fails, this is filled with response message to be sent to the neighbor.</param>
     /// <returns>true if the validation is successful, false otherwise.</returns>
-    public bool ValidateSharedProfileDeleteItem(SharedProfileDeleteItem DeleteItem, int Index, MessageBuilder MessageBuilder, Message RequestMessage, out Message ErrorResponse)
+    public bool ValidateSharedProfileDeleteItem(SharedProfileDeleteItem DeleteItem, int Index, HashSet<byte[]> UsedProfileIdsInBatch, MessageBuilder MessageBuilder, Message RequestMessage, out Message ErrorResponse)
     {
       log.Trace("(Index:{0})", Index);
 
@@ -3845,8 +3926,20 @@ namespace ProfileServer.Network
       byte[] identityId = DeleteItem.IdentityNetworkId.ToByteArray();
       // We do not verify identity existence here, that is being done in ProcessMessageNeighborhoodSharedProfileUpdateRequestAsync.
       bool identityIdValid = identityId.Length == IdentityBase.IdentifierLength;
-      if (!identityIdValid)
+      if (identityIdValid)
       {
+        if (!UsedProfileIdsInBatch.Contains(identityId))
+        {
+          UsedProfileIdsInBatch.Add(identityId);
+        }
+        else
+        {
+          log.Debug("ID '{0}' already processed in this request.", identityId.ToHex());
+          details = "delete.identityNetworkId";
+        }
+      }
+      else
+      { 
         log.Debug("Invalid identity ID length '{0}'.", identityId.Length);
         details = "delete.identityNetworkId";
       }
@@ -3870,7 +3963,7 @@ namespace ProfileServer.Network
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public async Task<Message> ProcessMessageStopNeighborhoodUpdatesRequest(IncomingClient Client, Message RequestMessage)
+    public async Task<Message> ProcessMessageStopNeighborhoodUpdatesRequestAsync(IncomingClient Client, Message RequestMessage)
     {
       log.Trace("()");
 
@@ -4068,7 +4161,7 @@ namespace ProfileServer.Network
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public async Task<Message> ProcessMessageCanStoreDataRequest(IncomingClient Client, Message RequestMessage)
+    public async Task<Message> ProcessMessageCanStoreDataRequestAsync(IncomingClient Client, Message RequestMessage)
     {
       log.Trace("()");
 
@@ -4190,7 +4283,7 @@ namespace ProfileServer.Network
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public async Task<Message> ProcessMessageCanPublishIpnsRecordRequest(IncomingClient Client, Message RequestMessage)
+    public async Task<Message> ProcessMessageCanPublishIpnsRecordRequestAsync(IncomingClient Client, Message RequestMessage)
     {
       log.Trace("()");
 

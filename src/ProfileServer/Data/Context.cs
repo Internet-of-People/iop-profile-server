@@ -17,7 +17,7 @@ namespace ProfileServer.Data
     /// <summary>Name of the database file.</summary>
     public const string DatabaseFileName = "ProfileServer.db";
 
-    /// <summary>Access to node's settings in the database.</summary>
+    /// <summary>Access to profile server's settings in the database.</summary>
     public DbSet<Setting> Settings { get; set; }
 
     /// <summary>Access to IoP locally hosted identities in the database.</summary>
@@ -68,7 +68,7 @@ namespace ProfileServer.Data
       modelBuilder.Entity<HostedIdentity>().Property(i => i.InitialLocationLatitude).HasColumnType("decimal(9,6)").IsRequired(true);
       modelBuilder.Entity<HostedIdentity>().Property(i => i.InitialLocationLongitude).HasColumnType("decimal(9,6)").IsRequired(true);
 
-      // In case of neighbors, it is possible that a single identity is hosted on multiple nodes.
+      // In case of neighbors, it is possible that a single identity is hosted on multiple profile servers.
       // Therefore IdentityId on itself does not form a unique key.
       modelBuilder.Entity<NeighborIdentity>().HasKey(i => new { i.DbId });
       modelBuilder.Entity<NeighborIdentity>().HasIndex(i => new { i.HostingServerId, i.IdentityId }).IsUnique();

@@ -13,7 +13,7 @@ namespace ProfileServer.Data.Models
 {
   /// <summary>
   /// Database representation of profile server neighbor. A neighbor is another profile server within the profile server's neighborhood,
-  /// which was announced to the profile server from its LBN server. There are two directions of neighborhood relationship,
+  /// which was announced to the profile server from its LOC server. There are two directions of neighborhood relationship,
   /// this represents only the servers that are this profile server's neighbors, but not necessarily vice versa. The profile server 
   /// asks its neighbors to share their profile databases with it. This allows to the profile server to include profiles hosted 
   /// on the neighbors in its own search queries.
@@ -78,5 +78,8 @@ namespace ProfileServer.Data.Models
     /// </summary>
     /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
     public DateTime? LastRefreshTime { get; set; }
+
+    /// <summary>Number of shared profiles that the profile server received from this neighbor.</summary>
+    public int SharedProfiles { get; set; }
   }
 }

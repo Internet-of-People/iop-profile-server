@@ -588,10 +588,10 @@ namespace ProfileServerProtocolTests.Tests
 
 
     /// <summary>
-    /// Verifies contents of list of relationships returned by the node against the expected list of cards.
+    /// Verifies contents of list of relationships returned by the profile server against the expected list of cards.
     /// </summary>
     /// <param name="CardNumbers">Numbers of cards that are expected to be in the relationship list.</param>
-    /// <param name="RelationshipList">Card list returned by the node.</param>
+    /// <param name="RelationshipList">Card list returned by the profile server.</param>
     /// <returns>true if the <paramref name="RelationshipList"/> contains cards specified by card numbers in <paramref name="CardNumbers"/>.</returns>
     public bool CheckRelationships(HashSet<int> CardNumbers, IEnumerable<IdentityRelationship> RelationshipList)
     {

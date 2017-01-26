@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace ProfileServer.Data.Models
 {
   /// <summary>
-  /// Database representation of node settings in key-value format.
+  /// Database representation of profile server settings in key-value format.
   /// </summary>
   public class Setting
   {

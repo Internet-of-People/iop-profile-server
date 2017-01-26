@@ -331,7 +331,7 @@ namespace ProfileServerNetworkSimulator
               {
                 foreach (ProfileServer ps in neighborhoodList)
                 {
-                  if (!ps.LbnServer.AddNeighborhood(neighborhoodList))
+                  if (!ps.LocServer.AddNeighborhood(neighborhoodList))
                   {
                     log.Error("  * Unable to add neighbors to server '{0}'.", ps.Name);
                     error = true;
@@ -377,7 +377,7 @@ namespace ProfileServerNetworkSimulator
               {
                 foreach (ProfileServer ps in neighborhoodList)
                 {
-                  if (!ps.LbnServer.CancelNeighborhood(neighborhoodList))
+                  if (!ps.LocServer.CancelNeighborhood(neighborhoodList))
                   {
                     log.Error("  * Unable to add neighbors to server '{0}'.", ps.Name);
                     error = true;
@@ -418,7 +418,7 @@ namespace ProfileServerNetworkSimulator
 
                 if (!error)
                 {
-                  if (profileServer.LbnServer.AddNeighborhood(neighborhoodList))
+                  if (profileServer.LocServer.AddNeighborhood(neighborhoodList))
                   {
                     log.Info("  * {0} servers have been added to the neighborhood of server '{1}'.", neighborhoodList.Count, profileServer.Name);
                   }
@@ -467,7 +467,7 @@ namespace ProfileServerNetworkSimulator
 
                 if (!error)
                 {
-                  if (profileServer.LbnServer.CancelNeighborhood(neighborhoodList))
+                  if (profileServer.LocServer.CancelNeighborhood(neighborhoodList))
                   {
                     log.Info("  * {0} servers have been removed from the neighborhood of server '{1}'.", neighborhoodList.Count, profileServer.Name);
                   }
@@ -599,7 +599,7 @@ namespace ProfileServerNetworkSimulator
             {
               CommandTakeSnapshot cmd = (CommandTakeSnapshot)command;
 
-              HashSet<string> runningServerNames = new HashSet<string>();
+              HashSet<string> runningServerNames = new HashSet<string>(StringComparer.Ordinal);
               foreach (ProfileServer ps in profileServers.Values)
               {
                 if (ps.IsRunningProcess())
@@ -677,23 +677,23 @@ namespace ProfileServerNetworkSimulator
                   ProfileServer profileServer = profileServers[serverSnapshot.Name];
 
                   List<ProfileServer> neighborServers = new List<ProfileServer>();
-                  foreach (string neighborName in serverSnapshot.LbnServer.NeighborsNames)
+                  foreach (string neighborName in serverSnapshot.LocServer.NeighborsNames)
                   {
                     ProfileServer neighborServer = profileServers[neighborName];
                     neighborServers.Add(neighborServer);
                   }
 
-                  profileServer.LbnServer.SetNeighborhood(neighborServers);
+                  profileServer.LocServer.SetNeighborhood(neighborServers);
                 }
 
-                // Start LBN servers and profile servers.
+                // Start LOC servers and profile servers.
                 log.Debug("Starting servers.");
                 foreach (ProfileServerSnapshot serverSnapshot in snapshot.ProfileServers)
                 {
                   ProfileServer profileServer = profileServers[serverSnapshot.Name];
-                  if (!profileServer.LbnServer.Start())
+                  if (!profileServer.LocServer.Start())
                   {
-                    log.Error("  * Unable to start LBN server of profile server instance '{0}'.", profileServer.Name);
+                    log.Error("  * Unable to start LOC server of profile server instance '{0}'.", profileServer.Name);
                     error = true;
                     break;
                   }

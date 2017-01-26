@@ -9,7 +9,7 @@ using System.Text;
 namespace ProfileServerCrypto
 {
   /// <summary>
-  /// Structure to hold node's public/private key pairs and extended private key in binary and hex formats.
+  /// Structure to hold identity's public/private key pairs and extended private key in binary and hex formats.
   /// </summary>
   public class KeysEd25519
   {

@@ -38,38 +38,71 @@ namespace ProfileServer.Data.Repositories
     /// <param name="UnitOfWork">Unit of work instance.</param>
     /// <param name="NeighborId">Identifier of the neighbor server to delete.</param>
     /// <param name="ActionId">If there is a neighborhood action that should NOT be deleted, this is its ID, otherwise it is -1.</param>
+    /// <param name="HoldingLocks">true if the caller is holding NeighborLock and NeighborhoodActionLock.</param>
     /// <returns>true if the function succeeds, false otherwise.</returns>
-    public async Task<bool> DeleteNeighbor(UnitOfWork UnitOfWork, byte[] NeighborId, int ActionId = -1)
+    public async Task<bool> DeleteNeighbor(UnitOfWork UnitOfWork, byte[] NeighborId, int ActionId = -1, bool HoldingLocks = false)
     {
-      log.Trace("(NeighborId:'{0}',ActionId:{1})", NeighborId.ToHex(), ActionId);
+      log.Trace("(NeighborId:'{0}',ActionId:{1},HoldingLocks:{2})", NeighborId.ToHex(), ActionId, HoldingLocks);
 
       bool res = false;
       List<byte[]> imagesToDelete = new List<byte[]>();
-      using (UnitOfWork unitOfWork = new UnitOfWork())
+      bool success = false;
+
+
+      // Delete neighbor from the list of neighbors.
+      DatabaseLock lockObject = UnitOfWork.NeighborLock;
+      if (!HoldingLocks) await UnitOfWork.AcquireLockAsync(lockObject);
+      try
       {
-        bool success = false;
+        Neighbor neighbor = (await GetAsync(n => n.NeighborId == NeighborId)).FirstOrDefault();
+        if (neighbor != null)
+        {
+          Delete(neighbor);
+          await UnitOfWork.SaveThrowAsync();
+          log.Debug("Neighbor ID '{0}' deleted from database.", NeighborId.ToHex());
+        }
+        else
+        {
+          // If the neighbor does not exist, we set success to true as the result of the operation is as we want it 
+          // and we gain nothing by trying to repeat the action later.
+          log.Warn("Neighbor ID '{0}' not found.", NeighborId.ToHex());
+        }
+
+        success = true;
+      }
+      catch (Exception e)
+      {
+        log.Error("Exception occurred: {0}", e.ToString());
+      }
+      if (!HoldingLocks) UnitOfWork.ReleaseLock(lockObject);
+
+      // Delete neighbor's profiles from the database.
+      if (success)
+      {
+        success = false;
 
         // Disable change tracking for faster multiple deletes.
-        unitOfWork.Context.ChangeTracker.AutoDetectChangesEnabled = false;
+        UnitOfWork.Context.ChangeTracker.AutoDetectChangesEnabled = false;
 
-        // Delete neighbor from the list of neighbors.
-        DatabaseLock lockObject = UnitOfWork.NeighborLock;
-        await unitOfWork.AcquireLockAsync(lockObject);
+        lockObject = UnitOfWork.NeighborIdentityLock;
+        await UnitOfWork.AcquireLockAsync(lockObject);
         try
         {
-          Neighbor neighbor = (await unitOfWork.NeighborRepository.GetAsync(n => n.NeighborId == NeighborId)).FirstOrDefault();
-          if (neighbor != null)
+          List<NeighborIdentity> identities = (await UnitOfWork.NeighborIdentityRepository.GetAsync(i => i.HostingServerId == NeighborId)).ToList();
+          if (identities.Count > 0)
           {
-            unitOfWork.NeighborRepository.Delete(neighbor);
-            await unitOfWork.SaveThrowAsync();
-            log.Debug("Neighbor ID '{0}' deleted from database.", NeighborId.ToHex());
+            log.Debug("There are {0} identities of removed neighbor ID '{1}'.", identities.Count, NeighborId.ToHex());
+            foreach (NeighborIdentity identity in identities)
+            {
+              if (identity.ThumbnailImage != null) imagesToDelete.Add(identity.ThumbnailImage);
+
+              UnitOfWork.NeighborIdentityRepository.Delete(identity);
+            }
+
+            await UnitOfWork.SaveThrowAsync();
+            log.Debug("{0} identities hosted on neighbor ID '{1}' deleted from database.", identities.Count, NeighborId.ToHex());
           }
-          else
-          {
-            // If the neighbor does not exist, we set success to true as the result of the operation is as we want it 
-            // and we gain nothing by trying to repeat the action later.
-            log.Warn("Neighbor ID '{0}' not found.", NeighborId.ToHex());
-          }
+          else log.Trace("No profiles hosted on neighbor ID '{0}' found.", NeighborId.ToHex());
 
           success = true;
         }
@@ -77,76 +110,44 @@ namespace ProfileServer.Data.Repositories
         {
           log.Error("Exception occurred: {0}", e.ToString());
         }
-        unitOfWork.ReleaseLock(lockObject);
 
-        // Delete neighbor's profiles from the database.
-        if (success)
-        {
-          success = false;
+        UnitOfWork.ReleaseLock(lockObject);
 
-          lockObject = UnitOfWork.NeighborIdentityLock;
-          await unitOfWork.AcquireLockAsync(lockObject);
-          try
-          {
-            List<NeighborIdentity> identities = (await unitOfWork.NeighborIdentityRepository.GetAsync(i => i.HostingServerId == NeighborId)).ToList();
-            if (identities.Count > 0)
-            {
-              log.Debug("There are {0} identities of removed neighbor ID '{1}'.", identities.Count, NeighborId.ToHex());
-              foreach (NeighborIdentity identity in identities)
-              {
-                if (identity.ThumbnailImage != null) imagesToDelete.Add(identity.ThumbnailImage);
-
-                unitOfWork.NeighborIdentityRepository.Delete(identity);
-              }
-
-              await unitOfWork.SaveThrowAsync();
-              log.Debug("{0} identities hosted on neighbor ID '{1}' deleted from database.", identities.Count, NeighborId.ToHex());
-            }
-            else log.Trace("No profiles hosted on neighbor ID '{0}' found.", NeighborId.ToHex());
-
-            success = true;
-          }
-          catch (Exception e)
-          {
-            log.Error("Exception occurred: {0}", e.ToString());
-          }
-
-          unitOfWork.ReleaseLock(lockObject);
-        }
-
-        if (success)
-        {
-          success = false;
-          lockObject = UnitOfWork.NeighborhoodActionLock;
-          await unitOfWork.AcquireLockAsync(lockObject);
-          try
-          {
-            // Do not delete the current action, it will be deleted just after this method finishes.
-            List<NeighborhoodAction> actions = unitOfWork.NeighborhoodActionRepository.Get(a => (a.ServerId == NeighborId) && (a.Id != ActionId)).ToList();
-            if (actions.Count > 0)
-            {
-              foreach (NeighborhoodAction action in actions)
-              {
-                log.Debug("Action ID {0}, type {1}, serverId '{2}' will be removed from the database.", action.Id, action.Type, NeighborId.ToHex());
-                unitOfWork.NeighborhoodActionRepository.Delete(action);
-              }
-
-              await unitOfWork.SaveThrowAsync();
-            }
-            else log.Debug("No neighborhood actions for neighbor ID '{0}' found.", NeighborId.ToHex());
-
-            success = true;
-          }
-          catch (Exception e) 
-          {
-            log.Error("Exception occurred: {0}", e.ToString());
-          }
-
-          unitOfWork.ReleaseLock(lockObject);
-        }
-
-        res = success;
+        UnitOfWork.Context.ChangeTracker.AutoDetectChangesEnabled = true;
       }
+
+      if (success)
+      {
+        success = false;
+        lockObject = UnitOfWork.NeighborhoodActionLock;
+        if (!HoldingLocks) await UnitOfWork.AcquireLockAsync(lockObject);
+        try
+        {
+          // Do not delete the current action, it will be deleted just after this method finishes.
+          List<NeighborhoodAction> actions = UnitOfWork.NeighborhoodActionRepository.Get(a => (a.ServerId == NeighborId) && (a.Id != ActionId)).ToList();
+          if (actions.Count > 0)
+          {
+            foreach (NeighborhoodAction action in actions)
+            {
+              log.Debug("Action ID {0}, type {1}, serverId '{2}' will be removed from the database.", action.Id, action.Type, NeighborId.ToHex());
+              UnitOfWork.NeighborhoodActionRepository.Delete(action);
+            }
+
+            await UnitOfWork.SaveThrowAsync();
+          }
+          else log.Debug("No neighborhood actions for neighbor ID '{0}' found.", NeighborId.ToHex());
+
+          success = true;
+        }
+        catch (Exception e)
+        {
+          log.Error("Exception occurred: {0}", e.ToString());
+        }
+
+        if (!HoldingLocks) UnitOfWork.ReleaseLock(lockObject);
+      }
+
+      res = success;
 
 
       if (imagesToDelete.Count > 0)

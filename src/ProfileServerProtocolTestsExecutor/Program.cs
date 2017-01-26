@@ -192,10 +192,21 @@ namespace ProfileServerProtocolTestsExecutor
       new Test("PS08007", "ProfileServer-default.conf",          new string[] { "127.0.0.1", "16987" }, false),
       new Test("PS08008", "ProfileServer-neighborhood-initialization-parallelism-1.conf", new string[] { "127.0.0.1", "16987" }, false),
       new Test("PS08009", "ProfileServer-default.conf",          new string[] { "127.0.0.1", "16987" }, false),
-      new Test("PS08010", "ProfileServer-neighborhood-initialization-parallelism-1.conf", new string[] { "127.0.0.1", "16987" }, false),
+      new Test("PS08010", "ProfileServer-neighborhood-initialization-parallelism-1.conf", new string[] { "127.0.0.1", "16987" }, true),
       new Test("PS08011", "ProfileServer-default.conf",          new string[] { "127.0.0.1", "16987", "17000" }, false),
       new Test("PS08012", "ProfileServer-default.conf",          new string[] { "127.0.0.1", "16987", "17000" }, true),
       new Test("PS08013", "ProfileServer-default.conf",          new string[] { "127.0.0.1", "16987", "17000" }, true),
+      new Test("PS08014", "ProfileServer-neighborhood-initialization-parallelism-1.conf", new string[] { "127.0.0.1", "16987" }, true),
+      new Test("PS08015", "ProfileServer-default.conf",          new string[] { "127.0.0.1", "16987" }, false),
+      new Test("PS08016", "ProfileServer-default.conf",          new string[] { "127.0.0.1", "16987", "17000" }, false),
+      new Test("PS08017", "ProfileServer-default.conf",          new string[] { "127.0.0.1", "16987" }, false),
+      new Test("PS08018", "ProfileServer-default.conf",          new string[] { "127.0.0.1", "16987", "17000", "16980" }, false),
+      new Test("PS08019", "ProfileServer-default.conf",          new string[] { "127.0.0.1", "16987", "17000", "16980" }, false),
+      new Test("PS08020", "ProfileServer-default.conf",          new string[] { "127.0.0.1", "16987", "17000", "16980" }, false),
+      new Test("PS08021", "ProfileServer-default.conf",          new string[] { "127.0.0.1", "16987", "17000", "16980" }, true),
+      new Test("PS08022", "ProfileServer-default.conf",          new string[] { "127.0.0.1", "16987", "17000", "16980" }, true),
+      new Test("PS08023", "ProfileServer-default.conf",          new string[] { "127.0.0.1", "16987", "17000", "16980" }, true),
+      new Test("PS08024", "ProfileServer-default.conf",          new string[] { "127.0.0.1", "16987", "17000", "16980" }, false),
 
       new Test("PS09001", "ProfileServer-default.conf",          new string[] { "127.0.0.1", "16988" }, false),
       new Test("PS09002", "ProfileServer-default.conf",          new string[] { "127.0.0.1", "16987", "15001" }, false),
@@ -207,7 +218,7 @@ namespace ProfileServerProtocolTestsExecutor
     /// <summary>
     /// Specification of required configuration files.
     /// </summary>
-    public static Dictionary<string, List<string>> Configurations = new Dictionary<string, List<string>>()
+    public static Dictionary<string, List<string>> Configurations = new Dictionary<string, List<string>>(StringComparer.Ordinal)
     {
       {
         "ProfileServer-default.conf", new List<string>()
@@ -225,7 +236,7 @@ namespace ProfileServerProtocolTestsExecutor
           "max_hosted_identities = 10000",
           "max_identity_relations = 100",
           "neighborhood_initialization_parallelism = 10",
-          "lbn_port = 16980",
+          "loc_port = 16980",
           "neighbor_profiles_expiration_time = 86400",
           "max_neighborhood_size = 110",
           "max_follower_servers_count = 200",
@@ -249,7 +260,7 @@ namespace ProfileServerProtocolTestsExecutor
           "max_hosted_identities = 10000",
           "max_identity_relations = 100",
           "neighborhood_initialization_parallelism = 10",
-          "lbn_port = 16980",
+          "loc_port = 16980",
           "neighbor_profiles_expiration_time = 86400",
           "max_neighborhood_size = 110",
           "max_follower_servers_count = 200",
@@ -273,7 +284,7 @@ namespace ProfileServerProtocolTestsExecutor
           "max_hosted_identities = 1",
           "max_identity_relations = 100",
           "neighborhood_initialization_parallelism = 10",
-          "lbn_port = 16980",
+          "loc_port = 16980",
           "neighbor_profiles_expiration_time = 86400",
           "max_neighborhood_size = 110",
           "max_follower_servers_count = 200",
@@ -297,7 +308,7 @@ namespace ProfileServerProtocolTestsExecutor
           "max_hosted_identities = 10000",
           "max_identity_relations = 100",
           "neighborhood_initialization_parallelism = 10",
-          "lbn_port = 16980",
+          "loc_port = 16980",
           "neighbor_profiles_expiration_time = 86400",
           "max_neighborhood_size = 110",
           "max_follower_servers_count = 1",
@@ -321,7 +332,7 @@ namespace ProfileServerProtocolTestsExecutor
           "max_hosted_identities = 10000",
           "max_identity_relations = 100",
           "neighborhood_initialization_parallelism = 1",
-          "lbn_port = 16980",
+          "loc_port = 16980",
           "neighbor_profiles_expiration_time = 86400",
           "max_neighborhood_size = 110",
           "max_follower_servers_count = 200",

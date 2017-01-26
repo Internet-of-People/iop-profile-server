@@ -62,6 +62,7 @@ namespace ProfileServer.Migrations
                     LocationLongitude = table.Column<decimal>(type: "decimal(9,6)", nullable: false),
                     NeighborId = table.Column<byte[]>(maxLength: 32, nullable: false),
                     PrimaryPort = table.Column<int>(nullable: false),
+                    SharedProfiles = table.Column<int>(nullable: false),
                     SrNeighborPort = table.Column<int>(nullable: true)
                 },
                 constraints: table =>

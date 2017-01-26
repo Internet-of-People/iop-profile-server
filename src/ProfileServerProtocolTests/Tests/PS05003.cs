@@ -175,18 +175,18 @@ namespace ProfileServerProtocolTests.Tests
 
         // Step 3
         log.Trace("Step 3");
-        Message nodeRequestMessage = await clientCallee.ReceiveMessageAsync();
+        Message serverRequestMessage = await clientCallee.ReceiveMessageAsync();
 
-        byte[] receivedPubKey = nodeRequestMessage.Request.ConversationRequest.IncomingCallNotification.CallerPublicKey.ToByteArray();
+        byte[] receivedPubKey = serverRequestMessage.Request.ConversationRequest.IncomingCallNotification.CallerPublicKey.ToByteArray();
         bool pubKeyOk = StructuralComparisons.StructuralComparer.Compare(receivedPubKey, pubKeyCaller) == 0;
-        bool serviceNameOk = nodeRequestMessage.Request.ConversationRequest.IncomingCallNotification.ServiceName == serviceName;
+        bool serviceNameOk = serverRequestMessage.Request.ConversationRequest.IncomingCallNotification.ServiceName == serviceName;
 
         bool incomingCallNotificationOk = pubKeyOk && serviceNameOk;
 
-        byte[] calleeToken = nodeRequestMessage.Request.ConversationRequest.IncomingCallNotification.CalleeToken.ToByteArray();
+        byte[] calleeToken = serverRequestMessage.Request.ConversationRequest.IncomingCallNotification.CalleeToken.ToByteArray();
 
-        Message nodeResponseMessage = mbCallee.CreateIncomingCallNotificationResponse(nodeRequestMessage);
-        await clientCallee.SendMessageAsync(nodeResponseMessage);
+        Message serverResponseMessage = mbCallee.CreateIncomingCallNotificationResponse(serverRequestMessage);
+        await clientCallee.SendMessageAsync(serverResponseMessage);
 
 
         // Connect to clAppService and send initialization message.
@@ -364,7 +364,7 @@ namespace ProfileServerProtocolTests.Tests
 
 
     /// <summary>
-    /// Receives messages from the open relay and sends confirmations for the incoming messages back to the node. 
+    /// Receives messages from the open relay and sends confirmations for the incoming messages back to the profile server.
     /// </summary>
     /// <param name="Client">Client connected to clAppService port with an initialized relay.</param>
     /// <param name="Builder">Client's message builder.</param>
@@ -396,7 +396,7 @@ namespace ProfileServerProtocolTests.Tests
             log.Trace(prefix + "Received data message #{0} - {1} bytes.", chunksReceived.Count, receivedData.Length);
             totalSize += receivedData.Length;
 
-            // Sending ACK back to the node.
+            // Sending ACK back to the profile server.
             await WriteLock.WaitAsync();
 
             Message ackResponse = Builder.CreateApplicationServiceReceiveMessageNotificationResponse(incomingMessage);
