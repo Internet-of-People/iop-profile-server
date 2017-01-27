@@ -1347,7 +1347,7 @@ namespace ProfileServer.Network
       if (details == null)
       {
         int nameSize = Encoding.UTF8.GetByteCount(AddItem.Name);
-        bool nameValid = nameSize <= IdentityBase.MaxProfileNameLengthBytes;
+        bool nameValid = !string.IsNullOrEmpty(AddItem.Name) && (nameSize <= IdentityBase.MaxProfileNameLengthBytes);
         if (!nameValid)
         {
           log.Debug("Invalid name size in bytes {0}.", nameSize);

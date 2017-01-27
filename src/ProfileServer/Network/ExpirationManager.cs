@@ -371,9 +371,6 @@ namespace ProfileServer.Network
 
       using (UnitOfWork unitOfWork = new UnitOfWork())
       {
-        // Disable change tracking for faster multiple inserts.
-        unitOfWork.Context.ChangeTracker.AutoDetectChangesEnabled = false;
-
         bool success = false;
         DatabaseLock[] lockObjects = new DatabaseLock[] { UnitOfWork.NeighborLock, UnitOfWork.NeighborhoodActionLock };
         using (IDbContextTransaction transaction = unitOfWork.BeginTransactionWithLock(lockObjects))

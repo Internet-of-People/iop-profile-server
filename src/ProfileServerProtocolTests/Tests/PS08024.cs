@@ -718,11 +718,37 @@ namespace ProfileServerProtocolTests.Tests
         log.Trace("Step 33: {0}", step33Ok ? "PASSED" : "FAILED");
 
 
+        // Step 34
+        log.Trace("Step 34");
+
+        updateItems = new List<SharedProfileUpdateItem>(originalUpdateItems);
+        updateItems[1] = new SharedProfileUpdateItem(updateItems[1]);
+        updateItems[1].Add.Name = "";
+
+        updateOk = await PerformNeighborhoodUpdateAsync(updateItems, client, "1.add.name");
+
+        bool step34Ok = updateOk;
+        log.Trace("Step 34: {0}", step34Ok ? "PASSED" : "FAILED");
+
+
+        // Step 35
+        log.Trace("Step 35");
+
+        updateItems = new List<SharedProfileUpdateItem>(originalUpdateItems);
+        updateItems[1] = new SharedProfileUpdateItem(changeItem0);
+        updateItems[1].Change.SetName = true;
+        updateItems[1].Change.Name = "";
+
+        updateOk = await PerformNeighborhoodUpdateAsync(updateItems, client, "1.change.name");
+
+        bool step35Ok = updateOk;
+        log.Trace("Step 35: {0}", step35Ok ? "PASSED" : "FAILED");
+
 
         Passed = step1Ok && step2Ok && step3Ok && step4Ok && step5Ok && step6Ok && step7Ok && step8Ok && step9Ok && step10Ok
           && step11Ok && step12Ok && step13Ok && step14Ok && step15Ok && step16Ok && step17Ok && step18Ok && step19Ok && step20Ok
           && step21Ok && step22Ok && step23Ok && step24Ok && step25Ok && step26Ok && step27Ok && step28Ok && step29Ok && step30Ok
-          && step31Ok && step32Ok && step33Ok;
+          && step31Ok && step32Ok && step33Ok && step34Ok && step35Ok;
 
         res = true;
       }

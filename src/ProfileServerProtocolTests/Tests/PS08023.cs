@@ -417,9 +417,22 @@ namespace ProfileServerProtocolTests.Tests
         log.Trace("Step 18: {0}", step18Ok ? "PASSED" : "FAILED");
 
 
+        // Step 19
+        log.Trace("Step 19");
+
+        updateItems = new List<SharedProfileUpdateItem>(originalUpdateItems);
+        updateItems[2] = new SharedProfileUpdateItem(updateItems[2]);
+        updateItems[2].Add.Name = "";
+
+        initOk = await PerformInitializationProcessWithUpdateItemsAsync(updateItems, profileServer, locServer, "2.add.name");
+
+        bool step19Ok = initOk;
+        log.Trace("Step 19: {0}", step19Ok ? "PASSED" : "FAILED");
+
+
 
         Passed = step1Ok && step2Ok && step3Ok && step4Ok && step5Ok && step6Ok && step7Ok && step8Ok && step9Ok && step10Ok
-          && step11Ok && step12Ok && step13Ok && step14Ok && step15Ok && step16Ok && step17Ok && step18Ok;
+          && step11Ok && step12Ok && step13Ok && step14Ok && step15Ok && step16Ok && step17Ok && step18Ok && step19Ok;
 
         res = true;
       }

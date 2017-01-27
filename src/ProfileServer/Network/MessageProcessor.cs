@@ -2990,7 +2990,7 @@ namespace ProfileServer.Network
     /// <returns>true if the function suceeds, false otherwise.</returns>
     public async Task<bool> UninstallInitializationProcessInProgress(UnitOfWork UnitOfWork, int ActionId)
     {
-      log.Trace("(ActionId:'{0}')", ActionId);
+      log.Trace("(ActionId:{0})", ActionId);
 
       bool res = false;
 
@@ -3696,7 +3696,7 @@ namespace ProfileServer.Network
       if (details == null)
       {
         int nameSize = Encoding.UTF8.GetByteCount(AddItem.Name);
-        bool nameValid = nameSize <= IdentityBase.MaxProfileNameLengthBytes;
+        bool nameValid = !string.IsNullOrEmpty(AddItem.Name) && (nameSize <= IdentityBase.MaxProfileNameLengthBytes);
         if (!nameValid)
         {
           log.Debug("Invalid name size in bytes {0}.", nameSize);
@@ -3838,7 +3838,7 @@ namespace ProfileServer.Network
       if ((details == null) && ChangeItem.SetName)
       {
         int nameSize = Encoding.UTF8.GetByteCount(ChangeItem.Name);
-        bool nameValid = nameSize <= IdentityBase.MaxProfileNameLengthBytes;
+        bool nameValid = !string.IsNullOrEmpty(ChangeItem.Name) && (nameSize <= IdentityBase.MaxProfileNameLengthBytes);
         if (!nameValid)
         {
           log.Debug("Invalid name size in bytes {0}.", nameSize);
