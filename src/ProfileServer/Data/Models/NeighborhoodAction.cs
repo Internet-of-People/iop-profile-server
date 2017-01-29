@@ -23,7 +23,7 @@ namespace ProfileServer.Data.Models
     AddNeighbor = 1,
 
     /// <summary>
-    /// The expiration manager found out that a neighbor expired.
+    /// The Cron component found out that a neighbor expired.
     /// The profile server removes the profiles hosted on the neighbor server from its database.
     /// Then it creates StopNeighborhoodUpdates action.
     /// </summary>

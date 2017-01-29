@@ -379,7 +379,7 @@ namespace ProfileServerProtocolTests
                 if (setKeepAlive)
                 {
                   connectedProfileServerWantsUpdates = true;
-                  log.Debug("Profile server is now connected to is LOC server and waiting for updates.");
+                  log.Debug("Profile server is now connected to its LOC server and waiting for updates.");
                 }
               }
               else

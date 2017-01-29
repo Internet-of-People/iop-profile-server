@@ -114,6 +114,24 @@ namespace ProfileServer.Network
 
 
     /// <summary>
+    /// Sends a message to the client over the open network stream.
+    /// </summary>
+    /// <param name="Message">Message to send.</param>
+    /// <returns>true if the connection to the client should remain open, false otherwise.</returns>
+    public override async Task<bool> SendMessageAsync(Message Message)
+    {
+      log.Trace("()");
+
+      lastResponseDetails = null;
+      lastResponseStatus = Status.Ok;
+      bool res = await base.SendMessageAsync(Message);
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+
+    /// <summary>
     /// Generates client's challenge and creates start conversation request with it.
     /// </summary>
     /// <returns>StartConversationRequest message that is ready to be sent to the server.</returns>
@@ -204,31 +222,34 @@ namespace ProfileServer.Network
       bool res = false;
 
       Message requestMessage = CreateStartConversationRequest();
-      await SendMessageAsync(requestMessage);
-      Message responseMessage = await ReceiveMessageAsync();
-      if (CheckResponseMessage(requestMessage, responseMessage))
+      if (await SendMessageAsync(requestMessage))
       {
-        try
+        Message responseMessage = await ReceiveMessageAsync();
+        if (CheckResponseMessage(requestMessage, responseMessage))
         {
-          SemVer receivedVersion = new SemVer(responseMessage.Response.ConversationResponse.Start.Version);
-          bool versionOk = receivedVersion.Equals(new SemVer(MessageBuilder.Version));
+          try
+          {
+            SemVer receivedVersion = new SemVer(responseMessage.Response.ConversationResponse.Start.Version);
+            bool versionOk = receivedVersion.Equals(new SemVer(MessageBuilder.Version));
 
-          bool pubKeyLenOk = responseMessage.Response.ConversationResponse.Start.PublicKey.Length == IdentityBase.IdentifierLength;
-          bool challengeOk = responseMessage.Response.ConversationResponse.Start.Challenge.Length == ProtocolHelper.ChallengeDataSize;
+            bool pubKeyLenOk = responseMessage.Response.ConversationResponse.Start.PublicKey.Length == IdentityBase.IdentifierLength;
+            bool challengeOk = responseMessage.Response.ConversationResponse.Start.Challenge.Length == ProtocolHelper.ChallengeDataSize;
 
-          serverKey = responseMessage.Response.ConversationResponse.Start.PublicKey.ToByteArray();
-          serverId = Crypto.Sha256(serverKey);
-          serverChallenge = responseMessage.Response.ConversationResponse.Start.Challenge.ToByteArray();
-          bool challengeVerifyOk = VerifyServerChallengeSignature(responseMessage);
+            serverKey = responseMessage.Response.ConversationResponse.Start.PublicKey.ToByteArray();
+            serverId = Crypto.Sha256(serverKey);
+            serverChallenge = responseMessage.Response.ConversationResponse.Start.Challenge.ToByteArray();
+            bool challengeVerifyOk = VerifyServerChallengeSignature(responseMessage);
 
-          res = versionOk && pubKeyLenOk && challengeOk && challengeVerifyOk;
+            res = versionOk && pubKeyLenOk && challengeOk && challengeVerifyOk;
+          }
+          catch
+          {
+            log.Warn("Received unexpected or invalid message.");
+          }
         }
-        catch
-        {
-          log.Warn("Received unexpected or invalid message.");
-        }
+        else log.Warn("Received unexpected or invalid message.");
       }
-      else log.Warn("Received unexpected or invalid message.");
+      else log.Warn("Unable to send message.");
 
       log.Trace("(-):{0}", res);
       return res;
@@ -247,13 +268,16 @@ namespace ProfileServer.Network
       if (await StartConversationAsync())
       {
         Message requestMessage = MessageBuilder.CreateVerifyIdentityRequest(serverChallenge);
-        await SendMessageAsync(requestMessage);
-        Message responseMessage = await ReceiveMessageAsync();
-        if (CheckResponseMessage(requestMessage, responseMessage))
+        if (await SendMessageAsync(requestMessage))
         {
-          res = true;
+          Message responseMessage = await ReceiveMessageAsync();
+          if (CheckResponseMessage(requestMessage, responseMessage))
+          {
+            res = true;
+          }
+          else log.Warn("Received unexpected or invalid message.");
         }
-        else log.Warn("Received unexpected or invalid message.");
+        else log.Warn("Unable to send message.");
       }
 
       log.Trace("(-):{0}", res);
@@ -330,19 +354,22 @@ namespace ProfileServer.Network
 
       bool res = false;
       Message requestMessage = MessageBuilder.CreateStartNeighborhoodInitializationRequest(PrimaryPort, SrNeighborPort);
-      await SendMessageAsync(requestMessage);
-      Message responseMessage = await ReceiveMessageAsync();
-      if (CheckResponseMessage(requestMessage, responseMessage))
+      if (await SendMessageAsync(requestMessage))
       {
-        res = true;
+        Message responseMessage = await ReceiveMessageAsync();
+        if (CheckResponseMessage(requestMessage, responseMessage))
+        {
+          res = true;
+        }
+        else
+        {
+          if (lastResponseStatus != Status.ErrorBusy)
+            log.Warn("Received unexpected or invalid message.");
+        }
       }
-      else
-      {
-        if (lastResponseStatus != Status.ErrorBusy)
-          log.Warn("Received unexpected or invalid message.");
-      }
+      else log.Warn("Unable to send message.");
 
-      log.Trace("(-):{0}", res);
+        log.Trace("(-):{0}", res);
       return res;
     }
 
@@ -359,17 +386,20 @@ namespace ProfileServer.Network
 
       bool res = false;
       Message requestMessage = RequestMessage;
-      await SendMessageAsync(requestMessage);
-      Message responseMessage = await ReceiveMessageAsync();
-      if (CheckResponseMessage(requestMessage, responseMessage))
+      if (await SendMessageAsync(requestMessage))
       {
-        res = true;
+        Message responseMessage = await ReceiveMessageAsync();
+        if (CheckResponseMessage(requestMessage, responseMessage))
+        {
+          res = true;
+        }
+        else
+        {
+          if (lastResponseStatus != Status.ErrorRejected)
+            log.Warn("Received unexpected or invalid message.");
+        }
       }
-      else
-      {
-        if (lastResponseStatus != Status.ErrorRejected)
-          log.Warn("Received unexpected or invalid message.");
-      }
+      else log.Warn("Unable to send message.");
 
       log.Trace("(-):{0}", res);
       return res;
@@ -389,17 +419,20 @@ namespace ProfileServer.Network
 
       bool res = false;
       Message requestMessage = RequestMessage;
-      await SendMessageAsync(requestMessage);
-      Message responseMessage = await ReceiveMessageAsync();
-      if (CheckResponseMessage(requestMessage, responseMessage))
+      if (await SendMessageAsync(requestMessage))
       {
-        res = true;
+        Message responseMessage = await ReceiveMessageAsync();
+        if (CheckResponseMessage(requestMessage, responseMessage))
+        {
+          res = true;
+        }
+        else
+        {
+          if (lastResponseStatus != Status.ErrorNotFound)
+            log.Warn("Received unexpected or invalid message.");
+        }
       }
-      else
-      {
-        if (lastResponseStatus != Status.ErrorNotFound)
-          log.Warn("Received unexpected or invalid message.");
-      }
+      else log.Warn("Unable to send message.");
 
       log.Trace("(-):{0}", res);
       return res;
@@ -416,13 +449,16 @@ namespace ProfileServer.Network
 
       ListRolesResponse res = null;
       Message requestMessage = MessageBuilder.CreateListRolesRequest();
-      await SendMessageAsync(requestMessage);
-      Message responseMessage = await ReceiveMessageAsync();
-      if (CheckResponseMessage(requestMessage, responseMessage))
+      if (await SendMessageAsync(requestMessage))
       {
-        res = responseMessage.Response.SingleResponse.ListRoles;
+        Message responseMessage = await ReceiveMessageAsync();
+        if (CheckResponseMessage(requestMessage, responseMessage))
+        {
+          res = responseMessage.Response.SingleResponse.ListRoles;
+        }
+        else log.Warn("Received unexpected or invalid message.");
       }
-      else log.Warn("Received unexpected or invalid message.");
+      else log.Warn("Unable to send message.");
 
       log.Trace("(-):{0}", res);
       return res;

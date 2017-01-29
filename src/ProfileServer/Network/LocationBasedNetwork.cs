@@ -29,6 +29,7 @@ namespace ProfileServer.Network
   /// </summary>
   public class LocationBasedNetwork : Component
   {
+#warning Regtest needed - LOC server refresh
     private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Network.LocationBasedNetwork");
 
     /// <summary>Event that is set when LocConnectionThread is not running.</summary>
@@ -53,6 +54,12 @@ namespace ProfileServer.Network
     private bool locServerInitialized = false;
     /// <summary>true if the component received current information about the server's neighborhood from the LOC server.</summary>
     public bool LocServerInitialized { get { return locServerInitialized; } }
+
+    /// <summary>
+    /// When this event triggers the message loop of the currently established connection to the LOC server is interrupted, 
+    /// which causes the profile server to disconnect from LOC server
+    /// </summary>
+    private AutoResetEvent interruptLocMessageLoopEvent = new AutoResetEvent(false);
 
 
     public override bool Init()
@@ -348,7 +355,7 @@ namespace ProfileServer.Network
 
         // Process the response if valid and contains neighbors.
         if (responseOk)
-          res = await ProcessMessageGetNeighbourNodesByDistanceResponseAsync(response);
+          res = await ProcessMessageGetNeighbourNodesByDistanceResponseAsync(response, true);
       }
       else log.Error("Unable to send GetNeighbourNodesByDistanceLocalRequest to LOC server.");
 
@@ -575,7 +582,20 @@ namespace ProfileServer.Network
             {
               Response response = IncomingMessage.Response;
               log.Trace("Response status is {0}, details are '{1}', response type is {2}.", response.Status, response.Details, response.ResponseTypeCase);
-              log.Error("Unexpected response type {0} received.", response.ResponseTypeCase);
+
+              // The only response we should ever receive here is GetNeighbourNodesByDistanceResponse in response to our refresh request that we do from time to time.
+              bool isGetNeighbourNodesByDistanceResponse = (response.Status == Status.Ok)
+                && (response.ResponseTypeCase == Response.ResponseTypeOneofCase.LocalService)
+                && (response.LocalService.LocalServiceResponseTypeCase == LocalServiceResponse.LocalServiceResponseTypeOneofCase.GetNeighbourNodes);
+
+              if (!isGetNeighbourNodesByDistanceResponse)
+              {
+                log.Error("Unexpected response type {0} received, status code {1}.", response.ResponseTypeCase, response.Status);
+                break;
+              }
+
+              // Process the response.
+              res = await ProcessMessageGetNeighbourNodesByDistanceResponseAsync(IncomingMessage, false);
               break;
             }
 
@@ -603,10 +623,11 @@ namespace ProfileServer.Network
     /// <para>This message contains information about profile server's neighbors, with which it should share its profile database.</para>
     /// </summary>
     /// <param name="ResponseMessage">Full response message.</param>
+    /// <param name="IsInitialization">true if the response was received to the request during the LOC initialization, false if it was received to the refresh request after the initialization.</param>
     /// <returns>true if the connection to the LOC server should remain open, false if it should be closed.</returns>
-    public async Task<bool> ProcessMessageGetNeighbourNodesByDistanceResponseAsync(Message ResponseMessage)
+    public async Task<bool> ProcessMessageGetNeighbourNodesByDistanceResponseAsync(Message ResponseMessage, bool IsInitialization)
     {
-      log.Trace("()");
+      log.Trace("(IsInitialization:{0})", IsInitialization);
 
       bool res = false;
       bool signalActionProcessor = false;
@@ -682,7 +703,7 @@ namespace ProfileServer.Network
         neighborhoodActionProcessor.Signal();
       }
 
-      if (res)
+      if (res && IsInitialization)
       {
         log.Debug("LOC component is now considered in sync with LOC server.");
         locServerInitialized = true;
@@ -1013,6 +1034,35 @@ namespace ProfileServer.Network
 
       log.Trace("(-):*.Response.Status={0}", res.Response.Status);
       return res;
+    }
+
+
+    /// <summary>
+    /// If the component is connected to LOC server, it sends a new GetNeighbourNodesByDistanceLocalRequest request 
+    /// to get fresh information about the profile server's neighborhood.
+    /// </summary>
+    public void RefreshLoc()
+    {
+      log.Trace("()");
+
+      if (!ShutdownSignaling.IsShutdown && locServerInitialized)
+      {
+        try
+        {
+          Message request = messageBuilder.CreateGetNeighbourNodesByDistanceLocalRequest();
+          if (SendMessageAsync(request).Result)
+          {
+            log.Trace("GetNeighbourNodesByDistanceLocalRequest sent to LOC server to get fresh neighborhood data.");
+          }
+          else log.Warn("Unable to send message to LOC server.");
+        }
+        catch (Exception e)
+        {
+          log.Warn("Exception occurred: {0}", e.ToString());
+        }
+      }
+
+      log.Trace("(-)");
     }
   }
 }

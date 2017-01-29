@@ -381,7 +381,7 @@ namespace ProfileServerNetworkSimulator
                 if (setKeepAlive)
                 {
                   connectedProfileServerWantsUpdates = true;
-                  log.Debug("Profile server '{0}' is now connected to is LOC server and waiting for updates.", profileServer.Name);
+                  log.Debug("Profile server '{0}' is now connected to its LOC server and waiting for updates.", profileServer.Name);
                 }
               }
               else

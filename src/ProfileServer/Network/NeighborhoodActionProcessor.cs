@@ -29,6 +29,11 @@ namespace ProfileServer.Network
   /// </summary>
   public class NeighborhoodActionProcessor : Component
   {
+#warning Regtest needed - neighborhood initialization process takes too long -> server retries again later
+#warning Regtest needed - shared profile refresh and expiration
+#warning Regtest needed - update failed soft -> server retries again
+#warning Regtest needed - update failed hard -> follower is deleted
+#warning Regtest needed - update failed hard -> follower is deleted; server won't send updates to the follower -> neighbor expires on the follower -> LOC refreshes -> neighbor relationship established again
     private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Network.NeighborhoodActionProcessor");
 
     /// <summary>Interval for checking the list of neighborhood actions.</summary>
@@ -1154,6 +1159,22 @@ namespace ProfileServer.Network
                   {
                     log.Info("Follower ID '{0}' rejected an update due to bad port usage (port {1} was used), reseting srNeighbor port for this follower, will retry later.", FollowerId.ToHex(), endPoint.Port);
                     resetSrNeighborPort = true;
+                  }
+                  else if (client.LastResponseStatus == Status.ErrorInvalidValue)
+                  {
+                    //
+                    // There are two possibilities here. First case is that we are in trouble because the database of the follower is not synchronized with ours
+                    // in which case retrying would not make it any better, and our best move is to delete the follower. Our shared profiles with it will expire 
+                    // in time and the follower will contact us again to reestablish the relationship.
+                    // 
+                    // The second case is a very rare case that can happen if the server sent NeighborhoodSharedProfileUpdateRequest to its follower 
+                    // in the past and the follower did accept and process the update and saved it into its database, but it failed to deliver 
+                    // NeighborhoodSharedProfileUpdateResponse to this server (e.g. due to a power failure on either side, or a network failure).
+                    // We could handle this special case differently but it is not easy to detect it. This is why we delete the follower as well in this case 
+                    // although it might not be necessary, but it is definitely the easiest thing to do.
+                    //
+                    log.Warn("Sending update to follower ID '{0}' failed, error status {1}, deleting follower!", FollowerId.ToHex(), client.LastResponseStatus);
+                    deleteFollower = true;
                   }
                   else log.Warn("Sending update to follower ID '{0}' failed, error status {1}, will retry later.", FollowerId.ToHex(), client.LastResponseStatus);
                 }

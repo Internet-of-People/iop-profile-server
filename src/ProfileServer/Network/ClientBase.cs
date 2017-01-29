@@ -164,7 +164,7 @@ namespace ProfileServer.Network
     /// </summary>
     /// <param name="Message">Message to send.</param>
     /// <returns>true if the connection to the client should remain open, false otherwise.</returns>
-    public async Task<bool> SendMessageAsync(Message Message)
+    public virtual async Task<bool> SendMessageAsync(Message Message)
     {
       log.Trace("()");
 
