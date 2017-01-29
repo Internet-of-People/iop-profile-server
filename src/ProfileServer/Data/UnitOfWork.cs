@@ -72,6 +72,9 @@ namespace ProfileServer.Data
     }
 
 
+    /// <summary>Lock for SettingsRepository.</summary>
+    public static DatabaseLock SettingsLock = new DatabaseLock("SETTINGS");
+
     /// <summary>Lock for HostedIdentityRepository.</summary>
     public static DatabaseLock HostedIdentityLock = new DatabaseLock("HOSTED_IDENTITY");
 

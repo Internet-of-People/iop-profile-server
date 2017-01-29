@@ -226,14 +226,13 @@ namespace ProfileServer.Network
 
       bool res = false;
 
-      Contact contact = new Contact();
-      IpAddress contactIpAddress = new IpAddress();
       IPAddress serverIpAddress = Base.Configuration.ServerInterface;
       byte[] ipBytes = serverIpAddress.GetAddressBytes();
-      contactIpAddress.Host = ProtocolHelper.ByteArrayToByteString(ipBytes);
-      contactIpAddress.Port = (uint)Base.Configuration.ServerRoles.GetRolePort(ServerRole.Primary);
-      if (Base.Configuration.ServerInterface.AddressFamily == AddressFamily.InterNetwork) contact.Ipv4 = contactIpAddress;
-      else contact.Ipv6 = contactIpAddress;
+      Contact contact = new Contact()
+      {
+        IpAddress = ProtocolHelper.ByteArrayToByteString(ipBytes),
+        Port = (uint)Base.Configuration.ServerRoles.GetRolePort(ServerRole.Primary)
+      };
 
       byte[] networkId = Crypto.Sha256(Base.Configuration.Keys.PublicKey);
       NodeProfile nodeProfile = new NodeProfile()
@@ -628,9 +627,9 @@ namespace ProfileServer.Network
               foreach (NodeInfo nodeInfo in getNeighbourNodesByDistanceResponse.Nodes)
               {
                 byte[] serverId = nodeInfo.Profile.NodeId.ToByteArray();
-                IpAddress address = nodeInfo.Profile.Contact.ContactTypeCase == Contact.ContactTypeOneofCase.Ipv4 ? nodeInfo.Profile.Contact.Ipv4 : nodeInfo.Profile.Contact.Ipv6;
-                IPAddress ipAddress = new IPAddress(address.Host.ToByteArray());
-                int port = (int)address.Port;
+                Contact contact = nodeInfo.Profile.Contact;
+                IPAddress ipAddress = new IPAddress(contact.IpAddress.ToByteArray());
+                int port = (int)contact.Port;
                 int latitude = nodeInfo.Location.Latitude;
                 int longitude = nodeInfo.Location.Longitude;
 
@@ -779,7 +778,7 @@ namespace ProfileServer.Network
             LocationLongitude = location.Longitude,
             LastRefreshTime = null
           };
-          UnitOfWork.NeighborRepository.Insert(neighbor);
+          await UnitOfWork.NeighborRepository.InsertAsync(neighbor);
           res.NeighborhoodSize++;
 
           // This action will cause our profile server to contact the new neighbor server and ask it to share its profile database,
@@ -796,7 +795,7 @@ namespace ProfileServer.Network
             TargetIdentityId = null,
             AdditionalData = null,            
           };
-          UnitOfWork.NeighborhoodActionRepository.Insert(action);
+          await UnitOfWork.NeighborhoodActionRepository.InsertAsync(action);
 
           res.SignalActionProcessor = true;
           res.SaveDb = true;
@@ -885,9 +884,9 @@ namespace ProfileServer.Network
                     NodeProfile nodeProfile = isAdd ? change.AddedNodeInfo.Profile : change.UpdatedNodeInfo.Profile;
                     byte[] serverId = nodeProfile.NodeId.ToByteArray();
 
-                    IpAddress address = nodeProfile.Contact.ContactTypeCase == Contact.ContactTypeOneofCase.Ipv4 ? nodeProfile.Contact.Ipv4 : nodeProfile.Contact.Ipv6;
-                    IPAddress ipAddress = new IPAddress(address.Host.ToByteArray());
-                    int port = (int)address.Port;
+                    Contact contact = nodeProfile.Contact;
+                    IPAddress ipAddress = new IPAddress(contact.IpAddress.ToByteArray());
+                    int port = (int)contact.Port;
                     Iop.Locnet.GpsLocation location = isAdd ? change.AddedNodeInfo.Location : change.UpdatedNodeInfo.Location;
                     int latitude =  location.Latitude;
                     int longitude = location.Longitude;
@@ -933,7 +932,7 @@ namespace ProfileServer.Network
                         TargetIdentityId = null,
                         AdditionalData = null
                       };
-                      unitOfWork.NeighborhoodActionRepository.Insert(action);
+                      await unitOfWork.NeighborhoodActionRepository.InsertAsync(action);
 
                       signalActionProcessor = true;
                       saveDb = true;

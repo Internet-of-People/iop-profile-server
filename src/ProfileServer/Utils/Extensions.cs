@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ProfileServerProtocol.Multiformats;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
@@ -71,6 +72,31 @@ namespace ProfileServer.Utils
     {
       return string.Format("0x{0:X16}", Value);
     }
+
+    /// <summary>
+    /// Converts a binary data to a base58 string representation.
+    /// </summary>
+    /// <param name="Data">Data to convert to base58 string.</param>
+    /// <param name="IncludePrefix">true if multibase prefix should be included.</param>
+    /// <returns>Base58 string representing the data.</returns>
+    public static string ToBase58(this byte[] Data, bool IncludePrefix = false)
+    {
+      return IncludePrefix ? Base58Encoding.Encoder.Encode(Data) : Base58Encoding.Encoder.EncodeRaw(Data);
+    }
+
+    /// <summary>
+    /// Converts a binary data to a base64 URL form with padding string representation.
+    /// </summary>
+    /// <param name="Data">Data to convert to base64 string.</param>
+    /// <param name="IncludePrefix">true if multibase prefix should be included.</param>
+    /// <returns>Base64 URL form with padding string representing the data.</returns>
+    public static string ToBase64UrlPad(this byte[] Data, bool IncludePrefix = false)
+    {
+      string res = Convert.ToBase64String(Data).Replace('+', '-').Replace('/', '_');
+      return IncludePrefix ? 'U' + res : res;
+    }
+
+
   }
 
 

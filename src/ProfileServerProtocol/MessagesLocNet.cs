@@ -127,26 +127,6 @@ namespace ProfileServerProtocol
     }
 
     /// <summary>
-    /// Creates a new error response for a specific request with ERROR_UNAUTHORIZED status code.
-    /// </summary>
-    /// <param name="Request">Request message for which the response is created.</param>
-    /// <returns>Error response message that is ready to be sent.</returns>
-    public Message CreateErrorUnauthorizedResponse(Message Request)
-    {
-      return CreateResponse(Request, Status.ErrorUnauthorized);
-    }
-
-    /// <summary>
-    /// Creates a new error response for a specific request with ERROR_BAD_ROLE status code.
-    /// </summary>
-    /// <param name="Request">Request message for which the response is created.</param>
-    /// <returns>Error response message that is ready to be sent.</returns>
-    public Message CreateErrorBadRoleResponse(Message Request)
-    {
-      return CreateResponse(Request, Status.ErrorBadRole);
-    }
-
-    /// <summary>
     /// Creates a new error response for a specific request with ERROR_INTERNAL status code.
     /// </summary>
     /// <param name="Request">Request message for which the response is created.</param>
@@ -156,16 +136,6 @@ namespace ProfileServerProtocol
       return CreateResponse(Request, Status.ErrorInternal);
     }
 
-
-    /// <summary>
-    /// Creates a new error response for a specific request with ERROR_INVALID_SIGNATURE status code.
-    /// </summary>
-    /// <param name="Request">Request message for which the response is created.</param>
-    /// <returns>Error response message that is ready to be sent.</returns>
-    public Message CreateErrorInvalidSignatureResponse(Message Request)
-    {
-      return CreateResponse(Request, Status.ErrorInvalidSignature);
-    }
 
     /// <summary>
     /// Creates a new error response for a specific request with ERROR_INVALID_VALUE status code.

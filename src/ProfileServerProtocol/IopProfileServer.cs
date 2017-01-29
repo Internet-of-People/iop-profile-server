@@ -68,7 +68,7 @@ namespace Iop.Profileserver {
             "LnByb2ZpbGVzZXJ2ZXIuUHJvZmlsZVN0YXRzUmVzcG9uc2VIABJtCiNnZXRJ",
             "ZGVudGl0eVJlbGF0aW9uc2hpcHNJbmZvcm1hdGlvbhgJIAEoCzI+LmlvcC5w",
             "cm9maWxlc2VydmVyLkdldElkZW50aXR5UmVsYXRpb25zaGlwc0luZm9ybWF0",
-            "aW9uUmVzcG9uc2VIAEIOCgxSZXNwb25zZVR5cGUi5QsKE0NvbnZlcnNhdGlv",
+            "aW9uUmVzcG9uc2VIAEIOCgxSZXNwb25zZVR5cGUi9QwKE0NvbnZlcnNhdGlv",
             "blJlcXVlc3QSEQoJc2lnbmF0dXJlGAEgASgMEjwKBXN0YXJ0GAIgASgLMisu",
             "aW9wLnByb2ZpbGVzZXJ2ZXIuU3RhcnRDb252ZXJzYXRpb25SZXF1ZXN0SAAS",
             "RAoPcmVnaXN0ZXJIb3N0aW5nGAMgASgLMikuaW9wLnByb2ZpbGVzZXJ2ZXIu",
@@ -101,192 +101,219 @@ namespace Iop.Profileserver {
             "aG9vZFNoYXJlZFByb2ZpbGVVcGRhdGUYEiABKAsyOS5pb3AucHJvZmlsZXNl",
             "cnZlci5OZWlnaGJvcmhvb2RTaGFyZWRQcm9maWxlVXBkYXRlUmVxdWVzdEgA",
             "ElQKF3N0b3BOZWlnaGJvcmhvb2RVcGRhdGVzGBMgASgLMjEuaW9wLnByb2Zp",
-            "bGVzZXJ2ZXIuU3RvcE5laWdoYm9yaG9vZFVwZGF0ZXNSZXF1ZXN0SABCDQoL",
-            "UmVxdWVzdFR5cGUi+QsKFENvbnZlcnNhdGlvblJlc3BvbnNlEhEKCXNpZ25h",
-            "dHVyZRgBIAEoDBI9CgVzdGFydBgCIAEoCzIsLmlvcC5wcm9maWxlc2VydmVy",
-            "LlN0YXJ0Q29udmVyc2F0aW9uUmVzcG9uc2VIABJFCg9yZWdpc3Rlckhvc3Rp",
-            "bmcYAyABKAsyKi5pb3AucHJvZmlsZXNlcnZlci5SZWdpc3Rlckhvc3RpbmdS",
-            "ZXNwb25zZUgAEjUKB2NoZWNrSW4YBCABKAsyIi5pb3AucHJvZmlsZXNlcnZl",
-            "ci5DaGVja0luUmVzcG9uc2VIABJDCg52ZXJpZnlJZGVudGl0eRgFIAEoCzIp",
-            "LmlvcC5wcm9maWxlc2VydmVyLlZlcmlmeUlkZW50aXR5UmVzcG9uc2VIABJB",
-            "Cg11cGRhdGVQcm9maWxlGAYgASgLMiguaW9wLnByb2ZpbGVzZXJ2ZXIuVXBk",
-            "YXRlUHJvZmlsZVJlc3BvbnNlSAASUwoWY2FuY2VsSG9zdGluZ0FncmVlbWVu",
-            "dBgHIAEoCzIxLmlvcC5wcm9maWxlc2VydmVyLkNhbmNlbEhvc3RpbmdBZ3Jl",
-            "ZW1lbnRSZXNwb25zZUgAElEKFWFwcGxpY2F0aW9uU2VydmljZUFkZBgIIAEo",
-            "CzIwLmlvcC5wcm9maWxlc2VydmVyLkFwcGxpY2F0aW9uU2VydmljZUFkZFJl",
-            "c3BvbnNlSAASVwoYYXBwbGljYXRpb25TZXJ2aWNlUmVtb3ZlGAkgASgLMjMu",
-            "aW9wLnByb2ZpbGVzZXJ2ZXIuQXBwbGljYXRpb25TZXJ2aWNlUmVtb3ZlUmVz",
-            "cG9uc2VIABJjCh5jYWxsSWRlbnRpdHlBcHBsaWNhdGlvblNlcnZpY2UYCiAB",
-            "KAsyOS5pb3AucHJvZmlsZXNlcnZlci5DYWxsSWRlbnRpdHlBcHBsaWNhdGlv",
-            "blNlcnZpY2VSZXNwb25zZUgAElcKGGluY29taW5nQ2FsbE5vdGlmaWNhdGlv",
-            "bhgLIAEoCzIzLmlvcC5wcm9maWxlc2VydmVyLkluY29taW5nQ2FsbE5vdGlm",
-            "aWNhdGlvblJlc3BvbnNlSAASQQoNcHJvZmlsZVNlYXJjaBgMIAEoCzIoLmlv",
-            "cC5wcm9maWxlc2VydmVyLlByb2ZpbGVTZWFyY2hSZXNwb25zZUgAEkkKEXBy",
-            "b2ZpbGVTZWFyY2hQYXJ0GA0gASgLMiwuaW9wLnByb2ZpbGVzZXJ2ZXIuUHJv",
-            "ZmlsZVNlYXJjaFBhcnRSZXNwb25zZUgAEksKEmFkZFJlbGF0ZWRJZGVudGl0",
-            "eRgOIAEoCzItLmlvcC5wcm9maWxlc2VydmVyLkFkZFJlbGF0ZWRJZGVudGl0",
-            "eVJlc3BvbnNlSAASUQoVcmVtb3ZlUmVsYXRlZElkZW50aXR5GA8gASgLMjAu",
-            "aW9wLnByb2ZpbGVzZXJ2ZXIuUmVtb3ZlUmVsYXRlZElkZW50aXR5UmVzcG9u",
-            "c2VIABJlCh9zdGFydE5laWdoYm9yaG9vZEluaXRpYWxpemF0aW9uGBAgASgL",
-            "MjouaW9wLnByb2ZpbGVzZXJ2ZXIuU3RhcnROZWlnaGJvcmhvb2RJbml0aWFs",
-            "aXphdGlvblJlc3BvbnNlSAASZwogZmluaXNoTmVpZ2hib3Job29kSW5pdGlh",
-            "bGl6YXRpb24YESABKAsyOy5pb3AucHJvZmlsZXNlcnZlci5GaW5pc2hOZWln",
-            "aGJvcmhvb2RJbml0aWFsaXphdGlvblJlc3BvbnNlSAASZQofbmVpZ2hib3Jo",
-            "b29kU2hhcmVkUHJvZmlsZVVwZGF0ZRgSIAEoCzI6LmlvcC5wcm9maWxlc2Vy",
-            "dmVyLk5laWdoYm9yaG9vZFNoYXJlZFByb2ZpbGVVcGRhdGVSZXNwb25zZUgA",
-            "ElUKF3N0b3BOZWlnaGJvcmhvb2RVcGRhdGVzGBMgASgLMjIuaW9wLnByb2Zp",
-            "bGVzZXJ2ZXIuU3RvcE5laWdoYm9yaG9vZFVwZGF0ZXNSZXNwb25zZUgAQg4K",
-            "DFJlc3BvbnNlVHlwZSIeCgtQaW5nUmVxdWVzdBIPCgdwYXlsb2FkGAEgASgM",
-            "Ii4KDFBpbmdSZXNwb25zZRIPCgdwYXlsb2FkGAEgASgMEg0KBWNsb2NrGAIg",
-            "ASgSIhIKEExpc3RSb2xlc1JlcXVlc3QiQQoRTGlzdFJvbGVzUmVzcG9uc2US",
-            "LAoFcm9sZXMYASADKAsyHS5pb3AucHJvZmlsZXNlcnZlci5TZXJ2ZXJSb2xl",
-            "ImkKClNlcnZlclJvbGUSLwoEcm9sZRgBIAEoDjIhLmlvcC5wcm9maWxlc2Vy",
-            "dmVyLlNlcnZlclJvbGVUeXBlEgwKBHBvcnQYAiABKA0SDQoFaXNUY3AYAyAB",
-            "KAgSDQoFaXNUbHMYBCABKAgiLwoXTGlzdEhvc3RpbmdQbGFuc1JlcXVlc3QS",
-            "FAoMaWRlbnRpdHlUeXBlGAEgASgJIkkKGExpc3RIb3N0aW5nUGxhbnNSZXNw",
-            "b25zZRItCgVwbGFucxgBIAMoCzIeLmlvcC5wcm9maWxlc2VydmVyLkhvc3Rp",
-            "bmdQbGFuIrcBCgtIb3N0aW5nUGxhbhIOCgZwbGFuSWQYASABKAwSFwoPc2Vy",
-            "dmVyTmV0d29ya0lkGAIgASgMEhQKDGlkZW50aXR5VHlwZRgDIAEoCRILCgNm",
-            "ZWUYBCABKAQSHAoUYmlsbGluZ1BlcmlvZFNlY29uZHMYBSABKA0SPgoOcGxh",
-            "blBhcmFtZXRlcnMYCSADKAsyJi5pb3AucHJvZmlsZXNlcnZlci5OYW1lU3Ry",
-            "aW5nVmFsdWVQYWlyIjIKE05hbWVTdHJpbmdWYWx1ZVBhaXISDAoEbmFtZRgB",
-            "IAEoCRINCgV2YWx1ZRgCIAEoCSJhChhTdGFydENvbnZlcnNhdGlvblJlcXVl",
-            "c3QSGQoRc3VwcG9ydGVkVmVyc2lvbnMYASADKAwSEQoJcHVibGljS2V5GAIg",
-            "ASgMEhcKD2NsaWVudENoYWxsZW5nZRgDIAEoDCJrChlTdGFydENvbnZlcnNh",
-            "dGlvblJlc3BvbnNlEg8KB3ZlcnNpb24YASABKAwSEQoJcHVibGljS2V5GAIg",
-            "ASgMEhEKCWNoYWxsZW5nZRgDIAEoDBIXCg9jbGllbnRDaGFsbGVuZ2UYBCAB",
-            "KAwiUgoWUmVnaXN0ZXJIb3N0aW5nUmVxdWVzdBI4Cghjb250cmFjdBgBIAEo",
-            "CzImLmlvcC5wcm9maWxlc2VydmVyLkhvc3RpbmdQbGFuQ29udHJhY3QiUwoX",
-            "UmVnaXN0ZXJIb3N0aW5nUmVzcG9uc2USOAoIY29udHJhY3QYASABKAsyJi5p",
-            "b3AucHJvZmlsZXNlcnZlci5Ib3N0aW5nUGxhbkNvbnRyYWN0ImkKE0hvc3Rp",
-            "bmdQbGFuQ29udHJhY3QSDgoGcGxhbklkGAEgASgMEhkKEWlkZW50aXR5UHVi",
-            "bGljS2V5GAIgASgMEhEKCXN0YXJ0VGltZRgDIAEoEhIUCgxpZGVudGl0eVR5",
-            "cGUYBCABKAkiIwoOQ2hlY2tJblJlcXVlc3QSEQoJY2hhbGxlbmdlGAEgASgM",
-            "IhEKD0NoZWNrSW5SZXNwb25zZSIqChVWZXJpZnlJZGVudGl0eVJlcXVlc3QS",
-            "EQoJY2hhbGxlbmdlGAEgASgMIhgKFlZlcmlmeUlkZW50aXR5UmVzcG9uc2Ui",
-            "3gEKFFVwZGF0ZVByb2ZpbGVSZXF1ZXN0EhIKCnNldFZlcnNpb24YASABKAgS",
-            "DwoHc2V0TmFtZRgCIAEoCBIQCghzZXRJbWFnZRgDIAEoCBITCgtzZXRMb2Nh",
-            "dGlvbhgEIAEoCBIUCgxzZXRFeHRyYURhdGEYBSABKAgSDwoHdmVyc2lvbhgI",
-            "IAEoDBIMCgRuYW1lGAkgASgJEg0KBWltYWdlGAogASgMEhAKCGxhdGl0dWRl",
-            "GAsgASgPEhEKCWxvbmdpdHVkZRgMIAEoDxIRCglleHRyYURhdGEYDSABKAki",
-            "FwoVVXBkYXRlUHJvZmlsZVJlc3BvbnNlImYKHUNhbmNlbEhvc3RpbmdBZ3Jl",
-            "ZW1lbnRSZXF1ZXN0EiIKGnJlZGlyZWN0VG9OZXdQcm9maWxlU2VydmVyGAEg",
-            "ASgIEiEKGW5ld1Byb2ZpbGVTZXJ2ZXJOZXR3b3JrSWQYAiABKAwiIAoeQ2Fu",
-            "Y2VsSG9zdGluZ0FncmVlbWVudFJlc3BvbnNlIjQKHEFwcGxpY2F0aW9uU2Vy",
-            "dmljZUFkZFJlcXVlc3QSFAoMc2VydmljZU5hbWVzGAEgAygJIh8KHUFwcGxp",
-            "Y2F0aW9uU2VydmljZUFkZFJlc3BvbnNlIjYKH0FwcGxpY2F0aW9uU2Vydmlj",
-            "ZVJlbW92ZVJlcXVlc3QSEwoLc2VydmljZU5hbWUYASABKAkiIgogQXBwbGlj",
-            "YXRpb25TZXJ2aWNlUmVtb3ZlUmVzcG9uc2UimgEKHUdldElkZW50aXR5SW5m",
-            "b3JtYXRpb25SZXF1ZXN0EhkKEWlkZW50aXR5TmV0d29ya0lkGAEgASgMEhsK",
-            "E2luY2x1ZGVQcm9maWxlSW1hZ2UYAiABKAgSHQoVaW5jbHVkZVRodW1ibmFp",
-            "bEltYWdlGAMgASgIEiIKGmluY2x1ZGVBcHBsaWNhdGlvblNlcnZpY2VzGAQg",
-            "ASgIItkCCh5HZXRJZGVudGl0eUluZm9ybWF0aW9uUmVzcG9uc2USEAoIaXNI",
-            "b3N0ZWQYASABKAgSIgoaaXNUYXJnZXRQcm9maWxlU2VydmVyS25vd24YAiAB",
-            "KAgSJAocdGFyZ2V0UHJvZmlsZVNlcnZlck5ldHdvcmtJZBgDIAEoDBIQCghp",
-            "c09ubGluZRgEIAEoCBIPCgd2ZXJzaW9uGAUgASgMEhkKEWlkZW50aXR5UHVi",
-            "bGljS2V5GAYgASgMEgwKBHR5cGUYByABKAkSDAoEbmFtZRgIIAEoCRIQCghs",
-            "YXRpdHVkZRgJIAEoDxIRCglsb25naXR1ZGUYCiABKA8SEQoJZXh0cmFEYXRh",
-            "GAsgASgJEhQKDHByb2ZpbGVJbWFnZRgMIAEoDBIWCg50aHVtYm5haWxJbWFn",
-            "ZRgNIAEoDBIbChNhcHBsaWNhdGlvblNlcnZpY2VzGA4gAygJIlcKJUNhbGxJ",
-            "ZGVudGl0eUFwcGxpY2F0aW9uU2VydmljZVJlcXVlc3QSGQoRaWRlbnRpdHlO",
-            "ZXR3b3JrSWQYASABKAwSEwoLc2VydmljZU5hbWUYAiABKAkiPQomQ2FsbElk",
-            "ZW50aXR5QXBwbGljYXRpb25TZXJ2aWNlUmVzcG9uc2USEwoLY2FsbGVyVG9r",
-            "ZW4YASABKAwiZAofSW5jb21pbmdDYWxsTm90aWZpY2F0aW9uUmVxdWVzdBIX",
-            "Cg9jYWxsZXJQdWJsaWNLZXkYASABKAwSEwoLc2VydmljZU5hbWUYAiABKAkS",
-            "EwoLY2FsbGVlVG9rZW4YAyABKAwiIgogSW5jb21pbmdDYWxsTm90aWZpY2F0",
-            "aW9uUmVzcG9uc2UiRgokQXBwbGljYXRpb25TZXJ2aWNlU2VuZE1lc3NhZ2VS",
-            "ZXF1ZXN0Eg0KBXRva2VuGAEgASgMEg8KB21lc3NhZ2UYAiABKAwiJwolQXBw",
-            "bGljYXRpb25TZXJ2aWNlU2VuZE1lc3NhZ2VSZXNwb25zZSJGCjNBcHBsaWNh",
-            "dGlvblNlcnZpY2VSZWNlaXZlTWVzc2FnZU5vdGlmaWNhdGlvblJlcXVlc3QS",
-            "DwoHbWVzc2FnZRgBIAEoDCI2CjRBcHBsaWNhdGlvblNlcnZpY2VSZWNlaXZl",
-            "TWVzc2FnZU5vdGlmaWNhdGlvblJlc3BvbnNlIhUKE1Byb2ZpbGVTdGF0c1Jl",
-            "cXVlc3QiSgoUUHJvZmlsZVN0YXRzUmVzcG9uc2USMgoFc3RhdHMYASADKAsy",
-            "Iy5pb3AucHJvZmlsZXNlcnZlci5Qcm9maWxlU3RhdHNJdGVtIjcKEFByb2Zp",
-            "bGVTdGF0c0l0ZW0SFAoMaWRlbnRpdHlUeXBlGAEgASgJEg0KBWNvdW50GAIg",
-            "ASgNIvIBChRQcm9maWxlU2VhcmNoUmVxdWVzdBIZChFpbmNsdWRlSG9zdGVk",
-            "T25seRgBIAEoCBIeChZpbmNsdWRlVGh1bWJuYWlsSW1hZ2VzGAIgASgIEh4K",
-            "Fm1heFJlc3BvbnNlUmVjb3JkQ291bnQYAyABKA0SGwoTbWF4VG90YWxSZWNv",
-            "cmRDb3VudBgEIAEoDRIMCgR0eXBlGAUgASgJEgwKBG5hbWUYBiABKAkSEAoI",
-            "bGF0aXR1ZGUYByABKA8SEQoJbG9uZ2l0dWRlGAggASgPEg4KBnJhZGl1cxgJ",
-            "IAEoDRIRCglleHRyYURhdGEYCiABKAkisQEKFVByb2ZpbGVTZWFyY2hSZXNw",
-            "b25zZRIYChB0b3RhbFJlY29yZENvdW50GAEgASgNEh4KFm1heFJlc3BvbnNl",
-            "UmVjb3JkQ291bnQYAiABKA0SFgoOY292ZXJlZFNlcnZlcnMYAyADKAwSRgoI",
-            "cHJvZmlsZXMYBCADKAsyNC5pb3AucHJvZmlsZXNlcnZlci5JZGVudGl0eU5l",
-            "dHdvcmtQcm9maWxlSW5mb3JtYXRpb24i/wEKIUlkZW50aXR5TmV0d29ya1By",
-            "b2ZpbGVJbmZvcm1hdGlvbhIQCghpc0hvc3RlZBgBIAEoCBIeChZob3N0aW5n",
-            "U2VydmVyTmV0d29ya0lkGAIgASgMEhAKCGlzT25saW5lGAMgASgIEg8KB3Zl",
-            "cnNpb24YBCABKAwSGQoRaWRlbnRpdHlQdWJsaWNLZXkYBSABKAwSDAoEdHlw",
-            "ZRgGIAEoCRIMCgRuYW1lGAcgASgJEhAKCGxhdGl0dWRlGAggASgPEhEKCWxv",
-            "bmdpdHVkZRgJIAEoDxIRCglleHRyYURhdGEYCiABKAkSFgoOdGh1bWJuYWls",
-            "SW1hZ2UYCyABKAwiRAoYUHJvZmlsZVNlYXJjaFBhcnRSZXF1ZXN0EhMKC3Jl",
-            "Y29yZEluZGV4GAEgASgNEhMKC3JlY29yZENvdW50GAIgASgNIo0BChlQcm9m",
-            "aWxlU2VhcmNoUGFydFJlc3BvbnNlEhMKC3JlY29yZEluZGV4GAEgASgNEhMK",
-            "C3JlY29yZENvdW50GAIgASgNEkYKCHByb2ZpbGVzGAMgAygLMjQuaW9wLnBy",
-            "b2ZpbGVzZXJ2ZXIuSWRlbnRpdHlOZXR3b3JrUHJvZmlsZUluZm9ybWF0aW9u",
-            "IqIBChlBZGRSZWxhdGVkSWRlbnRpdHlSZXF1ZXN0EkYKD2NhcmRBcHBsaWNh",
-            "dGlvbhgBIAEoCzItLmlvcC5wcm9maWxlc2VydmVyLkNhcmRBcHBsaWNhdGlv",
-            "bkluZm9ybWF0aW9uEj0KCnNpZ25lZENhcmQYAiABKAsyKS5pb3AucHJvZmls",
-            "ZXNlcnZlci5TaWduZWRSZWxhdGlvbnNoaXBDYXJkIhwKGkFkZFJlbGF0ZWRJ",
-            "ZGVudGl0eVJlc3BvbnNlIjUKHFJlbW92ZVJlbGF0ZWRJZGVudGl0eVJlcXVl",
-            "c3QSFQoNYXBwbGljYXRpb25JZBgBIAEoDCIfCh1SZW1vdmVSZWxhdGVkSWRl",
-            "bnRpdHlSZXNwb25zZSJDChpDYXJkQXBwbGljYXRpb25JbmZvcm1hdGlvbhIO",
-            "CgZjYXJkSWQYASABKAwSFQoNYXBwbGljYXRpb25JZBgCIAEoDCJkChZTaWdu",
-            "ZWRSZWxhdGlvbnNoaXBDYXJkEjEKBGNhcmQYASABKAsyIy5pb3AucHJvZmls",
-            "ZXNlcnZlci5SZWxhdGlvbnNoaXBDYXJkEhcKD2lzc3VlclNpZ25hdHVyZRgC",
-            "IAEoDCKaAQoQUmVsYXRpb25zaGlwQ2FyZBIOCgZjYXJkSWQYASABKAwSDwoH",
-            "dmVyc2lvbhgCIAEoDBIMCgR0eXBlGAMgASgJEhEKCXZhbGlkRnJvbRgEIAEo",
-            "EhIPCgd2YWxpZFRvGAUgASgSEhcKD2lzc3VlclB1YmxpY0tleRgGIAEoDBIa",
-            "ChJyZWNpcGllbnRQdWJsaWNLZXkYByABKAwingEKKkdldElkZW50aXR5UmVs",
-            "YXRpb25zaGlwc0luZm9ybWF0aW9uUmVxdWVzdBIZChFpZGVudGl0eU5ldHdv",
-            "cmtJZBgBIAEoDBIWCg5pbmNsdWRlSW52YWxpZBgCIAEoCBIMCgR0eXBlGAMg",
-            "ASgJEhYKDnNwZWNpZmljSXNzdWVyGAQgASgIEhcKD2lzc3Vlck5ldHdvcmtJ",
-            "ZBgFIAEoDCJtCitHZXRJZGVudGl0eVJlbGF0aW9uc2hpcHNJbmZvcm1hdGlv",
-            "blJlc3BvbnNlEj4KDXJlbGF0aW9uc2hpcHMYASADKAsyJy5pb3AucHJvZmls",
-            "ZXNlcnZlci5JZGVudGl0eVJlbGF0aW9uc2hpcCK5AQoUSWRlbnRpdHlSZWxh",
-            "dGlvbnNoaXASRgoPY2FyZEFwcGxpY2F0aW9uGAEgASgLMi0uaW9wLnByb2Zp",
-            "bGVzZXJ2ZXIuQ2FyZEFwcGxpY2F0aW9uSW5mb3JtYXRpb24SIAoYY2FyZEFw",
-            "cGxpY2F0aW9uU2lnbmF0dXJlGAIgASgMEjcKBGNhcmQYAyABKAsyKS5pb3Au",
-            "cHJvZmlsZXNlcnZlci5TaWduZWRSZWxhdGlvbnNoaXBDYXJkIlUKJlN0YXJ0",
-            "TmVpZ2hib3Job29kSW5pdGlhbGl6YXRpb25SZXF1ZXN0EhMKC3ByaW1hcnlQ",
-            "b3J0GAEgASgNEhYKDnNyTmVpZ2hib3JQb3J0GAIgASgNIikKJ1N0YXJ0TmVp",
-            "Z2hib3Job29kSW5pdGlhbGl6YXRpb25SZXNwb25zZSIpCidGaW5pc2hOZWln",
-            "aGJvcmhvb2RJbml0aWFsaXphdGlvblJlcXVlc3QiKgooRmluaXNoTmVpZ2hi",
-            "b3Job29kSW5pdGlhbGl6YXRpb25SZXNwb25zZSJjCiZOZWlnaGJvcmhvb2RT",
-            "aGFyZWRQcm9maWxlVXBkYXRlUmVxdWVzdBI5CgVpdGVtcxgBIAMoCzIqLmlv",
-            "cC5wcm9maWxlc2VydmVyLlNoYXJlZFByb2ZpbGVVcGRhdGVJdGVtIikKJ05l",
-            "aWdoYm9yaG9vZFNoYXJlZFByb2ZpbGVVcGRhdGVSZXNwb25zZSKeAgoXU2hh",
-            "cmVkUHJvZmlsZVVwZGF0ZUl0ZW0SNgoDYWRkGAEgASgLMicuaW9wLnByb2Zp",
-            "bGVzZXJ2ZXIuU2hhcmVkUHJvZmlsZUFkZEl0ZW1IABI8CgZjaGFuZ2UYAiAB",
-            "KAsyKi5pb3AucHJvZmlsZXNlcnZlci5TaGFyZWRQcm9maWxlQ2hhbmdlSXRl",
-            "bUgAEjwKBmRlbGV0ZRgDIAEoCzIqLmlvcC5wcm9maWxlc2VydmVyLlNoYXJl",
-            "ZFByb2ZpbGVEZWxldGVJdGVtSAASQQoHcmVmcmVzaBgEIAEoCzIuLmlvcC5w",
-            "cm9maWxlc2VydmVyLlNoYXJlZFByb2ZpbGVSZWZyZXNoQWxsSXRlbUgAQgwK",
-            "CkFjdGlvblR5cGUiyQEKFFNoYXJlZFByb2ZpbGVBZGRJdGVtEg8KB3ZlcnNp",
-            "b24YASABKAwSGQoRaWRlbnRpdHlQdWJsaWNLZXkYAiABKAwSDAoEbmFtZRgD",
-            "IAEoCRIMCgR0eXBlGAQgASgJEhkKEXNldFRodW1ibmFpbEltYWdlGAUgASgI",
-            "EhYKDnRodW1ibmFpbEltYWdlGAYgASgMEhAKCGxhdGl0dWRlGAcgASgPEhEK",
-            "CWxvbmdpdHVkZRgIIAEoDxIRCglleHRyYURhdGEYCSABKAkijgIKF1NoYXJl",
-            "ZFByb2ZpbGVDaGFuZ2VJdGVtEhkKEWlkZW50aXR5TmV0d29ya0lkGAEgASgM",
-            "EhIKCnNldFZlcnNpb24YAiABKAgSDwoHc2V0TmFtZRgDIAEoCBIZChFzZXRU",
-            "aHVtYm5haWxJbWFnZRgEIAEoCBITCgtzZXRMb2NhdGlvbhgFIAEoCBIUCgxz",
-            "ZXRFeHRyYURhdGEYBiABKAgSDwoHdmVyc2lvbhgHIAEoDBIMCgRuYW1lGAgg",
-            "ASgJEhYKDnRodW1ibmFpbEltYWdlGAkgASgMEhAKCGxhdGl0dWRlGAogASgP",
-            "EhEKCWxvbmdpdHVkZRgLIAEoDxIRCglleHRyYURhdGEYDCABKAkiNAoXU2hh",
-            "cmVkUHJvZmlsZURlbGV0ZUl0ZW0SGQoRaWRlbnRpdHlOZXR3b3JrSWQYASAB",
-            "KAwiHQobU2hhcmVkUHJvZmlsZVJlZnJlc2hBbGxJdGVtIiAKHlN0b3BOZWln",
-            "aGJvcmhvb2RVcGRhdGVzUmVxdWVzdCIhCh9TdG9wTmVpZ2hib3Job29kVXBk",
-            "YXRlc1Jlc3BvbnNlKpYDCgZTdGF0dXMSDQoJU1RBVFVTX09LEAASHAoYRVJS",
-            "T1JfUFJPVE9DT0xfVklPTEFUSU9OEAESFQoRRVJST1JfVU5TVVBQT1JURUQQ",
-            "AhIQCgxFUlJPUl9CQU5ORUQQAxIOCgpFUlJPUl9CVVNZEAQSFgoSRVJST1Jf",
-            "VU5BVVRIT1JJWkVEEAUSEgoORVJST1JfQkFEX1JPTEUQBhIhCh1FUlJPUl9C",
-            "QURfQ09OVkVSU0FUSU9OX1NUQVRVUxAHEhIKDkVSUk9SX0lOVEVSTkFMEAgS",
-            "GAoURVJST1JfUVVPVEFfRVhDRUVERUQQMxIbChdFUlJPUl9JTlZBTElEX1NJ",
-            "R05BVFVSRRA0EhMKD0VSUk9SX05PVF9GT1VORBA1EhcKE0VSUk9SX0lOVkFM",
-            "SURfVkFMVUUQNhIYChRFUlJPUl9BTFJFQURZX0VYSVNUUxA3EhcKE0VSUk9S",
-            "X05PVF9BVkFJTEFCTEUQOBISCg5FUlJPUl9SRUpFQ1RFRBA5EhcKE0VSUk9S",
-            "X1VOSU5JVElBTElaRUQQOipoCg5TZXJ2ZXJSb2xlVHlwZRILCgdQUklNQVJZ",
-            "EAASDwoLU1JfTkVJR0hCT1IQAhITCg9DTF9OT05fQ1VTVE9NRVIQBhIPCgtD",
-            "TF9DVVNUT01FUhAHEhIKDkNMX0FQUF9TRVJWSUNFEAliBnByb3RvMw=="));
+            "bGVzZXJ2ZXIuU3RvcE5laWdoYm9yaG9vZFVwZGF0ZXNSZXF1ZXN0SAASPgoM",
+            "Y2FuU3RvcmVEYXRhGBQgASgLMiYuaW9wLnByb2ZpbGVzZXJ2ZXIuQ2FuU3Rv",
+            "cmVEYXRhUmVxdWVzdEgAEk4KFGNhblB1Ymxpc2hJcG5zUmVjb3JkGBUgASgL",
+            "Mi4uaW9wLnByb2ZpbGVzZXJ2ZXIuQ2FuUHVibGlzaElwbnNSZWNvcmRSZXF1",
+            "ZXN0SABCDQoLUmVxdWVzdFR5cGUiiw0KFENvbnZlcnNhdGlvblJlc3BvbnNl",
+            "EhEKCXNpZ25hdHVyZRgBIAEoDBI9CgVzdGFydBgCIAEoCzIsLmlvcC5wcm9m",
+            "aWxlc2VydmVyLlN0YXJ0Q29udmVyc2F0aW9uUmVzcG9uc2VIABJFCg9yZWdp",
+            "c3Rlckhvc3RpbmcYAyABKAsyKi5pb3AucHJvZmlsZXNlcnZlci5SZWdpc3Rl",
+            "ckhvc3RpbmdSZXNwb25zZUgAEjUKB2NoZWNrSW4YBCABKAsyIi5pb3AucHJv",
+            "ZmlsZXNlcnZlci5DaGVja0luUmVzcG9uc2VIABJDCg52ZXJpZnlJZGVudGl0",
+            "eRgFIAEoCzIpLmlvcC5wcm9maWxlc2VydmVyLlZlcmlmeUlkZW50aXR5UmVz",
+            "cG9uc2VIABJBCg11cGRhdGVQcm9maWxlGAYgASgLMiguaW9wLnByb2ZpbGVz",
+            "ZXJ2ZXIuVXBkYXRlUHJvZmlsZVJlc3BvbnNlSAASUwoWY2FuY2VsSG9zdGlu",
+            "Z0FncmVlbWVudBgHIAEoCzIxLmlvcC5wcm9maWxlc2VydmVyLkNhbmNlbEhv",
+            "c3RpbmdBZ3JlZW1lbnRSZXNwb25zZUgAElEKFWFwcGxpY2F0aW9uU2Vydmlj",
+            "ZUFkZBgIIAEoCzIwLmlvcC5wcm9maWxlc2VydmVyLkFwcGxpY2F0aW9uU2Vy",
+            "dmljZUFkZFJlc3BvbnNlSAASVwoYYXBwbGljYXRpb25TZXJ2aWNlUmVtb3Zl",
+            "GAkgASgLMjMuaW9wLnByb2ZpbGVzZXJ2ZXIuQXBwbGljYXRpb25TZXJ2aWNl",
+            "UmVtb3ZlUmVzcG9uc2VIABJjCh5jYWxsSWRlbnRpdHlBcHBsaWNhdGlvblNl",
+            "cnZpY2UYCiABKAsyOS5pb3AucHJvZmlsZXNlcnZlci5DYWxsSWRlbnRpdHlB",
+            "cHBsaWNhdGlvblNlcnZpY2VSZXNwb25zZUgAElcKGGluY29taW5nQ2FsbE5v",
+            "dGlmaWNhdGlvbhgLIAEoCzIzLmlvcC5wcm9maWxlc2VydmVyLkluY29taW5n",
+            "Q2FsbE5vdGlmaWNhdGlvblJlc3BvbnNlSAASQQoNcHJvZmlsZVNlYXJjaBgM",
+            "IAEoCzIoLmlvcC5wcm9maWxlc2VydmVyLlByb2ZpbGVTZWFyY2hSZXNwb25z",
+            "ZUgAEkkKEXByb2ZpbGVTZWFyY2hQYXJ0GA0gASgLMiwuaW9wLnByb2ZpbGVz",
+            "ZXJ2ZXIuUHJvZmlsZVNlYXJjaFBhcnRSZXNwb25zZUgAEksKEmFkZFJlbGF0",
+            "ZWRJZGVudGl0eRgOIAEoCzItLmlvcC5wcm9maWxlc2VydmVyLkFkZFJlbGF0",
+            "ZWRJZGVudGl0eVJlc3BvbnNlSAASUQoVcmVtb3ZlUmVsYXRlZElkZW50aXR5",
+            "GA8gASgLMjAuaW9wLnByb2ZpbGVzZXJ2ZXIuUmVtb3ZlUmVsYXRlZElkZW50",
+            "aXR5UmVzcG9uc2VIABJlCh9zdGFydE5laWdoYm9yaG9vZEluaXRpYWxpemF0",
+            "aW9uGBAgASgLMjouaW9wLnByb2ZpbGVzZXJ2ZXIuU3RhcnROZWlnaGJvcmhv",
+            "b2RJbml0aWFsaXphdGlvblJlc3BvbnNlSAASZwogZmluaXNoTmVpZ2hib3Jo",
+            "b29kSW5pdGlhbGl6YXRpb24YESABKAsyOy5pb3AucHJvZmlsZXNlcnZlci5G",
+            "aW5pc2hOZWlnaGJvcmhvb2RJbml0aWFsaXphdGlvblJlc3BvbnNlSAASZQof",
+            "bmVpZ2hib3Job29kU2hhcmVkUHJvZmlsZVVwZGF0ZRgSIAEoCzI6LmlvcC5w",
+            "cm9maWxlc2VydmVyLk5laWdoYm9yaG9vZFNoYXJlZFByb2ZpbGVVcGRhdGVS",
+            "ZXNwb25zZUgAElUKF3N0b3BOZWlnaGJvcmhvb2RVcGRhdGVzGBMgASgLMjIu",
+            "aW9wLnByb2ZpbGVzZXJ2ZXIuU3RvcE5laWdoYm9yaG9vZFVwZGF0ZXNSZXNw",
+            "b25zZUgAEj8KDGNhblN0b3JlRGF0YRgUIAEoCzInLmlvcC5wcm9maWxlc2Vy",
+            "dmVyLkNhblN0b3JlRGF0YVJlc3BvbnNlSAASTwoUY2FuUHVibGlzaElwbnNS",
+            "ZWNvcmQYFSABKAsyLy5pb3AucHJvZmlsZXNlcnZlci5DYW5QdWJsaXNoSXBu",
+            "c1JlY29yZFJlc3BvbnNlSABCDgoMUmVzcG9uc2VUeXBlIh4KC1BpbmdSZXF1",
+            "ZXN0Eg8KB3BheWxvYWQYASABKAwiLgoMUGluZ1Jlc3BvbnNlEg8KB3BheWxv",
+            "YWQYASABKAwSDQoFY2xvY2sYAiABKBIiEgoQTGlzdFJvbGVzUmVxdWVzdCJB",
+            "ChFMaXN0Um9sZXNSZXNwb25zZRIsCgVyb2xlcxgBIAMoCzIdLmlvcC5wcm9m",
+            "aWxlc2VydmVyLlNlcnZlclJvbGUiaQoKU2VydmVyUm9sZRIvCgRyb2xlGAEg",
+            "ASgOMiEuaW9wLnByb2ZpbGVzZXJ2ZXIuU2VydmVyUm9sZVR5cGUSDAoEcG9y",
+            "dBgCIAEoDRINCgVpc1RjcBgDIAEoCBINCgVpc1RscxgEIAEoCCIvChdMaXN0",
+            "SG9zdGluZ1BsYW5zUmVxdWVzdBIUCgxpZGVudGl0eVR5cGUYASABKAkiSQoY",
+            "TGlzdEhvc3RpbmdQbGFuc1Jlc3BvbnNlEi0KBXBsYW5zGAEgAygLMh4uaW9w",
+            "LnByb2ZpbGVzZXJ2ZXIuSG9zdGluZ1BsYW4itwEKC0hvc3RpbmdQbGFuEg4K",
+            "BnBsYW5JZBgBIAEoDBIXCg9zZXJ2ZXJOZXR3b3JrSWQYAiABKAwSFAoMaWRl",
+            "bnRpdHlUeXBlGAMgASgJEgsKA2ZlZRgEIAEoBBIcChRiaWxsaW5nUGVyaW9k",
+            "U2Vjb25kcxgFIAEoDRI+Cg5wbGFuUGFyYW1ldGVycxgJIAMoCzImLmlvcC5w",
+            "cm9maWxlc2VydmVyLk5hbWVTdHJpbmdWYWx1ZVBhaXIiMgoTTmFtZVN0cmlu",
+            "Z1ZhbHVlUGFpchIMCgRuYW1lGAEgASgJEg0KBXZhbHVlGAIgASgJImEKGFN0",
+            "YXJ0Q29udmVyc2F0aW9uUmVxdWVzdBIZChFzdXBwb3J0ZWRWZXJzaW9ucxgB",
+            "IAMoDBIRCglwdWJsaWNLZXkYAiABKAwSFwoPY2xpZW50Q2hhbGxlbmdlGAMg",
+            "ASgMImsKGVN0YXJ0Q29udmVyc2F0aW9uUmVzcG9uc2USDwoHdmVyc2lvbhgB",
+            "IAEoDBIRCglwdWJsaWNLZXkYAiABKAwSEQoJY2hhbGxlbmdlGAMgASgMEhcK",
+            "D2NsaWVudENoYWxsZW5nZRgEIAEoDCJSChZSZWdpc3Rlckhvc3RpbmdSZXF1",
+            "ZXN0EjgKCGNvbnRyYWN0GAEgASgLMiYuaW9wLnByb2ZpbGVzZXJ2ZXIuSG9z",
+            "dGluZ1BsYW5Db250cmFjdCJTChdSZWdpc3Rlckhvc3RpbmdSZXNwb25zZRI4",
+            "Cghjb250cmFjdBgBIAEoCzImLmlvcC5wcm9maWxlc2VydmVyLkhvc3RpbmdQ",
+            "bGFuQ29udHJhY3QiaQoTSG9zdGluZ1BsYW5Db250cmFjdBIOCgZwbGFuSWQY",
+            "ASABKAwSGQoRaWRlbnRpdHlQdWJsaWNLZXkYAiABKAwSEQoJc3RhcnRUaW1l",
+            "GAMgASgSEhQKDGlkZW50aXR5VHlwZRgEIAEoCSIjCg5DaGVja0luUmVxdWVz",
+            "dBIRCgljaGFsbGVuZ2UYASABKAwiEQoPQ2hlY2tJblJlc3BvbnNlIioKFVZl",
+            "cmlmeUlkZW50aXR5UmVxdWVzdBIRCgljaGFsbGVuZ2UYASABKAwiGAoWVmVy",
+            "aWZ5SWRlbnRpdHlSZXNwb25zZSLeAQoUVXBkYXRlUHJvZmlsZVJlcXVlc3QS",
+            "EgoKc2V0VmVyc2lvbhgBIAEoCBIPCgdzZXROYW1lGAIgASgIEhAKCHNldElt",
+            "YWdlGAMgASgIEhMKC3NldExvY2F0aW9uGAQgASgIEhQKDHNldEV4dHJhRGF0",
+            "YRgFIAEoCBIPCgd2ZXJzaW9uGAggASgMEgwKBG5hbWUYCSABKAkSDQoFaW1h",
+            "Z2UYCiABKAwSEAoIbGF0aXR1ZGUYCyABKA8SEQoJbG9uZ2l0dWRlGAwgASgP",
+            "EhEKCWV4dHJhRGF0YRgNIAEoCSIXChVVcGRhdGVQcm9maWxlUmVzcG9uc2Ui",
+            "ZgodQ2FuY2VsSG9zdGluZ0FncmVlbWVudFJlcXVlc3QSIgoacmVkaXJlY3RU",
+            "b05ld1Byb2ZpbGVTZXJ2ZXIYASABKAgSIQoZbmV3UHJvZmlsZVNlcnZlck5l",
+            "dHdvcmtJZBgCIAEoDCIgCh5DYW5jZWxIb3N0aW5nQWdyZWVtZW50UmVzcG9u",
+            "c2UiNAocQXBwbGljYXRpb25TZXJ2aWNlQWRkUmVxdWVzdBIUCgxzZXJ2aWNl",
+            "TmFtZXMYASADKAkiHwodQXBwbGljYXRpb25TZXJ2aWNlQWRkUmVzcG9uc2Ui",
+            "NgofQXBwbGljYXRpb25TZXJ2aWNlUmVtb3ZlUmVxdWVzdBITCgtzZXJ2aWNl",
+            "TmFtZRgBIAEoCSIiCiBBcHBsaWNhdGlvblNlcnZpY2VSZW1vdmVSZXNwb25z",
+            "ZSKaAQodR2V0SWRlbnRpdHlJbmZvcm1hdGlvblJlcXVlc3QSGQoRaWRlbnRp",
+            "dHlOZXR3b3JrSWQYASABKAwSGwoTaW5jbHVkZVByb2ZpbGVJbWFnZRgCIAEo",
+            "CBIdChVpbmNsdWRlVGh1bWJuYWlsSW1hZ2UYAyABKAgSIgoaaW5jbHVkZUFw",
+            "cGxpY2F0aW9uU2VydmljZXMYBCABKAgi2QIKHkdldElkZW50aXR5SW5mb3Jt",
+            "YXRpb25SZXNwb25zZRIQCghpc0hvc3RlZBgBIAEoCBIiChppc1RhcmdldFBy",
+            "b2ZpbGVTZXJ2ZXJLbm93bhgCIAEoCBIkChx0YXJnZXRQcm9maWxlU2VydmVy",
+            "TmV0d29ya0lkGAMgASgMEhAKCGlzT25saW5lGAQgASgIEg8KB3ZlcnNpb24Y",
+            "BSABKAwSGQoRaWRlbnRpdHlQdWJsaWNLZXkYBiABKAwSDAoEdHlwZRgHIAEo",
+            "CRIMCgRuYW1lGAggASgJEhAKCGxhdGl0dWRlGAkgASgPEhEKCWxvbmdpdHVk",
+            "ZRgKIAEoDxIRCglleHRyYURhdGEYCyABKAkSFAoMcHJvZmlsZUltYWdlGAwg",
+            "ASgMEhYKDnRodW1ibmFpbEltYWdlGA0gASgMEhsKE2FwcGxpY2F0aW9uU2Vy",
+            "dmljZXMYDiADKAkiVwolQ2FsbElkZW50aXR5QXBwbGljYXRpb25TZXJ2aWNl",
+            "UmVxdWVzdBIZChFpZGVudGl0eU5ldHdvcmtJZBgBIAEoDBITCgtzZXJ2aWNl",
+            "TmFtZRgCIAEoCSI9CiZDYWxsSWRlbnRpdHlBcHBsaWNhdGlvblNlcnZpY2VS",
+            "ZXNwb25zZRITCgtjYWxsZXJUb2tlbhgBIAEoDCJkCh9JbmNvbWluZ0NhbGxO",
+            "b3RpZmljYXRpb25SZXF1ZXN0EhcKD2NhbGxlclB1YmxpY0tleRgBIAEoDBIT",
+            "CgtzZXJ2aWNlTmFtZRgCIAEoCRITCgtjYWxsZWVUb2tlbhgDIAEoDCIiCiBJ",
+            "bmNvbWluZ0NhbGxOb3RpZmljYXRpb25SZXNwb25zZSJGCiRBcHBsaWNhdGlv",
+            "blNlcnZpY2VTZW5kTWVzc2FnZVJlcXVlc3QSDQoFdG9rZW4YASABKAwSDwoH",
+            "bWVzc2FnZRgCIAEoDCInCiVBcHBsaWNhdGlvblNlcnZpY2VTZW5kTWVzc2Fn",
+            "ZVJlc3BvbnNlIkYKM0FwcGxpY2F0aW9uU2VydmljZVJlY2VpdmVNZXNzYWdl",
+            "Tm90aWZpY2F0aW9uUmVxdWVzdBIPCgdtZXNzYWdlGAEgASgMIjYKNEFwcGxp",
+            "Y2F0aW9uU2VydmljZVJlY2VpdmVNZXNzYWdlTm90aWZpY2F0aW9uUmVzcG9u",
+            "c2UiFQoTUHJvZmlsZVN0YXRzUmVxdWVzdCJKChRQcm9maWxlU3RhdHNSZXNw",
+            "b25zZRIyCgVzdGF0cxgBIAMoCzIjLmlvcC5wcm9maWxlc2VydmVyLlByb2Zp",
+            "bGVTdGF0c0l0ZW0iNwoQUHJvZmlsZVN0YXRzSXRlbRIUCgxpZGVudGl0eVR5",
+            "cGUYASABKAkSDQoFY291bnQYAiABKA0i8gEKFFByb2ZpbGVTZWFyY2hSZXF1",
+            "ZXN0EhkKEWluY2x1ZGVIb3N0ZWRPbmx5GAEgASgIEh4KFmluY2x1ZGVUaHVt",
+            "Ym5haWxJbWFnZXMYAiABKAgSHgoWbWF4UmVzcG9uc2VSZWNvcmRDb3VudBgD",
+            "IAEoDRIbChNtYXhUb3RhbFJlY29yZENvdW50GAQgASgNEgwKBHR5cGUYBSAB",
+            "KAkSDAoEbmFtZRgGIAEoCRIQCghsYXRpdHVkZRgHIAEoDxIRCglsb25naXR1",
+            "ZGUYCCABKA8SDgoGcmFkaXVzGAkgASgNEhEKCWV4dHJhRGF0YRgKIAEoCSKx",
+            "AQoVUHJvZmlsZVNlYXJjaFJlc3BvbnNlEhgKEHRvdGFsUmVjb3JkQ291bnQY",
+            "ASABKA0SHgoWbWF4UmVzcG9uc2VSZWNvcmRDb3VudBgCIAEoDRIWCg5jb3Zl",
+            "cmVkU2VydmVycxgDIAMoDBJGCghwcm9maWxlcxgEIAMoCzI0LmlvcC5wcm9m",
+            "aWxlc2VydmVyLklkZW50aXR5TmV0d29ya1Byb2ZpbGVJbmZvcm1hdGlvbiL/",
+            "AQohSWRlbnRpdHlOZXR3b3JrUHJvZmlsZUluZm9ybWF0aW9uEhAKCGlzSG9z",
+            "dGVkGAEgASgIEh4KFmhvc3RpbmdTZXJ2ZXJOZXR3b3JrSWQYAiABKAwSEAoI",
+            "aXNPbmxpbmUYAyABKAgSDwoHdmVyc2lvbhgEIAEoDBIZChFpZGVudGl0eVB1",
+            "YmxpY0tleRgFIAEoDBIMCgR0eXBlGAYgASgJEgwKBG5hbWUYByABKAkSEAoI",
+            "bGF0aXR1ZGUYCCABKA8SEQoJbG9uZ2l0dWRlGAkgASgPEhEKCWV4dHJhRGF0",
+            "YRgKIAEoCRIWCg50aHVtYm5haWxJbWFnZRgLIAEoDCJEChhQcm9maWxlU2Vh",
+            "cmNoUGFydFJlcXVlc3QSEwoLcmVjb3JkSW5kZXgYASABKA0SEwoLcmVjb3Jk",
+            "Q291bnQYAiABKA0ijQEKGVByb2ZpbGVTZWFyY2hQYXJ0UmVzcG9uc2USEwoL",
+            "cmVjb3JkSW5kZXgYASABKA0SEwoLcmVjb3JkQ291bnQYAiABKA0SRgoIcHJv",
+            "ZmlsZXMYAyADKAsyNC5pb3AucHJvZmlsZXNlcnZlci5JZGVudGl0eU5ldHdv",
+            "cmtQcm9maWxlSW5mb3JtYXRpb24iogEKGUFkZFJlbGF0ZWRJZGVudGl0eVJl",
+            "cXVlc3QSRgoPY2FyZEFwcGxpY2F0aW9uGAEgASgLMi0uaW9wLnByb2ZpbGVz",
+            "ZXJ2ZXIuQ2FyZEFwcGxpY2F0aW9uSW5mb3JtYXRpb24SPQoKc2lnbmVkQ2Fy",
+            "ZBgCIAEoCzIpLmlvcC5wcm9maWxlc2VydmVyLlNpZ25lZFJlbGF0aW9uc2hp",
+            "cENhcmQiHAoaQWRkUmVsYXRlZElkZW50aXR5UmVzcG9uc2UiNQocUmVtb3Zl",
+            "UmVsYXRlZElkZW50aXR5UmVxdWVzdBIVCg1hcHBsaWNhdGlvbklkGAEgASgM",
+            "Ih8KHVJlbW92ZVJlbGF0ZWRJZGVudGl0eVJlc3BvbnNlIkMKGkNhcmRBcHBs",
+            "aWNhdGlvbkluZm9ybWF0aW9uEg4KBmNhcmRJZBgBIAEoDBIVCg1hcHBsaWNh",
+            "dGlvbklkGAIgASgMImQKFlNpZ25lZFJlbGF0aW9uc2hpcENhcmQSMQoEY2Fy",
+            "ZBgBIAEoCzIjLmlvcC5wcm9maWxlc2VydmVyLlJlbGF0aW9uc2hpcENhcmQS",
+            "FwoPaXNzdWVyU2lnbmF0dXJlGAIgASgMIpoBChBSZWxhdGlvbnNoaXBDYXJk",
+            "Eg4KBmNhcmRJZBgBIAEoDBIPCgd2ZXJzaW9uGAIgASgMEgwKBHR5cGUYAyAB",
+            "KAkSEQoJdmFsaWRGcm9tGAQgASgSEg8KB3ZhbGlkVG8YBSABKBISFwoPaXNz",
+            "dWVyUHVibGljS2V5GAYgASgMEhoKEnJlY2lwaWVudFB1YmxpY0tleRgHIAEo",
+            "DCKeAQoqR2V0SWRlbnRpdHlSZWxhdGlvbnNoaXBzSW5mb3JtYXRpb25SZXF1",
+            "ZXN0EhkKEWlkZW50aXR5TmV0d29ya0lkGAEgASgMEhYKDmluY2x1ZGVJbnZh",
+            "bGlkGAIgASgIEgwKBHR5cGUYAyABKAkSFgoOc3BlY2lmaWNJc3N1ZXIYBCAB",
+            "KAgSFwoPaXNzdWVyTmV0d29ya0lkGAUgASgMIm0KK0dldElkZW50aXR5UmVs",
+            "YXRpb25zaGlwc0luZm9ybWF0aW9uUmVzcG9uc2USPgoNcmVsYXRpb25zaGlw",
+            "cxgBIAMoCzInLmlvcC5wcm9maWxlc2VydmVyLklkZW50aXR5UmVsYXRpb25z",
+            "aGlwIrkBChRJZGVudGl0eVJlbGF0aW9uc2hpcBJGCg9jYXJkQXBwbGljYXRp",
+            "b24YASABKAsyLS5pb3AucHJvZmlsZXNlcnZlci5DYXJkQXBwbGljYXRpb25J",
+            "bmZvcm1hdGlvbhIgChhjYXJkQXBwbGljYXRpb25TaWduYXR1cmUYAiABKAwS",
+            "NwoEY2FyZBgDIAEoCzIpLmlvcC5wcm9maWxlc2VydmVyLlNpZ25lZFJlbGF0",
+            "aW9uc2hpcENhcmQiVQomU3RhcnROZWlnaGJvcmhvb2RJbml0aWFsaXphdGlv",
+            "blJlcXVlc3QSEwoLcHJpbWFyeVBvcnQYASABKA0SFgoOc3JOZWlnaGJvclBv",
+            "cnQYAiABKA0iKQonU3RhcnROZWlnaGJvcmhvb2RJbml0aWFsaXphdGlvblJl",
+            "c3BvbnNlIikKJ0ZpbmlzaE5laWdoYm9yaG9vZEluaXRpYWxpemF0aW9uUmVx",
+            "dWVzdCIqCihGaW5pc2hOZWlnaGJvcmhvb2RJbml0aWFsaXphdGlvblJlc3Bv",
+            "bnNlImMKJk5laWdoYm9yaG9vZFNoYXJlZFByb2ZpbGVVcGRhdGVSZXF1ZXN0",
+            "EjkKBWl0ZW1zGAEgAygLMiouaW9wLnByb2ZpbGVzZXJ2ZXIuU2hhcmVkUHJv",
+            "ZmlsZVVwZGF0ZUl0ZW0iKQonTmVpZ2hib3Job29kU2hhcmVkUHJvZmlsZVVw",
+            "ZGF0ZVJlc3BvbnNlIp4CChdTaGFyZWRQcm9maWxlVXBkYXRlSXRlbRI2CgNh",
+            "ZGQYASABKAsyJy5pb3AucHJvZmlsZXNlcnZlci5TaGFyZWRQcm9maWxlQWRk",
+            "SXRlbUgAEjwKBmNoYW5nZRgCIAEoCzIqLmlvcC5wcm9maWxlc2VydmVyLlNo",
+            "YXJlZFByb2ZpbGVDaGFuZ2VJdGVtSAASPAoGZGVsZXRlGAMgASgLMiouaW9w",
+            "LnByb2ZpbGVzZXJ2ZXIuU2hhcmVkUHJvZmlsZURlbGV0ZUl0ZW1IABJBCgdy",
+            "ZWZyZXNoGAQgASgLMi4uaW9wLnByb2ZpbGVzZXJ2ZXIuU2hhcmVkUHJvZmls",
+            "ZVJlZnJlc2hBbGxJdGVtSABCDAoKQWN0aW9uVHlwZSLJAQoUU2hhcmVkUHJv",
+            "ZmlsZUFkZEl0ZW0SDwoHdmVyc2lvbhgBIAEoDBIZChFpZGVudGl0eVB1Ymxp",
+            "Y0tleRgCIAEoDBIMCgRuYW1lGAMgASgJEgwKBHR5cGUYBCABKAkSGQoRc2V0",
+            "VGh1bWJuYWlsSW1hZ2UYBSABKAgSFgoOdGh1bWJuYWlsSW1hZ2UYBiABKAwS",
+            "EAoIbGF0aXR1ZGUYByABKA8SEQoJbG9uZ2l0dWRlGAggASgPEhEKCWV4dHJh",
+            "RGF0YRgJIAEoCSKOAgoXU2hhcmVkUHJvZmlsZUNoYW5nZUl0ZW0SGQoRaWRl",
+            "bnRpdHlOZXR3b3JrSWQYASABKAwSEgoKc2V0VmVyc2lvbhgCIAEoCBIPCgdz",
+            "ZXROYW1lGAMgASgIEhkKEXNldFRodW1ibmFpbEltYWdlGAQgASgIEhMKC3Nl",
+            "dExvY2F0aW9uGAUgASgIEhQKDHNldEV4dHJhRGF0YRgGIAEoCBIPCgd2ZXJz",
+            "aW9uGAcgASgMEgwKBG5hbWUYCCABKAkSFgoOdGh1bWJuYWlsSW1hZ2UYCSAB",
+            "KAwSEAoIbGF0aXR1ZGUYCiABKA8SEQoJbG9uZ2l0dWRlGAsgASgPEhEKCWV4",
+            "dHJhRGF0YRgMIAEoCSI0ChdTaGFyZWRQcm9maWxlRGVsZXRlSXRlbRIZChFp",
+            "ZGVudGl0eU5ldHdvcmtJZBgBIAEoDCIdChtTaGFyZWRQcm9maWxlUmVmcmVz",
+            "aEFsbEl0ZW0iIAoeU3RvcE5laWdoYm9yaG9vZFVwZGF0ZXNSZXF1ZXN0IiEK",
+            "H1N0b3BOZWlnaGJvcmhvb2RVcGRhdGVzUmVzcG9uc2UiVAoXQ2FuUHJvZmls",
+            "ZVNlcnZlckNvbnRhY3QSEQoJcHVibGljS2V5GAEgASgMEhEKCWlwQWRkcmVz",
+            "cxgCIAEoDBITCgtwcmltYXJ5UG9ydBgDIAEoDSJgCg9DYW5JZGVudGl0eURh",
+            "dGESFwoPaG9zdGluZ1NlcnZlcklkGAEgASgMEjQKDGtleVZhbHVlTGlzdBgC",
+            "IAMoCzIeLmlvcC5wcm9maWxlc2VydmVyLkNhbktleVZhbHVlIq8BCgtDYW5L",
+            "ZXlWYWx1ZRILCgNrZXkYASABKAkSFQoLYmluYXJ5VmFsdWUYAiABKAxIABIV",
+            "Cgt1aW50MzJWYWx1ZRgDIAEoBUgAEhUKC3VpbnQ2NFZhbHVlGAQgASgDSAAS",
+            "FQoLZG91YmxlVmFsdWUYBSABKAFIABITCglib29sVmFsdWUYBiABKAhIABIV",
+            "CgtzdHJpbmdWYWx1ZRgHIAEoCUgAQgsKCVZhbHVlVHlwZSJHChNDYW5TdG9y",
+            "ZURhdGFSZXF1ZXN0EjAKBGRhdGEYASABKAsyIi5pb3AucHJvZmlsZXNlcnZl",
+            "ci5DYW5JZGVudGl0eURhdGEiJAoUQ2FuU3RvcmVEYXRhUmVzcG9uc2USDAoE",
+            "aGFzaBgBIAEoDCJOChtDYW5QdWJsaXNoSXBuc1JlY29yZFJlcXVlc3QSLwoG",
+            "cmVjb3JkGAEgASgLMh8uaW9wLnByb2ZpbGVzZXJ2ZXIuQ2FuSXBuc0VudHJ5",
+            "Ih4KHENhblB1Ymxpc2hJcG5zUmVjb3JkUmVzcG9uc2UivgEKDENhbklwbnNF",
+            "bnRyeRINCgV2YWx1ZRgBIAEoDBIRCglzaWduYXR1cmUYAiABKAwSQgoMdmFs",
+            "aWRpdHlUeXBlGAMgASgOMiwuaW9wLnByb2ZpbGVzZXJ2ZXIuQ2FuSXBuc0Vu",
+            "dHJ5LlZhbGlkaXR5VHlwZRIQCgh2YWxpZGl0eRgEIAEoDBIQCghzZXF1ZW5j",
+            "ZRgFIAEoBBILCgN0dGwYBiABKAQiFwoMVmFsaWRpdHlUeXBlEgcKA0VPTBAA",
+            "InQKDENhbkNyeXB0b0tleRI1CgR0eXBlGAEgASgOMicuaW9wLnByb2ZpbGVz",
+            "ZXJ2ZXIuQ2FuQ3J5cHRvS2V5LktleVR5cGUSDAoEZGF0YRgCIAEoDCIfCgdL",
+            "ZXlUeXBlEgcKA1JTQRAAEgsKB0VkMjU1MTkQASqWAwoGU3RhdHVzEg0KCVNU",
+            "QVRVU19PSxAAEhwKGEVSUk9SX1BST1RPQ09MX1ZJT0xBVElPThABEhUKEUVS",
+            "Uk9SX1VOU1VQUE9SVEVEEAISEAoMRVJST1JfQkFOTkVEEAMSDgoKRVJST1Jf",
+            "QlVTWRAEEhYKEkVSUk9SX1VOQVVUSE9SSVpFRBAFEhIKDkVSUk9SX0JBRF9S",
+            "T0xFEAYSIQodRVJST1JfQkFEX0NPTlZFUlNBVElPTl9TVEFUVVMQBxISCg5F",
+            "UlJPUl9JTlRFUk5BTBAIEhgKFEVSUk9SX1FVT1RBX0VYQ0VFREVEEDMSGwoX",
+            "RVJST1JfSU5WQUxJRF9TSUdOQVRVUkUQNBITCg9FUlJPUl9OT1RfRk9VTkQQ",
+            "NRIXChNFUlJPUl9JTlZBTElEX1ZBTFVFEDYSGAoURVJST1JfQUxSRUFEWV9F",
+            "WElTVFMQNxIXChNFUlJPUl9OT1RfQVZBSUxBQkxFEDgSEgoORVJST1JfUkVK",
+            "RUNURUQQORIXChNFUlJPUl9VTklOSVRJQUxJWkVEEDoqaAoOU2VydmVyUm9s",
+            "ZVR5cGUSCwoHUFJJTUFSWRAAEg8KC1NSX05FSUdIQk9SEAISEwoPQ0xfTk9O",
+            "X0NVU1RPTUVSEAYSDwoLQ0xfQ1VTVE9NRVIQBxISCg5DTF9BUFBfU0VSVklD",
+            "RRAJYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Iop.Profileserver.Status), typeof(global::Iop.Profileserver.ServerRoleType), }, new pbr::GeneratedClrTypeInfo[] {
@@ -296,8 +323,8 @@ namespace Iop.Profileserver {
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Profileserver.Response), global::Iop.Profileserver.Response.Parser, new[]{ "Status", "Timestamp", "Details", "SingleResponse", "ConversationResponse" }, new[]{ "ConversationType" }, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Profileserver.SingleRequest), global::Iop.Profileserver.SingleRequest.Parser, new[]{ "Version", "Ping", "ListRoles", "ListHostingPlans", "GetIdentityInformation", "ApplicationServiceSendMessage", "ApplicationServiceReceiveMessageNotification", "ProfileStats", "GetIdentityRelationshipsInformation" }, new[]{ "RequestType" }, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Profileserver.SingleResponse), global::Iop.Profileserver.SingleResponse.Parser, new[]{ "Version", "Ping", "ListRoles", "ListHostingPlans", "GetIdentityInformation", "ApplicationServiceSendMessage", "ApplicationServiceReceiveMessageNotification", "ProfileStats", "GetIdentityRelationshipsInformation" }, new[]{ "ResponseType" }, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Profileserver.ConversationRequest), global::Iop.Profileserver.ConversationRequest.Parser, new[]{ "Signature", "Start", "RegisterHosting", "CheckIn", "VerifyIdentity", "UpdateProfile", "CancelHostingAgreement", "ApplicationServiceAdd", "ApplicationServiceRemove", "CallIdentityApplicationService", "IncomingCallNotification", "ProfileSearch", "ProfileSearchPart", "AddRelatedIdentity", "RemoveRelatedIdentity", "StartNeighborhoodInitialization", "FinishNeighborhoodInitialization", "NeighborhoodSharedProfileUpdate", "StopNeighborhoodUpdates" }, new[]{ "RequestType" }, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Profileserver.ConversationResponse), global::Iop.Profileserver.ConversationResponse.Parser, new[]{ "Signature", "Start", "RegisterHosting", "CheckIn", "VerifyIdentity", "UpdateProfile", "CancelHostingAgreement", "ApplicationServiceAdd", "ApplicationServiceRemove", "CallIdentityApplicationService", "IncomingCallNotification", "ProfileSearch", "ProfileSearchPart", "AddRelatedIdentity", "RemoveRelatedIdentity", "StartNeighborhoodInitialization", "FinishNeighborhoodInitialization", "NeighborhoodSharedProfileUpdate", "StopNeighborhoodUpdates" }, new[]{ "ResponseType" }, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Profileserver.ConversationRequest), global::Iop.Profileserver.ConversationRequest.Parser, new[]{ "Signature", "Start", "RegisterHosting", "CheckIn", "VerifyIdentity", "UpdateProfile", "CancelHostingAgreement", "ApplicationServiceAdd", "ApplicationServiceRemove", "CallIdentityApplicationService", "IncomingCallNotification", "ProfileSearch", "ProfileSearchPart", "AddRelatedIdentity", "RemoveRelatedIdentity", "StartNeighborhoodInitialization", "FinishNeighborhoodInitialization", "NeighborhoodSharedProfileUpdate", "StopNeighborhoodUpdates", "CanStoreData", "CanPublishIpnsRecord" }, new[]{ "RequestType" }, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Profileserver.ConversationResponse), global::Iop.Profileserver.ConversationResponse.Parser, new[]{ "Signature", "Start", "RegisterHosting", "CheckIn", "VerifyIdentity", "UpdateProfile", "CancelHostingAgreement", "ApplicationServiceAdd", "ApplicationServiceRemove", "CallIdentityApplicationService", "IncomingCallNotification", "ProfileSearch", "ProfileSearchPart", "AddRelatedIdentity", "RemoveRelatedIdentity", "StartNeighborhoodInitialization", "FinishNeighborhoodInitialization", "NeighborhoodSharedProfileUpdate", "StopNeighborhoodUpdates", "CanStoreData", "CanPublishIpnsRecord" }, new[]{ "ResponseType" }, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Profileserver.PingRequest), global::Iop.Profileserver.PingRequest.Parser, new[]{ "Payload" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Profileserver.PingResponse), global::Iop.Profileserver.PingResponse.Parser, new[]{ "Payload", "Clock" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Profileserver.ListRolesRequest), global::Iop.Profileserver.ListRolesRequest.Parser, null, null, null, null),
@@ -364,7 +391,16 @@ namespace Iop.Profileserver {
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Profileserver.SharedProfileDeleteItem), global::Iop.Profileserver.SharedProfileDeleteItem.Parser, new[]{ "IdentityNetworkId" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Profileserver.SharedProfileRefreshAllItem), global::Iop.Profileserver.SharedProfileRefreshAllItem.Parser, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Profileserver.StopNeighborhoodUpdatesRequest), global::Iop.Profileserver.StopNeighborhoodUpdatesRequest.Parser, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Profileserver.StopNeighborhoodUpdatesResponse), global::Iop.Profileserver.StopNeighborhoodUpdatesResponse.Parser, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Profileserver.StopNeighborhoodUpdatesResponse), global::Iop.Profileserver.StopNeighborhoodUpdatesResponse.Parser, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Profileserver.CanProfileServerContact), global::Iop.Profileserver.CanProfileServerContact.Parser, new[]{ "PublicKey", "IpAddress", "PrimaryPort" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Profileserver.CanIdentityData), global::Iop.Profileserver.CanIdentityData.Parser, new[]{ "HostingServerId", "KeyValueList" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Profileserver.CanKeyValue), global::Iop.Profileserver.CanKeyValue.Parser, new[]{ "Key", "BinaryValue", "Uint32Value", "Uint64Value", "DoubleValue", "BoolValue", "StringValue" }, new[]{ "ValueType" }, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Profileserver.CanStoreDataRequest), global::Iop.Profileserver.CanStoreDataRequest.Parser, new[]{ "Data" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Profileserver.CanStoreDataResponse), global::Iop.Profileserver.CanStoreDataResponse.Parser, new[]{ "Hash" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Profileserver.CanPublishIpnsRecordRequest), global::Iop.Profileserver.CanPublishIpnsRecordRequest.Parser, new[]{ "Record" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Profileserver.CanPublishIpnsRecordResponse), global::Iop.Profileserver.CanPublishIpnsRecordResponse.Parser, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Profileserver.CanIpnsEntry), global::Iop.Profileserver.CanIpnsEntry.Parser, new[]{ "Value", "Signature", "ValidityType", "Validity", "Sequence", "Ttl" }, null, new[]{ typeof(global::Iop.Profileserver.CanIpnsEntry.Types.ValidityType) }, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Profileserver.CanCryptoKey), global::Iop.Profileserver.CanCryptoKey.Parser, new[]{ "Type", "Data" }, null, new[]{ typeof(global::Iop.Profileserver.CanCryptoKey.Types.KeyType) }, null)
           }));
     }
     #endregion
@@ -2311,6 +2347,12 @@ namespace Iop.Profileserver {
         case RequestTypeOneofCase.StopNeighborhoodUpdates:
           StopNeighborhoodUpdates = other.StopNeighborhoodUpdates.Clone();
           break;
+        case RequestTypeOneofCase.CanStoreData:
+          CanStoreData = other.CanStoreData.Clone();
+          break;
+        case RequestTypeOneofCase.CanPublishIpnsRecord:
+          CanPublishIpnsRecord = other.CanPublishIpnsRecord.Clone();
+          break;
       }
 
     }
@@ -2535,6 +2577,28 @@ namespace Iop.Profileserver {
       }
     }
 
+    /// <summary>Field number for the "canStoreData" field.</summary>
+    public const int CanStoreDataFieldNumber = 20;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Profileserver.CanStoreDataRequest CanStoreData {
+      get { return requestTypeCase_ == RequestTypeOneofCase.CanStoreData ? (global::Iop.Profileserver.CanStoreDataRequest) requestType_ : null; }
+      set {
+        requestType_ = value;
+        requestTypeCase_ = value == null ? RequestTypeOneofCase.None : RequestTypeOneofCase.CanStoreData;
+      }
+    }
+
+    /// <summary>Field number for the "canPublishIpnsRecord" field.</summary>
+    public const int CanPublishIpnsRecordFieldNumber = 21;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Profileserver.CanPublishIpnsRecordRequest CanPublishIpnsRecord {
+      get { return requestTypeCase_ == RequestTypeOneofCase.CanPublishIpnsRecord ? (global::Iop.Profileserver.CanPublishIpnsRecordRequest) requestType_ : null; }
+      set {
+        requestType_ = value;
+        requestTypeCase_ = value == null ? RequestTypeOneofCase.None : RequestTypeOneofCase.CanPublishIpnsRecord;
+      }
+    }
+
     private object requestType_;
     /// <summary>Enum of possible cases for the "RequestType" oneof.</summary>
     public enum RequestTypeOneofCase {
@@ -2557,6 +2621,8 @@ namespace Iop.Profileserver {
       FinishNeighborhoodInitialization = 17,
       NeighborhoodSharedProfileUpdate = 18,
       StopNeighborhoodUpdates = 19,
+      CanStoreData = 20,
+      CanPublishIpnsRecord = 21,
     }
     private RequestTypeOneofCase requestTypeCase_ = RequestTypeOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2602,6 +2668,8 @@ namespace Iop.Profileserver {
       if (!object.Equals(FinishNeighborhoodInitialization, other.FinishNeighborhoodInitialization)) return false;
       if (!object.Equals(NeighborhoodSharedProfileUpdate, other.NeighborhoodSharedProfileUpdate)) return false;
       if (!object.Equals(StopNeighborhoodUpdates, other.StopNeighborhoodUpdates)) return false;
+      if (!object.Equals(CanStoreData, other.CanStoreData)) return false;
+      if (!object.Equals(CanPublishIpnsRecord, other.CanPublishIpnsRecord)) return false;
       if (RequestTypeCase != other.RequestTypeCase) return false;
       return true;
     }
@@ -2628,6 +2696,8 @@ namespace Iop.Profileserver {
       if (requestTypeCase_ == RequestTypeOneofCase.FinishNeighborhoodInitialization) hash ^= FinishNeighborhoodInitialization.GetHashCode();
       if (requestTypeCase_ == RequestTypeOneofCase.NeighborhoodSharedProfileUpdate) hash ^= NeighborhoodSharedProfileUpdate.GetHashCode();
       if (requestTypeCase_ == RequestTypeOneofCase.StopNeighborhoodUpdates) hash ^= StopNeighborhoodUpdates.GetHashCode();
+      if (requestTypeCase_ == RequestTypeOneofCase.CanStoreData) hash ^= CanStoreData.GetHashCode();
+      if (requestTypeCase_ == RequestTypeOneofCase.CanPublishIpnsRecord) hash ^= CanPublishIpnsRecord.GetHashCode();
       hash ^= (int) requestTypeCase_;
       return hash;
     }
@@ -2715,6 +2785,14 @@ namespace Iop.Profileserver {
         output.WriteRawTag(154, 1);
         output.WriteMessage(StopNeighborhoodUpdates);
       }
+      if (requestTypeCase_ == RequestTypeOneofCase.CanStoreData) {
+        output.WriteRawTag(162, 1);
+        output.WriteMessage(CanStoreData);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.CanPublishIpnsRecord) {
+        output.WriteRawTag(170, 1);
+        output.WriteMessage(CanPublishIpnsRecord);
+      }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2776,6 +2854,12 @@ namespace Iop.Profileserver {
       }
       if (requestTypeCase_ == RequestTypeOneofCase.StopNeighborhoodUpdates) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(StopNeighborhoodUpdates);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.CanStoreData) {
+        size += 2 + pb::CodedOutputStream.ComputeMessageSize(CanStoreData);
+      }
+      if (requestTypeCase_ == RequestTypeOneofCase.CanPublishIpnsRecord) {
+        size += 2 + pb::CodedOutputStream.ComputeMessageSize(CanPublishIpnsRecord);
       }
       return size;
     }
@@ -2842,6 +2926,12 @@ namespace Iop.Profileserver {
           break;
         case RequestTypeOneofCase.StopNeighborhoodUpdates:
           StopNeighborhoodUpdates = other.StopNeighborhoodUpdates;
+          break;
+        case RequestTypeOneofCase.CanStoreData:
+          CanStoreData = other.CanStoreData;
+          break;
+        case RequestTypeOneofCase.CanPublishIpnsRecord:
+          CanPublishIpnsRecord = other.CanPublishIpnsRecord;
           break;
       }
 
@@ -3021,6 +3111,24 @@ namespace Iop.Profileserver {
             StopNeighborhoodUpdates = subBuilder;
             break;
           }
+          case 162: {
+            global::Iop.Profileserver.CanStoreDataRequest subBuilder = new global::Iop.Profileserver.CanStoreDataRequest();
+            if (requestTypeCase_ == RequestTypeOneofCase.CanStoreData) {
+              subBuilder.MergeFrom(CanStoreData);
+            }
+            input.ReadMessage(subBuilder);
+            CanStoreData = subBuilder;
+            break;
+          }
+          case 170: {
+            global::Iop.Profileserver.CanPublishIpnsRecordRequest subBuilder = new global::Iop.Profileserver.CanPublishIpnsRecordRequest();
+            if (requestTypeCase_ == RequestTypeOneofCase.CanPublishIpnsRecord) {
+              subBuilder.MergeFrom(CanPublishIpnsRecord);
+            }
+            input.ReadMessage(subBuilder);
+            CanPublishIpnsRecord = subBuilder;
+            break;
+          }
         }
       }
     }
@@ -3109,6 +3217,12 @@ namespace Iop.Profileserver {
           break;
         case ResponseTypeOneofCase.StopNeighborhoodUpdates:
           StopNeighborhoodUpdates = other.StopNeighborhoodUpdates.Clone();
+          break;
+        case ResponseTypeOneofCase.CanStoreData:
+          CanStoreData = other.CanStoreData.Clone();
+          break;
+        case ResponseTypeOneofCase.CanPublishIpnsRecord:
+          CanPublishIpnsRecord = other.CanPublishIpnsRecord.Clone();
           break;
       }
 
@@ -3334,6 +3448,28 @@ namespace Iop.Profileserver {
       }
     }
 
+    /// <summary>Field number for the "canStoreData" field.</summary>
+    public const int CanStoreDataFieldNumber = 20;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Profileserver.CanStoreDataResponse CanStoreData {
+      get { return responseTypeCase_ == ResponseTypeOneofCase.CanStoreData ? (global::Iop.Profileserver.CanStoreDataResponse) responseType_ : null; }
+      set {
+        responseType_ = value;
+        responseTypeCase_ = value == null ? ResponseTypeOneofCase.None : ResponseTypeOneofCase.CanStoreData;
+      }
+    }
+
+    /// <summary>Field number for the "canPublishIpnsRecord" field.</summary>
+    public const int CanPublishIpnsRecordFieldNumber = 21;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Profileserver.CanPublishIpnsRecordResponse CanPublishIpnsRecord {
+      get { return responseTypeCase_ == ResponseTypeOneofCase.CanPublishIpnsRecord ? (global::Iop.Profileserver.CanPublishIpnsRecordResponse) responseType_ : null; }
+      set {
+        responseType_ = value;
+        responseTypeCase_ = value == null ? ResponseTypeOneofCase.None : ResponseTypeOneofCase.CanPublishIpnsRecord;
+      }
+    }
+
     private object responseType_;
     /// <summary>Enum of possible cases for the "ResponseType" oneof.</summary>
     public enum ResponseTypeOneofCase {
@@ -3356,6 +3492,8 @@ namespace Iop.Profileserver {
       FinishNeighborhoodInitialization = 17,
       NeighborhoodSharedProfileUpdate = 18,
       StopNeighborhoodUpdates = 19,
+      CanStoreData = 20,
+      CanPublishIpnsRecord = 21,
     }
     private ResponseTypeOneofCase responseTypeCase_ = ResponseTypeOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -3401,6 +3539,8 @@ namespace Iop.Profileserver {
       if (!object.Equals(FinishNeighborhoodInitialization, other.FinishNeighborhoodInitialization)) return false;
       if (!object.Equals(NeighborhoodSharedProfileUpdate, other.NeighborhoodSharedProfileUpdate)) return false;
       if (!object.Equals(StopNeighborhoodUpdates, other.StopNeighborhoodUpdates)) return false;
+      if (!object.Equals(CanStoreData, other.CanStoreData)) return false;
+      if (!object.Equals(CanPublishIpnsRecord, other.CanPublishIpnsRecord)) return false;
       if (ResponseTypeCase != other.ResponseTypeCase) return false;
       return true;
     }
@@ -3427,6 +3567,8 @@ namespace Iop.Profileserver {
       if (responseTypeCase_ == ResponseTypeOneofCase.FinishNeighborhoodInitialization) hash ^= FinishNeighborhoodInitialization.GetHashCode();
       if (responseTypeCase_ == ResponseTypeOneofCase.NeighborhoodSharedProfileUpdate) hash ^= NeighborhoodSharedProfileUpdate.GetHashCode();
       if (responseTypeCase_ == ResponseTypeOneofCase.StopNeighborhoodUpdates) hash ^= StopNeighborhoodUpdates.GetHashCode();
+      if (responseTypeCase_ == ResponseTypeOneofCase.CanStoreData) hash ^= CanStoreData.GetHashCode();
+      if (responseTypeCase_ == ResponseTypeOneofCase.CanPublishIpnsRecord) hash ^= CanPublishIpnsRecord.GetHashCode();
       hash ^= (int) responseTypeCase_;
       return hash;
     }
@@ -3514,6 +3656,14 @@ namespace Iop.Profileserver {
         output.WriteRawTag(154, 1);
         output.WriteMessage(StopNeighborhoodUpdates);
       }
+      if (responseTypeCase_ == ResponseTypeOneofCase.CanStoreData) {
+        output.WriteRawTag(162, 1);
+        output.WriteMessage(CanStoreData);
+      }
+      if (responseTypeCase_ == ResponseTypeOneofCase.CanPublishIpnsRecord) {
+        output.WriteRawTag(170, 1);
+        output.WriteMessage(CanPublishIpnsRecord);
+      }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -3575,6 +3725,12 @@ namespace Iop.Profileserver {
       }
       if (responseTypeCase_ == ResponseTypeOneofCase.StopNeighborhoodUpdates) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(StopNeighborhoodUpdates);
+      }
+      if (responseTypeCase_ == ResponseTypeOneofCase.CanStoreData) {
+        size += 2 + pb::CodedOutputStream.ComputeMessageSize(CanStoreData);
+      }
+      if (responseTypeCase_ == ResponseTypeOneofCase.CanPublishIpnsRecord) {
+        size += 2 + pb::CodedOutputStream.ComputeMessageSize(CanPublishIpnsRecord);
       }
       return size;
     }
@@ -3641,6 +3797,12 @@ namespace Iop.Profileserver {
           break;
         case ResponseTypeOneofCase.StopNeighborhoodUpdates:
           StopNeighborhoodUpdates = other.StopNeighborhoodUpdates;
+          break;
+        case ResponseTypeOneofCase.CanStoreData:
+          CanStoreData = other.CanStoreData;
+          break;
+        case ResponseTypeOneofCase.CanPublishIpnsRecord:
+          CanPublishIpnsRecord = other.CanPublishIpnsRecord;
           break;
       }
 
@@ -3818,6 +3980,24 @@ namespace Iop.Profileserver {
             }
             input.ReadMessage(subBuilder);
             StopNeighborhoodUpdates = subBuilder;
+            break;
+          }
+          case 162: {
+            global::Iop.Profileserver.CanStoreDataResponse subBuilder = new global::Iop.Profileserver.CanStoreDataResponse();
+            if (responseTypeCase_ == ResponseTypeOneofCase.CanStoreData) {
+              subBuilder.MergeFrom(CanStoreData);
+            }
+            input.ReadMessage(subBuilder);
+            CanStoreData = subBuilder;
+            break;
+          }
+          case 170: {
+            global::Iop.Profileserver.CanPublishIpnsRecordResponse subBuilder = new global::Iop.Profileserver.CanPublishIpnsRecordResponse();
+            if (responseTypeCase_ == ResponseTypeOneofCase.CanPublishIpnsRecord) {
+              subBuilder.MergeFrom(CanPublishIpnsRecord);
+            }
+            input.ReadMessage(subBuilder);
+            CanPublishIpnsRecord = subBuilder;
             break;
           }
         }
@@ -6585,7 +6765,7 @@ namespace Iop.Profileserver {
   ///  the RegisterHostingRequest. Until the initialization of the profile is made, the identity 
   ///  is not considered as being fully initialized and can not be queried or called by other 
   ///  identities.
-  ///  
+  ///
   ///  Roles: clCustomer
   ///
   ///  Conversation status: Authenticated
@@ -13195,7 +13375,7 @@ namespace Iop.Profileserver {
   ///  will ask it to share its database. This request will come if S considers C its neighbor.
   ///
   ///  The process starts with the server C sending StartNeighborhoodInitializationRequest message to S.
-  ///  If S is accepts the request, it replies with StartNeighborhoodInitializationResponse and then 
+  ///  If S accepts the request, it replies with StartNeighborhoodInitializationResponse and then 
   ///  it starts sending NeighborhoodSharedProfileUpdateRequest messages until a full database is sent to C. 
   ///  With each update message, C has to check the validity of the data and if it accepts the batch
   ///  it replies with NeighborhoodSharedProfileUpdateResponse. Once all of the profiles are sent to C,
@@ -15446,6 +15626,1647 @@ namespace Iop.Profileserver {
         }
       }
     }
+
+  }
+
+  /// <summary>
+  ///
+  ///  Profile server contact information.
+  /// </summary>
+  public sealed partial class CanProfileServerContact : pb::IMessage<CanProfileServerContact> {
+    private static readonly pb::MessageParser<CanProfileServerContact> _parser = new pb::MessageParser<CanProfileServerContact>(() => new CanProfileServerContact());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<CanProfileServerContact> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Profileserver.IopProfileServerReflection.Descriptor.MessageTypes[75]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CanProfileServerContact() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CanProfileServerContact(CanProfileServerContact other) : this() {
+      publicKey_ = other.publicKey_;
+      ipAddress_ = other.ipAddress_;
+      primaryPort_ = other.primaryPort_;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CanProfileServerContact Clone() {
+      return new CanProfileServerContact(this);
+    }
+
+    /// <summary>Field number for the "publicKey" field.</summary>
+    public const int PublicKeyFieldNumber = 1;
+    private pb::ByteString publicKey_ = pb::ByteString.Empty;
+    /// <summary>
+    ///  Profile server's public key.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString PublicKey {
+      get { return publicKey_; }
+      set {
+        publicKey_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "ipAddress" field.</summary>
+    public const int IpAddressFieldNumber = 2;
+    private pb::ByteString ipAddress_ = pb::ByteString.Empty;
+    /// <summary>
+    ///  IPv4 or IPv6 public address of the network interface on which profile server operates.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString IpAddress {
+      get { return ipAddress_; }
+      set {
+        ipAddress_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "primaryPort" field.</summary>
+    public const int PrimaryPortFieldNumber = 3;
+    private uint primaryPort_;
+    /// <summary>
+    ///  TCP port of profile server's primary interface.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public uint PrimaryPort {
+      get { return primaryPort_; }
+      set {
+        primaryPort_ = value;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as CanProfileServerContact);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(CanProfileServerContact other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (PublicKey != other.PublicKey) return false;
+      if (IpAddress != other.IpAddress) return false;
+      if (PrimaryPort != other.PrimaryPort) return false;
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (PublicKey.Length != 0) hash ^= PublicKey.GetHashCode();
+      if (IpAddress.Length != 0) hash ^= IpAddress.GetHashCode();
+      if (PrimaryPort != 0) hash ^= PrimaryPort.GetHashCode();
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (PublicKey.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteBytes(PublicKey);
+      }
+      if (IpAddress.Length != 0) {
+        output.WriteRawTag(18);
+        output.WriteBytes(IpAddress);
+      }
+      if (PrimaryPort != 0) {
+        output.WriteRawTag(24);
+        output.WriteUInt32(PrimaryPort);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (PublicKey.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(PublicKey);
+      }
+      if (IpAddress.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(IpAddress);
+      }
+      if (PrimaryPort != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeUInt32Size(PrimaryPort);
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(CanProfileServerContact other) {
+      if (other == null) {
+        return;
+      }
+      if (other.PublicKey.Length != 0) {
+        PublicKey = other.PublicKey;
+      }
+      if (other.IpAddress.Length != 0) {
+        IpAddress = other.IpAddress;
+      }
+      if (other.PrimaryPort != 0) {
+        PrimaryPort = other.PrimaryPort;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+          case 10: {
+            PublicKey = input.ReadBytes();
+            break;
+          }
+          case 18: {
+            IpAddress = input.ReadBytes();
+            break;
+          }
+          case 24: {
+            PrimaryPort = input.ReadUInt32();
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///
+  ///  Structure of data an identity client can store in CAN storage.
+  /// </summary>
+  public sealed partial class CanIdentityData : pb::IMessage<CanIdentityData> {
+    private static readonly pb::MessageParser<CanIdentityData> _parser = new pb::MessageParser<CanIdentityData>(() => new CanIdentityData());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<CanIdentityData> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Profileserver.IopProfileServerReflection.Descriptor.MessageTypes[76]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CanIdentityData() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CanIdentityData(CanIdentityData other) : this() {
+      hostingServerId_ = other.hostingServerId_;
+      keyValueList_ = other.keyValueList_.Clone();
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CanIdentityData Clone() {
+      return new CanIdentityData(this);
+    }
+
+    /// <summary>Field number for the "hostingServerId" field.</summary>
+    public const int HostingServerIdFieldNumber = 1;
+    private pb::ByteString hostingServerId_ = pb::ByteString.Empty;
+    /// <summary>
+    ///  Network ID of the profile server that hosts the identity.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString HostingServerId {
+      get { return hostingServerId_; }
+      set {
+        hostingServerId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "keyValueList" field.</summary>
+    public const int KeyValueListFieldNumber = 2;
+    private static readonly pb::FieldCodec<global::Iop.Profileserver.CanKeyValue> _repeated_keyValueList_codec
+        = pb::FieldCodec.ForMessage(18, global::Iop.Profileserver.CanKeyValue.Parser);
+    private readonly pbc::RepeatedField<global::Iop.Profileserver.CanKeyValue> keyValueList_ = new pbc::RepeatedField<global::Iop.Profileserver.CanKeyValue>();
+    /// <summary>
+    ///  Key-value dictionary that contain client defined data.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<global::Iop.Profileserver.CanKeyValue> KeyValueList {
+      get { return keyValueList_; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as CanIdentityData);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(CanIdentityData other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (HostingServerId != other.HostingServerId) return false;
+      if(!keyValueList_.Equals(other.keyValueList_)) return false;
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (HostingServerId.Length != 0) hash ^= HostingServerId.GetHashCode();
+      hash ^= keyValueList_.GetHashCode();
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (HostingServerId.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteBytes(HostingServerId);
+      }
+      keyValueList_.WriteTo(output, _repeated_keyValueList_codec);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (HostingServerId.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(HostingServerId);
+      }
+      size += keyValueList_.CalculateSize(_repeated_keyValueList_codec);
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(CanIdentityData other) {
+      if (other == null) {
+        return;
+      }
+      if (other.HostingServerId.Length != 0) {
+        HostingServerId = other.HostingServerId;
+      }
+      keyValueList_.Add(other.keyValueList_);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+          case 10: {
+            HostingServerId = input.ReadBytes();
+            break;
+          }
+          case 18: {
+            keyValueList_.AddEntriesFrom(input, _repeated_keyValueList_codec);
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///
+  ///  Description of a single item in key-value type of structure.
+  /// </summary>
+  public sealed partial class CanKeyValue : pb::IMessage<CanKeyValue> {
+    private static readonly pb::MessageParser<CanKeyValue> _parser = new pb::MessageParser<CanKeyValue>(() => new CanKeyValue());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<CanKeyValue> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Profileserver.IopProfileServerReflection.Descriptor.MessageTypes[77]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CanKeyValue() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CanKeyValue(CanKeyValue other) : this() {
+      key_ = other.key_;
+      switch (other.ValueTypeCase) {
+        case ValueTypeOneofCase.BinaryValue:
+          BinaryValue = other.BinaryValue;
+          break;
+        case ValueTypeOneofCase.Uint32Value:
+          Uint32Value = other.Uint32Value;
+          break;
+        case ValueTypeOneofCase.Uint64Value:
+          Uint64Value = other.Uint64Value;
+          break;
+        case ValueTypeOneofCase.DoubleValue:
+          DoubleValue = other.DoubleValue;
+          break;
+        case ValueTypeOneofCase.BoolValue:
+          BoolValue = other.BoolValue;
+          break;
+        case ValueTypeOneofCase.StringValue:
+          StringValue = other.StringValue;
+          break;
+      }
+
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CanKeyValue Clone() {
+      return new CanKeyValue(this);
+    }
+
+    /// <summary>Field number for the "key" field.</summary>
+    public const int KeyFieldNumber = 1;
+    private string key_ = "";
+    /// <summary>
+    ///  Name of the item, which should be unique within the client's CAN object.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string Key {
+      get { return key_; }
+      set {
+        key_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "binaryValue" field.</summary>
+    public const int BinaryValueFieldNumber = 2;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString BinaryValue {
+      get { return valueTypeCase_ == ValueTypeOneofCase.BinaryValue ? (pb::ByteString) valueType_ : pb::ByteString.Empty; }
+      set {
+        valueType_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+        valueTypeCase_ = ValueTypeOneofCase.BinaryValue;
+      }
+    }
+
+    /// <summary>Field number for the "uint32Value" field.</summary>
+    public const int Uint32ValueFieldNumber = 3;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int Uint32Value {
+      get { return valueTypeCase_ == ValueTypeOneofCase.Uint32Value ? (int) valueType_ : 0; }
+      set {
+        valueType_ = value;
+        valueTypeCase_ = ValueTypeOneofCase.Uint32Value;
+      }
+    }
+
+    /// <summary>Field number for the "uint64Value" field.</summary>
+    public const int Uint64ValueFieldNumber = 4;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public long Uint64Value {
+      get { return valueTypeCase_ == ValueTypeOneofCase.Uint64Value ? (long) valueType_ : 0L; }
+      set {
+        valueType_ = value;
+        valueTypeCase_ = ValueTypeOneofCase.Uint64Value;
+      }
+    }
+
+    /// <summary>Field number for the "doubleValue" field.</summary>
+    public const int DoubleValueFieldNumber = 5;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public double DoubleValue {
+      get { return valueTypeCase_ == ValueTypeOneofCase.DoubleValue ? (double) valueType_ : 0D; }
+      set {
+        valueType_ = value;
+        valueTypeCase_ = ValueTypeOneofCase.DoubleValue;
+      }
+    }
+
+    /// <summary>Field number for the "boolValue" field.</summary>
+    public const int BoolValueFieldNumber = 6;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool BoolValue {
+      get { return valueTypeCase_ == ValueTypeOneofCase.BoolValue ? (bool) valueType_ : false; }
+      set {
+        valueType_ = value;
+        valueTypeCase_ = ValueTypeOneofCase.BoolValue;
+      }
+    }
+
+    /// <summary>Field number for the "stringValue" field.</summary>
+    public const int StringValueFieldNumber = 7;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string StringValue {
+      get { return valueTypeCase_ == ValueTypeOneofCase.StringValue ? (string) valueType_ : ""; }
+      set {
+        valueType_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+        valueTypeCase_ = ValueTypeOneofCase.StringValue;
+      }
+    }
+
+    private object valueType_;
+    /// <summary>Enum of possible cases for the "ValueType" oneof.</summary>
+    public enum ValueTypeOneofCase {
+      None = 0,
+      BinaryValue = 2,
+      Uint32Value = 3,
+      Uint64Value = 4,
+      DoubleValue = 5,
+      BoolValue = 6,
+      StringValue = 7,
+    }
+    private ValueTypeOneofCase valueTypeCase_ = ValueTypeOneofCase.None;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ValueTypeOneofCase ValueTypeCase {
+      get { return valueTypeCase_; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void ClearValueType() {
+      valueTypeCase_ = ValueTypeOneofCase.None;
+      valueType_ = null;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as CanKeyValue);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(CanKeyValue other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (Key != other.Key) return false;
+      if (BinaryValue != other.BinaryValue) return false;
+      if (Uint32Value != other.Uint32Value) return false;
+      if (Uint64Value != other.Uint64Value) return false;
+      if (DoubleValue != other.DoubleValue) return false;
+      if (BoolValue != other.BoolValue) return false;
+      if (StringValue != other.StringValue) return false;
+      if (ValueTypeCase != other.ValueTypeCase) return false;
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (Key.Length != 0) hash ^= Key.GetHashCode();
+      if (valueTypeCase_ == ValueTypeOneofCase.BinaryValue) hash ^= BinaryValue.GetHashCode();
+      if (valueTypeCase_ == ValueTypeOneofCase.Uint32Value) hash ^= Uint32Value.GetHashCode();
+      if (valueTypeCase_ == ValueTypeOneofCase.Uint64Value) hash ^= Uint64Value.GetHashCode();
+      if (valueTypeCase_ == ValueTypeOneofCase.DoubleValue) hash ^= DoubleValue.GetHashCode();
+      if (valueTypeCase_ == ValueTypeOneofCase.BoolValue) hash ^= BoolValue.GetHashCode();
+      if (valueTypeCase_ == ValueTypeOneofCase.StringValue) hash ^= StringValue.GetHashCode();
+      hash ^= (int) valueTypeCase_;
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (Key.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteString(Key);
+      }
+      if (valueTypeCase_ == ValueTypeOneofCase.BinaryValue) {
+        output.WriteRawTag(18);
+        output.WriteBytes(BinaryValue);
+      }
+      if (valueTypeCase_ == ValueTypeOneofCase.Uint32Value) {
+        output.WriteRawTag(24);
+        output.WriteInt32(Uint32Value);
+      }
+      if (valueTypeCase_ == ValueTypeOneofCase.Uint64Value) {
+        output.WriteRawTag(32);
+        output.WriteInt64(Uint64Value);
+      }
+      if (valueTypeCase_ == ValueTypeOneofCase.DoubleValue) {
+        output.WriteRawTag(41);
+        output.WriteDouble(DoubleValue);
+      }
+      if (valueTypeCase_ == ValueTypeOneofCase.BoolValue) {
+        output.WriteRawTag(48);
+        output.WriteBool(BoolValue);
+      }
+      if (valueTypeCase_ == ValueTypeOneofCase.StringValue) {
+        output.WriteRawTag(58);
+        output.WriteString(StringValue);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (Key.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Key);
+      }
+      if (valueTypeCase_ == ValueTypeOneofCase.BinaryValue) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(BinaryValue);
+      }
+      if (valueTypeCase_ == ValueTypeOneofCase.Uint32Value) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Uint32Value);
+      }
+      if (valueTypeCase_ == ValueTypeOneofCase.Uint64Value) {
+        size += 1 + pb::CodedOutputStream.ComputeInt64Size(Uint64Value);
+      }
+      if (valueTypeCase_ == ValueTypeOneofCase.DoubleValue) {
+        size += 1 + 8;
+      }
+      if (valueTypeCase_ == ValueTypeOneofCase.BoolValue) {
+        size += 1 + 1;
+      }
+      if (valueTypeCase_ == ValueTypeOneofCase.StringValue) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(StringValue);
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(CanKeyValue other) {
+      if (other == null) {
+        return;
+      }
+      if (other.Key.Length != 0) {
+        Key = other.Key;
+      }
+      switch (other.ValueTypeCase) {
+        case ValueTypeOneofCase.BinaryValue:
+          BinaryValue = other.BinaryValue;
+          break;
+        case ValueTypeOneofCase.Uint32Value:
+          Uint32Value = other.Uint32Value;
+          break;
+        case ValueTypeOneofCase.Uint64Value:
+          Uint64Value = other.Uint64Value;
+          break;
+        case ValueTypeOneofCase.DoubleValue:
+          DoubleValue = other.DoubleValue;
+          break;
+        case ValueTypeOneofCase.BoolValue:
+          BoolValue = other.BoolValue;
+          break;
+        case ValueTypeOneofCase.StringValue:
+          StringValue = other.StringValue;
+          break;
+      }
+
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+          case 10: {
+            Key = input.ReadString();
+            break;
+          }
+          case 18: {
+            BinaryValue = input.ReadBytes();
+            break;
+          }
+          case 24: {
+            Uint32Value = input.ReadInt32();
+            break;
+          }
+          case 32: {
+            Uint64Value = input.ReadInt64();
+            break;
+          }
+          case 41: {
+            DoubleValue = input.ReadDouble();
+            break;
+          }
+          case 48: {
+            BoolValue = input.ReadBool();
+            break;
+          }
+          case 58: {
+            StringValue = input.ReadString();
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///  
+  ///  Uploads client's object to CAN and deletes the old one if there is any.
+  ///
+  ///  Once an identity is hosted on a profile server, it can use CanStoreDataRequest to upload its CAN object 
+  ///  to CAN. The object has to contain a link back to its profile server, but otherwise, it can contain arbitrary 
+  ///  information as per client's needs. 
+  ///
+  ///  Roles: clCustomer
+  ///
+  ///  Conversation status: Authenticated
+  /// </summary>
+  public sealed partial class CanStoreDataRequest : pb::IMessage<CanStoreDataRequest> {
+    private static readonly pb::MessageParser<CanStoreDataRequest> _parser = new pb::MessageParser<CanStoreDataRequest>(() => new CanStoreDataRequest());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<CanStoreDataRequest> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Profileserver.IopProfileServerReflection.Descriptor.MessageTypes[78]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CanStoreDataRequest() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CanStoreDataRequest(CanStoreDataRequest other) : this() {
+      Data = other.data_ != null ? other.Data.Clone() : null;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CanStoreDataRequest Clone() {
+      return new CanStoreDataRequest(this);
+    }
+
+    /// <summary>Field number for the "data" field.</summary>
+    public const int DataFieldNumber = 1;
+    private global::Iop.Profileserver.CanIdentityData data_;
+    /// <summary>
+    ///  Data to store in CAN, or null to just delete the old object.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Profileserver.CanIdentityData Data {
+      get { return data_; }
+      set {
+        data_ = value;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as CanStoreDataRequest);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(CanStoreDataRequest other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (!object.Equals(Data, other.Data)) return false;
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (data_ != null) hash ^= Data.GetHashCode();
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (data_ != null) {
+        output.WriteRawTag(10);
+        output.WriteMessage(Data);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (data_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Data);
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(CanStoreDataRequest other) {
+      if (other == null) {
+        return;
+      }
+      if (other.data_ != null) {
+        if (data_ == null) {
+          data_ = new global::Iop.Profileserver.CanIdentityData();
+        }
+        Data.MergeFrom(other.Data);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+          case 10: {
+            if (data_ == null) {
+              data_ = new global::Iop.Profileserver.CanIdentityData();
+            }
+            input.ReadMessage(data_);
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///
+  ///  A response to CanStoreDataRequest. 
+  ///
+  ///  When CAN accepts the object, it returns its hash, which has to be returned to the client. The client uses 
+  ///  the hash to create its IPNS record.
+  ///
+  ///  Specific Error Responses:
+  ///    * ERROR_REJECTED - CAN server reported error, see 'Response.details' for the error message it sent.
+  ///    * ERROR_INVALID_VALUE
+  ///      * Response.details == "data.hostingServerId" - 'CanStoreDataRequest.data.hostingServerId' is not the profile server's network ID.
+  /// </summary>
+  public sealed partial class CanStoreDataResponse : pb::IMessage<CanStoreDataResponse> {
+    private static readonly pb::MessageParser<CanStoreDataResponse> _parser = new pb::MessageParser<CanStoreDataResponse>(() => new CanStoreDataResponse());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<CanStoreDataResponse> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Profileserver.IopProfileServerReflection.Descriptor.MessageTypes[79]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CanStoreDataResponse() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CanStoreDataResponse(CanStoreDataResponse other) : this() {
+      hash_ = other.hash_;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CanStoreDataResponse Clone() {
+      return new CanStoreDataResponse(this);
+    }
+
+    /// <summary>Field number for the "hash" field.</summary>
+    public const int HashFieldNumber = 1;
+    private pb::ByteString hash_ = pb::ByteString.Empty;
+    /// <summary>
+    ///  Hash of 'CanStoreDataRequest.data' received from CAN in multihash binary format, or empty array if 'CanStoreDataRequest.data' was null.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString Hash {
+      get { return hash_; }
+      set {
+        hash_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as CanStoreDataResponse);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(CanStoreDataResponse other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (Hash != other.Hash) return false;
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (Hash.Length != 0) hash ^= Hash.GetHashCode();
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (Hash.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteBytes(Hash);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (Hash.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(Hash);
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(CanStoreDataResponse other) {
+      if (other == null) {
+        return;
+      }
+      if (other.Hash.Length != 0) {
+        Hash = other.Hash;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+          case 10: {
+            Hash = input.ReadBytes();
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///
+  ///  Identity client asks its hosting profile server to publish its IPNS record in CAN on its behalf.
+  ///  
+  ///
+  ///  Roles: clCustomer
+  ///
+  ///  Conversation status: Authenticated
+  /// </summary>
+  public sealed partial class CanPublishIpnsRecordRequest : pb::IMessage<CanPublishIpnsRecordRequest> {
+    private static readonly pb::MessageParser<CanPublishIpnsRecordRequest> _parser = new pb::MessageParser<CanPublishIpnsRecordRequest>(() => new CanPublishIpnsRecordRequest());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<CanPublishIpnsRecordRequest> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Profileserver.IopProfileServerReflection.Descriptor.MessageTypes[80]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CanPublishIpnsRecordRequest() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CanPublishIpnsRecordRequest(CanPublishIpnsRecordRequest other) : this() {
+      Record = other.record_ != null ? other.Record.Clone() : null;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CanPublishIpnsRecordRequest Clone() {
+      return new CanPublishIpnsRecordRequest(this);
+    }
+
+    /// <summary>Field number for the "record" field.</summary>
+    public const int RecordFieldNumber = 1;
+    private global::Iop.Profileserver.CanIpnsEntry record_;
+    /// <summary>
+    ///  Signed IPNS record. Its expiration date must not exceed the expiration date 
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Profileserver.CanIpnsEntry Record {
+      get { return record_; }
+      set {
+        record_ = value;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as CanPublishIpnsRecordRequest);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(CanPublishIpnsRecordRequest other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (!object.Equals(Record, other.Record)) return false;
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (record_ != null) hash ^= Record.GetHashCode();
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (record_ != null) {
+        output.WriteRawTag(10);
+        output.WriteMessage(Record);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (record_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Record);
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(CanPublishIpnsRecordRequest other) {
+      if (other == null) {
+        return;
+      }
+      if (other.record_ != null) {
+        if (record_ == null) {
+          record_ = new global::Iop.Profileserver.CanIpnsEntry();
+        }
+        Record.MergeFrom(other.Record);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+          case 10: {
+            if (record_ == null) {
+              record_ = new global::Iop.Profileserver.CanIpnsEntry();
+            }
+            input.ReadMessage(record_);
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///
+  ///  A response to CanPublishIpnsRecordRequest.
+  ///
+  ///  Specific Error Responses:
+  ///    * ERROR_REJECTED - CAN server reported error, see 'Response.details' for the error message it sent.
+  ///    * ERROR_NOT_FOUND - Client did not upload any CAN object yet.
+  ///    * ERROR_INVALID_VALUE
+  ///      * Response.details == "record" - 'CanPublishIpnsRecordRequest.record' does not represent a valid IPNS record.
+  ///      * Response.details == "record.value" - 'CanPublishIpnsRecordRequest.value' does not match the path to the last CAN object the client uploaded using CanStoreDataRequest.
+  ///      * Response.details == "record.validity" - 'CanPublishIpnsRecordRequest.record.validity' is invalid expiration date or it is greater than the client's hosting contract validity.
+  /// </summary>
+  public sealed partial class CanPublishIpnsRecordResponse : pb::IMessage<CanPublishIpnsRecordResponse> {
+    private static readonly pb::MessageParser<CanPublishIpnsRecordResponse> _parser = new pb::MessageParser<CanPublishIpnsRecordResponse>(() => new CanPublishIpnsRecordResponse());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<CanPublishIpnsRecordResponse> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Profileserver.IopProfileServerReflection.Descriptor.MessageTypes[81]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CanPublishIpnsRecordResponse() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CanPublishIpnsRecordResponse(CanPublishIpnsRecordResponse other) : this() {
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CanPublishIpnsRecordResponse Clone() {
+      return new CanPublishIpnsRecordResponse(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as CanPublishIpnsRecordResponse);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(CanPublishIpnsRecordResponse other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(CanPublishIpnsRecordResponse other) {
+      if (other == null) {
+        return;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///
+  ///  IPNS record as defined in https://github.com/DeCentral-Budapest/go-ipfs/blob/master/namesys/pb/namesys.proto
+  /// </summary>
+  public sealed partial class CanIpnsEntry : pb::IMessage<CanIpnsEntry> {
+    private static readonly pb::MessageParser<CanIpnsEntry> _parser = new pb::MessageParser<CanIpnsEntry>(() => new CanIpnsEntry());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<CanIpnsEntry> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Profileserver.IopProfileServerReflection.Descriptor.MessageTypes[82]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CanIpnsEntry() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CanIpnsEntry(CanIpnsEntry other) : this() {
+      value_ = other.value_;
+      signature_ = other.signature_;
+      validityType_ = other.validityType_;
+      validity_ = other.validity_;
+      sequence_ = other.sequence_;
+      ttl_ = other.ttl_;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CanIpnsEntry Clone() {
+      return new CanIpnsEntry(this);
+    }
+
+    /// <summary>Field number for the "value" field.</summary>
+    public const int ValueFieldNumber = 1;
+    private pb::ByteString value_ = pb::ByteString.Empty;
+    /// <summary>
+    ///  IPFS path string converted to byte array. The path string has to be "/ipfs/$objectHashEncoded",
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString Value {
+      get { return value_; }
+      set {
+        value_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "signature" field.</summary>
+    public const int SignatureFieldNumber = 2;
+    private pb::ByteString signature_ = pb::ByteString.Empty;
+    /// <summary>
+    ///  where $objectHashEncoded is base58 encoded hash of the CAN object that the client received as `CanStoreDataResponse.hash`.
+    ///  The base58 encoding must be used without the multibase prefix - for example "/ipfs/QmaRvpLT4RgBDVY6cQKwqQGQNtbM31KSqh8TxvQgFoEUus".
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString Signature {
+      get { return signature_; }
+      set {
+        signature_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "validityType" field.</summary>
+    public const int ValidityTypeFieldNumber = 3;
+    private global::Iop.Profileserver.CanIpnsEntry.Types.ValidityType validityType_ = 0;
+    /// <summary>
+    ///  Type of meaning of 'validity' field.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Profileserver.CanIpnsEntry.Types.ValidityType ValidityType {
+      get { return validityType_; }
+      set {
+        validityType_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "validity" field.</summary>
+    public const int ValidityFieldNumber = 4;
+    private pb::ByteString validity_ = pb::ByteString.Empty;
+    /// <summary>
+    ///  RFC3339 UTF-8 string converted to byte array.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString Validity {
+      get { return validity_; }
+      set {
+        validity_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "sequence" field.</summary>
+    public const int SequenceFieldNumber = 5;
+    private ulong sequence_;
+    /// <summary>
+    ///  Record sequence number that has to be increased on updates.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ulong Sequence {
+      get { return sequence_; }
+      set {
+        sequence_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "ttl" field.</summary>
+    public const int TtlFieldNumber = 6;
+    private ulong ttl_;
+    /// <summary>
+    ///  Time to live of the IPNS record in cache in nanoseconds.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ulong Ttl {
+      get { return ttl_; }
+      set {
+        ttl_ = value;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as CanIpnsEntry);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(CanIpnsEntry other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (Value != other.Value) return false;
+      if (Signature != other.Signature) return false;
+      if (ValidityType != other.ValidityType) return false;
+      if (Validity != other.Validity) return false;
+      if (Sequence != other.Sequence) return false;
+      if (Ttl != other.Ttl) return false;
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (Value.Length != 0) hash ^= Value.GetHashCode();
+      if (Signature.Length != 0) hash ^= Signature.GetHashCode();
+      if (ValidityType != 0) hash ^= ValidityType.GetHashCode();
+      if (Validity.Length != 0) hash ^= Validity.GetHashCode();
+      if (Sequence != 0UL) hash ^= Sequence.GetHashCode();
+      if (Ttl != 0UL) hash ^= Ttl.GetHashCode();
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (Value.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteBytes(Value);
+      }
+      if (Signature.Length != 0) {
+        output.WriteRawTag(18);
+        output.WriteBytes(Signature);
+      }
+      if (ValidityType != 0) {
+        output.WriteRawTag(24);
+        output.WriteEnum((int) ValidityType);
+      }
+      if (Validity.Length != 0) {
+        output.WriteRawTag(34);
+        output.WriteBytes(Validity);
+      }
+      if (Sequence != 0UL) {
+        output.WriteRawTag(40);
+        output.WriteUInt64(Sequence);
+      }
+      if (Ttl != 0UL) {
+        output.WriteRawTag(48);
+        output.WriteUInt64(Ttl);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (Value.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(Value);
+      }
+      if (Signature.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(Signature);
+      }
+      if (ValidityType != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) ValidityType);
+      }
+      if (Validity.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(Validity);
+      }
+      if (Sequence != 0UL) {
+        size += 1 + pb::CodedOutputStream.ComputeUInt64Size(Sequence);
+      }
+      if (Ttl != 0UL) {
+        size += 1 + pb::CodedOutputStream.ComputeUInt64Size(Ttl);
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(CanIpnsEntry other) {
+      if (other == null) {
+        return;
+      }
+      if (other.Value.Length != 0) {
+        Value = other.Value;
+      }
+      if (other.Signature.Length != 0) {
+        Signature = other.Signature;
+      }
+      if (other.ValidityType != 0) {
+        ValidityType = other.ValidityType;
+      }
+      if (other.Validity.Length != 0) {
+        Validity = other.Validity;
+      }
+      if (other.Sequence != 0UL) {
+        Sequence = other.Sequence;
+      }
+      if (other.Ttl != 0UL) {
+        Ttl = other.Ttl;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+          case 10: {
+            Value = input.ReadBytes();
+            break;
+          }
+          case 18: {
+            Signature = input.ReadBytes();
+            break;
+          }
+          case 24: {
+            validityType_ = (global::Iop.Profileserver.CanIpnsEntry.Types.ValidityType) input.ReadEnum();
+            break;
+          }
+          case 34: {
+            Validity = input.ReadBytes();
+            break;
+          }
+          case 40: {
+            Sequence = input.ReadUInt64();
+            break;
+          }
+          case 48: {
+            Ttl = input.ReadUInt64();
+            break;
+          }
+        }
+      }
+    }
+
+    #region Nested types
+    /// <summary>Container for nested types declared in the CanIpnsEntry message type.</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static partial class Types {
+      /// <summary>
+      ///  Type of validity value.
+      /// </summary>
+      public enum ValidityType {
+        /// <summary>
+        ///  Validity value is specifies a time until which the IPNS record is valid.
+        /// </summary>
+        [pbr::OriginalName("EOL")] Eol = 0,
+      }
+
+    }
+    #endregion
+
+  }
+
+  /// <summary>
+  ///
+  ///  Representation of a cryptographic key in CAN API.
+  /// </summary>
+  public sealed partial class CanCryptoKey : pb::IMessage<CanCryptoKey> {
+    private static readonly pb::MessageParser<CanCryptoKey> _parser = new pb::MessageParser<CanCryptoKey>(() => new CanCryptoKey());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<CanCryptoKey> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Profileserver.IopProfileServerReflection.Descriptor.MessageTypes[83]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CanCryptoKey() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CanCryptoKey(CanCryptoKey other) : this() {
+      type_ = other.type_;
+      data_ = other.data_;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CanCryptoKey Clone() {
+      return new CanCryptoKey(this);
+    }
+
+    /// <summary>Field number for the "type" field.</summary>
+    public const int TypeFieldNumber = 1;
+    private global::Iop.Profileserver.CanCryptoKey.Types.KeyType type_ = 0;
+    /// <summary>
+    ///  Type of the key.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Profileserver.CanCryptoKey.Types.KeyType Type {
+      get { return type_; }
+      set {
+        type_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "data" field.</summary>
+    public const int DataFieldNumber = 2;
+    private pb::ByteString data_ = pb::ByteString.Empty;
+    /// <summary>
+    ///  Key binary data.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString Data {
+      get { return data_; }
+      set {
+        data_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as CanCryptoKey);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(CanCryptoKey other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (Type != other.Type) return false;
+      if (Data != other.Data) return false;
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (Type != 0) hash ^= Type.GetHashCode();
+      if (Data.Length != 0) hash ^= Data.GetHashCode();
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (Type != 0) {
+        output.WriteRawTag(8);
+        output.WriteEnum((int) Type);
+      }
+      if (Data.Length != 0) {
+        output.WriteRawTag(18);
+        output.WriteBytes(Data);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (Type != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Type);
+      }
+      if (Data.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(Data);
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(CanCryptoKey other) {
+      if (other == null) {
+        return;
+      }
+      if (other.Type != 0) {
+        Type = other.Type;
+      }
+      if (other.Data.Length != 0) {
+        Data = other.Data;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+          case 8: {
+            type_ = (global::Iop.Profileserver.CanCryptoKey.Types.KeyType) input.ReadEnum();
+            break;
+          }
+          case 18: {
+            Data = input.ReadBytes();
+            break;
+          }
+        }
+      }
+    }
+
+    #region Nested types
+    /// <summary>Container for nested types declared in the CanCryptoKey message type.</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static partial class Types {
+      /// <summary>
+      ///  Type of the key algorithm. 
+      /// </summary>
+      public enum KeyType {
+        [pbr::OriginalName("RSA")] Rsa = 0,
+        [pbr::OriginalName("Ed25519")] Ed25519 = 1,
+      }
+
+    }
+    #endregion
 
   }
 

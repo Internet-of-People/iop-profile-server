@@ -31,6 +31,7 @@ namespace ProfileServer.Migrations
                 {
                     DbId = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    CanObjectHash = table.Column<byte[]>(nullable: true),
                     ExpirationDate = table.Column<DateTime>(nullable: true),
                     ExtraData = table.Column<string>(maxLength: 200, nullable: false),
                     HostingServerId = table.Column<byte[]>(maxLength: 32, nullable: true),
@@ -99,7 +100,6 @@ namespace ProfileServer.Migrations
                     InitialLocationLatitude = table.Column<decimal>(type: "decimal(9,6)", nullable: false),
                     InitialLocationLongitude = table.Column<decimal>(type: "decimal(9,6)", nullable: false),
                     Name = table.Column<string>(maxLength: 64, nullable: false),
-                    ProfileImage = table.Column<byte[]>(nullable: true),
                     PublicKey = table.Column<byte[]>(maxLength: 128, nullable: false),
                     ThumbnailImage = table.Column<byte[]>(nullable: true),
                     Type = table.Column<string>(maxLength: 64, nullable: false),

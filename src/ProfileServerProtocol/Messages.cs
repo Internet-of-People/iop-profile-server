@@ -259,10 +259,14 @@ namespace ProfileServerProtocol
     /// Creates a new error response for a specific request with ERROR_REJECTED status code.
     /// </summary>
     /// <param name="Request">Request message for which the response is created.</param>
+    /// <param name="Details">Optionally, details about the error to be sent in 'Response.details'.</param>
     /// <returns>Error response message that is ready to be sent.</returns>
-    public Message CreateErrorRejectedResponse(Message Request)
+    public Message CreateErrorRejectedResponse(Message Request, string Details = null)
     {
-      return CreateResponse(Request, Status.ErrorRejected);
+      Message res = CreateResponse(Request, Status.ErrorRejected);
+      if (Details != null)
+        res.Response.Details = Details;
+      return res;
     }
 
     /// <summary>
@@ -1422,6 +1426,75 @@ namespace ProfileServerProtocol
 
       Message res = CreateConversationResponse(Request);
       res.Response.ConversationResponse.StopNeighborhoodUpdates = stopNeighborhoodUpdatesResponse;
+
+      return res;
+    }
+
+
+
+    /// <summary>
+    /// Creates a new CanStoreDataRequest message.
+    /// </summary>
+    /// <param name="Data">Data to store in CAN, or null to just delete the old object.</param>
+    /// <returns>CanStoreDataRequest message that is ready to be sent.</returns>
+    public Message CreateCanStoreDataRequest(CanIdentityData Data)
+    {
+      CanStoreDataRequest canStoreDataRequest = new CanStoreDataRequest();
+      canStoreDataRequest.Data = Data;
+
+      Message res = CreateConversationRequest();
+      res.Request.ConversationRequest.CanStoreData = canStoreDataRequest;
+
+      return res;
+    }
+
+
+    /// <summary>
+    /// Creates a response message to a CanStoreDataRequest message.
+    /// </summary>
+    /// <param name="Request">CanStoreDataRequest message for which the response is created.</param>
+    /// <param name="Hash">Hash of 'CanStoreDataRequest.data' received from CAN, or null if 'CanStoreDataRequest.data' was null.</param>
+    /// <returns>CanStoreDataResponse message that is ready to be sent.</returns>
+    public Message CreateCanStoreDataResponse(Message Request, byte[] Hash)
+    {
+      CanStoreDataResponse canStoreDataResponse = new CanStoreDataResponse();
+      if (Hash != null) canStoreDataResponse.Hash = ProtocolHelper.ByteArrayToByteString(Hash);
+
+      Message res = CreateConversationResponse(Request);
+      res.Response.ConversationResponse.CanStoreData = canStoreDataResponse;
+
+      return res;
+    }
+
+
+    /// <summary>
+    /// Creates a new CanPublishIpnsRecordRequest message.
+    /// </summary>
+    /// <param name="Record">Signed IPNS record.</param>
+    /// <returns>CanPublishIpnsRecordRequest message that is ready to be sent.</returns>
+    public Message CreateCanPublishIpnsRecordRequest(CanIpnsEntry Record)
+    {
+      CanPublishIpnsRecordRequest canPublishIpnsRecordRequest = new CanPublishIpnsRecordRequest();
+      canPublishIpnsRecordRequest.Record = Record;
+
+      Message res = CreateConversationRequest();
+      res.Request.ConversationRequest.CanPublishIpnsRecord = canPublishIpnsRecordRequest;
+
+      return res;
+    }
+
+
+    /// <summary>
+    /// Creates a response message to a CanPublishIpnsRecordRequest message.
+    /// </summary>
+    /// <param name="Request">CanPublishIpnsRecordRequest message for which the response is created.</param>
+    /// <returns>CanPublishIpnsRecordResponse message that is ready to be sent.</returns>
+    public Message CreateCanPublishIpnsRecordResponse(Message Request)
+    {
+      CanPublishIpnsRecordResponse canPublishIpnsRecordResponse = new CanPublishIpnsRecordResponse();
+
+      Message res = CreateConversationResponse(Request);
+      res.Response.ConversationResponse.CanPublishIpnsRecord = canPublishIpnsRecordResponse;
 
       return res;
     }

@@ -229,6 +229,19 @@ namespace ProfileServer.Data
     }
 
     /// <summary>
+    /// Adds entity to the database.
+    /// </summary>
+    /// <param name="entity">Entity to add.</param>
+    public virtual async Task InsertAsync(TEntity entity)
+    {
+      log.Trace("()");
+
+      await dbSet.AddAsync(entity);
+
+      log.Trace("(-)");
+    }
+
+    /// <summary>
     /// Finds and deletes an entity from the database based on its primary identifier.
     /// </summary>
     /// <param name="id">Primary identifier of the entity to delete.</param>

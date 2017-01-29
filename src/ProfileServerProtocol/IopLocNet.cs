@@ -54,86 +54,84 @@ namespace Iop.Locnet {
             "Lk5laWdoYm91cmhvb2RDaGFuZ2VkTm90aWZpY2F0aW9uUmVzcG9uc2VIAEIa",
             "ChhMb2NhbFNlcnZpY2VSZXNwb25zZVR5cGUiQwoLTm9kZVByb2ZpbGUSDgoG",
             "bm9kZUlkGAEgASgMEiQKB2NvbnRhY3QYAiABKAsyEy5pb3AubG9jbmV0LkNv",
-            "bnRhY3QiZgoHQ29udGFjdBIlCgRpcHY0GAEgASgLMhUuaW9wLmxvY25ldC5J",
-            "cEFkZHJlc3NIABIlCgRpcHY2GAIgASgLMhUuaW9wLmxvY25ldC5JcEFkZHJl",
-            "c3NIAEINCgtDb250YWN0VHlwZSInCglJcEFkZHJlc3MSDAoEaG9zdBgBIAEo",
-            "DBIMCgRwb3J0GAIgASgNInQKFlJlZ2lzdGVyU2VydmljZVJlcXVlc3QSLAoL",
-            "c2VydmljZVR5cGUYASABKA4yFy5pb3AubG9jbmV0LlNlcnZpY2VUeXBlEiwK",
-            "C25vZGVQcm9maWxlGAIgASgLMhcuaW9wLmxvY25ldC5Ob2RlUHJvZmlsZSIZ",
-            "ChdSZWdpc3RlclNlcnZpY2VSZXNwb25zZSJIChhEZXJlZ2lzdGVyU2Vydmlj",
-            "ZVJlcXVlc3QSLAoLc2VydmljZVR5cGUYASABKA4yFy5pb3AubG9jbmV0LlNl",
-            "cnZpY2VUeXBlIhsKGURlcmVnaXN0ZXJTZXJ2aWNlUmVzcG9uc2UiSgonR2V0",
-            "TmVpZ2hib3VyTm9kZXNCeURpc3RhbmNlTG9jYWxSZXF1ZXN0Eh8KF2tlZXBB",
-            "bGl2ZUFuZFNlbmRVcGRhdGVzGAEgASgIIjIKC0dwc0xvY2F0aW9uEhAKCGxh",
-            "dGl0dWRlGAEgASgPEhEKCWxvbmdpdHVkZRgCIAEoDyJfCghOb2RlSW5mbxIo",
-            "Cgdwcm9maWxlGAEgASgLMhcuaW9wLmxvY25ldC5Ob2RlUHJvZmlsZRIpCghs",
-            "b2NhdGlvbhgCIAEoCzIXLmlvcC5sb2NuZXQuR3BzTG9jYXRpb24iSgojR2V0",
-            "TmVpZ2hib3VyTm9kZXNCeURpc3RhbmNlUmVzcG9uc2USIwoFbm9kZXMYASAD",
-            "KAsyFC5pb3AubG9jbmV0Lk5vZGVJbmZvIpwBChNOZWlnaGJvdXJob29kQ2hh",
-            "bmdlEi0KDWFkZGVkTm9kZUluZm8YASABKAsyFC5pb3AubG9jbmV0Lk5vZGVJ",
-            "bmZvSAASLwoPdXBkYXRlZE5vZGVJbmZvGAIgASgLMhQuaW9wLmxvY25ldC5O",
-            "b2RlSW5mb0gAEhcKDXJlbW92ZWROb2RlSWQYAyABKAxIAEIMCgpDaGFuZ2VU",
-            "eXBlIlsKJ05laWdoYm91cmhvb2RDaGFuZ2VkTm90aWZpY2F0aW9uUmVxdWVz",
-            "dBIwCgdjaGFuZ2VzGAEgAygLMh8uaW9wLmxvY25ldC5OZWlnaGJvdXJob29k",
-            "Q2hhbmdlIioKKE5laWdoYm91cmhvb2RDaGFuZ2VkTm90aWZpY2F0aW9uUmVz",
-            "cG9uc2Ui2QMKEVJlbW90ZU5vZGVSZXF1ZXN0EjoKD2FjY2VwdENvbGxlYWd1",
-            "ZRgBIAEoCzIfLmlvcC5sb2NuZXQuQnVpbGROZXR3b3JrUmVxdWVzdEgAEjkK",
-            "DnJlbmV3Q29sbGVhZ3VlGAIgASgLMh8uaW9wLmxvY25ldC5CdWlsZE5ldHdv",
-            "cmtSZXF1ZXN0SAASOgoPYWNjZXB0TmVpZ2hib3VyGAMgASgLMh8uaW9wLmxv",
-            "Y25ldC5CdWlsZE5ldHdvcmtSZXF1ZXN0SAASOQoOcmVuZXdOZWlnaGJvdXIY",
-            "BCABKAsyHy5pb3AubG9jbmV0LkJ1aWxkTmV0d29ya1JlcXVlc3RIABI3Cgxn",
-            "ZXROb2RlQ291bnQYBSABKAsyHy5pb3AubG9jbmV0LkdldE5vZGVDb3VudFJl",
-            "cXVlc3RIABI7Cg5nZXRSYW5kb21Ob2RlcxgGIAEoCzIhLmlvcC5sb2NuZXQu",
-            "R2V0UmFuZG9tTm9kZXNSZXF1ZXN0SAASRwoPZ2V0Q2xvc2VzdE5vZGVzGAcg",
-            "ASgLMiwuaW9wLmxvY25ldC5HZXRDbG9zZXN0Tm9kZXNCeURpc3RhbmNlUmVx",
-            "dWVzdEgAQhcKFVJlbW90ZU5vZGVSZXF1ZXN0VHlwZSLiAwoSUmVtb3RlTm9k",
-            "ZVJlc3BvbnNlEjsKD2FjY2VwdENvbGxlYWd1ZRgBIAEoCzIgLmlvcC5sb2Nu",
-            "ZXQuQnVpbGROZXR3b3JrUmVzcG9uc2VIABI6Cg5yZW5ld0NvbGxlYWd1ZRgC",
-            "IAEoCzIgLmlvcC5sb2NuZXQuQnVpbGROZXR3b3JrUmVzcG9uc2VIABI7Cg9h",
-            "Y2NlcHROZWlnaGJvdXIYAyABKAsyIC5pb3AubG9jbmV0LkJ1aWxkTmV0d29y",
-            "a1Jlc3BvbnNlSAASOgoOcmVuZXdOZWlnaGJvdXIYBCABKAsyIC5pb3AubG9j",
-            "bmV0LkJ1aWxkTmV0d29ya1Jlc3BvbnNlSAASOAoMZ2V0Tm9kZUNvdW50GAUg",
-            "ASgLMiAuaW9wLmxvY25ldC5HZXROb2RlQ291bnRSZXNwb25zZUgAEjwKDmdl",
-            "dFJhbmRvbU5vZGVzGAYgASgLMiIuaW9wLmxvY25ldC5HZXRSYW5kb21Ob2Rl",
-            "c1Jlc3BvbnNlSAASSAoPZ2V0Q2xvc2VzdE5vZGVzGAcgASgLMi0uaW9wLmxv",
-            "Y25ldC5HZXRDbG9zZXN0Tm9kZXNCeURpc3RhbmNlUmVzcG9uc2VIAEIYChZS",
-            "ZW1vdGVOb2RlUmVzcG9uc2VUeXBlIj0KE0J1aWxkTmV0d29ya1JlcXVlc3QS",
-            "JgoIbm9kZUluZm8YASABKAsyFC5pb3AubG9jbmV0Lk5vZGVJbmZvIigKFEJ1",
-            "aWxkTmV0d29ya1Jlc3BvbnNlEhAKCGFjY2VwdGVkGAEgASgIIhUKE0dldE5v",
-            "ZGVDb3VudFJlcXVlc3QiKQoUR2V0Tm9kZUNvdW50UmVzcG9uc2USEQoJbm9k",
-            "ZUNvdW50GAEgASgNIkgKFUdldFJhbmRvbU5vZGVzUmVxdWVzdBIUCgxtYXhO",
-            "b2RlQ291bnQYASABKA0SGQoRaW5jbHVkZU5laWdoYm91cnMYAiABKAgiPQoW",
-            "R2V0UmFuZG9tTm9kZXNSZXNwb25zZRIjCgVub2RlcxgBIAMoCzIULmlvcC5s",
-            "b2NuZXQuTm9kZUluZm8ikwEKIEdldENsb3Nlc3ROb2Rlc0J5RGlzdGFuY2VS",
-            "ZXF1ZXN0EikKCGxvY2F0aW9uGAEgASgLMhcuaW9wLmxvY25ldC5HcHNMb2Nh",
-            "dGlvbhITCgttYXhSYWRpdXNLbRgCIAEoAhIUCgxtYXhOb2RlQ291bnQYAyAB",
-            "KA0SGQoRaW5jbHVkZU5laWdoYm91cnMYBCABKAgiSAohR2V0Q2xvc2VzdE5v",
+            "bnRhY3QiKgoHQ29udGFjdBIRCglpcEFkZHJlc3MYASABKAwSDAoEcG9ydBgC",
+            "IAEoDSJ0ChZSZWdpc3RlclNlcnZpY2VSZXF1ZXN0EiwKC3NlcnZpY2VUeXBl",
+            "GAEgASgOMhcuaW9wLmxvY25ldC5TZXJ2aWNlVHlwZRIsCgtub2RlUHJvZmls",
+            "ZRgCIAEoCzIXLmlvcC5sb2NuZXQuTm9kZVByb2ZpbGUiGQoXUmVnaXN0ZXJT",
+            "ZXJ2aWNlUmVzcG9uc2UiSAoYRGVyZWdpc3RlclNlcnZpY2VSZXF1ZXN0EiwK",
+            "C3NlcnZpY2VUeXBlGAEgASgOMhcuaW9wLmxvY25ldC5TZXJ2aWNlVHlwZSIb",
+            "ChlEZXJlZ2lzdGVyU2VydmljZVJlc3BvbnNlIkoKJ0dldE5laWdoYm91ck5v",
+            "ZGVzQnlEaXN0YW5jZUxvY2FsUmVxdWVzdBIfChdrZWVwQWxpdmVBbmRTZW5k",
+            "VXBkYXRlcxgBIAEoCCIyCgtHcHNMb2NhdGlvbhIQCghsYXRpdHVkZRgBIAEo",
+            "DxIRCglsb25naXR1ZGUYAiABKA8iXwoITm9kZUluZm8SKAoHcHJvZmlsZRgB",
+            "IAEoCzIXLmlvcC5sb2NuZXQuTm9kZVByb2ZpbGUSKQoIbG9jYXRpb24YAiAB",
+            "KAsyFy5pb3AubG9jbmV0Lkdwc0xvY2F0aW9uIkoKI0dldE5laWdoYm91ck5v",
             "ZGVzQnlEaXN0YW5jZVJlc3BvbnNlEiMKBW5vZGVzGAEgAygLMhQuaW9wLmxv",
-            "Y25ldC5Ob2RlSW5mbyL3AQoNQ2xpZW50UmVxdWVzdBI1CgtnZXRTZXJ2aWNl",
-            "cxgBIAEoCzIeLmlvcC5sb2NuZXQuR2V0U2VydmljZXNSZXF1ZXN0SAASUQoR",
-            "Z2V0TmVpZ2hib3VyTm9kZXMYAiABKAsyNC5pb3AubG9jbmV0LkdldE5laWdo",
-            "Ym91ck5vZGVzQnlEaXN0YW5jZUNsaWVudFJlcXVlc3RIABJHCg9nZXRDbG9z",
-            "ZXN0Tm9kZXMYAyABKAsyLC5pb3AubG9jbmV0LkdldENsb3Nlc3ROb2Rlc0J5",
-            "RGlzdGFuY2VSZXF1ZXN0SABCEwoRQ2xpZW50UmVxdWVzdFR5cGUi9gEKDkNs",
-            "aWVudFJlc3BvbnNlEjYKC2dldFNlcnZpY2VzGAEgASgLMh8uaW9wLmxvY25l",
-            "dC5HZXRTZXJ2aWNlc1Jlc3BvbnNlSAASTAoRZ2V0TmVpZ2hib3VyTm9kZXMY",
-            "AiABKAsyLy5pb3AubG9jbmV0LkdldE5laWdoYm91ck5vZGVzQnlEaXN0YW5j",
-            "ZVJlc3BvbnNlSAASSAoPZ2V0Q2xvc2VzdE5vZGVzGAMgASgLMi0uaW9wLmxv",
-            "Y25ldC5HZXRDbG9zZXN0Tm9kZXNCeURpc3RhbmNlUmVzcG9uc2VIAEIUChJD",
-            "bGllbnRSZXNwb25zZVR5cGUiFAoSR2V0U2VydmljZXNSZXF1ZXN0ImgKDlNl",
-            "cnZpY2VQcm9maWxlEiwKC3NlcnZpY2VUeXBlGAEgASgOMhcuaW9wLmxvY25l",
-            "dC5TZXJ2aWNlVHlwZRIoCgdwcm9maWxlGAIgASgLMhcuaW9wLmxvY25ldC5O",
-            "b2RlUHJvZmlsZSJDChNHZXRTZXJ2aWNlc1Jlc3BvbnNlEiwKCHNlcnZpY2Vz",
-            "GAEgAygLMhouaW9wLmxvY25ldC5TZXJ2aWNlUHJvZmlsZSIqCihHZXROZWln",
-            "aGJvdXJOb2Rlc0J5RGlzdGFuY2VDbGllbnRSZXF1ZXN0KsIBCgZTdGF0dXMS",
-            "DQoJU1RBVFVTX09LEAASHAoYRVJST1JfUFJPVE9DT0xfVklPTEFUSU9OEAES",
-            "FQoRRVJST1JfVU5TVVBQT1JURUQQAhIWChJFUlJPUl9VTkFVVEhPUklaRUQQ",
-            "BRISCg5FUlJPUl9CQURfUk9MRRAGEhIKDkVSUk9SX0lOVEVSTkFMEAgSGwoX",
-            "RVJST1JfSU5WQUxJRF9TSUdOQVRVUkUQNBIXChNFUlJPUl9JTlZBTElEX1ZB",
-            "TFVFEDYqlgEKC1NlcnZpY2VUeXBlEhAKDFVuc3RydWN0dXJlZBAAEgsKB0Nv",
-            "bnRlbnQQARILCgdMYXRlbmN5EAISDAoITG9jYXRpb24QAxIJCgVUb2tlbhAK",
-            "EgsKB1Byb2ZpbGUQCxINCglQcm94aW1pdHkQDBIJCgVSZWxheRANEg4KClJl",
-            "cHV0YXRpb24QDhILCgdNaW50aW5nEA9iBnByb3RvMw=="));
+            "Y25ldC5Ob2RlSW5mbyKcAQoTTmVpZ2hib3VyaG9vZENoYW5nZRItCg1hZGRl",
+            "ZE5vZGVJbmZvGAEgASgLMhQuaW9wLmxvY25ldC5Ob2RlSW5mb0gAEi8KD3Vw",
+            "ZGF0ZWROb2RlSW5mbxgCIAEoCzIULmlvcC5sb2NuZXQuTm9kZUluZm9IABIX",
+            "Cg1yZW1vdmVkTm9kZUlkGAMgASgMSABCDAoKQ2hhbmdlVHlwZSJbCidOZWln",
+            "aGJvdXJob29kQ2hhbmdlZE5vdGlmaWNhdGlvblJlcXVlc3QSMAoHY2hhbmdl",
+            "cxgBIAMoCzIfLmlvcC5sb2NuZXQuTmVpZ2hib3VyaG9vZENoYW5nZSIqCihO",
+            "ZWlnaGJvdXJob29kQ2hhbmdlZE5vdGlmaWNhdGlvblJlc3BvbnNlItkDChFS",
+            "ZW1vdGVOb2RlUmVxdWVzdBI6Cg9hY2NlcHRDb2xsZWFndWUYASABKAsyHy5p",
+            "b3AubG9jbmV0LkJ1aWxkTmV0d29ya1JlcXVlc3RIABI5Cg5yZW5ld0NvbGxl",
+            "YWd1ZRgCIAEoCzIfLmlvcC5sb2NuZXQuQnVpbGROZXR3b3JrUmVxdWVzdEgA",
+            "EjoKD2FjY2VwdE5laWdoYm91chgDIAEoCzIfLmlvcC5sb2NuZXQuQnVpbGRO",
+            "ZXR3b3JrUmVxdWVzdEgAEjkKDnJlbmV3TmVpZ2hib3VyGAQgASgLMh8uaW9w",
+            "LmxvY25ldC5CdWlsZE5ldHdvcmtSZXF1ZXN0SAASNwoMZ2V0Tm9kZUNvdW50",
+            "GAUgASgLMh8uaW9wLmxvY25ldC5HZXROb2RlQ291bnRSZXF1ZXN0SAASOwoO",
+            "Z2V0UmFuZG9tTm9kZXMYBiABKAsyIS5pb3AubG9jbmV0LkdldFJhbmRvbU5v",
+            "ZGVzUmVxdWVzdEgAEkcKD2dldENsb3Nlc3ROb2RlcxgHIAEoCzIsLmlvcC5s",
+            "b2NuZXQuR2V0Q2xvc2VzdE5vZGVzQnlEaXN0YW5jZVJlcXVlc3RIAEIXChVS",
+            "ZW1vdGVOb2RlUmVxdWVzdFR5cGUi4gMKElJlbW90ZU5vZGVSZXNwb25zZRI7",
+            "Cg9hY2NlcHRDb2xsZWFndWUYASABKAsyIC5pb3AubG9jbmV0LkJ1aWxkTmV0",
+            "d29ya1Jlc3BvbnNlSAASOgoOcmVuZXdDb2xsZWFndWUYAiABKAsyIC5pb3Au",
+            "bG9jbmV0LkJ1aWxkTmV0d29ya1Jlc3BvbnNlSAASOwoPYWNjZXB0TmVpZ2hi",
+            "b3VyGAMgASgLMiAuaW9wLmxvY25ldC5CdWlsZE5ldHdvcmtSZXNwb25zZUgA",
+            "EjoKDnJlbmV3TmVpZ2hib3VyGAQgASgLMiAuaW9wLmxvY25ldC5CdWlsZE5l",
+            "dHdvcmtSZXNwb25zZUgAEjgKDGdldE5vZGVDb3VudBgFIAEoCzIgLmlvcC5s",
+            "b2NuZXQuR2V0Tm9kZUNvdW50UmVzcG9uc2VIABI8Cg5nZXRSYW5kb21Ob2Rl",
+            "cxgGIAEoCzIiLmlvcC5sb2NuZXQuR2V0UmFuZG9tTm9kZXNSZXNwb25zZUgA",
+            "EkgKD2dldENsb3Nlc3ROb2RlcxgHIAEoCzItLmlvcC5sb2NuZXQuR2V0Q2xv",
+            "c2VzdE5vZGVzQnlEaXN0YW5jZVJlc3BvbnNlSABCGAoWUmVtb3RlTm9kZVJl",
+            "c3BvbnNlVHlwZSJGChNCdWlsZE5ldHdvcmtSZXF1ZXN0Ei8KEXJlcXVlc3Rv",
+            "ck5vZGVJbmZvGAEgASgLMhQuaW9wLmxvY25ldC5Ob2RlSW5mbyJxChRCdWls",
+            "ZE5ldHdvcmtSZXNwb25zZRIQCghhY2NlcHRlZBgBIAEoCBIuChBhY2NlcHRv",
+            "ck5vZGVJbmZvGAIgASgLMhQuaW9wLmxvY25ldC5Ob2RlSW5mbxIXCg9yZW1v",
+            "dGVJcEFkZHJlc3MYAyABKAwiFQoTR2V0Tm9kZUNvdW50UmVxdWVzdCIpChRH",
+            "ZXROb2RlQ291bnRSZXNwb25zZRIRCglub2RlQ291bnQYASABKA0iSAoVR2V0",
+            "UmFuZG9tTm9kZXNSZXF1ZXN0EhQKDG1heE5vZGVDb3VudBgBIAEoDRIZChFp",
+            "bmNsdWRlTmVpZ2hib3VycxgCIAEoCCI9ChZHZXRSYW5kb21Ob2Rlc1Jlc3Bv",
+            "bnNlEiMKBW5vZGVzGAEgAygLMhQuaW9wLmxvY25ldC5Ob2RlSW5mbyKTAQog",
+            "R2V0Q2xvc2VzdE5vZGVzQnlEaXN0YW5jZVJlcXVlc3QSKQoIbG9jYXRpb24Y",
+            "ASABKAsyFy5pb3AubG9jbmV0Lkdwc0xvY2F0aW9uEhMKC21heFJhZGl1c0tt",
+            "GAIgASgCEhQKDG1heE5vZGVDb3VudBgDIAEoDRIZChFpbmNsdWRlTmVpZ2hi",
+            "b3VycxgEIAEoCCJICiFHZXRDbG9zZXN0Tm9kZXNCeURpc3RhbmNlUmVzcG9u",
+            "c2USIwoFbm9kZXMYASADKAsyFC5pb3AubG9jbmV0Lk5vZGVJbmZvIvcBCg1D",
+            "bGllbnRSZXF1ZXN0EjUKC2dldFNlcnZpY2VzGAEgASgLMh4uaW9wLmxvY25l",
+            "dC5HZXRTZXJ2aWNlc1JlcXVlc3RIABJRChFnZXROZWlnaGJvdXJOb2RlcxgC",
+            "IAEoCzI0LmlvcC5sb2NuZXQuR2V0TmVpZ2hib3VyTm9kZXNCeURpc3RhbmNl",
+            "Q2xpZW50UmVxdWVzdEgAEkcKD2dldENsb3Nlc3ROb2RlcxgDIAEoCzIsLmlv",
+            "cC5sb2NuZXQuR2V0Q2xvc2VzdE5vZGVzQnlEaXN0YW5jZVJlcXVlc3RIAEIT",
+            "ChFDbGllbnRSZXF1ZXN0VHlwZSL2AQoOQ2xpZW50UmVzcG9uc2USNgoLZ2V0",
+            "U2VydmljZXMYASABKAsyHy5pb3AubG9jbmV0LkdldFNlcnZpY2VzUmVzcG9u",
+            "c2VIABJMChFnZXROZWlnaGJvdXJOb2RlcxgCIAEoCzIvLmlvcC5sb2NuZXQu",
+            "R2V0TmVpZ2hib3VyTm9kZXNCeURpc3RhbmNlUmVzcG9uc2VIABJICg9nZXRD",
+            "bG9zZXN0Tm9kZXMYAyABKAsyLS5pb3AubG9jbmV0LkdldENsb3Nlc3ROb2Rl",
+            "c0J5RGlzdGFuY2VSZXNwb25zZUgAQhQKEkNsaWVudFJlc3BvbnNlVHlwZSIU",
+            "ChJHZXRTZXJ2aWNlc1JlcXVlc3QiaAoOU2VydmljZVByb2ZpbGUSLAoLc2Vy",
+            "dmljZVR5cGUYASABKA4yFy5pb3AubG9jbmV0LlNlcnZpY2VUeXBlEigKB3By",
+            "b2ZpbGUYAiABKAsyFy5pb3AubG9jbmV0Lk5vZGVQcm9maWxlIkMKE0dldFNl",
+            "cnZpY2VzUmVzcG9uc2USLAoIc2VydmljZXMYASADKAsyGi5pb3AubG9jbmV0",
+            "LlNlcnZpY2VQcm9maWxlIioKKEdldE5laWdoYm91ck5vZGVzQnlEaXN0YW5j",
+            "ZUNsaWVudFJlcXVlc3QqeQoGU3RhdHVzEg0KCVNUQVRVU19PSxAAEhwKGEVS",
+            "Uk9SX1BST1RPQ09MX1ZJT0xBVElPThABEhUKEUVSUk9SX1VOU1VQUE9SVEVE",
+            "EAISEgoORVJST1JfSU5URVJOQUwQCBIXChNFUlJPUl9JTlZBTElEX1ZBTFVF",
+            "EDYqlgEKC1NlcnZpY2VUeXBlEhAKDFVuc3RydWN0dXJlZBAAEgsKB0NvbnRl",
+            "bnQQARILCgdMYXRlbmN5EAISDAoITG9jYXRpb24QAxIJCgVUb2tlbhAKEgsK",
+            "B1Byb2ZpbGUQCxINCglQcm94aW1pdHkQDBIJCgVSZWxheRANEg4KClJlcHV0",
+            "YXRpb24QDhILCgdNaW50aW5nEA9iBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Iop.Locnet.Status), typeof(global::Iop.Locnet.ServiceType), }, new pbr::GeneratedClrTypeInfo[] {
@@ -144,8 +142,7 @@ namespace Iop.Locnet {
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.LocalServiceRequest), global::Iop.Locnet.LocalServiceRequest.Parser, new[]{ "RegisterService", "DeregisterService", "GetNeighbourNodes", "NeighbourhoodChanged" }, new[]{ "LocalServiceRequestType" }, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.LocalServiceResponse), global::Iop.Locnet.LocalServiceResponse.Parser, new[]{ "RegisterService", "DeregisterService", "GetNeighbourNodes", "NeighbourhoodUpdated" }, new[]{ "LocalServiceResponseType" }, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.NodeProfile), global::Iop.Locnet.NodeProfile.Parser, new[]{ "NodeId", "Contact" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.Contact), global::Iop.Locnet.Contact.Parser, new[]{ "Ipv4", "Ipv6" }, new[]{ "ContactType" }, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.IpAddress), global::Iop.Locnet.IpAddress.Parser, new[]{ "Host", "Port" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.Contact), global::Iop.Locnet.Contact.Parser, new[]{ "IpAddress", "Port" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.RegisterServiceRequest), global::Iop.Locnet.RegisterServiceRequest.Parser, new[]{ "ServiceType", "NodeProfile" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.RegisterServiceResponse), global::Iop.Locnet.RegisterServiceResponse.Parser, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.DeregisterServiceRequest), global::Iop.Locnet.DeregisterServiceRequest.Parser, new[]{ "ServiceType" }, null, null, null),
@@ -159,8 +156,8 @@ namespace Iop.Locnet {
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.NeighbourhoodChangedNotificationResponse), global::Iop.Locnet.NeighbourhoodChangedNotificationResponse.Parser, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.RemoteNodeRequest), global::Iop.Locnet.RemoteNodeRequest.Parser, new[]{ "AcceptColleague", "RenewColleague", "AcceptNeighbour", "RenewNeighbour", "GetNodeCount", "GetRandomNodes", "GetClosestNodes" }, new[]{ "RemoteNodeRequestType" }, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.RemoteNodeResponse), global::Iop.Locnet.RemoteNodeResponse.Parser, new[]{ "AcceptColleague", "RenewColleague", "AcceptNeighbour", "RenewNeighbour", "GetNodeCount", "GetRandomNodes", "GetClosestNodes" }, new[]{ "RemoteNodeResponseType" }, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.BuildNetworkRequest), global::Iop.Locnet.BuildNetworkRequest.Parser, new[]{ "NodeInfo" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.BuildNetworkResponse), global::Iop.Locnet.BuildNetworkResponse.Parser, new[]{ "Accepted" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.BuildNetworkRequest), global::Iop.Locnet.BuildNetworkRequest.Parser, new[]{ "RequestorNodeInfo" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.BuildNetworkResponse), global::Iop.Locnet.BuildNetworkResponse.Parser, new[]{ "Accepted", "AcceptorNodeInfo", "RemoteIpAddress" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.GetNodeCountRequest), global::Iop.Locnet.GetNodeCountRequest.Parser, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.GetNodeCountResponse), global::Iop.Locnet.GetNodeCountResponse.Parser, new[]{ "NodeCount" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.GetRandomNodesRequest), global::Iop.Locnet.GetRandomNodesRequest.Parser, new[]{ "MaxNodeCount", "IncludeNeighbours" }, null, null, null),
@@ -197,24 +194,11 @@ namespace Iop.Locnet {
     /// </summary>
     [pbr::OriginalName("ERROR_UNSUPPORTED")] ErrorUnsupported = 2,
     /// <summary>
-    ///  Within conversation, some server roles require authorization of the peer before certain requests are allowed.
-    /// </summary>
-    [pbr::OriginalName("ERROR_UNAUTHORIZED")] ErrorUnauthorized = 5,
-    /// <summary>
-    ///  If a request is sent to a port that does not handle the specific role, this error is returned.
-    /// </summary>
-    [pbr::OriginalName("ERROR_BAD_ROLE")] ErrorBadRole = 6,
-    /// <summary>
-    ///   ERROR_BAD_CONVERSATION_STATUS = 7;               // The conversation status is different from what the message requires.
+    ///  Internal error occurred while processing the message.
     /// </summary>
     [pbr::OriginalName("ERROR_INTERNAL")] ErrorInternal = 8,
     /// <summary>
-    ///  Return codes specific to a request.
-    ///   ERROR_QUOTA_EXCEEDED = 51;                       // The peer reached or exceeded prescribed limits.
-    /// </summary>
-    [pbr::OriginalName("ERROR_INVALID_SIGNATURE")] ErrorInvalidSignature = 52,
-    /// <summary>
-    ///   ERROR_NOT_FOUND = 53;                            // A referenced object was not found.
+    ///  One of the values provided is invalid.
     /// </summary>
     [pbr::OriginalName("ERROR_INVALID_VALUE")] ErrorInvalidValue = 54,
   }
@@ -1895,15 +1879,8 @@ namespace Iop.Locnet {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public Contact(Contact other) : this() {
-      switch (other.ContactTypeCase) {
-        case ContactTypeOneofCase.Ipv4:
-          Ipv4 = other.Ipv4.Clone();
-          break;
-        case ContactTypeOneofCase.Ipv6:
-          Ipv6 = other.Ipv6.Clone();
-          break;
-      }
-
+      ipAddress_ = other.ipAddress_;
+      port_ = other.port_;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1911,193 +1888,14 @@ namespace Iop.Locnet {
       return new Contact(this);
     }
 
-    /// <summary>Field number for the "ipv4" field.</summary>
-    public const int Ipv4FieldNumber = 1;
+    /// <summary>Field number for the "ipAddress" field.</summary>
+    public const int IpAddressFieldNumber = 1;
+    private pb::ByteString ipAddress_ = pb::ByteString.Empty;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Iop.Locnet.IpAddress Ipv4 {
-      get { return contactTypeCase_ == ContactTypeOneofCase.Ipv4 ? (global::Iop.Locnet.IpAddress) contactType_ : null; }
+    public pb::ByteString IpAddress {
+      get { return ipAddress_; }
       set {
-        contactType_ = value;
-        contactTypeCase_ = value == null ? ContactTypeOneofCase.None : ContactTypeOneofCase.Ipv4;
-      }
-    }
-
-    /// <summary>Field number for the "ipv6" field.</summary>
-    public const int Ipv6FieldNumber = 2;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Iop.Locnet.IpAddress Ipv6 {
-      get { return contactTypeCase_ == ContactTypeOneofCase.Ipv6 ? (global::Iop.Locnet.IpAddress) contactType_ : null; }
-      set {
-        contactType_ = value;
-        contactTypeCase_ = value == null ? ContactTypeOneofCase.None : ContactTypeOneofCase.Ipv6;
-      }
-    }
-
-    private object contactType_;
-    /// <summary>Enum of possible cases for the "ContactType" oneof.</summary>
-    public enum ContactTypeOneofCase {
-      None = 0,
-      Ipv4 = 1,
-      Ipv6 = 2,
-    }
-    private ContactTypeOneofCase contactTypeCase_ = ContactTypeOneofCase.None;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public ContactTypeOneofCase ContactTypeCase {
-      get { return contactTypeCase_; }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void ClearContactType() {
-      contactTypeCase_ = ContactTypeOneofCase.None;
-      contactType_ = null;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override bool Equals(object other) {
-      return Equals(other as Contact);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(Contact other) {
-      if (ReferenceEquals(other, null)) {
-        return false;
-      }
-      if (ReferenceEquals(other, this)) {
-        return true;
-      }
-      if (!object.Equals(Ipv4, other.Ipv4)) return false;
-      if (!object.Equals(Ipv6, other.Ipv6)) return false;
-      if (ContactTypeCase != other.ContactTypeCase) return false;
-      return true;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override int GetHashCode() {
-      int hash = 1;
-      if (contactTypeCase_ == ContactTypeOneofCase.Ipv4) hash ^= Ipv4.GetHashCode();
-      if (contactTypeCase_ == ContactTypeOneofCase.Ipv6) hash ^= Ipv6.GetHashCode();
-      hash ^= (int) contactTypeCase_;
-      return hash;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override string ToString() {
-      return pb::JsonFormatter.ToDiagnosticString(this);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void WriteTo(pb::CodedOutputStream output) {
-      if (contactTypeCase_ == ContactTypeOneofCase.Ipv4) {
-        output.WriteRawTag(10);
-        output.WriteMessage(Ipv4);
-      }
-      if (contactTypeCase_ == ContactTypeOneofCase.Ipv6) {
-        output.WriteRawTag(18);
-        output.WriteMessage(Ipv6);
-      }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int CalculateSize() {
-      int size = 0;
-      if (contactTypeCase_ == ContactTypeOneofCase.Ipv4) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Ipv4);
-      }
-      if (contactTypeCase_ == ContactTypeOneofCase.Ipv6) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Ipv6);
-      }
-      return size;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(Contact other) {
-      if (other == null) {
-        return;
-      }
-      switch (other.ContactTypeCase) {
-        case ContactTypeOneofCase.Ipv4:
-          Ipv4 = other.Ipv4;
-          break;
-        case ContactTypeOneofCase.Ipv6:
-          Ipv6 = other.Ipv6;
-          break;
-      }
-
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(pb::CodedInputStream input) {
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
-          default:
-            input.SkipLastField();
-            break;
-          case 10: {
-            global::Iop.Locnet.IpAddress subBuilder = new global::Iop.Locnet.IpAddress();
-            if (contactTypeCase_ == ContactTypeOneofCase.Ipv4) {
-              subBuilder.MergeFrom(Ipv4);
-            }
-            input.ReadMessage(subBuilder);
-            Ipv4 = subBuilder;
-            break;
-          }
-          case 18: {
-            global::Iop.Locnet.IpAddress subBuilder = new global::Iop.Locnet.IpAddress();
-            if (contactTypeCase_ == ContactTypeOneofCase.Ipv6) {
-              subBuilder.MergeFrom(Ipv6);
-            }
-            input.ReadMessage(subBuilder);
-            Ipv6 = subBuilder;
-            break;
-          }
-        }
-      }
-    }
-
-  }
-
-  public sealed partial class IpAddress : pb::IMessage<IpAddress> {
-    private static readonly pb::MessageParser<IpAddress> _parser = new pb::MessageParser<IpAddress>(() => new IpAddress());
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pb::MessageParser<IpAddress> Parser { get { return _parser; } }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pbr::MessageDescriptor Descriptor {
-      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[8]; }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    pbr::MessageDescriptor pb::IMessage.Descriptor {
-      get { return Descriptor; }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public IpAddress() {
-      OnConstruction();
-    }
-
-    partial void OnConstruction();
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public IpAddress(IpAddress other) : this() {
-      host_ = other.host_;
-      port_ = other.port_;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public IpAddress Clone() {
-      return new IpAddress(this);
-    }
-
-    /// <summary>Field number for the "host" field.</summary>
-    public const int HostFieldNumber = 1;
-    private pb::ByteString host_ = pb::ByteString.Empty;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pb::ByteString Host {
-      get { return host_; }
-      set {
-        host_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+        ipAddress_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
     }
 
@@ -2114,18 +1912,18 @@ namespace Iop.Locnet {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
-      return Equals(other as IpAddress);
+      return Equals(other as Contact);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(IpAddress other) {
+    public bool Equals(Contact other) {
       if (ReferenceEquals(other, null)) {
         return false;
       }
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (Host != other.Host) return false;
+      if (IpAddress != other.IpAddress) return false;
       if (Port != other.Port) return false;
       return true;
     }
@@ -2133,7 +1931,7 @@ namespace Iop.Locnet {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      if (Host.Length != 0) hash ^= Host.GetHashCode();
+      if (IpAddress.Length != 0) hash ^= IpAddress.GetHashCode();
       if (Port != 0) hash ^= Port.GetHashCode();
       return hash;
     }
@@ -2145,9 +1943,9 @@ namespace Iop.Locnet {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (Host.Length != 0) {
+      if (IpAddress.Length != 0) {
         output.WriteRawTag(10);
-        output.WriteBytes(Host);
+        output.WriteBytes(IpAddress);
       }
       if (Port != 0) {
         output.WriteRawTag(16);
@@ -2158,8 +1956,8 @@ namespace Iop.Locnet {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      if (Host.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeBytesSize(Host);
+      if (IpAddress.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(IpAddress);
       }
       if (Port != 0) {
         size += 1 + pb::CodedOutputStream.ComputeUInt32Size(Port);
@@ -2168,12 +1966,12 @@ namespace Iop.Locnet {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(IpAddress other) {
+    public void MergeFrom(Contact other) {
       if (other == null) {
         return;
       }
-      if (other.Host.Length != 0) {
-        Host = other.Host;
+      if (other.IpAddress.Length != 0) {
+        IpAddress = other.IpAddress;
       }
       if (other.Port != 0) {
         Port = other.Port;
@@ -2189,7 +1987,7 @@ namespace Iop.Locnet {
             input.SkipLastField();
             break;
           case 10: {
-            Host = input.ReadBytes();
+            IpAddress = input.ReadBytes();
             break;
           }
           case 16: {
@@ -2209,7 +2007,7 @@ namespace Iop.Locnet {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[9]; }
+      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[8]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2360,7 +2158,7 @@ namespace Iop.Locnet {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[10]; }
+      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[9]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2449,7 +2247,7 @@ namespace Iop.Locnet {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[11]; }
+      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[10]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2566,7 +2364,7 @@ namespace Iop.Locnet {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[12]; }
+      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[11]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2655,7 +2453,7 @@ namespace Iop.Locnet {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[13]; }
+      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[12]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2772,7 +2570,7 @@ namespace Iop.Locnet {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[14]; }
+      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[13]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2917,7 +2715,7 @@ namespace Iop.Locnet {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[15]; }
+      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[14]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -3074,7 +2872,7 @@ namespace Iop.Locnet {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[16]; }
+      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[15]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -3183,7 +2981,7 @@ namespace Iop.Locnet {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[17]; }
+      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[16]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -3400,7 +3198,7 @@ namespace Iop.Locnet {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[18]; }
+      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[17]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -3509,7 +3307,7 @@ namespace Iop.Locnet {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[19]; }
+      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[18]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -3598,7 +3396,7 @@ namespace Iop.Locnet {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[20]; }
+      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[19]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -3964,7 +3762,7 @@ namespace Iop.Locnet {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[21]; }
+      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[20]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -4330,7 +4128,7 @@ namespace Iop.Locnet {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[22]; }
+      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[21]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -4347,7 +4145,7 @@ namespace Iop.Locnet {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public BuildNetworkRequest(BuildNetworkRequest other) : this() {
-      NodeInfo = other.nodeInfo_ != null ? other.NodeInfo.Clone() : null;
+      RequestorNodeInfo = other.requestorNodeInfo_ != null ? other.RequestorNodeInfo.Clone() : null;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -4355,14 +4153,14 @@ namespace Iop.Locnet {
       return new BuildNetworkRequest(this);
     }
 
-    /// <summary>Field number for the "nodeInfo" field.</summary>
-    public const int NodeInfoFieldNumber = 1;
-    private global::Iop.Locnet.NodeInfo nodeInfo_;
+    /// <summary>Field number for the "requestorNodeInfo" field.</summary>
+    public const int RequestorNodeInfoFieldNumber = 1;
+    private global::Iop.Locnet.NodeInfo requestorNodeInfo_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Iop.Locnet.NodeInfo NodeInfo {
-      get { return nodeInfo_; }
+    public global::Iop.Locnet.NodeInfo RequestorNodeInfo {
+      get { return requestorNodeInfo_; }
       set {
-        nodeInfo_ = value;
+        requestorNodeInfo_ = value;
       }
     }
 
@@ -4379,14 +4177,14 @@ namespace Iop.Locnet {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (!object.Equals(NodeInfo, other.NodeInfo)) return false;
+      if (!object.Equals(RequestorNodeInfo, other.RequestorNodeInfo)) return false;
       return true;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      if (nodeInfo_ != null) hash ^= NodeInfo.GetHashCode();
+      if (requestorNodeInfo_ != null) hash ^= RequestorNodeInfo.GetHashCode();
       return hash;
     }
 
@@ -4397,17 +4195,17 @@ namespace Iop.Locnet {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (nodeInfo_ != null) {
+      if (requestorNodeInfo_ != null) {
         output.WriteRawTag(10);
-        output.WriteMessage(NodeInfo);
+        output.WriteMessage(RequestorNodeInfo);
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      if (nodeInfo_ != null) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(NodeInfo);
+      if (requestorNodeInfo_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(RequestorNodeInfo);
       }
       return size;
     }
@@ -4417,11 +4215,11 @@ namespace Iop.Locnet {
       if (other == null) {
         return;
       }
-      if (other.nodeInfo_ != null) {
-        if (nodeInfo_ == null) {
-          nodeInfo_ = new global::Iop.Locnet.NodeInfo();
+      if (other.requestorNodeInfo_ != null) {
+        if (requestorNodeInfo_ == null) {
+          requestorNodeInfo_ = new global::Iop.Locnet.NodeInfo();
         }
-        NodeInfo.MergeFrom(other.NodeInfo);
+        RequestorNodeInfo.MergeFrom(other.RequestorNodeInfo);
       }
     }
 
@@ -4434,10 +4232,10 @@ namespace Iop.Locnet {
             input.SkipLastField();
             break;
           case 10: {
-            if (nodeInfo_ == null) {
-              nodeInfo_ = new global::Iop.Locnet.NodeInfo();
+            if (requestorNodeInfo_ == null) {
+              requestorNodeInfo_ = new global::Iop.Locnet.NodeInfo();
             }
-            input.ReadMessage(nodeInfo_);
+            input.ReadMessage(requestorNodeInfo_);
             break;
           }
         }
@@ -4453,7 +4251,7 @@ namespace Iop.Locnet {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[23]; }
+      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[22]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -4471,6 +4269,8 @@ namespace Iop.Locnet {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public BuildNetworkResponse(BuildNetworkResponse other) : this() {
       accepted_ = other.accepted_;
+      AcceptorNodeInfo = other.acceptorNodeInfo_ != null ? other.AcceptorNodeInfo.Clone() : null;
+      remoteIpAddress_ = other.remoteIpAddress_;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -4489,6 +4289,28 @@ namespace Iop.Locnet {
       }
     }
 
+    /// <summary>Field number for the "acceptorNodeInfo" field.</summary>
+    public const int AcceptorNodeInfoFieldNumber = 2;
+    private global::Iop.Locnet.NodeInfo acceptorNodeInfo_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Locnet.NodeInfo AcceptorNodeInfo {
+      get { return acceptorNodeInfo_; }
+      set {
+        acceptorNodeInfo_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "remoteIpAddress" field.</summary>
+    public const int RemoteIpAddressFieldNumber = 3;
+    private pb::ByteString remoteIpAddress_ = pb::ByteString.Empty;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString RemoteIpAddress {
+      get { return remoteIpAddress_; }
+      set {
+        remoteIpAddress_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as BuildNetworkResponse);
@@ -4503,6 +4325,8 @@ namespace Iop.Locnet {
         return true;
       }
       if (Accepted != other.Accepted) return false;
+      if (!object.Equals(AcceptorNodeInfo, other.AcceptorNodeInfo)) return false;
+      if (RemoteIpAddress != other.RemoteIpAddress) return false;
       return true;
     }
 
@@ -4510,6 +4334,8 @@ namespace Iop.Locnet {
     public override int GetHashCode() {
       int hash = 1;
       if (Accepted != false) hash ^= Accepted.GetHashCode();
+      if (acceptorNodeInfo_ != null) hash ^= AcceptorNodeInfo.GetHashCode();
+      if (RemoteIpAddress.Length != 0) hash ^= RemoteIpAddress.GetHashCode();
       return hash;
     }
 
@@ -4524,6 +4350,14 @@ namespace Iop.Locnet {
         output.WriteRawTag(8);
         output.WriteBool(Accepted);
       }
+      if (acceptorNodeInfo_ != null) {
+        output.WriteRawTag(18);
+        output.WriteMessage(AcceptorNodeInfo);
+      }
+      if (RemoteIpAddress.Length != 0) {
+        output.WriteRawTag(26);
+        output.WriteBytes(RemoteIpAddress);
+      }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -4531,6 +4365,12 @@ namespace Iop.Locnet {
       int size = 0;
       if (Accepted != false) {
         size += 1 + 1;
+      }
+      if (acceptorNodeInfo_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(AcceptorNodeInfo);
+      }
+      if (RemoteIpAddress.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(RemoteIpAddress);
       }
       return size;
     }
@@ -4542,6 +4382,15 @@ namespace Iop.Locnet {
       }
       if (other.Accepted != false) {
         Accepted = other.Accepted;
+      }
+      if (other.acceptorNodeInfo_ != null) {
+        if (acceptorNodeInfo_ == null) {
+          acceptorNodeInfo_ = new global::Iop.Locnet.NodeInfo();
+        }
+        AcceptorNodeInfo.MergeFrom(other.AcceptorNodeInfo);
+      }
+      if (other.RemoteIpAddress.Length != 0) {
+        RemoteIpAddress = other.RemoteIpAddress;
       }
     }
 
@@ -4557,6 +4406,17 @@ namespace Iop.Locnet {
             Accepted = input.ReadBool();
             break;
           }
+          case 18: {
+            if (acceptorNodeInfo_ == null) {
+              acceptorNodeInfo_ = new global::Iop.Locnet.NodeInfo();
+            }
+            input.ReadMessage(acceptorNodeInfo_);
+            break;
+          }
+          case 26: {
+            RemoteIpAddress = input.ReadBytes();
+            break;
+          }
         }
       }
     }
@@ -4570,7 +4430,7 @@ namespace Iop.Locnet {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[24]; }
+      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[23]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -4659,7 +4519,7 @@ namespace Iop.Locnet {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[25]; }
+      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[24]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -4776,7 +4636,7 @@ namespace Iop.Locnet {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[26]; }
+      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[25]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -4921,7 +4781,7 @@ namespace Iop.Locnet {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[27]; }
+      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[26]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -5030,7 +4890,7 @@ namespace Iop.Locnet {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[28]; }
+      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[27]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -5237,7 +5097,7 @@ namespace Iop.Locnet {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[29]; }
+      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[28]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -5346,7 +5206,7 @@ namespace Iop.Locnet {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[30]; }
+      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[29]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -5568,7 +5428,7 @@ namespace Iop.Locnet {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[31]; }
+      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[30]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -5790,7 +5650,7 @@ namespace Iop.Locnet {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[32]; }
+      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[31]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -5879,7 +5739,7 @@ namespace Iop.Locnet {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[33]; }
+      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[32]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -6030,7 +5890,7 @@ namespace Iop.Locnet {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[34]; }
+      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[33]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -6139,7 +5999,7 @@ namespace Iop.Locnet {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[35]; }
+      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[34]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]

@@ -15,6 +15,7 @@
     "Microsoft.EntityFrameworkCore.Sqlite": "1.1.0",
     "Microsoft.EntityFrameworkCore.Design": "1.1.0",
     "Microsoft.EntityFrameworkCore.Tools": "1.1.0-preview4-final",
+    "System.Collections.Specialized": "4.3.0",
     "Newtonsoft.Json": "9.0.1"
   },
 
@@ -24,11 +25,12 @@
     }
   },
   "tools": {
-    "Microsoft.EntityFrameworkCore.Tools.DotNet": "1.0.0-preview3-final"
+    "Microsoft.EntityFrameworkCore.Tools.DotNet": "1.1.0-preview4-final"
   },
   "runtimes": {
     "win10-x64": {},
     "ubuntu.14.04-x64": {},
+    "ubuntu.16.10-x64": {},
     "osx.10.11-x64": {},
     "fedora.23-x64": {}
   }

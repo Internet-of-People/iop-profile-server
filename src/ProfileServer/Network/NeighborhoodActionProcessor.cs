@@ -837,7 +837,7 @@ namespace ProfileServer.Network
         await unitOfWork.AcquireLockAsync(lockObject);
         try
         {
-          unitOfWork.NeighborhoodActionRepository.Insert(stopUpdatesAction);
+          await unitOfWork.NeighborhoodActionRepository.InsertAsync(stopUpdatesAction);
 
           await unitOfWork.SaveThrowAsync();
         }
@@ -1188,7 +1188,6 @@ namespace ProfileServer.Network
               InitialLocationLongitude = location.Longitude,
               ExtraData = addItem.ExtraData,
               ExpirationDate = null,
-              ProfileImage = null,
               ThumbnailImage = thumbnailImageHash
             };
             identityDatabase.Add(identity.IdentityId, identity);
@@ -1389,7 +1388,7 @@ namespace ProfileServer.Network
 
               // Insert all its identities.
               foreach (NeighborIdentity identity in identityDatabase.Values)
-                unitOfWork.NeighborIdentityRepository.Insert(identity);
+                await unitOfWork.NeighborIdentityRepository.InsertAsync(identity);
 
               await unitOfWork.SaveThrowAsync();
               transaction.Commit();

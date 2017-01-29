@@ -13,6 +13,11 @@ using System.Net.Sockets;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using ProfileServerProtocol.Multiformats;
+using System.Text;
+using System.Net.Http;
+using System.Collections.Specialized;
+using Newtonsoft.Json;
 
 namespace ProfileServerProtocolTests
 {
@@ -561,6 +566,465 @@ namespace ProfileServerProtocolTests
       return res;
     }
 
+
+    /// <summary>
+    /// Creates IPFS path to the object of a given hash.
+    /// </summary>
+    /// <param name="Hash">Hash of the object.</param>
+    /// <returns>IPFS path to the object of the given hash.</returns>
+    public string CreateIpfsPathFromHash(byte[] Hash)
+    {
+      return "/ipfs/" + Base58Encoding.Encoder.EncodeRaw(Hash);
+    }
+
+
+    /// <summary>
+    /// Creates IPNS path to the object of a given hash.
+    /// </summary>
+    /// <param name="Hash">Hash of the object.</param>
+    /// <returns>IPNS path to the object of the given hash.</returns>
+    public string CreateIpnsPathFromHash(byte[] Hash)
+    {
+      return "/ipns/" + Base58Encoding.Encoder.EncodeRaw(Hash);
+    }
+
+
+    /// <summary>
+    /// Converts public key to CAN ID format.
+    /// </summary>
+    /// <param name="PublicKey">Ed25519 public key.</param>
+    /// <returns>CAN ID that corresponds to the the public.</returns>
+    public byte[] PublicKeyToId(byte[] PublicKey)
+    {
+      CanCryptoKey key = new CanCryptoKey()
+      {
+        Type = CanCryptoKey.Types.KeyType.Ed25519,
+        Data = ProtocolHelper.ByteArrayToByteString(PublicKey)
+      };
+
+      byte[] hash = Crypto.Sha256(key.ToByteArray());
+
+      byte[] res = new byte[2 + hash.Length];
+      res[0] = 0x12; // SHA256 hash prefix
+      res[1] = (byte)hash.Length;
+      Array.Copy(hash, 0, res, 2, hash.Length);
+      return res;
+    }
+
+
+
+    /// <summary>
+    /// Calculates a signature of IPNS record.
+    /// </summary>
+    /// <param name="Record">IPNS record to calculate signature for.</param>
+    /// <returns>Signature of the IPNS record.</returns>
+    public byte[] CreateIpnsRecordSignature(CanIpnsEntry Record)
+    {
+      string validityTypeString = Record.ValidityType.ToString().ToUpperInvariant();
+      byte[] validityTypeBytes = Encoding.UTF8.GetBytes(validityTypeString);
+      byte[] dataToSign = new byte[Record.Value.Length + Record.Validity.Length + validityTypeBytes.Length];
+
+      int offset = 0;
+      Array.Copy(Record.Value.ToByteArray(), 0, dataToSign, offset, Record.Value.Length);
+      offset += Record.Value.Length;
+
+      Array.Copy(Record.Validity.ToByteArray(), 0, dataToSign, offset, Record.Validity.Length);
+      offset += Record.Validity.Length;
+
+      Array.Copy(validityTypeBytes, 0, dataToSign, offset, validityTypeBytes.Length);
+      offset += validityTypeBytes.Length;
+
+      byte[] res = Ed25519.Sign(dataToSign, keys.ExpandedPrivateKey);
+
+      return res;
+    }
+
+
+
+    /// <summary>
+    /// Resolves IPNS name.
+    /// </summary>
+    /// <param name="CanEndPoint">Address and port of CAN server.</param>
+    /// <param name="IpnsPath">CAN path to IPNS.</param>
+    /// <returns>Structure describing whether the function succeeded and response provided by CAN server.</returns>
+    public async Task<CanIpnsResolveResult> CanIpnsResolve(IPEndPoint CanEndPoint, string IpnsPath)
+    {
+      log.Trace("(IpnsPath:'{0}')", IpnsPath);
+
+      NameValueCollection args = new NameValueCollection();
+      args.Add("arg", IpnsPath);
+      CanApiResult apiResult = await CanSendRequest(CanEndPoint, "name/resolve", args);
+      CanIpnsResolveResult res = CanIpnsResolveResult.FromApiResult(apiResult);
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+
+    /// <summary>
+    /// Downloads CAN object.
+    /// </summary>
+    /// <param name="CanEndPoint">Address and port of CAN server.</param>
+    /// <param name="IpfsPath">CAN path to object.</param>
+    /// <returns>Structure describing whether the function succeeded and response provided by CAN server.</returns>
+    public async Task<CanCatResult> CanGetObject(IPEndPoint CanEndPoint, string IpfsPath)
+    {
+      log.Trace("(IpfsPath:'{0}')", IpfsPath);
+
+      NameValueCollection args = new NameValueCollection();
+      args.Add("arg", IpfsPath);
+      CanApiResult apiResult = await CanSendRequest(CanEndPoint, "cat", args);
+      CanCatResult res = CanCatResult.FromApiResult(apiResult);
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+
+    /// <summary>
+    /// Sends HTTP POST request to CAN server.
+    /// </summary>
+    /// <param name="CanEndPoint">Address and port of CAN server.</param>
+    /// <param name="Action">Specifies the API function to call.</param>
+    /// <param name="Params">List of parameters and their values.</param>
+    /// <returns>Structure describing whether the function succeeded and response provided by CAN server.</returns>
+    private async Task<CanApiResult> CanSendRequest(IPEndPoint CanEndPoint, string Action, NameValueCollection Params)
+    {
+      log.Trace("(CanEndPoint:'{0}',Action:'{1}')", CanEndPoint, Action);
+
+      CanApiResult res = new CanApiResult();
+
+      string query = "";
+      foreach (string key in Params)
+        query += string.Format("{0}{1}={2}", query.Length > 0 ? "&" : "", WebUtility.HtmlEncode(key), WebUtility.HtmlEncode(Params[key]));
+
+      string apiUrl = string.Format("http://{0}/api/v0/", CanEndPoint);
+      string url = string.Format("{0}{1}{2}{3}", apiUrl, Action, query.Length > 0 ? "?" : "", query);
+      log.Debug("CAN API URL is '{0}'.", url);
+
+      try
+      {
+        using (HttpClient client = new HttpClient())
+        {
+          client.Timeout = TimeSpan.FromSeconds(8);
+
+          using (HttpResponseMessage message = await client.PostAsync(url, null))
+          {
+            res.Success = message.IsSuccessStatusCode;
+            byte[] data = await message.Content.ReadAsByteArrayAsync();
+            string dataStr = null;
+            try
+            {
+              dataStr = Encoding.UTF8.GetString(data);
+            }
+            catch
+            {
+            }
+
+            if (res.Success)
+            {
+              res.Data = data;
+              res.DataStr = dataStr;
+            }
+            else
+            {
+              try
+              {
+                CanErrorResponse cer = JsonConvert.DeserializeObject<CanErrorResponse>(dataStr);
+                res.Message = cer.Message;
+              }
+              catch
+              {
+                res.Message = dataStr != null ? dataStr : "Invalid response.";
+              }
+              res.IsCanError = true;
+            }
+          }
+        }
+      }
+      catch (Exception e)
+      {
+        log.Warn("Exception occurred: {0}", e.ToString());
+      }
+
+      if (res.Success) log.Trace("(-):*.Success={0},*.Data:\n{1}", res.Success, res.DataStr != null ? res.DataStr.Substring(0, Math.Min(256, res.DataStr.Length)) : "");
+      else log.Trace("(-):*.Success={0},*.IsCanError={1},*.Message:\n{2}", res.Success, res.IsCanError, res.Message != null ? res.Message : "");
+      return res;
+    }
+
+
+    /// <summary>
+    /// Deletes CAN object from CAN server.
+    /// </summary>
+    /// <param name="CanEndPoint">Address and port of CAN server.</param>
+    /// <param name="ObjectPath">CAN path to the object.</param>
+    /// <returns>Structure describing whether the function succeeded and response provided by CAN server.</returns>
+    public async Task<CanDeleteResult> CanDeleteObject(IPEndPoint CanEndPoint, string ObjectPath)
+    {
+      log.Trace("(CanEndPoint:'{0}',ObjectPath:'{1}')", CanEndPoint, ObjectPath);
+
+      NameValueCollection args = new NameValueCollection();
+      args.Add("arg", ObjectPath);
+      CanApiResult apiResult = await CanSendRequest(CanEndPoint, "pin/rm", args);
+      CanDeleteResult res = CanDeleteResult.FromApiResult(apiResult);
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+
+
+
+
+
+    /// <summary>
+    /// Result of CanIpnsResolve function.
+    /// </summary>
+    public class CanIpnsResolveResult : CanApiResult
+    {
+      private static NLog.Logger log = NLog.LogManager.GetLogger("Test.ProtocolClient.CanIpnsResolveResult");
+
+      /// <summary>
+      /// Structure of the JSON response of CAN '/api/v0/name/resolve' call.
+      /// </summary>
+      public class CanNameResolveResponse
+      {
+        /// <summary>Path to which IPNS resolved.</summary>
+        public string Path;
+      }
+
+
+      /// <summary>
+      /// Creates delete result from generic API result.
+      /// </summary>
+      /// <param name="ApiResult">Existing instance to copy.</param>
+      public CanIpnsResolveResult(CanApiResult ApiResult) :
+        base(ApiResult)
+      {
+      }
+
+
+      /// <summary>Path to which IPNS resolved.</summary>
+      public string Path;
+
+      /// <summary>
+      /// Creates a new object based on a result from CAN API including validation checks.
+      /// </summary>
+      /// <param name="ApiResult">CAN API result object to copy values from.</param>
+      /// <returns>Structure describing result of CAN upload operation.</returns>
+      public static CanIpnsResolveResult FromApiResult(CanApiResult ApiResult)
+      {
+        log.Trace("()");
+
+        CanIpnsResolveResult res = new CanIpnsResolveResult(ApiResult);
+        if (res.Success)
+        {
+          bool error = false;
+          try
+          {
+            CanNameResolveResponse response = JsonConvert.DeserializeObject<CanNameResolveResponse>(res.DataStr);
+            res.Path = response.Path;
+          }
+          catch (Exception e)
+          {
+            log.Error("Exception occurred: {0}", e.ToString());
+            error = true;
+          }
+
+          if (error)
+          {
+            res.Success = false;
+            res.Message = "Invalid CAN response.";
+            res.IsCanError = false;
+          }
+        }
+
+        log.Trace("(-)");
+        return res;
+      }
+    }
+
+
+
+    /// <summary>
+    /// Result of CanDeleteObject function.
+    /// </summary>
+    public class CanDeleteResult : CanApiResult
+    {
+      private static NLog.Logger log = NLog.LogManager.GetLogger("Test.ProtocolClient.CanDeleteResult");
+
+      /// <summary>
+      /// Structure of the JSON response of CAN '/api/v0/pin/rm' call.
+      /// </summary>
+      public class CanDeleteObjectResponse
+      {
+        /// <summary>List of removed pins.</summary>
+        public string[] Pins;
+      }
+
+
+      /// <summary>
+      /// Creates delete result from generic API result.
+      /// </summary>
+      /// <param name="ApiResult">Existing instance to copy.</param>
+      public CanDeleteResult(CanApiResult ApiResult) :
+        base(ApiResult)
+      {
+      }
+
+
+      /// <summary>List of removed pins.</summary>
+      public string[] Pins;
+
+      /// <summary>
+      /// Creates a new object based on a result from CAN API including validation checks.
+      /// </summary>
+      /// <param name="ApiResult">CAN API result object to copy values from.</param>
+      /// <returns>Structure describing result of CAN upload operation.</returns>
+      public static CanDeleteResult FromApiResult(CanApiResult ApiResult)
+      {
+        log.Trace("()");
+
+        CanDeleteResult res = new CanDeleteResult(ApiResult);
+        if (res.Success)
+        {
+          bool error = false;
+          try
+          {
+            CanDeleteObjectResponse response = JsonConvert.DeserializeObject<CanDeleteObjectResponse>(res.DataStr);
+            res.Pins = response.Pins;
+
+            // If the object was deleted previously, we might have empty Pins in response.
+            // We are thus OK if we receive success response and no more validation is done.
+          }
+          catch (Exception e)
+          {
+            log.Error("Exception occurred: {0}", e.ToString());
+            error = true;
+          }
+
+          if (error)
+          {
+            res.Success = false;
+            res.Message = "Invalid CAN response.";
+            res.IsCanError = false;
+          }
+        }
+        else if (res.Message.ToLowerInvariant() == "not pinned")
+        {
+          res.Success = true;
+          res.Pins = null;
+        }
+
+        log.Trace("(-)");
+        return res;
+      }
+    }
+
+    /// <summary>
+    /// Result of CanIpnsResolve function.
+    /// </summary>
+    public class CanCatResult : CanApiResult
+    {
+      private static NLog.Logger log = NLog.LogManager.GetLogger("Test.ProtocolClient.CanCanResult");
+
+      /// <summary>
+      /// Structure of the JSON response of CAN '/api/v0/name/resolve' call.
+      /// </summary>
+      public class CanCatResponse
+      {
+        /// <summary>Path to which IPNS resolved.</summary>
+        public string Path;
+      }
+
+
+      /// <summary>
+      /// Creates delete result from generic API result.
+      /// </summary>
+      /// <param name="ApiResult">Existing instance to copy.</param>
+      public CanCatResult(CanApiResult ApiResult) :
+        base(ApiResult)
+      {
+      }
+
+
+      /// <summary>
+      /// Creates a new object based on a result from CAN API including validation checks.
+      /// </summary>
+      /// <param name="ApiResult">CAN API result object to copy values from.</param>
+      /// <returns>Structure describing result of CAN upload operation.</returns>
+      public static CanCatResult FromApiResult(CanApiResult ApiResult)
+      {
+        log.Trace("()");
+
+        CanCatResult res = new CanCatResult(ApiResult);
+      
+        log.Trace("(-)");
+        return res;
+      }
+    }
+
+
+    /// <summary>
+    /// Result of CAN API call.
+    /// </summary>
+    public class CanApiResult
+    {
+      /// <summary>true if the function succeeds, false otherwise.</summary>
+      public bool Success;
+
+      /// <summary>If Success is true, this contains response data.</summary>
+      public byte[] Data;
+
+      /// <summary>String representation of Data, or null if Data does not hold a string.</summary>
+      public string DataStr;
+
+      /// <summary>
+      /// If Success is false and IsCanError is true, this is an error message from CAN server.
+      /// If Success is false and IsCanError is false, this is an error message from our code.
+      /// </summary>
+      public string Message;
+
+      /// <summary>If Success is false, this is true if the error was reported by CAN server, and this is false if the error comes from our code.</summary>
+      public bool IsCanError;
+
+      /// <summary>
+      /// Creates a default instance of the object.
+      /// </summary>
+      public CanApiResult()
+      {
+        Success = false;
+        Data = null;
+        DataStr = null;           
+        Message = "Internal error.";
+        IsCanError = false;
+      }
+
+      /// <summary>
+      /// Creates an instance of the object as a copy of another existing instance.
+      /// </summary>
+      /// <param name="ApiResult">Existing instance to copy.</param>
+      public CanApiResult(CanApiResult ApiResult)
+      {
+        Success = ApiResult.Success;
+        Data = ApiResult.Data;
+        DataStr = ApiResult.DataStr;
+        Message = ApiResult.Message;
+        IsCanError = ApiResult.IsCanError;
+      }
+    }
+
+    /// <summary>
+    /// Structure of the CAN error JSON response.
+    /// </summary>
+    public class CanErrorResponse
+    {
+      /// <summary>Error message.</summary>
+      public string Message;
+
+      /// <summary>Error code.</summary>
+      public int Code;
+    }
 
     /// <summary>
     /// Callback routine that validates server TLS certificate.

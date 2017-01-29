@@ -9,7 +9,7 @@ using ProfileServer.Data.Models;
 namespace ProfileServer.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20161218113852_initial")]
+    [Migration("20170107090649_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -51,6 +51,8 @@ namespace ProfileServer.Migrations
                 {
                     b.Property<int>("DbId")
                         .ValueGeneratedOnAdd();
+
+                    b.Property<byte[]>("CanObjectHash");
 
                     b.Property<DateTime?>("ExpirationDate");
 
@@ -215,8 +217,6 @@ namespace ProfileServer.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(64);
-
-                    b.Property<byte[]>("ProfileImage");
 
                     b.Property<byte[]>("PublicKey")
                         .IsRequired()
