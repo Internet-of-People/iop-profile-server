@@ -465,7 +465,7 @@ namespace ProfileServerProtocolTests.Tests
       // Announce new neighbor.
       Iop.Locnet.NeighbourhoodChange change = new Iop.Locnet.NeighbourhoodChange()
       {
-        AddedNodeInfo = ProfileServer.GetNodeInfo()
+        AddedNodeInfo = ProfileServer.GetNodeInfo(LocServer.Port)
       };
 
       bool addNeighborOk = await LocServer.SendChangeNotification(change);
@@ -483,7 +483,7 @@ namespace ProfileServerProtocolTests.Tests
       // Announce new neighbor.
       change = new Iop.Locnet.NeighbourhoodChange()
       {
-        RemovedNodeId = ProfileServer.GetNodeInfo().Profile.NodeId
+        RemovedNodeId = ProtocolHelper.ByteArrayToByteString(Crypto.Sha256(ProfileServer.Keys.PublicKey))
       };
 
       bool deleteNeighborOk = await LocServer.SendChangeNotification(change);

@@ -179,14 +179,12 @@ namespace ProfileServerProtocol
     /// <summary>
     /// Creates a new RegisterServiceRequest message.
     /// </summary>
-    /// <param name="ServiceType">Type of service to register.</param>
-    /// <param name="NodeProfile">Node profile with interface to register.</param>
+    /// <param name="ServiceInfo">Description of the service to register.</param>
     /// <returns>RegisterServiceRequest message that is ready to be sent.</returns>
-    public Message CreateRegisterServiceRequest(ServiceType ServiceType, NodeProfile NodeProfile)
+    public Message CreateRegisterServiceRequest(ServiceInfo ServiceInfo)
     {
       RegisterServiceRequest registerServiceRequest = new RegisterServiceRequest();
-      registerServiceRequest.ServiceType = ServiceType;
-      registerServiceRequest.NodeProfile = NodeProfile;
+      registerServiceRequest.Service = ServiceInfo;
 
       Message res = CreateLocalServiceRequest();
       res.Request.LocalService.RegisterService = registerServiceRequest;

@@ -88,7 +88,7 @@ namespace ProfileServerProtocolTests.Tests
 
         NeighbourhoodChange change = new NeighbourhoodChange()
         {
-          AddedNodeInfo = profileServer.GetNodeInfo()
+          AddedNodeInfo = profileServer.GetNodeInfo(LocPort)
         };
         
         bool changeNotificationOk = await locServer.SendChangeNotification(change);

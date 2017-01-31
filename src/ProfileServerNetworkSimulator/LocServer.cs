@@ -64,6 +64,9 @@ namespace ProfileServerNetworkSimulator
     /// <summary>Lock object for writing to client streams. This is simulation only, we do not expect more than one client.</summary>
     private SemaphoreSlim StreamWriteLock = new SemaphoreSlim(1);
 
+    /// <summary>Node location.</summary>
+    private Iop.Locnet.GpsLocation nodeLocation;
+
     /// <summary>
     /// Initializes the LOC server instance.
     /// </summary>
@@ -76,6 +79,8 @@ namespace ProfileServerNetworkSimulator
       this.profileServer = ProfileServer;
       ipAddress = ProfileServer.IpAddress;
       port = ProfileServer.LocPort;
+
+      nodeLocation = ProfileServer.NodeLocation;
 
       listener = new TcpListener(ipAddress, port);
       listener.Server.LingerState = new LingerOption(true, 0);
@@ -736,7 +741,13 @@ namespace ProfileServerNetworkSimulator
       Message res = MessageBuilder.CreateRegisterServiceResponse(RequestMessage);
 
       RegisterServiceRequest registerServiceRequest = RequestMessage.Request.LocalService.RegisterService;
-      profileServer.SetNodeProfile(registerServiceRequest.NodeProfile);
+
+      byte[] serverId = registerServiceRequest.Service.ServiceData.ToByteArray();
+      if ((registerServiceRequest.Service.Type == ServiceType.Profile) && (serverId.Length == 32))
+      {
+        profileServer.SetNetworkId(serverId);
+      }
+      else log.Error("Received register service request is invalid.");
 
       log.Trace("(-):*.Response.Status={0}", res.Response.Status);
       return res;
@@ -757,7 +768,7 @@ namespace ProfileServerNetworkSimulator
       Message res = MessageBuilder.CreateDeregisterServiceResponse(RequestMessage);
 
       DeregisterServiceRequest deregisterServiceRequest = RequestMessage.Request.LocalService.DeregisterService;
-      profileServer.RemoveNodeProfile();
+      profileServer.Uninitialize();
 
       log.Trace("(-):*.Response.Status={0}", res.Response.Status);
       return res;
@@ -804,5 +815,47 @@ namespace ProfileServerNetworkSimulator
         neighbors.Add(Neighbor.Name, Neighbor);
       }
     }
+
+
+    /// <summary>
+    /// Checks whether LOC node information contains a Profile Server service and if so, it returns its port and network ID.
+    /// </summary>
+    /// <param name="NodeInfo">Node information structure to scan.</param>
+    /// <param name="ProfileServerPort">If the node informatino contains Profile Server type of service, this is filled with the Profile Server port.</param>
+    /// <param name="ProfileServerId">If the node informatino contains Profile Server type of service, this is filled with the Profile Server network ID.</param>
+    /// <returns>true if the node information contains Profile Server type of service, false otherwise.</returns>
+    public bool HasProfileServerService(NodeInfo NodeInfo, out int ProfileServerPort, out byte[] ProfileServerId)
+    {
+      log.Trace("()");
+
+      bool res = false;
+      ProfileServerPort = 0;
+      ProfileServerId = null;
+      foreach (ServiceInfo si in NodeInfo.Services)
+      {
+        if (si.Type == ServiceType.Profile)
+        {
+          bool portValid = (0 < si.Port) && (si.Port <= 65535);
+          bool serviceDataValid = si.ServiceData.Length == 32;
+          if (portValid && serviceDataValid)
+          {
+            ProfileServerPort = (int)si.Port;
+            ProfileServerId = si.ServiceData.ToByteArray();
+            res = true;
+          }
+          else
+          {
+            if (!portValid) log.Warn("Invalid service port {0}.", si.Port);
+            if (!serviceDataValid) log.Warn("Invalid identifier length in ServiceData: {0} bytes.", si.ServiceData.Length);
+          }
+
+          break;
+        }
+      }
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
   }
 }

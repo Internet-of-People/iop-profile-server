@@ -92,7 +92,7 @@ namespace ProfileServer.Network.CAN
       {
         using (HttpClient client = new HttpClient())
         {
-          client.Timeout = TimeSpan.FromSeconds(8);
+          client.Timeout = TimeSpan.FromSeconds(20);
 
           byte[] boundaryBytes = new byte[16];
           Crypto.Rng.GetBytes(boundaryBytes);

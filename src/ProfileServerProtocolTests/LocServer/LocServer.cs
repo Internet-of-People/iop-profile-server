@@ -23,6 +23,8 @@ namespace ProfileServerProtocolTests
 
     /// <summary>TCP port to listen on.</summary>
     private int port;
+    /// <summary>TCP port to listen on.</summary>
+    public int Port { get { return port; } }
 
     /// <summary>Lock object to protect access to Neighbors.</summary>
     private object neighborsLock = new object();
@@ -61,8 +63,8 @@ namespace ProfileServerProtocolTests
     private SemaphoreSlim StreamWriteLock = new SemaphoreSlim(1);
 
 
-    /// <summary>LOC node profile of the profile server.</summary>
-    private NodeProfile profileServerNodeProfile;
+    /// <summary>Port of the associated profile server, or 0 if the value was not initialized yet.</summary>
+    private int profileServerPort = 0;
 
 
     /// <summary>
@@ -580,7 +582,7 @@ namespace ProfileServerProtocolTests
       Message res = MessageBuilder.CreateRegisterServiceResponse(RequestMessage);
 
       RegisterServiceRequest registerServiceRequest = RequestMessage.Request.LocalService.RegisterService;
-      profileServerNodeProfile = registerServiceRequest.NodeProfile;
+      profileServerPort = (int)registerServiceRequest.Service.Port;
 
       log.Trace("(-):*.Response.Status={0}", res.Response.Status);
       return res;
@@ -601,7 +603,7 @@ namespace ProfileServerProtocolTests
       Message res = MessageBuilder.CreateDeregisterServiceResponse(RequestMessage);
 
       DeregisterServiceRequest deregisterServiceRequest = RequestMessage.Request.LocalService.DeregisterService;
-      profileServerNodeProfile = null;
+      profileServerPort = 0;
 
       log.Trace("(-):*.Response.Status={0}", res.Response.Status);
       return res;

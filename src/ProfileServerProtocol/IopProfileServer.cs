@@ -6914,7 +6914,7 @@ namespace Iop.Profileserver {
     public const int ImageFieldNumber = 10;
     private pb::ByteString image_ = pb::ByteString.Empty;
     /// <summary>
-    ///  Profile image in PNG or JPEG format, non-empty binary data, max 20,480 bytes long, or empty binary data if the image is about to be erased.
+    ///  Profile image in PNG or JPEG format, non-empty binary data, max 20,480 bytes long, or zero length binary data if the image is about to be erased.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public pb::ByteString Image {
@@ -13371,7 +13371,7 @@ namespace Iop.Profileserver {
   ///  Sharing the profile list always goes from one profile server S (who acts as the server in 
   ///  the session) to the requesting profile server C (who acts as a client in the session). It is C 
   ///  who connects to S and sends a request asking S to share its database. If the server C wants 
-  ///  to share its profile database with the server S, it has to wait for the request from C, which 
+  ///  to share its profile database with the server S, it has to wait for the request from S, which 
   ///  will ask it to share its database. This request will come if S considers C its neighbor.
   ///
   ///  The process starts with the server C sending StartNeighborhoodInitializationRequest message to S.
@@ -13391,19 +13391,21 @@ namespace Iop.Profileserver {
   ///  as finished and must not include the profiles of S in its searches.
   ///
   ///  The profile server S has the responsibility of keeping the information on C up to date. With 
-  ///  each change of profile S hosts, it has to contact C and inform it about the change. This is done 
-  ///  using NeighborhoodSharedProfileUpdateRequest messages that are sent outside the initialization 
-  ///  process (i.e. without sending StartNeighborhoodInitializationRequest message first).
+  ///  each change of a profile that S hosts, it has to contact C and inform it about the change. 
+  ///  This is done using NeighborhoodSharedProfileUpdateRequest messages that are sent outside 
+  ///  the initialization process (i.e. without sending StartNeighborhoodInitializationRequest message 
+  ///  first).
   ///
-  ///  If the request is processed successfully, the initialization of the neighbor relationship is 
-  ///  started on the opened session and the initialization process has to be finished with 
-  ///  FinishNeighborhoodInitializationRequest or it will fail when the connection is terminated. 
+  ///  If StartNeighborhoodInitializationRequest message is processed successfully, the initialization 
+  ///  of the neighbor relationship is started on the opened session and the initialization process has 
+  ///  to be finished with FinishNeighborhoodInitializationRequest or it will fail when the connection 
+  ///  is terminated. 
   ///
   ///  All profiles received from a neighbor have expiration time after which the profile server can 
   ///  delete them from its database. The minimal refresh time is 24 hours, which means that each server 
-  ///  has to keep the profiles from its neighbors for at least 24 hours from the time of last update.
-  ///  Each server is free to define its own refresh time longer than 24 hours, which means it will 
-  ///  not deleted unrefreshed data for more than 24 hours.
+  ///  has to keep the profiles from its neighbors for at least 24 hours from the time of the last 
+  ///  refresh. Each server is free to define its own refresh time longer than 24 hours, which means it 
+  ///  will not delete unrefreshed data for more than 24 hours.
   ///
   ///  Roles: srNeighbor
   ///
@@ -13566,7 +13568,7 @@ namespace Iop.Profileserver {
   ///
   ///  General Error Responses:
   ///    * ERROR_REJECTED - Profile server already has reached its limit of a number of servers that it shares its profile database with and is not willing to have more.
-  ///    * ERROR_ALREADY_EXISTS - Neighborhood initialization process has already been done.
+  ///    * ERROR_ALREADY_EXISTS - Neighborhood initialization process has already been done, or the initialization process with the peer is currently in the progress.
   ///    * ERROR_BUSY - Profile server can use this error code during the start of the neighborhood initialization process to express that it is currently busy 
   ///                   with the neighborhood initialization process with one or more other profile servers.
   ///    * ERROR_INVALID_VALUE
@@ -13868,7 +13870,7 @@ namespace Iop.Profileserver {
   ///  the neighborhood initialization process, it is considered as a standalone request.
   ///
   ///  During the neighborhood initialization process, only items with `SharedProfileUpdateItem.ActionType` 
-  ///  of `SharedProfileAddItem` can be sent.
+  ///  of `add` can be sent.
   ///
   ///  Roles: srNeighbor
   ///
@@ -13912,7 +13914,7 @@ namespace Iop.Profileserver {
         = pb::FieldCodec.ForMessage(10, global::Iop.Profileserver.SharedProfileUpdateItem.Parser);
     private readonly pbc::RepeatedField<global::Iop.Profileserver.SharedProfileUpdateItem> items_ = new pbc::RepeatedField<global::Iop.Profileserver.SharedProfileUpdateItem>();
     /// <summary>
-    ///  List of profile update items.
+    ///  List of profile update items. Within the request, the profiles added/changed/deleted must be unique.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public pbc::RepeatedField<global::Iop.Profileserver.SharedProfileUpdateItem> Items {
@@ -13997,11 +13999,13 @@ namespace Iop.Profileserver {
   ///                       initialization process from start.
   ///    * ERROR_INVALID_VALUE
   ///      * Response.details == "$index.$field" - All items up to 'NeighborhoodSharedProfileUpdateRequest.items[$index]' (exclusive) were processed correctly
-  ///                                              and an error occurred while processing the item with zero-based index $index. Items with index greater 
-  ///                                              then $index were not processed. The $field specifies which field was invalid as follows:
+  ///                                              (and the peer must not send them again) and an error occurred while processing the item with zero-based 
+  ///                                              index $index. Items with index greater then $index were not processed. The $field specifies which field 
+  ///                                              was invalid as follows:
   ///        * $field == "add" - Number of shared profiles from the requesting profile server exceeds the limit.
   ///        * $field == "add.version" - `items[$index].add.version` is not a valid VersionType value.
-  ///        * $field == "add.identityPublicKey" - `items[$index].add.identityPublicKey` is not a valid public key value or the same identity already exists.
+  ///        * $field == "add.identityPublicKey" - `items[$index].add.identityPublicKey` is not a valid public key value or the same identity already exists, 
+  ///                                              or another update item in the same request referred to this identity.
   ///        * $field == "add.name" - `items[$index].add.name` is not a valid profile name.
   ///        * $field == "add.type" - `items[$index].add.type` is not a valid identity type.
   ///        * $field == "add.thumbnailImage" - `items[$index].add.thumbnailImage` is not a valid thumbnail image.
@@ -14009,15 +14013,17 @@ namespace Iop.Profileserver {
   ///        * $field == "add.longitude" - `items[$index].add.longitude` is not a valid longitude value.
   ///        * $field == "add.extraData" - `items[$index].add.extraData` is not a valid extraData value.
   ///        * $field == "change.set*" - `items[$index].change.set*` are all false.
-  ///        * $field == "change.identityNetworkId" - `items[$index].change.identityNetworkId` does not represent an existing identity.
+  ///        * $field == "change.identityNetworkId" - `items[$index].change.identityNetworkId` does not represent an existing identity, or another update item 
+  ///                                                 in the same request referred to this identity.
   ///        * $field == "change.version" - `items[$index].change.version` is not a valid VersionType value.
   ///        * $field == "change.name" - `items[$index].change.name` is not a valid profile name.
   ///        * $field == "change.thumbnailImage" - `items[$index].change.thumbnailImage` is not a valid thumbnail image.
   ///        * $field == "change.latitude" - `items[$index].change.latitude` is not a valid latitude value.
   ///        * $field == "change.longitude" - `items[$index].change.longitude` is not a valid longitude value.
   ///        * $field == "change.extraData" - `items[$index].change.extraData` is not a valid extraData value.
-  ///        * $field == "delete.identityNetworkId" - `items[$index].delete.identityNetworkId` does not represent an existing identity.
-  ///        * $field == "actionType" - During the neighborhood initialization process, only `SharedProfileAddItem` is a valid update message.
+  ///        * $field == "delete.identityNetworkId" - `items[$index].delete.identityNetworkId` does not represent an existing identity, or another update item 
+  ///                                                 in the same request referred to this identity.
+  ///        * $field == "actionType" - During the neighborhood initialization process, only `add` is a valid update message type.
   /// </summary>
   public sealed partial class NeighborhoodSharedProfileUpdateResponse : pb::IMessage<NeighborhoodSharedProfileUpdateResponse> {
     private static readonly pb::MessageParser<NeighborhoodSharedProfileUpdateResponse> _parser = new pb::MessageParser<NeighborhoodSharedProfileUpdateResponse>(() => new NeighborhoodSharedProfileUpdateResponse());
@@ -14110,7 +14116,7 @@ namespace Iop.Profileserver {
 
   /// <summary>
   ///
-  ///  Information about update of a neighborhood's profile.
+  ///  Information about update of a neighborhood profile.
   /// </summary>
   public sealed partial class SharedProfileUpdateItem : pb::IMessage<SharedProfileUpdateItem> {
     private static readonly pb::MessageParser<SharedProfileUpdateItem> _parser = new pb::MessageParser<SharedProfileUpdateItem>(() => new SharedProfileUpdateItem());
@@ -14458,7 +14464,7 @@ namespace Iop.Profileserver {
     public const int NameFieldNumber = 3;
     private string name_ = "";
     /// <summary>
-    ///  Name of the profile or empty string, max 64 bytes long.
+    ///  Name of the profile, non-empty string, max 64 bytes long.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string Name {
@@ -14542,7 +14548,7 @@ namespace Iop.Profileserver {
     public const int ExtraDataFieldNumber = 9;
     private string extraData_ = "";
     /// <summary>
-    ///  Semicolon separated 'key=value' list, or empty string, max 200 bytes long.
+    ///  Semicolon separated 'key=value' list, max 200 bytes long, or empty string.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string ExtraData {
@@ -14959,7 +14965,7 @@ namespace Iop.Profileserver {
     public const int ExtraDataFieldNumber = 12;
     private string extraData_ = "";
     /// <summary>
-    ///  Semicolon separated 'key=value' list, max 200 bytes long.
+    ///  Semicolon separated 'key=value' list, max 200 bytes long, or empty string.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string ExtraData {
