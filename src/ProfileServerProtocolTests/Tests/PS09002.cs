@@ -139,7 +139,7 @@ namespace ProfileServerProtocolTests.Tests
         // Step 3
         log.Trace("Step 3");
         IPEndPoint canEndPoint = new IPEndPoint(ServerIp, CanPort);
-        byte[] clientCanId = client.PublicKeyToId(client.GetIdentityKeys().PublicKey);
+        byte[] clientCanId = client.CanPublicKeyToId(client.GetIdentityKeys().PublicKey);
         string ipnsPath = client.CreateIpnsPathFromHash(clientCanId);
 
         ProtocolClient.CanIpnsResolveResult canIpnsResolveResult = await client.CanIpnsResolve(canEndPoint, ipnsPath);

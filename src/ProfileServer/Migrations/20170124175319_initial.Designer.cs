@@ -9,7 +9,7 @@ using ProfileServer.Data.Models;
 namespace ProfileServer.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20170107090649_initial")]
+    [Migration("20170124175319_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -134,6 +134,8 @@ namespace ProfileServer.Migrations
                         .HasMaxLength(32);
 
                     b.Property<int>("PrimaryPort");
+
+                    b.Property<int>("SharedProfiles");
 
                     b.Property<int?>("SrNeighborPort");
 

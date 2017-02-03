@@ -16,7 +16,12 @@
     "Microsoft.EntityFrameworkCore.Design": "1.1.0",
     "Microsoft.EntityFrameworkCore.Tools": "1.1.0-preview4-final",
     "System.Collections.Specialized": "4.3.0",
-    "Newtonsoft.Json": "9.0.1"
+    "Newtonsoft.Json": "9.0.1",
+    "ImageSharp": "1.0.0-alpha1-00071",
+    "ImageSharp.Formats.Png": "1.0.0-alpha1-00051",
+    "ImageSharp.Formats.Jpeg": "1.0.0-alpha1-00051",
+    "ImageSharp.Processing": "1.0.0-alpha1-00051",
+    "ImageSharp.Drawing": "1.0.0-alpha1-00051"
   },
 
   "frameworks": {

@@ -52,6 +52,13 @@ namespace ProfileServerProtocolTests
     /// <summary>Challenge that the client sent to the profile server when starting conversation.</summary>
     public byte[] ClientChallenge;
 
+    /// <summary>Information about client's profile.</summary>
+    public ClientProfile Profile;
+
+    /// <summary>Random number generator.</summary>
+    public static Random Rng = new Random();
+
+
     /// <summary>
     /// Initializes the instance.
     /// </summary>
@@ -287,6 +294,37 @@ namespace ProfileServerProtocolTests
 
 
     /// <summary>
+    /// Connects to a profile server and cancels hosting agreement for the client's identity.
+    /// </summary>
+    /// <param name="CustomerPort">IP address of the profile server.</param>
+    /// <param name="ServerIp">Profile server's customer port interface.</param>
+    /// <returns>true if the function succeeds, false otherwise.</returns>
+    public async Task<bool> CancelHostingAgreementAsync(IPAddress ServerIp, int CustomerPort)
+    {
+      log.Trace("()");
+
+      await ConnectAsync(ServerIp, CustomerPort, true);
+      bool checkInOk = await CheckInAsync();
+
+      Message requestMessage = MessageBuilder.CreateCancelHostingAgreementRequest(null);
+      await SendMessageAsync(requestMessage);
+      Message responseMessage = await ReceiveMessageAsync();
+
+      bool idOk = responseMessage.Id == requestMessage.Id;
+      bool statusOk = responseMessage.Response.Status == Status.Ok;
+
+      bool cancelHostingOk = idOk && statusOk;
+
+      bool res = checkInOk && cancelHostingOk;
+
+      CloseConnection();
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+
+    /// <summary>
     /// Performs a check-in process for the client's identity using the already opened connection to the profile server.
     /// </summary>
     /// <returns>true if the function succeeds, false otherwise.</returns>
@@ -355,7 +393,7 @@ namespace ProfileServerProtocolTests
       bool idOk = responseMessage.Id == requestMessage.Id;
       bool statusOk = responseMessage.Response.Status == Status.Ok;
 
-      foreach (ServerRole serverRole in responseMessage.Response.SingleResponse.ListRoles.Roles)
+      foreach (Iop.Profileserver.ServerRole serverRole in responseMessage.Response.SingleResponse.ListRoles.Roles)
         RolePorts.Add(serverRole.Role, serverRole.Port);
 
       bool primaryPortOk = RolePorts.ContainsKey(ServerRoleType.Primary);
@@ -594,7 +632,7 @@ namespace ProfileServerProtocolTests
     /// </summary>
     /// <param name="PublicKey">Ed25519 public key.</param>
     /// <returns>CAN ID that corresponds to the the public.</returns>
-    public byte[] PublicKeyToId(byte[] PublicKey)
+    public byte[] CanPublicKeyToId(byte[] PublicKey)
     {
       CanCryptoKey key = new CanCryptoKey()
       {
@@ -1025,6 +1063,431 @@ namespace ProfileServerProtocolTests
       /// <summary>Error code.</summary>
       public int Code;
     }
+
+
+    /// <summary>
+    /// Initializes client's profile by generating random meaningful data.
+    /// </summary>
+    /// <param name="Index">Index of the profile which will be reflected in profile's name.</param>
+    /// <param name="ImageData">Profile image data in case the profile will be generated with an image.</param>
+    public void InitializeRandomProfile(int Index, byte[] ImageData)
+    {
+      decimal latitude = (decimal)(Rng.NextDouble() * ((double)GpsLocation.LatitudeMax - (double)GpsLocation.LatitudeMin)) + GpsLocation.LatitudeMin;
+      decimal longitude = (decimal)(Rng.NextDouble() * ((double)GpsLocation.LongitudeMax - (double)GpsLocation.LongitudeMin)) + GpsLocation.LongitudeMin;
+      if (longitude == GpsLocation.LongitudeMin) longitude = GpsLocation.LongitudeMax;
+      GpsLocation location = new GpsLocation(latitude, longitude);
+
+      string name = string.Format("Identity#{0:0000}", Index);
+
+      string type = "test";
+
+      bool hasImage = Rng.NextDouble() < 0.80;
+      byte[] imageData = hasImage ? ImageData : null;
+
+      bool hasExtraData = Rng.NextDouble() < 0.60;
+      int extraDataLen = Rng.Next(1, 120);
+      byte[] extraData = hasExtraData ? new byte[extraDataLen] : null;
+      if (hasExtraData) Crypto.Rng.GetBytes(extraData);
+      string extraDataStr = extraData != null ? Convert.ToBase64String(extraData) : null;
+
+      Profile = new ClientProfile()
+      {
+        Version = SemVer.V100,
+        Name = name,
+        Type = type,
+        ProfileImage = imageData,
+        PublicKey = keys.PublicKey,
+        ThumbnailImage = null,
+        Location = location,
+        ExtraData = extraDataStr
+      };
+    }
+
+
+    /// <summary>
+    /// Establishes a hosting agreement with the profile, initializes a profile and retrieves thumbnail image to the client's profile.
+    /// </summary>
+    /// <param name="ServerIp">IP address of the profile server.</param>
+    /// <param name="NonCustomerPort">Profile server's clNonCustomer port.</param>
+    /// <param name="CustomerPort">Profile server's clCustomer port.</param>
+    /// <returns>true, if the function succeeds, false otherwise.</returns>
+    /// <remarks>The function requires client's Profile to be initialized.</remarks>
+    public async Task<bool> RegisterAndInitializeProfileAsync(IPAddress ServerIp, int NonCustomerPort, int CustomerPort)
+    {
+      log.Trace("()");
+
+      bool res = false;
+
+      await ConnectAsync(ServerIp, NonCustomerPort, true);
+      bool hostingEstablished = await EstablishHostingAsync(Profile.Type);
+      CloseConnection();
+
+      if (hostingEstablished)
+      {
+        await ConnectAsync(ServerIp, CustomerPort, true);
+        bool checkInOk = await CheckInAsync();
+        bool initializeProfileOk = await InitializeProfileAsync(Profile.Name, Profile.ProfileImage, Profile.Location, Profile.ExtraData);
+
+        bool imageOk = false;
+        if (Profile.ProfileImage != null)
+        {
+          Message requestMessage = MessageBuilder.CreateGetIdentityInformationRequest(GetIdentityId(), false, true, false);
+          await SendMessageAsync(requestMessage);
+
+          Message responseMessage = await ReceiveMessageAsync();
+          Profile.ThumbnailImage = responseMessage.Response.SingleResponse.GetIdentityInformation.ThumbnailImage.ToByteArray();
+          imageOk = Profile.ThumbnailImage.Length > 0;
+        }
+        else imageOk = true;
+
+        CloseConnection();
+        
+        res = checkInOk && initializeProfileOk && imageOk;
+      }
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+
+    /// <summary>
+    /// Converts client's profile to SharedProfileAddItem structure.
+    /// </summary>
+    /// <returns>SharedProfileAddItem representing the client's profile.</returns>
+    public SharedProfileAddItem GetSharedProfileAddItem()
+    {
+      SharedProfileAddItem res = new SharedProfileAddItem()
+      {
+        Version = Profile.Version.ToByteString(),
+        Name = Profile.Name != null ? Profile.Name : "",
+        Type = Profile.Type,
+        ExtraData = Profile.ExtraData != null ? Profile.ExtraData : "",
+        Latitude = Profile.Location.GetLocationTypeLatitude(),
+        Longitude = Profile.Location.GetLocationTypeLongitude(),
+        IdentityPublicKey = ProtocolHelper.ByteArrayToByteString(Profile.PublicKey),
+        SetThumbnailImage = Profile.ThumbnailImage != null,
+        ThumbnailImage = ProtocolHelper.ByteArrayToByteString(Profile.ThumbnailImage != null ? Profile.ThumbnailImage : new byte[0])
+      };
+      return res;
+    }
+
+
+    /// <summary>
+    /// Converts client's profile to SharedProfileUpdateItem structure with filled in Add member.
+    /// </summary>
+    /// <returns>SharedProfileUpdateItem representing the client's profile.</returns>
+    public SharedProfileUpdateItem GetSharedProfileUpdateAddItem()
+    {
+      SharedProfileUpdateItem res = new SharedProfileUpdateItem()
+      {
+        Add = GetSharedProfileAddItem()
+      };
+      return res;
+    }
+
+    /// <summary>
+    /// Converts client's profile to SharedProfileDeleteItem structure.
+    /// </summary>
+    /// <returns>SharedProfileDeleteItem representing the client's profile.</returns>
+    public SharedProfileDeleteItem GetSharedProfileDeleteItem()
+    {
+      SharedProfileDeleteItem res = new SharedProfileDeleteItem()
+      {
+        IdentityNetworkId = ProtocolHelper.ByteArrayToByteString(Crypto.Sha256(Profile.PublicKey))
+      };
+      return res;
+    }
+
+    /// <summary>
+    /// Converts client's profile to SharedProfileUpdateItem structure with filled in Delete member.
+    /// </summary>
+    /// <returns>SharedProfileUpdateItem representing the client's profile.</returns>
+    public SharedProfileUpdateItem GetSharedProfileUpdateDeleteItem()
+    {
+      SharedProfileUpdateItem res = new SharedProfileUpdateItem()
+      {
+        Delete = GetSharedProfileDeleteItem()
+      };
+      return res;
+    }
+
+
+
+    /// <summary>
+    /// Converts client's profile to IdentityNetworkProfileInformation structure.
+    /// </summary>
+    /// <param name="IsHosted">Value for IdentityNetworkProfileInformation.IsHosted field.</param>
+    /// <param name="IsOnline">Value for IdentityNetworkProfileInformation.IsOnline field.</param>
+    /// <param name="HostingProfileServerId">Value for IdentityNetworkProfileInformation.HostingServerNetworkId field.</param>
+    /// <returns>IdentityNetworkProfileInformation representing the client's profile.</returns>
+    public IdentityNetworkProfileInformation GetIdentityNetworkProfileInformation(bool IsHosted, bool IsOnline, byte[] HostingProfileServerId)
+    {
+      IdentityNetworkProfileInformation res = new IdentityNetworkProfileInformation()
+      {
+        IsHosted = IsHosted,
+        IsOnline = IsOnline,
+        Version = Profile.Version.ToByteString(),
+        Name = Profile.Name != null ? Profile.Name : "",
+        Type = Profile.Type,
+        ExtraData = Profile.ExtraData != null ? Profile.ExtraData : "",
+        Latitude = Profile.Location.GetLocationTypeLatitude(),
+        Longitude = Profile.Location.GetLocationTypeLongitude(),
+        IdentityPublicKey = ProtocolHelper.ByteArrayToByteString(Profile.PublicKey),
+        ThumbnailImage = ProtocolHelper.ByteArrayToByteString(Profile.ThumbnailImage != null ? Profile.ThumbnailImage : new byte[0]),
+        HostingServerNetworkId = ProtocolHelper.ByteArrayToByteString(HostingProfileServerId != null ? HostingProfileServerId : new byte[0])        
+      };
+
+      return res;
+    }
+
+
+
+
+    /// <summary>
+    /// Performs an identity verification followed by a neighborhood initialization process with the profile server to which the client is already connected to.
+    /// </summary>
+    /// <param name="PrimaryPort">Primary port of the client's simulated profile server.</param>
+    /// <param name="SrNeighborPort">Server neighbor port of the client's simulated profile server.</param>
+    /// <param name="ClientList">List of clients with initialized profiles that the client is expected to receive from the server duting the neighborhood initialization process.</param>
+    /// <returns>true if the function succeeds, false otherwise.</returns>
+    public async Task<bool> NeighborhoodInitializationProcessAsync(int PrimaryPort, int SrNeighborPort, Dictionary<string, ProtocolClient> ClientList)
+    {
+      log.Trace("(PrimaryPort:{0},SrNeighborPort:{1},ClientList.Count:{2})", PrimaryPort, SrNeighborPort, ClientList.Count);
+
+      bool verifyIdentityOk = await VerifyIdentityAsync();
+
+      // Start neighborhood initialization process.
+      Message requestMessage = MessageBuilder.CreateStartNeighborhoodInitializationRequest((uint)PrimaryPort, (uint)SrNeighborPort);
+      await SendMessageAsync(requestMessage);
+
+      Message responseMessage = await ReceiveMessageAsync();
+      bool idOk = responseMessage.Id == requestMessage.Id;
+      bool statusOk = responseMessage.Response.Status == Status.Ok;
+      bool startNeighborhoodInitializationOk = idOk && statusOk;
+
+
+      // Wait for update request.
+      Message serverRequestMessage = null;
+      Message clientResponseMessage = null;
+      bool typeOk = false;
+
+      List<SharedProfileAddItem> receivedItems = new List<SharedProfileAddItem>();
+
+      bool error = false;
+      while (receivedItems.Count < ClientList.Count)
+      {
+        serverRequestMessage = await ReceiveMessageAsync();
+        typeOk = serverRequestMessage.MessageTypeCase == Message.MessageTypeOneofCase.Request
+          && serverRequestMessage.Request.ConversationTypeCase == Request.ConversationTypeOneofCase.ConversationRequest
+          && serverRequestMessage.Request.ConversationRequest.RequestTypeCase == ConversationRequest.RequestTypeOneofCase.NeighborhoodSharedProfileUpdate;
+
+        clientResponseMessage = MessageBuilder.CreateNeighborhoodSharedProfileUpdateResponse(serverRequestMessage);
+        await SendMessageAsync(clientResponseMessage);
+
+
+        if (!typeOk) break;
+
+        foreach (SharedProfileUpdateItem updateItem in serverRequestMessage.Request.ConversationRequest.NeighborhoodSharedProfileUpdate.Items)
+        {
+          if (updateItem.ActionTypeCase != SharedProfileUpdateItem.ActionTypeOneofCase.Add)
+          {
+            log.Trace("Received invalid update item action type '{0}'.", updateItem.ActionTypeCase);
+            error = true;
+            break;
+          }
+
+          receivedItems.Add(updateItem.Add);
+        }
+
+        if (error) break;
+      }
+
+      log.Trace("Received {0} profiles from target profile server.", receivedItems.Count);
+      bool receivedProfilesOk = !error && CheckProfileListMatchAddItems(ClientList, receivedItems);
+
+      // Wait for finish request.
+      serverRequestMessage = await ReceiveMessageAsync();
+      typeOk = serverRequestMessage.MessageTypeCase == Message.MessageTypeOneofCase.Request
+        && serverRequestMessage.Request.ConversationTypeCase == Request.ConversationTypeOneofCase.ConversationRequest
+        && serverRequestMessage.Request.ConversationRequest.RequestTypeCase == ConversationRequest.RequestTypeOneofCase.FinishNeighborhoodInitialization;
+
+      bool finishNeighborhoodInitializationResponseOk = typeOk;
+
+      clientResponseMessage = MessageBuilder.CreateFinishNeighborhoodInitializationResponse(serverRequestMessage);
+      await SendMessageAsync(clientResponseMessage);
+
+      bool res = verifyIdentityOk && startNeighborhoodInitializationOk && receivedProfilesOk && finishNeighborhoodInitializationResponseOk;
+
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+
+    /// <summary>
+    /// Checks whether a list of expected clients matches the list received from a neighbor server. This function works with incoming list of added clients.
+    /// </summary>
+    /// <param name="ExpectedClientList">List of clients we are expecting to be updated about, mapped by their profile names.</param>
+    /// <param name="RealClientList">List of real clients in form of neighborhood add updates items.</param>
+    /// <returns>true if the lists are equal, false otherwise.</returns>
+    public bool CheckProfileListMatchAddItems(Dictionary<string, ProtocolClient> ExpectedClientList, List<SharedProfileAddItem> RealClientList)
+    {
+      log.Trace("()");
+
+      bool error = false;
+      Dictionary<string, ProtocolClient> clientList = new Dictionary<string, ProtocolClient>(ExpectedClientList, StringComparer.Ordinal);
+      foreach (SharedProfileAddItem receivedItem in RealClientList)
+      {
+        byte[] receivedItemBytes = receivedItem.ToByteArray();
+        ProtocolClient client;
+        if (!clientList.TryGetValue(receivedItem.Name, out client))
+        {
+          log.Trace("Received item name '{0}' not found among expected items.", receivedItem.Name);
+          error = true;
+          break;
+        }
+
+        SharedProfileAddItem profileInfo = client.GetSharedProfileAddItem();
+        byte[] profileInfoBytes = profileInfo.ToByteArray();
+        if (StructuralComparisons.StructuralComparer.Compare(receivedItemBytes, profileInfoBytes) != 0)
+        {
+          log.Trace("Data of profile name '{0}' do not match.", receivedItem.Name);
+          error = true;
+          break;
+        }
+
+        clientList.Remove(receivedItem.Name);
+      }
+
+      bool res = !error && (clientList.Count == 0);
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+
+
+    /// <summary>
+    /// Checks whether a list of expected clients matches the list received from a neighbor server. This function works with incoming list of deleted clients.
+    /// </summary>
+    /// <param name="ExpectedClientList">List of network identifiers of clients we are expecting to be updated about.</param>
+    /// <param name="RealClientList">List of real clients in form of neighborhood delete updates items.</param>
+    /// <returns>true if the lists are equal, false otherwise.</returns>
+    public bool CheckProfileListMatchDeleteItems(HashSet<byte[]> ExpectedClientList, List<SharedProfileDeleteItem> RealClientList)
+    {
+      log.Trace("()");
+
+      bool error = false;
+      HashSet<byte[]> clientList = new HashSet<byte[]>(ExpectedClientList, StructuralEqualityComparer<byte[]>.Default);
+      foreach (SharedProfileDeleteItem receivedItem in RealClientList)
+      {
+        byte[] receivedItemId = receivedItem.IdentityNetworkId.ToByteArray();
+        if (!clientList.Contains(receivedItemId))
+        {
+          log.Trace("Received item ID '{0}' not found among expected items.", Crypto.ToHex(receivedItemId));
+          error = true;
+          break;
+        }
+
+        clientList.Remove(receivedItemId);
+      }
+
+      bool res = !error && (clientList.Count == 0); 
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+
+    /// <summary>
+    /// Checks whether a list of expected clients matches the list received from a neighbor server. This function works with incoming list of clients with updated profiles.
+    /// </summary>
+    /// <param name="ExpectedClientList">List of neighborhood change update items for clients we are expecting to be updated about, mapped by their network identifier.</param>
+    /// <param name="RealClientList">List of real clients in form of neighborhood change updates items.</param>
+    /// <returns>true if the lists are equal, false otherwise.</returns>
+    public bool CheckProfileListMatchChangeItems(Dictionary<byte[], SharedProfileChangeItem> ExpectedClientList, List<SharedProfileChangeItem> RealClientList)
+    {
+      log.Trace("()");
+
+      bool error = false;
+      Dictionary<byte[], SharedProfileChangeItem> clientList = new Dictionary<byte[], SharedProfileChangeItem>(ExpectedClientList, StructuralEqualityComparer<byte[]>.Default);
+      foreach (SharedProfileChangeItem receivedItem in RealClientList)
+      {
+        byte[] receivedItemId = receivedItem.IdentityNetworkId.ToByteArray();
+        SharedProfileChangeItem expectedItem;
+        if (!clientList.TryGetValue(receivedItemId, out expectedItem))
+        {
+          log.Trace("Received item ID '{0}' not found among expected items.", Crypto.ToHex(receivedItemId));
+          error = true;
+          break;
+        }
+
+        byte[] expectedItemBytes = expectedItem.ToByteArray();
+        byte[] receivedItemBytes = receivedItem.ToByteArray();
+        if (StructuralComparisons.StructuralComparer.Compare(receivedItemBytes, expectedItemBytes) != 0)
+        {
+          log.Trace("Data of item ID '{0}' do not match.", Crypto.ToHex(receivedItemId));
+          error = true;
+          break;
+        }
+
+        clientList.Remove(receivedItemId);
+      }
+
+      bool res = !error && (clientList.Count == 0);
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+
+    /// <summary>
+    /// Checks whether a list of expected clients matches the list received from a neighbor server. This function works with search result list format.
+    /// </summary>
+    /// <param name="ExpectedClientList">List of clients we are expecting to be updated about, mapped by their profile names.</param>
+    /// <param name="RealClientList">List of real clients in form of neighborhood add updates items.</param>
+    /// <param name="IsHosted">true if the expected clients are hosted on the server that was quieried, false otherwise.</param>
+    /// <param name="IsOnline">If <paramref name="IsHosted"/> is true, this value indicates whether the clients are online on the server being queried.</param>
+    /// <param name="HostingProfileServerId">If <paramref name="IsHosted"/> is false, this is network ID of the profile server who hosts the expected clients.</param>
+    /// <param name="IncludeImages">If set to true, images are included in the search results.</param>
+    /// <returns>true if the lists are equal, false otherwise.</returns>
+    public bool CheckProfileListMatchSearchResultItems(Dictionary<string, ProtocolClient> ExpectedClientList, List<IdentityNetworkProfileInformation> RealClientList, bool IsHosted, bool IsOnline, byte[] HostingProfileServerId, bool IncludeImages)
+    {
+      log.Trace("(ExpectedClientList.Count:{0},RealClientList.Count:{1})", ExpectedClientList.Count, RealClientList.Count);
+
+      bool error = false;
+      Dictionary<string, ProtocolClient> clientList = new Dictionary<string, ProtocolClient>(ExpectedClientList, StringComparer.Ordinal);
+      foreach (IdentityNetworkProfileInformation receivedItem in RealClientList)
+      {
+        byte[] receivedItemBytes = receivedItem.ToByteArray();
+        ProtocolClient client;
+        if (!clientList.TryGetValue(receivedItem.Name, out client))
+        {
+          log.Trace("Received item name '{0}' not found among expected items.", receivedItem.Name);
+          error = true;
+          break;
+        }
+
+        IdentityNetworkProfileInformation profileInfo = client.GetIdentityNetworkProfileInformation(IsHosted, IsOnline, HostingProfileServerId);
+        byte[] profileInfoBytes = profileInfo.ToByteArray();
+        if (StructuralComparisons.StructuralComparer.Compare(receivedItemBytes, profileInfoBytes) != 0)
+        {
+          log.Trace("Data of profile name '{0}' do not match.", receivedItem.Name);
+          error = true;
+          break;
+        }
+
+        clientList.Remove(receivedItem.Name);
+      }
+
+      bool res = !error && (clientList.Count == 0);
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+
+
 
     /// <summary>
     /// Callback routine that validates server TLS certificate.

@@ -206,7 +206,7 @@ namespace ProfileServerProtocol.Multiformats
     private static byte[] GetDecodeMap(string Alphabet)
     {
       if (decodeMap == null)
-        decodeMap = new Dictionary<string, byte[]>();
+        decodeMap = new Dictionary<string, byte[]>(StringComparer.Ordinal);
 
       byte[] map;
       if (decodeMap.TryGetValue(Alphabet, out map))

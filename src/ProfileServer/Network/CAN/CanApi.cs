@@ -152,7 +152,7 @@ namespace ProfileServer.Network.CAN
           res.IsCanError = false;
           res.Message = "Shutdown";
         }
-        else log.Warn("Exception occurred: {0}", e.ToString());
+        else log.Warn("Exception occurred: {0}", e.Message);
       }
 
       if (res.Success) log.Trace("(-):*.Success={0},*.Data:\n{1}", res.Success, res.DataStr != null ? res.DataStr.SubstrMax() : "n/a");

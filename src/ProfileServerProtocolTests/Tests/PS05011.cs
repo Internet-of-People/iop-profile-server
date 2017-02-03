@@ -123,18 +123,18 @@ namespace ProfileServerProtocolTests.Tests
 
         // Step 3
         log.Trace("Step 3");
-        Message nodeRequestMessage = await clientCallee.ReceiveMessageAsync();
+        Message serverRequestMessage = await clientCallee.ReceiveMessageAsync();
 
-        byte[] receivedPubKey = nodeRequestMessage.Request.ConversationRequest.IncomingCallNotification.CallerPublicKey.ToByteArray();
+        byte[] receivedPubKey = serverRequestMessage.Request.ConversationRequest.IncomingCallNotification.CallerPublicKey.ToByteArray();
         bool pubKeyOk = StructuralComparisons.StructuralComparer.Compare(receivedPubKey, pubKeyCaller) == 0;
-        bool serviceNameOk = nodeRequestMessage.Request.ConversationRequest.IncomingCallNotification.ServiceName == serviceName;
+        bool serviceNameOk = serverRequestMessage.Request.ConversationRequest.IncomingCallNotification.ServiceName == serviceName;
 
         bool incomingCallNotificationOk = pubKeyOk && serviceNameOk;
 
-        byte[] calleeToken = nodeRequestMessage.Request.ConversationRequest.IncomingCallNotification.CalleeToken.ToByteArray();
+        byte[] calleeToken = serverRequestMessage.Request.ConversationRequest.IncomingCallNotification.CalleeToken.ToByteArray();
 
-        Message nodeResponseMessage = mbCallee.CreateIncomingCallNotificationResponse(nodeRequestMessage);
-        await clientCallee.SendMessageAsync(nodeResponseMessage);
+        Message serverResponseMessage = mbCallee.CreateIncomingCallNotificationResponse(serverRequestMessage);
+        await clientCallee.SendMessageAsync(serverResponseMessage);
 
 
         // Step 3 Acceptance

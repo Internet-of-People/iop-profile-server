@@ -46,7 +46,7 @@ namespace ProfileServer.Network
       bool res = false;
       lock (lockObject)
       {
-        HashSet<string> newSet = new HashSet<string>(serviceNames);
+        HashSet<string> newSet = new HashSet<string>(serviceNames, StringComparer.Ordinal);
         foreach (string serviceName in ServiceNames)
           newSet.Add(serviceName);
 
@@ -95,7 +95,7 @@ namespace ProfileServer.Network
       HashSet<string> res = null;
       lock (lockObject)
       {
-        res = new HashSet<string>(serviceNames);
+        res = new HashSet<string>(serviceNames, StringComparer.Ordinal);
       }
 
       log.Trace("(-):*.Count={0}", res.Count);

@@ -107,8 +107,8 @@ namespace ProfileServerProtocolTests.Tests
         SemVer receivedVersion = new SemVer(responseMessage.Response.SingleResponse.GetIdentityInformation.Version);
         bool versionOk = receivedVersion.Equals(SemVer.V100);
 
-        HashSet<string> expectedAsList = new HashSet<string>() { "a", "b", "c", "d" };
-        HashSet<string> receivedAsList = new HashSet<string>(responseMessage.Response.SingleResponse.GetIdentityInformation.ApplicationServices);
+        HashSet<string> expectedAsList = new HashSet<string>(StringComparer.Ordinal) { "a", "b", "c", "d" };
+        HashSet<string> receivedAsList = new HashSet<string>(responseMessage.Response.SingleResponse.GetIdentityInformation.ApplicationServices, StringComparer.Ordinal);
         bool appServicesOk = expectedAsList.SetEquals(responseMessage.Response.SingleResponse.GetIdentityInformation.ApplicationServices);
 
 
@@ -141,8 +141,8 @@ namespace ProfileServerProtocolTests.Tests
         receivedVersion = new SemVer(responseMessage.Response.SingleResponse.GetIdentityInformation.Version);
         versionOk = receivedVersion.Equals(SemVer.V100);
 
-        expectedAsList = new HashSet<string>() { "a", "b", "c", "d", "e" };
-        receivedAsList = new HashSet<string>(responseMessage.Response.SingleResponse.GetIdentityInformation.ApplicationServices);
+        expectedAsList = new HashSet<string>(StringComparer.Ordinal) { "a", "b", "c", "d", "e" };
+        receivedAsList = new HashSet<string>(responseMessage.Response.SingleResponse.GetIdentityInformation.ApplicationServices, StringComparer.Ordinal);
         appServicesOk = expectedAsList.SetEquals(responseMessage.Response.SingleResponse.GetIdentityInformation.ApplicationServices);
 
 
@@ -174,8 +174,8 @@ namespace ProfileServerProtocolTests.Tests
         receivedVersion = new SemVer(responseMessage.Response.SingleResponse.GetIdentityInformation.Version);
         versionOk = receivedVersion.Equals(SemVer.V100);
 
-        expectedAsList = new HashSet<string>() { "b", "c", "d", "e" };
-        receivedAsList = new HashSet<string>(responseMessage.Response.SingleResponse.GetIdentityInformation.ApplicationServices);
+        expectedAsList = new HashSet<string>(StringComparer.Ordinal) { "b", "c", "d", "e" };
+        receivedAsList = new HashSet<string>(responseMessage.Response.SingleResponse.GetIdentityInformation.ApplicationServices, StringComparer.Ordinal);
         appServicesOk = expectedAsList.SetEquals(responseMessage.Response.SingleResponse.GetIdentityInformation.ApplicationServices);
 
 
@@ -208,8 +208,8 @@ namespace ProfileServerProtocolTests.Tests
         receivedVersion = new SemVer(responseMessage.Response.SingleResponse.GetIdentityInformation.Version);
         versionOk = receivedVersion.Equals(SemVer.V100);
 
-        expectedAsList = new HashSet<string>() { "b", "c", "d", "e" };
-        receivedAsList = new HashSet<string>(responseMessage.Response.SingleResponse.GetIdentityInformation.ApplicationServices);
+        expectedAsList = new HashSet<string>(StringComparer.Ordinal) { "b", "c", "d", "e" };
+        receivedAsList = new HashSet<string>(responseMessage.Response.SingleResponse.GetIdentityInformation.ApplicationServices, StringComparer.Ordinal);
         appServicesOk = expectedAsList.SetEquals(responseMessage.Response.SingleResponse.GetIdentityInformation.ApplicationServices);
 
 
@@ -244,8 +244,8 @@ namespace ProfileServerProtocolTests.Tests
         receivedVersion = new SemVer(responseMessage.Response.SingleResponse.GetIdentityInformation.Version);
         versionOk = receivedVersion.Equals(SemVer.V100);
 
-        expectedAsList = new HashSet<string>() { "b", "c", "d", "e" };
-        receivedAsList = new HashSet<string>(responseMessage.Response.SingleResponse.GetIdentityInformation.ApplicationServices);
+        expectedAsList = new HashSet<string>(StringComparer.Ordinal) { "b", "c", "d", "e" };
+        receivedAsList = new HashSet<string>(responseMessage.Response.SingleResponse.GetIdentityInformation.ApplicationServices, StringComparer.Ordinal);
         appServicesOk = expectedAsList.SetEquals(responseMessage.Response.SingleResponse.GetIdentityInformation.ApplicationServices);
 
 
@@ -291,8 +291,8 @@ namespace ProfileServerProtocolTests.Tests
         receivedVersion = new SemVer(responseMessage.Response.SingleResponse.GetIdentityInformation.Version);
         versionOk = receivedVersion.Equals(SemVer.V100);
 
-        expectedAsList = new HashSet<string>() { "b", "c", "d", "e", "a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8", "a9", "a10", "b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "b10" };
-        receivedAsList = new HashSet<string>(responseMessage.Response.SingleResponse.GetIdentityInformation.ApplicationServices);
+        expectedAsList = new HashSet<string>(StringComparer.Ordinal) { "b", "c", "d", "e", "a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8", "a9", "a10", "b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "b10" };
+        receivedAsList = new HashSet<string>(responseMessage.Response.SingleResponse.GetIdentityInformation.ApplicationServices, StringComparer.Ordinal);
         appServicesOk = expectedAsList.SetEquals(responseMessage.Response.SingleResponse.GetIdentityInformation.ApplicationServices);
 
 
@@ -325,8 +325,8 @@ namespace ProfileServerProtocolTests.Tests
         receivedVersion = new SemVer(responseMessage.Response.SingleResponse.GetIdentityInformation.Version);
         versionOk = receivedVersion.Equals(SemVer.V100);
 
-        expectedAsList = new HashSet<string>() { "b", "c", "d", "e", "a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8", "a9", "a10", "b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "b10" };
-        receivedAsList = new HashSet<string>(responseMessage.Response.SingleResponse.GetIdentityInformation.ApplicationServices);
+        expectedAsList = new HashSet<string>(StringComparer.Ordinal) { "b", "c", "d", "e", "a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8", "a9", "a10", "b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "b10" };
+        receivedAsList = new HashSet<string>(responseMessage.Response.SingleResponse.GetIdentityInformation.ApplicationServices, StringComparer.Ordinal);
         appServicesOk = expectedAsList.SetEquals(responseMessage.Response.SingleResponse.GetIdentityInformation.ApplicationServices);
 
 

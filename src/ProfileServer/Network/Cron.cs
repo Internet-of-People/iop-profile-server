@@ -13,49 +13,57 @@ using Microsoft.EntityFrameworkCore.Storage;
 namespace ProfileServer.Network
 {
   /// <summary>
-  /// Expiration manager is responsible for several maintanence tasks:
+  /// The Cron component is responsible for several maintanence tasks:
   ///  * periodically check follower servers to prevent expiration and deleting of shared profiles on follower servers,
   ///  * periodically check for expired hosted identities and delete them,
   ///  * periodically check for expired neighbor identities and delete them and the neighbors themselves,
-  ///  * periodically check and delete unused profile images.
+  ///  * periodically check and delete unused profile images,
+  ///  * periodically refresh data from LOC server.
   /// </summary>
-  public class ExpirationManager : Component
+  public class Cron : Component
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Network.ExpirationManager");
+    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Network.Cron");
 
-    /// <summary>How quickly in milliseconds after the component start will checkFollowersRefreshTimer signal for the first time.</summary>
+    /// <summary>How quickly (in milliseconds) after the component start will checkFollowersRefreshTimer signal for the first time.</summary>
     private const int CheckFollowersRefreshTimerStartDelay = 19 * 1000;
 
-    /// <summary>Interval in milliseconds for checkFollowersRefreshTimer.</summary>
+    /// <summary>Interval (in milliseconds) for checkFollowersRefreshTimer.</summary>
     private const int CheckFollowersRefreshTimerInterval = 11 * 60 * 1000;
 
 
-    /// <summary>How quickly in milliseconds after the component start will checkExpiredHostedIdentitiesRefreshTimer signal for the first time.</summary>
+    /// <summary>How quickly (in milliseconds) after the component start will checkExpiredHostedIdentitiesRefreshTimer signal for the first time.</summary>
     private const int CheckExpiredHostedIdentitiesTimerStartDelay = 59 * 1000;
 
-    /// <summary>Interval in milliseconds for checkExpiredHostedIdentitiesRefreshTimer.</summary>
+    /// <summary>Interval (in milliseconds) for checkExpiredHostedIdentitiesRefreshTimer.</summary>
     private const int CheckExpiredHostedIdentitiesTimerInterval = 119 * 60 * 1000;
 
 
     /// <summary>
-    /// How quickly in milliseconds after the component start will checkExpiredNeighborIdentitiesRefreshTimer signal for the first time.
+    /// How quickly (in milliseconds) after the component start will checkExpiredNeighborIdentitiesRefreshTimer signal for the first time.
     /// <para>
-    /// We want a certain delay here after the start of the server to allow getting fresh neighborhood information from the LBN server.
-    /// But if LBN server is not initialized by then, it does not matter, cleanup will be postponed.
+    /// We want a certain delay here after the start of the server to allow getting fresh neighborhood information from the LOC server.
+    /// But if LOC server is not initialized by then, it does not matter, cleanup will be postponed.
     /// </para>
     /// </summary>
     private const int CheckExpiredNeighborIdentitiesTimerStartDelay = 5 * 60 * 1000;
 
-    /// <summary>Interval in milliseconds for checkExpiredNeighborIdentitiesRefreshTimer.</summary>
+    /// <summary>Interval (in milliseconds) for checkExpiredNeighborIdentitiesRefreshTimer.</summary>
     private const int CheckExpiredNeighborIdentitiesTimerInterval = 31 * 60 * 1000;
 
 
 
-    /// <summary>How quickly in milliseconds after the component start will checkUnusedImagesTimer signal for the first time.</summary>
+    /// <summary>How quickly (in milliseconds) after the component start will checkUnusedImagesTimer signal for the first time.</summary>
     private const int CheckUnusedImagesTimerStartDelay = 200 * 1000;
 
-    /// <summary>Interval in milliseconds for checkUnusedImagesTimer.</summary>
+    /// <summary>Interval (in milliseconds) for checkUnusedImagesTimer.</summary>
     private const int CheckUnusedImagesTimerInterval = 37 * 60 * 1000;
+
+
+    /// <summary>How quickly (in milliseconds) after the component start will refreshLocDataTimer signal for the first time.</summary>
+    private const int RefreshLocDataTimerStartDelay = 67 * 60 * 1000;
+
+    /// <summary>Interval (in milliseconds) for refreshLocDataTimer.</summary>
+    private const int RefreshLocDataTimerInterval = 601 * 60 * 1000;
 
 
 
@@ -88,6 +96,13 @@ namespace ProfileServer.Network
     private static AutoResetEvent checkUnusedImagesEvent = new AutoResetEvent(false);
 
 
+    /// <summary>Timer that invokes checks of neighbor identities.</summary>
+    private static Timer refreshLocDataTimer;
+
+    /// <summary>Event that is set by refreshLocDataTimer.</summary>
+    private static AutoResetEvent refreshLocDataEvent = new AutoResetEvent(false);
+
+
 
     /// <summary>Event that is set when executiveThread is not running.</summary>
     private ManualResetEvent executiveThreadFinished = new ManualResetEvent(true);
@@ -108,6 +123,7 @@ namespace ProfileServer.Network
         checkExpiredHostedIdentitiesTimer = new Timer(SignalTimerCallback, checkExpiredHostedIdentitiesEvent, CheckExpiredHostedIdentitiesTimerStartDelay, CheckExpiredHostedIdentitiesTimerInterval);
         checkExpiredNeighborIdentitiesTimer = new Timer(SignalTimerCallback, checkExpiredNeighborIdentitiesEvent, CheckExpiredNeighborIdentitiesTimerStartDelay, CheckExpiredNeighborIdentitiesTimerInterval);
         checkUnusedImagesTimer = new Timer(SignalTimerCallback, checkUnusedImagesEvent, CheckUnusedImagesTimerStartDelay, CheckUnusedImagesTimerInterval);
+        refreshLocDataTimer = new Timer(SignalTimerCallback, refreshLocDataEvent, RefreshLocDataTimerStartDelay, RefreshLocDataTimerInterval);
 
         executiveThread = new Thread(new ThreadStart(ExecutiveThread));
         executiveThread.Start();
@@ -138,6 +154,9 @@ namespace ProfileServer.Network
 
         if (checkUnusedImagesTimer != null) checkUnusedImagesTimer.Dispose();
         checkUnusedImagesTimer = null;
+
+        if (refreshLocDataTimer != null) refreshLocDataTimer.Dispose();
+        refreshLocDataTimer = null;
       }
 
       log.Info("(-):{0}", res);
@@ -163,6 +182,8 @@ namespace ProfileServer.Network
       if (checkUnusedImagesTimer != null) checkUnusedImagesTimer.Dispose();
       checkUnusedImagesTimer = null;
 
+      if (refreshLocDataTimer != null) refreshLocDataTimer.Dispose();
+      refreshLocDataTimer = null;
 
       if ((executiveThread != null) && !executiveThreadFinished.WaitOne(10000))
         log.Error("Executive thread did not terminated in 10 seconds.");
@@ -208,18 +229,25 @@ namespace ProfileServer.Network
           log.Trace("checkExpiredNeighborIdentitiesEvent activated.");
 
           LocationBasedNetwork locationBasedNetwork = (LocationBasedNetwork)Base.ComponentDictionary["Network.LocationBasedNetwork"];
-          if (locationBasedNetwork.LbnServerInitialized)
+          if (locationBasedNetwork.LocServerInitialized)
           {
             CheckExpiredNeighborIdentities();
           }
-          else log.Debug("LBN component is not in sync with the LBN server yet, checking expired neighbors will not be executed now.");
+          else log.Debug("LOC component is not in sync with the LOC server yet, checking expired neighbors will not be executed now.");
         } 
         else if (handles[index] == checkUnusedImagesEvent)
         {
-          log.Trace("checkExpiredHostedIdentitiesEvent activated.");
+          log.Trace("checkUnusedImagesEvent activated.");
 
           ImageManager imageManager = (ImageManager)Base.ComponentDictionary["Data.ImageManager"];
           imageManager.ProcessImageDeleteList();
+        }
+        else if (handles[index] == refreshLocDataEvent)
+        {
+          log.Trace("refreshLocDataEvent activated.");
+
+          LocationBasedNetwork locationBasedNetwork = (LocationBasedNetwork)Base.ComponentDictionary["Network.LocationBasedNetwork"];
+          locationBasedNetwork.RefreshLoc();
         }
       }
 
@@ -371,9 +399,6 @@ namespace ProfileServer.Network
 
       using (UnitOfWork unitOfWork = new UnitOfWork())
       {
-        // Disable change tracking for faster multiple inserts.
-        unitOfWork.Context.ChangeTracker.AutoDetectChangesEnabled = false;
-
         bool success = false;
         DatabaseLock[] lockObjects = new DatabaseLock[] { UnitOfWork.NeighborLock, UnitOfWork.NeighborhoodActionLock };
         using (IDbContextTransaction transaction = unitOfWork.BeginTransactionWithLock(lockObjects))

@@ -65,11 +65,11 @@ namespace ProfileServer.Network
     /// <summary>Role server assigned client identifier.</summary>
     public ulong Id;
 
-    /// <summary>UTC time before next message has to come over the connection from this client or the node can close the connection due to inactivity.</summary>
+    /// <summary>UTC time before next message has to come over the connection from this client or the profile server can close the connection due to inactivity.</summary>
     public DateTime NextKeepAliveTime;
 
-    /// <summary>TcpRoleServer.ClientKeepAliveIntervalSeconds for end user client device connections, 
-    /// TcpRoleServer.NodeKeepAliveIntervalSeconds for node to node or unknown connections.</summary>
+    /// <summary>This is either TcpRoleServer.ClientKeepAliveIntervalSeconds for end user client device connections, 
+    /// or TcpRoleServer.ServerKeepAliveIntervalSeconds for server to server or unknown connections.</summary>
     public int KeepAliveIntervalSeconds;
 
 
@@ -87,7 +87,7 @@ namespace ProfileServer.Network
     /// <summary>Random data used for client's authentication.</summary>
     public byte[] AuthenticationChallenge;
 
-    /// <summary>true if the network client represents identity hosted by the node that is checked-in, false otherwise.</summary>
+    /// <summary>true if the network client represents identity hosted by the profile server that is checked-in, false otherwise.</summary>
     public bool IsOurCheckedInClient;
 
     /// <summary>Client's application services available for the current session.</summary>
@@ -146,7 +146,7 @@ namespace ProfileServer.Network
     /// <param name="TcpClient">TCP client class that holds the connection and allows communication with the client.</param>
     /// <param name="Id">Unique identifier of the client's connection.</param>
     /// <param name="UseTls">true if the client is connected to the TLS port, false otherwise.</param>
-    /// <param name="KeepAliveIntervalSeconds">Number of seconds for the connection to this client to be without any message until the node can close it for inactivity.</param>
+    /// <param name="KeepAliveIntervalSeconds">Number of seconds for the connection to this client to be without any message until the profile server can close it for inactivity.</param>
     public IncomingClient(TcpRoleServer Server, TcpClient TcpClient, ulong Id, bool UseTls, int KeepAliveIntervalSeconds):
       base(TcpClient, UseTls, Server.IdBase)
     {

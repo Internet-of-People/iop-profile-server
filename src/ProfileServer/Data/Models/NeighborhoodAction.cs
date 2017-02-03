@@ -17,13 +17,13 @@ namespace ProfileServer.Data.Models
   public enum NeighborhoodActionType
   {
     /// <summary>
-    /// LBN server informed the profile server about a new server in its neighborhood.
+    /// LOC server informed the profile server about a new server in its neighborhood.
     /// The profile server contacts the neighbor and ask it to share its profile database.
     /// </summary>
     AddNeighbor = 1,
 
     /// <summary>
-    /// LBN server informed the profile server about a server leaving its neighborhood.
+    /// The Cron component found out that a neighbor expired.
     /// The profile server removes the profiles hosted on the neighbor server from its database.
     /// Then it creates StopNeighborhoodUpdates action.
     /// </summary>

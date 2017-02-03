@@ -67,9 +67,11 @@ namespace ProfileServer.Network
     public ClientBase(IPEndPoint RemoteEndPoint, bool UseTls, uint IdBase = 0)
     {
       useTls = UseTls;
-      remoteEndPoint = (IPEndPoint)RemoteEndPoint;
+      remoteEndPoint = RemoteEndPoint;
       messageBuilder = new MessageBuilder(IdBase, new List<SemVer>() { SemVer.V100 }, Base.Configuration.Keys);
       tcpClient = new TcpClient();
+      tcpClient.LingerState = new LingerOption(true, 0);
+      tcpClient.NoDelay = true;
     }
 
     /// <summary>
@@ -108,7 +110,7 @@ namespace ProfileServer.Network
       bool res = false;
       try
       {
-        await TcpClient.ConnectAsync(RemoteEndPoint.Address, RemoteEndPoint.Port);
+        await TcpClient.ConnectAsync(remoteEndPoint.Address, remoteEndPoint.Port);
         stream = TcpClient.GetStream();
         if (UseTls)
         {
@@ -120,7 +122,7 @@ namespace ProfileServer.Network
       }
       catch (Exception e)
       {
-        log.Debug("Unable to connect to {0}, error exception: {1}", RemoteEndPoint, e.ToString());
+        log.Debug("Unable to connect to {0}, error exception: {1}", remoteEndPoint, e.ToString());
       }
 
 
@@ -162,7 +164,7 @@ namespace ProfileServer.Network
     /// </summary>
     /// <param name="Message">Message to send.</param>
     /// <returns>true if the connection to the client should remain open, false otherwise.</returns>
-    public async Task<bool> SendMessageAsync(Message Message)
+    public virtual async Task<bool> SendMessageAsync(Message Message)
     {
       log.Trace("()");
 
@@ -301,6 +303,25 @@ namespace ProfileServer.Network
 
       log.Trace("(-)");
     }
+
+
+    /// <summary>
+    /// Sets a new value to client's end point and allows it to connect to different end point.
+    /// </summary>
+    /// <param name="EndPoint">New target end point.</param>
+    public void SetRemoteEndPoint(IPEndPoint EndPoint)
+    {
+      log.Trace("()");
+
+      CloseConnection();
+      remoteEndPoint = EndPoint;
+      tcpClient = new TcpClient();
+      tcpClient.LingerState = new LingerOption(true, 0);
+      tcpClient.NoDelay = true;
+
+      log.Trace("(-)");
+    }
+
 
 
     /// <summary>

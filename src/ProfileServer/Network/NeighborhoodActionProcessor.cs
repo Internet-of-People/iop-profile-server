@@ -29,6 +29,11 @@ namespace ProfileServer.Network
   /// </summary>
   public class NeighborhoodActionProcessor : Component
   {
+#warning Regtest needed - neighborhood initialization process takes too long -> server retries again later
+#warning Regtest needed - shared profile refresh and expiration
+#warning Regtest needed - update failed soft -> server retries again
+#warning Regtest needed - update failed hard -> follower is deleted
+#warning Regtest needed - update failed hard -> follower is deleted; server won't send updates to the follower -> neighbor expires on the follower -> LOC refreshes -> neighbor relationship established again
     private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Network.NeighborhoodActionProcessor");
 
     /// <summary>Interval for checking the list of neighborhood actions.</summary>
@@ -274,10 +279,12 @@ namespace ProfileServer.Network
           // If the action was processed successfully, we remove it from the database.
           // Otherwise its ExecuteAfter flag is set to the future and the action will 
           // attempt to be processed again later.
+          if (await RemoveActionAsync(Action.Id))
+            log.Info("Action ID {0} removed from the database.", Action.Id);
+
           // We signal the event to have the action queue checked, because this action 
           // that just finished might have blocked another action in the queue.
-          if (await RemoveActionAsync(Action.Id)) Signal();
-          else log.Error("Failed to remove action ID {0} from the database.", Action.Id);
+          Signal();
         }
         else log.Info("Processing of action ID {0} failed.", Action.Id);
 
@@ -417,7 +424,7 @@ namespace ProfileServer.Network
             if (await unitOfWork.SaveAsync())
               res = true;
           }
-          else log.Warn("Unable to find action ID {0} in the database.", ActionId);
+          else log.Info("Unable to find action ID {0} in the database, it has probably been removed already.", ActionId);
         }
         catch (Exception e)
         {
@@ -502,6 +509,8 @@ namespace ProfileServer.Network
       log.Trace("Setting up safe deadline to {0}.", safeDeadline.ToString("yyyy-MM-dd HH:mm:ss"));
 
       bool deleteNeighbor = false;
+      bool resetSrNeighborPort = false;
+
       IPEndPoint endPoint = await GetNeighborServerContact(NeighborId);
       if (endPoint != null)
       {
@@ -510,7 +519,21 @@ namespace ProfileServer.Network
           Dictionary<byte[], NeighborIdentity> identityDatabase = new Dictionary<byte[], NeighborIdentity>(StructuralEqualityComparer<byte[]>.Default);
           client.Context = identityDatabase;
 
-          if (await client.ConnectAndVerifyIdentityAsync())
+          bool connected = await client.ConnectAndVerifyIdentityAsync();
+          if (!connected)
+          {
+            log.Debug("Failed to connect to neighbor ID '{0}' on address '{1}'. Trying to get new value of its srNeighbor port from its primaryPort.", NeighborId.ToHex(), endPoint);
+            IPEndPoint newEndPoint = await GetNeighborServerContact(NeighborId, true);
+            if (newEndPoint != null)
+            {
+              endPoint = newEndPoint;
+              client.SetRemoteEndPoint(endPoint);
+              connected = await client.ConnectAndVerifyIdentityAsync();
+            }
+            else log.Debug("Failed to get srNeighbor port from primaryPort of neighbor ID '{0}'.", NeighborId.ToHex());
+          }
+
+          if (connected)
           {
             if (client.MatchServerId(NeighborId))
             {
@@ -610,6 +633,11 @@ namespace ProfileServer.Network
                   // Target server is busy at the moment and does not want to talk to us about neighborhood initialization.
                   log.Debug("Neighbor ID '{0}' is busy now, let's try later.", NeighborId.ToHex());
                 }
+                else if (client.LastResponseStatus == Status.ErrorBadRole)
+                {
+                  log.Info("Neighbor ID '{0}' rejected start of initialization process to bad port usage (port {1} was used), reseting srNeighbor port for this follower, will retry later.", NeighborId.ToHex(), endPoint.Port);
+                  resetSrNeighborPort = true;
+                }
                 else log.Warn("Starting the intialization process failed with neighbor ID '{0}', will retry later.", NeighborId.ToHex());
               }
             }
@@ -640,6 +668,16 @@ namespace ProfileServer.Network
         }
       }
 
+      if (resetSrNeighborPort)
+      {
+        using (UnitOfWork unitOfWork = new UnitOfWork())
+        {
+          if (await unitOfWork.NeighborRepository.ResetSrNeighborPort(unitOfWork, NeighborId)) log.Info("srNeighbor port of neighbor ID '{0}' has been reset.", NeighborId.ToHex());
+          else log.Error("Unable to reset srNeighbor port of neighbor ID '{0}'.", NeighborId.ToHex());
+        }
+      }
+
+
       log.Trace("(-):{0}", res);
       return res;
     }
@@ -649,10 +687,12 @@ namespace ProfileServer.Network
     /// Obtains IP address and srNeighbor port from neighbor server's network identifier.
     /// </summary>
     /// <param name="NeighborId">Network identifer of the neighbor server.</param>
+    /// <param name="IgnoreDbPortValue">If set to true, the function will ignore SrNeighborPort value of the neighbor even if it is set in the database 
+    /// and will contact the neighbor on its primary port and then update SrNeighborPort in the database, if it successfully gets its value.</param>
     /// <returns>End point description or null if the function fails.</returns>
-    private async Task<IPEndPoint> GetNeighborServerContact(byte[] NeighborId)
+    private async Task<IPEndPoint> GetNeighborServerContact(byte[] NeighborId, bool IgnoreDbPortValue = false)
     {
-      log.Trace("(NeighborId:'{0}')", NeighborId.ToHex());
+      log.Trace("(NeighborId:'{0}',IgnoreDbPortValue:{1})", NeighborId.ToHex(), IgnoreDbPortValue);
 
       IPEndPoint res = null;
       using (UnitOfWork unitOfWork = new UnitOfWork())
@@ -665,13 +705,13 @@ namespace ProfileServer.Network
           if (neighbor != null)
           {
             IPAddress addr = IPAddress.Parse(neighbor.IpAddress);
-            if (neighbor.SrNeighborPort != null)
+            if (!IgnoreDbPortValue && (neighbor.SrNeighborPort != null))
             {
               res = new IPEndPoint(addr, neighbor.SrNeighborPort.Value);
             }
             else
             {
-              // We do not know srNeighbor port of this neighbor yet, we have to connect to its primary port and get that information.
+              // We do not know srNeighbor port of this neighbor yet (or we ignore it), we have to connect to its primary port and get that information.
               int srNeighborPort = await GetServerRolePortFromPrimaryPort(addr, neighbor.PrimaryPort, ServerRoleType.SrNeighbor);
               if (srNeighborPort != 0)
               {
@@ -685,7 +725,7 @@ namespace ProfileServer.Network
 
                 res = new IPEndPoint(addr, srNeighborPort);
               }
-              else log.Warn("Unable to obtain srNeighbor port from primary port of neighbor ID '{0}'.", NeighborId.ToHex());
+              else log.Debug("Unable to obtain srNeighbor port from primary port of neighbor ID '{0}'.", NeighborId.ToHex());
             }
           }
           else log.Error("Unable to find neighbor ID '{0}' in the database.", NeighborId.ToHex());
@@ -707,10 +747,12 @@ namespace ProfileServer.Network
     /// Obtains IP address and srNeighbor port from follower server's network identifier.
     /// </summary>
     /// <param name="FollowerId">Network identifer of the follower server.</param>
+    /// <param name="IgnoreDbPortValue">If set to true, the function will ignore SrNeighborPort value of the follower even if it is set in the database 
+    /// and will contact the follower on its primary port and then update SrNeighborPort in the database, if it successfully gets its value.</param>
     /// <returns>End point description or null if the function fails.</returns>
-    private async Task<IPEndPoint> GetFollowerServerContact(byte[] FollowerId)
+    private async Task<IPEndPoint> GetFollowerServerContact(byte[] FollowerId, bool IgnoreDbPortValue = false)
     {
-      log.Trace("(FollowerId:'{0}')", FollowerId.ToHex());
+      log.Trace("(FollowerId:'{0}',IgnoreDbPortValue:{1})", FollowerId.ToHex(), IgnoreDbPortValue);
 
       IPEndPoint res = null;
       using (UnitOfWork unitOfWork = new UnitOfWork())
@@ -723,13 +765,13 @@ namespace ProfileServer.Network
           if (follower != null)
           {
             IPAddress addr = IPAddress.Parse(follower.IpAddress);
-            if (follower.SrNeighborPort != null)
+            if (!IgnoreDbPortValue && (follower.SrNeighborPort != null))
             {
               res = new IPEndPoint(addr, follower.SrNeighborPort.Value);
             }
             else
             {
-              // We do not know srNeighbor port of this follower yet, we have to connect to its primary port and get that information.
+              // We do not know srNeighbor port of this follower yet (or we ignore it), we have to connect to its primary port and get that information.
               int srNeighborPort = await GetServerRolePortFromPrimaryPort(addr, follower.PrimaryPort, ServerRoleType.SrNeighbor);
               if (srNeighborPort != 0)
               {
@@ -743,7 +785,7 @@ namespace ProfileServer.Network
 
                 res = new IPEndPoint(addr, srNeighborPort);
               }
-              else log.Error("Unable to obtain srNeighbor port from primary port of follower ID '{0}'.", FollowerId.ToHex());
+              else log.Debug("Unable to obtain srNeighbor port from primary port of follower ID '{0}'.", FollowerId.ToHex());
             }
           }
           else log.Error("Unable to find follower ID '{0}' in the database.", FollowerId.ToHex());
@@ -799,10 +841,9 @@ namespace ProfileServer.Network
     }
 
 
-
+    
     /// <summary>
-    /// A former neighbor server was removed from a neighborhood. We delete it and all its shared profiles from our database.
-    /// Neighbor can be removed either by message from LBN server, or due to its expiration.
+    /// A neighbor expired and needs to be removed from a neighborhood. We delete it and all its shared profiles from our database.
     /// </summary>
     /// <param name="NeighborId">Network identifier of the former neighbor server.</param>
     /// <param name="CurrentActionId">Identifier of the action being executed.</param>
@@ -852,7 +893,7 @@ namespace ProfileServer.Network
       log.Trace("(-):{0}", res);
       return res;
     }
-
+    
 
 
     /// <summary>
@@ -886,47 +927,51 @@ namespace ProfileServer.Network
         return true;
       }
 
+      bool newNeighborPortObtained = false;
       int srNeighborPort = neighbor.SrNeighborPort != null ? neighbor.SrNeighborPort.Value : 0;
 
       if (srNeighborPort == 0)
+      {
         srNeighborPort = await GetServerRolePortFromPrimaryPort(ipAddress, neighbor.PrimaryPort, ServerRoleType.SrNeighbor);
+        newNeighborPortObtained = true;
+      }
 
       if (srNeighborPort != 0)
       {
         IPEndPoint endPoint = new IPEndPoint(ipAddress, srNeighborPort);
         using (OutgoingClient client = new OutgoingClient(endPoint, true, ShutdownSignaling.ShutdownCancellationTokenSource.Token))
         {
-          if (await client.ConnectAndVerifyIdentityAsync())
+          bool connected = await client.ConnectAndVerifyIdentityAsync();
+          if (!connected && !newNeighborPortObtained)
+          {
+            log.Debug("Failed to connect to neighbor ID '{0}' on address '{1}'. Trying to get new value of its srNeighborPort from its primaryPort.", NeighborId.ToHex(), endPoint);
+            int newSrNeighborPort = await GetServerRolePortFromPrimaryPort(ipAddress, neighbor.PrimaryPort, ServerRoleType.SrNeighbor);
+            if (newSrNeighborPort != 0)
+            {
+              client.SetRemoteEndPoint(new IPEndPoint(ipAddress, newSrNeighborPort));
+              connected = await client.ConnectAndVerifyIdentityAsync();
+            }
+            else log.Debug("Failed to get srNeighborPort from primaryPort of neighbor ID '{0}'.", NeighborId.ToHex());
+          }
+
+          if (connected)
           {
             if (client.MatchServerId(NeighborId))
             {
               Message requestMessage = client.MessageBuilder.CreateStopNeighborhoodUpdatesRequest();
-              if (await client.SendStopNeighborhoodUpdates(requestMessage))
+              if (!await client.SendStopNeighborhoodUpdates(requestMessage))
               {
-                res = true;
-              }
-              else
-              {
-                if (client.LastResponseStatus == Status.ErrorNotFound)
-                {
-                  log.Info("Neighbor ID '{0}' does not register us as followers.", NeighborId.ToHex());
-                  // We do not expect this server to send us any more updates.
-                  res = true;
-                }
-                else log.Warn("Sending update to neighbor ID '{0}' failed, error status {1}, will retry later.", NeighborId.ToHex(), client.LastResponseStatus);
+                if (client.LastResponseStatus == Status.ErrorNotFound) log.Info("Neighbor ID '{0}' does not register us as followers.", NeighborId.ToHex());
+                else log.Warn("Sending update to neighbor ID '{0}' failed, error status {1}.", NeighborId.ToHex(), client.LastResponseStatus);
               }
             }
-            else
-            {
-              log.Warn("Server identity differs from expected ID '{0}'.", NeighborId.ToHex());
-              // This is not the server we want to send request to.
-              // We will do nothing and will not try again.
-              // It has been deleted from our database and if it sends us an update, 
-              // we will reject it.
-              res = true;
-            }
+            else log.Warn("Server identity differs from expected ID '{0}'.", NeighborId.ToHex());
           }
-          else log.Info("Unable to initiate conversation with neighbor ID '{0}' on address {1}, will retry later.", NeighborId.ToHex(), endPoint);
+          else log.Info("Unable to initiate conversation with neighbor ID '{0}' on address '{1}'.", NeighborId.ToHex(), endPoint);
+
+          // In case of failure, we will not try again. The neighbor is deleted from our database 
+          // and hopefully will not send us any more updates. If it does, we will reject them.
+          res = true;
         }
       }
       else log.Warn("Unable to find neighbor ID '{0}' IP and port information, will retry later.", NeighborId.ToHex());
@@ -1068,11 +1113,26 @@ namespace ProfileServer.Network
         if (updateItem != null)
         {
           bool deleteFollower = false;
+          bool resetSrNeighborPort = false;
 
           using (OutgoingClient client = new OutgoingClient(endPoint, true, ShutdownSignaling.ShutdownCancellationTokenSource.Token))
           {
             // If we successfully constructed the update for the follower server, we connect to it and send it.
-            if (await client.ConnectAndVerifyIdentityAsync())
+            bool connected = await client.ConnectAndVerifyIdentityAsync();
+            if (!connected)
+            {
+              log.Debug("Failed to connect to follower ID '{0}' on address '{1}'. Trying to get new value of its srNeighbor port from its primaryPort.", FollowerId.ToHex(), endPoint);
+              IPEndPoint newEndPoint = await GetFollowerServerContact(FollowerId, true);
+              if (newEndPoint != null)
+              {
+                endPoint = newEndPoint;
+                client.SetRemoteEndPoint(endPoint);
+                connected = await client.ConnectAndVerifyIdentityAsync();
+              }
+              else log.Debug("Failed to get srNeighbor port from primaryPort of follower ID '{0}'.", FollowerId.ToHex());
+            }
+
+            if (connected)
             {
               if (client.MatchServerId(FollowerId))
               {
@@ -1093,6 +1153,27 @@ namespace ProfileServer.Network
                   if (client.LastResponseStatus == Status.ErrorRejected)
                   {
                     log.Info("Follower ID '{0}' rejected an update, deleting this follower.", FollowerId.ToHex());
+                    deleteFollower = true;
+                  }
+                  else if (client.LastResponseStatus == Status.ErrorBadRole)
+                  {
+                    log.Info("Follower ID '{0}' rejected an update due to bad port usage (port {1} was used), reseting srNeighbor port for this follower, will retry later.", FollowerId.ToHex(), endPoint.Port);
+                    resetSrNeighborPort = true;
+                  }
+                  else if (client.LastResponseStatus == Status.ErrorInvalidValue)
+                  {
+                    //
+                    // There are two possibilities here. First case is that we are in trouble because the database of the follower is not synchronized with ours
+                    // in which case retrying would not make it any better, and our best move is to delete the follower. Our shared profiles with it will expire 
+                    // in time and the follower will contact us again to reestablish the relationship.
+                    // 
+                    // The second case is a very rare case that can happen if the server sent NeighborhoodSharedProfileUpdateRequest to its follower 
+                    // in the past and the follower did accept and process the update and saved it into its database, but it failed to deliver 
+                    // NeighborhoodSharedProfileUpdateResponse to this server (e.g. due to a power failure on either side, or a network failure).
+                    // We could handle this special case differently but it is not easy to detect it. This is why we delete the follower as well in this case 
+                    // although it might not be necessary, but it is definitely the easiest thing to do.
+                    //
+                    log.Warn("Sending update to follower ID '{0}' failed, error status {1}, deleting follower!", FollowerId.ToHex(), client.LastResponseStatus);
                     deleteFollower = true;
                   }
                   else log.Warn("Sending update to follower ID '{0}' failed, error status {1}, will retry later.", FollowerId.ToHex(), client.LastResponseStatus);
@@ -1123,6 +1204,15 @@ namespace ProfileServer.Network
               else log.Error("Unable to delete follower ID '{0}' from database.", FollowerId.ToHex());
             }
           }
+
+          if (resetSrNeighborPort)
+          {
+            using (UnitOfWork unitOfWork = new UnitOfWork())
+            {
+              if (await unitOfWork.FollowerRepository.ResetSrNeighborPort(unitOfWork, FollowerId)) log.Info("srNeighbor port of follower ID '{0}' has been reset.", FollowerId.ToHex());
+              else log.Error("Unable to reset srNeighbor port of follower ID '{0}'.", FollowerId.ToHex());
+            }
+          }
         }
       }
       else log.Warn("Unable to find follower ID '{0}' IP and port information, will retry later.", FollowerId.ToHex());
@@ -1146,10 +1236,11 @@ namespace ProfileServer.Network
       MessageBuilder messageBuilder = Client.MessageBuilder;
       Message res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
 
+      bool error = false;
       NeighborhoodSharedProfileUpdateRequest neighborhoodSharedProfileUpdateRequest = RequestMessage.Request.ConversationRequest.NeighborhoodSharedProfileUpdate;
       log.Debug("Received {0} update items.", neighborhoodSharedProfileUpdateRequest.Items.Count);
 
-      bool error = false;
+      Dictionary<byte[], NeighborIdentity> identityDatabase = (Dictionary<byte[], NeighborIdentity>)Client.Context;
       int itemIndex = 0;
       foreach (SharedProfileUpdateItem updateItem in neighborhoodSharedProfileUpdateRequest.Items)
       {
@@ -1157,7 +1248,6 @@ namespace ProfileServer.Network
         {
           SharedProfileAddItem addItem = updateItem.Add;
           Message errorResponse;
-          Dictionary<byte[], NeighborIdentity> identityDatabase = (Dictionary<byte[], NeighborIdentity>)Client.Context;
           if (ValidateInMemorySharedProfileAddItem(addItem, itemIndex, identityDatabase, Client.MessageBuilder, RequestMessage, out errorResponse))
           {
             byte[] thumbnailImageHash = null;
@@ -1261,9 +1351,10 @@ namespace ProfileServer.Network
         bool pubKeyValid = (0 < pubKey.Length) && (pubKey.Length <= IdentityBase.MaxPublicKeyLengthBytes);
         if (pubKeyValid)
         {
-          if (IdentityDatabase.ContainsKey(pubKey))
+          byte[] id = Crypto.Sha256(pubKey);
+          if (IdentityDatabase.ContainsKey(id))
           {
-            log.Debug("Identity with public key '{0}' already exists.", pubKey.ToHex());
+            log.Debug("Identity with public key '{0}' (ID '{1}') already exists.", pubKey.ToHex(), id.ToHex());
             details = "add.identityPublicKey";
           }
         }
@@ -1277,7 +1368,7 @@ namespace ProfileServer.Network
       if (details == null)
       {
         int nameSize = Encoding.UTF8.GetByteCount(AddItem.Name);
-        bool nameValid = nameSize <= IdentityBase.MaxProfileNameLengthBytes;
+        bool nameValid = !string.IsNullOrEmpty(AddItem.Name) && (nameSize <= IdentityBase.MaxProfileNameLengthBytes);
         if (!nameValid)
         {
           log.Debug("Invalid name size in bytes {0}.", nameSize);
@@ -1288,7 +1379,7 @@ namespace ProfileServer.Network
       if (details == null)
       {
         int typeSize = Encoding.UTF8.GetByteCount(AddItem.Type);
-        bool typeValid = typeSize <= IdentityBase.MaxProfileTypeLengthBytes;
+        bool typeValid = (0 < typeSize) && (typeSize <= IdentityBase.MaxProfileTypeLengthBytes);
         if (!typeValid)
         {
           log.Debug("Invalid type size in bytes {0}.", typeSize);
@@ -1320,11 +1411,11 @@ namespace ProfileServer.Network
 
       if (details == null)
       {
-        GpsLocation locLon = new GpsLocation(AddItem.Longitude, 0);
+        GpsLocation locLon = new GpsLocation(0, AddItem.Longitude);
         if (!locLon.IsValid())
         {
           log.Debug("Invalid longitude {0}.", AddItem.Longitude);
-          details = "add.latitude";
+          details = "add.longitude";
         }
       }
 
@@ -1384,6 +1475,7 @@ namespace ProfileServer.Network
             {
               // The neighbor is now initialized and is allowed to send us updates.
               neighbor.LastRefreshTime = DateTime.UtcNow;
+              neighbor.SharedProfiles = identityDatabase.Count;
               unitOfWork.NeighborRepository.Update(neighbor);
 
               // Insert all its identities.

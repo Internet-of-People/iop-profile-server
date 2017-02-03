@@ -33,8 +33,8 @@ namespace ProfileServerNetworkSimulator
     /// <summary>Base TCP port of the instance, which can use ports between Port and Port + 19.</summary>
     public int BasePort;
 
-    /// <summary>Port of LBN server.</summary>
-    public int LbnPort;
+    /// <summary>Port of LOC server.</summary>
+    public int LocPort;
 
     /// <summary>Port of profile server primary interface.</summary>
     public int PrimaryInterfacePort;
@@ -60,14 +60,14 @@ namespace ProfileServerNetworkSimulator
     /// <summary>Network ID of the profile server.</summary>
     public string NetworkId;
 
-    /// <summary>Related LBN server instance.</summary>
-    public LbnServerSnapshot LbnServer;
+    /// <summary>Related LOC server instance.</summary>
+    public LocServerSnapshot LocServer;
   }
 
   /// <summary>
-  /// Description of LBN server instance.
+  /// Description of LOC server instance.
   /// </summary>
-  public class LbnServerSnapshot
+  public class LocServerSnapshot
   {
     /// <summary>Interface IP address the server listens on.</summary>
     public string IpAddress;
@@ -192,7 +192,7 @@ namespace ProfileServerNetworkSimulator
       this.Name = Name;
       ProfileServers = new List<ProfileServerSnapshot>();
       Identities = new List<IdentitySnapshot>();
-      Images = new Dictionary<string, string>();
+      Images = new Dictionary<string, string>(StringComparer.Ordinal);
 
       snapshotDirectory = Path.Combine(CommandProcessor.SnapshotDirectory, this.Name);
       profileServersFile = Path.Combine(snapshotDirectory, ProfileServersFileName);

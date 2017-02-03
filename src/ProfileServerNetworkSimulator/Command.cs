@@ -40,7 +40,7 @@ namespace ProfileServerNetworkSimulator
 
 
   /// <summary>
-  /// ProfileServer command creates one or more profile servers with associated LBN server.
+  /// ProfileServer command creates one or more profile servers with associated LOC server.
   /// </summary>
   public class CommandProfileServer : Command
   {
@@ -50,7 +50,7 @@ namespace ProfileServerNetworkSimulator
     /// <summary>Number of instances to create.</summary>
     public int Count;
 
-    /// <summary>TCP port number from which TCP ports of each profile server and associated LBN servers are to be calculated.</summary>
+    /// <summary>TCP port number from which TCP ports of each profile server and associated LOC servers are to be calculated.</summary>
     public int BasePort;
 
     /// <summary>GPS latitude in the decimal form of the target area centre.</summary>

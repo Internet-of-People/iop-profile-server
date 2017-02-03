@@ -108,7 +108,7 @@ namespace ProfileServerProtocolTests
 
       if (args.Length - 1 == ArgumentDescriptions.Count)
       {
-        ArgumentValues = new Dictionary<string, object>();
+        ArgumentValues = new Dictionary<string, object>(StringComparer.Ordinal);
         int index = 1;
         foreach (ProtocolTestArgument argument in ArgumentDescriptions)
         {

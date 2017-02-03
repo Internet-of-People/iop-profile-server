@@ -109,9 +109,9 @@ namespace ProfileServer.Data
     }
 
 
-    /// <summary>Identity repository for the node customers.</summary>
+    /// <summary>Identity repository for the profile server customers.</summary>
     private HostedIdentityRepository hostedIdentityRepository;
-    /// <summary>Identity repository for the node customers.</summary>
+    /// <summary>Identity repository for the profile server customers.</summary>
     public HostedIdentityRepository HostedIdentityRepository
     {
       get
@@ -123,9 +123,9 @@ namespace ProfileServer.Data
       }
     }
 
-    /// <summary>Identity repository for identities hosted in the node's neighborhood.</summary>
+    /// <summary>Identity repository for identities hosted in the profile server's neighborhood.</summary>
     private NeighborIdentityRepository neighborIdentityRepository;
-    /// <summary>Identity repository for identities hosted in the node's neighborhood.</summary>
+    /// <summary>Identity repository for identities hosted in the profile server's neighborhood.</summary>
     public NeighborIdentityRepository NeighborIdentityRepository
     {
       get

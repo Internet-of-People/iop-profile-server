@@ -146,43 +146,43 @@ namespace ProfileServerProtocolTests.Tests
 
         // Step 3
         log.Trace("Step 3");
-        Message nodeRequestMessage = await clientCallee.ReceiveMessageAsync();
+        Message serverRequestMessage = await clientCallee.ReceiveMessageAsync();
 
         // What we received now can actually be either notification about caller1 or caller2, we do not know. 
         // So we have to check, which one is it before we proceed.
-        byte[] receivedPubKey = nodeRequestMessage.Request.ConversationRequest.IncomingCallNotification.CallerPublicKey.ToByteArray();
+        byte[] receivedPubKey = serverRequestMessage.Request.ConversationRequest.IncomingCallNotification.CallerPublicKey.ToByteArray();
         bool isCaller1 = StructuralComparisons.StructuralComparer.Compare(receivedPubKey, pubKeyCaller1) == 0;
         bool isCaller2 = StructuralComparisons.StructuralComparer.Compare(receivedPubKey, pubKeyCaller2) == 0;
         bool pubKeyOk = isCaller1 || isCaller2;
-        bool serviceNameOk = nodeRequestMessage.Request.ConversationRequest.IncomingCallNotification.ServiceName == serviceName;
+        bool serviceNameOk = serverRequestMessage.Request.ConversationRequest.IncomingCallNotification.ServiceName == serviceName;
 
         bool incomingCallNotificationOk1 = pubKeyOk && serviceNameOk;
 
         byte[] calleeToken1 = null;
         byte[] calleeToken2 = null;
-        if (isCaller1) calleeToken1 = nodeRequestMessage.Request.ConversationRequest.IncomingCallNotification.CalleeToken.ToByteArray();
-        else calleeToken2 = nodeRequestMessage.Request.ConversationRequest.IncomingCallNotification.CalleeToken.ToByteArray();
+        if (isCaller1) calleeToken1 = serverRequestMessage.Request.ConversationRequest.IncomingCallNotification.CalleeToken.ToByteArray();
+        else calleeToken2 = serverRequestMessage.Request.ConversationRequest.IncomingCallNotification.CalleeToken.ToByteArray();
 
-        Message nodeResponseMessage = mbCallee.CreateIncomingCallNotificationResponse(nodeRequestMessage);
-        await clientCallee.SendMessageAsync(nodeResponseMessage);
+        Message serverResponseMessage = mbCallee.CreateIncomingCallNotificationResponse(serverRequestMessage);
+        await clientCallee.SendMessageAsync(serverResponseMessage);
 
 
 
-        nodeRequestMessage = await clientCallee.ReceiveMessageAsync();
+        serverRequestMessage = await clientCallee.ReceiveMessageAsync();
 
         // This time, it has to be the other caller
-        receivedPubKey = nodeRequestMessage.Request.ConversationRequest.IncomingCallNotification.CallerPublicKey.ToByteArray();
+        receivedPubKey = serverRequestMessage.Request.ConversationRequest.IncomingCallNotification.CallerPublicKey.ToByteArray();
         if (isCaller1) pubKeyOk = StructuralComparisons.StructuralComparer.Compare(receivedPubKey, pubKeyCaller2) == 0;
         else pubKeyOk = StructuralComparisons.StructuralComparer.Compare(receivedPubKey, pubKeyCaller1) == 0;
-        serviceNameOk = nodeRequestMessage.Request.ConversationRequest.IncomingCallNotification.ServiceName == serviceName;
+        serviceNameOk = serverRequestMessage.Request.ConversationRequest.IncomingCallNotification.ServiceName == serviceName;
 
         bool incomingCallNotificationOk2 = pubKeyOk && serviceNameOk;
 
-        if (isCaller1) calleeToken2 = nodeRequestMessage.Request.ConversationRequest.IncomingCallNotification.CalleeToken.ToByteArray();
-        else calleeToken1 = nodeRequestMessage.Request.ConversationRequest.IncomingCallNotification.CalleeToken.ToByteArray();
+        if (isCaller1) calleeToken2 = serverRequestMessage.Request.ConversationRequest.IncomingCallNotification.CalleeToken.ToByteArray();
+        else calleeToken1 = serverRequestMessage.Request.ConversationRequest.IncomingCallNotification.CalleeToken.ToByteArray();
 
-        nodeResponseMessage = mbCallee.CreateIncomingCallNotificationResponse(nodeRequestMessage);
-        await clientCallee.SendMessageAsync(nodeResponseMessage);
+        serverResponseMessage = mbCallee.CreateIncomingCallNotificationResponse(serverRequestMessage);
+        await clientCallee.SendMessageAsync(serverResponseMessage);
 
 
 
@@ -306,23 +306,23 @@ namespace ProfileServerProtocolTests.Tests
         // Step 7
         log.Trace("Step 7");
         // Receive message #1.
-        Message nodeRequestAppServiceCallee = await clientCallee1AppService.ReceiveMessageAsync();
-        SemVer receivedVersion = new SemVer(nodeRequestAppServiceCallee.Request.SingleRequest.Version);
+        Message serverRequestAppServiceCallee = await clientCallee1AppService.ReceiveMessageAsync();
+        SemVer receivedVersion = new SemVer(serverRequestAppServiceCallee.Request.SingleRequest.Version);
         bool versionOk = receivedVersion.Equals(SemVer.V100);
 
-        typeOk = (nodeRequestAppServiceCallee.MessageTypeCase == Message.MessageTypeOneofCase.Request)
-          && (nodeRequestAppServiceCallee.Request.ConversationTypeCase == Request.ConversationTypeOneofCase.SingleRequest)
-          && (nodeRequestAppServiceCallee.Request.SingleRequest.RequestTypeCase == SingleRequest.RequestTypeOneofCase.ApplicationServiceReceiveMessageNotification);
+        typeOk = (serverRequestAppServiceCallee.MessageTypeCase == Message.MessageTypeOneofCase.Request)
+          && (serverRequestAppServiceCallee.Request.ConversationTypeCase == Request.ConversationTypeOneofCase.SingleRequest)
+          && (serverRequestAppServiceCallee.Request.SingleRequest.RequestTypeCase == SingleRequest.RequestTypeOneofCase.ApplicationServiceReceiveMessageNotification);
 
-        string receivedMessage = Encoding.UTF8.GetString(nodeRequestAppServiceCallee.Request.SingleRequest.ApplicationServiceReceiveMessageNotification.Message.ToByteArray());
+        string receivedMessage = Encoding.UTF8.GetString(serverRequestAppServiceCallee.Request.SingleRequest.ApplicationServiceReceiveMessageNotification.Message.ToByteArray());
         bool messageOk = receivedMessage == caller1Message1;
 
         bool receiveMessageOk = versionOk && typeOk && messageOk;
 
 
         // ACK message #1.
-        Message nodeResponseAppServiceCallee = mbCallee1AppService.CreateApplicationServiceReceiveMessageNotificationResponse(nodeRequestAppServiceCallee);
-        await clientCallee1AppService.SendMessageAsync(nodeResponseAppServiceCallee);
+        Message serverResponseAppServiceCallee = mbCallee1AppService.CreateApplicationServiceReceiveMessageNotificationResponse(serverRequestAppServiceCallee);
+        await clientCallee1AppService.SendMessageAsync(serverResponseAppServiceCallee);
 
 
 

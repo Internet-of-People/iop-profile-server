@@ -44,18 +44,18 @@ namespace ProfileServer.Network
     private PrefixLogger log;
 
     /// <summary>
-    /// Time in seconds for which a remote client is allowed not to send any request to the node in the open connection.
-    /// If the node detects an open connection to the client without any request for more than this value,
-    /// the node will close the connection.
+    /// Time in seconds for which a remote client is allowed not to send any request to the profile server in the open connection.
+    /// If the profile server detects an open connection to the client without any request for more than this value,
+    /// the server will close the connection.
     /// </summary>
     public const int ClientKeepAliveIntervalSeconds = 60;
 
     /// <summary>
-    /// Time in seconds for which a remote node is allowed not to send any request to the node in the open connection.
-    /// If the node detects an open connection to other node without any request for more than this value,
-    /// the node will close the connection.
+    /// Time in seconds for which a remote server is allowed not to send any request to the profile server in the open connection.
+    /// If the profile server detects an open connection to other profile server without any request for more than this value,
+    /// the server will close the connection.
     /// </summary>
-    public const int NodeKeepAliveIntervalSeconds = 300;
+    public const int ServerKeepAliveIntervalSeconds = 300;
 
 
     /// <summary>
@@ -63,7 +63,7 @@ namespace ProfileServer.Network
     /// </summary>
     public static Dictionary<ServerRole, bool> ServerRoleEncryption = new Dictionary<ServerRole, bool>()
     {
-      { ServerRole.Primary,  false },
+      { ServerRole.Primary,           false },
       { ServerRole.ServerNeighbor,    true  },
       { ServerRole.ClientCustomer,    true  },
       { ServerRole.ClientNonCustomer, true  },
@@ -71,12 +71,12 @@ namespace ProfileServer.Network
     };
 
     /// <summary>
-    /// Provides information about which server roles are for nodes and which are for clients.
-    /// true in this table means that the connection is either unknown (primary) or for nodes.
+    /// Provides information about which server roles are for servers and which are for clients.
+    /// true in this table means that the connection is either unknown (primary) or for servers.
     /// </summary>
-    public static Dictionary<ServerRole, bool> ServerRoleForNodes = new Dictionary<ServerRole, bool>()
+    public static Dictionary<ServerRole, bool> ServerRoleForServers = new Dictionary<ServerRole, bool>()
     {
-      { ServerRole.Primary,  true  },
+      { ServerRole.Primary,           true  },
       { ServerRole.ServerNeighbor,    true  },
       { ServerRole.ClientCustomer,    false },
       { ServerRole.ClientNonCustomer, false },
@@ -103,7 +103,7 @@ namespace ProfileServer.Network
     public bool IsRunning = false;
 
 
-    /// <summary>true if the server is serving only end user device clients and not nodes.</summary>
+    /// <summary>true if the server is serving only end user device clients and not servers.</summary>
     public bool IsServingClientsOnly = false;
 
 
@@ -188,14 +188,14 @@ namespace ProfileServer.Network
       Listener.Server.NoDelay = true;
 
       // We want to determine what types of clients do connect to this server.
-      // This information is stored in ServerRoleForNodes dictionary.
-      // If ServerRoleForNodes[R] is true for a role R, it means that that role is intended for nodes.
-      // Thus if this server roles only consist of roles, for which ServerRoleForNodes[x] is false,
+      // This information is stored in ServerRoleForServers dictionary.
+      // If ServerRoleForServers[R] is true for a role R, it means that that role is intended for servers.
+      // Thus if this server roles only consist of roles, for which ServerRoleForServers[x] is false,
       // it means that the server is intended for clients use.
       IsServingClientsOnly = true;
       foreach (ServerRole role in Enum.GetValues(typeof(ServerRole)))
       {
-        if (this.Roles.HasFlag(role) && ServerRoleForNodes[role])
+        if (this.Roles.HasFlag(role) && ServerRoleForServers[role])
         {
           this.IsServingClientsOnly = false;
           break;
@@ -382,7 +382,7 @@ namespace ProfileServer.Network
 
           if (tcpClient != null)
           {
-            int keepAliveInterval = IsServingClientsOnly ? ClientKeepAliveIntervalSeconds : NodeKeepAliveIntervalSeconds;
+            int keepAliveInterval = IsServingClientsOnly ? ClientKeepAliveIntervalSeconds : ServerKeepAliveIntervalSeconds;
 
             IncomingClient client = new IncomingClient(this, tcpClient, clientList.GetNewClientId(), UseTls, keepAliveInterval);
             ClientHandlerAsync(client);
@@ -407,9 +407,7 @@ namespace ProfileServer.Network
     /// Handler for each client that connects to the TCP server.
     /// </summary>
     /// <param name="Client">Client that is connected to TCP server.</param>
-    /// <remarks>The client is being handled in the processing loop until the connection to it 
-    /// is terminated by either side. This function implements reading the message from the network stream,
-    /// which includes reading the message length prefix followed by the entire message.</remarks>
+    /// <remarks>The client is being handled in the processing loop until the connection to it is terminated by either side.</remarks>
     private async void ClientHandlerAsync(IncomingClient Client)
     {
       LogDiagnosticContext.Start();

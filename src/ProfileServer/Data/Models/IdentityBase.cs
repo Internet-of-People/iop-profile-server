@@ -33,7 +33,7 @@ namespace ProfileServer.Data.Models
     /// <summary>Maximum number of bytes that profile extra data can occupy.</summary>
     public const int MaxProfileExtraDataLengthBytes = 200;
 
-    /// <summary>Length in bytes of node/identity identifiers.</summary>
+    /// <summary>Length in bytes of profile server/identity identifiers.</summary>
     public const int IdentifierLength = 32;
 
     /// <summary>Maximum number of bytes that public key can occupy.</summary>

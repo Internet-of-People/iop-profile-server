@@ -21,7 +21,7 @@ namespace ProfileServer.Network
 
   /// <summary>
   /// Implements structures for managment of a server's network peers and clients.
-  /// This includes context information of client to client calls over the node server relay.
+  /// This includes context information of client to client calls over the profile server relay.
   /// </summary>
   public class IncomingClientList
   {
@@ -35,7 +35,7 @@ namespace ProfileServer.Network
 
     /// <summary>
     /// List of network peers mapped by their internal ID. All network peers are in this list.
-    /// A network peer is any connected entity to the node's role server.
+    /// A network peer is any connected entity to the profile server's role server.
     /// </summary>
     private Dictionary<ulong, PeerListItem> peersByInternalId = new Dictionary<ulong, PeerListItem>();
 
@@ -45,7 +45,7 @@ namespace ProfileServer.Network
     private Dictionary<byte[], List<PeerListItem>> peersByIdentityId = new Dictionary<byte[], List<PeerListItem>>(StructuralEqualityComparer<byte[]>.Default);
 
     /// <summary>
-    /// List of online (checked-in) clients mapped by their Identity ID. Only node's clients are in this list.
+    /// List of online (checked-in) clients mapped by their Identity ID. Only profile server's clients are in this list.
     /// A client is an identity hosted by this server.
     /// </summary>
     private Dictionary<byte[], PeerListItem> clientsByIdentityId = new Dictionary<byte[], PeerListItem>(StructuralEqualityComparer<byte[]>.Default);
@@ -163,7 +163,7 @@ namespace ProfileServer.Network
     /// <summary>
     /// Adds a checked-in client to the clientsByIdentityList.
     /// </summary>
-    /// <param name="Client">Checked-in node's client to add.</param>
+    /// <param name="Client">Checked-in profile server's client to add.</param>
     /// <returns>true if the function succeeds, false otherwise. The function may fail only 
     /// if there is an asynchrony in internal peer lists, which should never happen.</returns>
     public async Task<bool> AddCheckedInClient(IncomingClient Client)
@@ -316,10 +316,10 @@ namespace ProfileServer.Network
 
 
     /// <summary>
-    /// Creates a new network relay between a caller identity and one of the node's customer identities that is online.
+    /// Creates a new network relay between a caller identity and one of the profile server's customer identities that is online.
     /// </summary>
     /// <param name="Caller">Initiator of the call.</param>
-    /// <param name="Callee">Node's customer client to be called.</param>
+    /// <param name="Callee">Profile server's customer client to be called.</param>
     /// <param name="ServiceName">Name of the application service to use.</param>
     /// <param name="RequestMessage">CallIdentityApplicationServiceRequest message that the caller send in order to initiate the call.</param>
     /// <returns>New relay connection object if the function succeeds, or null otherwise.</returns>

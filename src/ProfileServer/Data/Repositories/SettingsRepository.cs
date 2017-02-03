@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace ProfileServer.Data.Repositories
 {
   /// <summary>
-  /// Database key-value repository for node settings.
+  /// Database key-value repository for profile server settings.
   /// </summary>
   public class SettingsRepository : GenericRepository<Setting>
   {
@@ -21,7 +21,7 @@ namespace ProfileServer.Data.Repositories
     }
 
     /// <summary>
-    /// Obtains integer value from node settings.
+    /// Obtains integer value from profile server settings.
     /// </summary>
     /// <param name="Name">Setting name.</param>
     /// <returns>Integer value of the setting or -1 if the setting with corresponding name does not exist or if it is not an integer setting.</returns>
@@ -40,7 +40,7 @@ namespace ProfileServer.Data.Repositories
     }
 
     /// <summary>
-    /// Obtains string value from node settings.
+    /// Obtains string value from profile server settings.
     /// </summary>
     /// <param name="Name">Setting name.</param>
     /// <returns>String value of the setting or null if the setting with corresponding name does not exist.</returns>

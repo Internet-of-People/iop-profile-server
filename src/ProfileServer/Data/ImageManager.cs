@@ -1,4 +1,6 @@
-﻿using ProfileServer.Data.Models;
+﻿using ImageSharp;
+using ImageSharp.Formats;
+using ProfileServer.Data.Models;
 using ProfileServer.Kernel;
 using ProfileServer.Utils;
 using ProfileServerCrypto;
@@ -25,7 +27,7 @@ namespace ProfileServer.Data
   /// </summary>
   public class ImageManager: Component
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Data.ImageManger");
+    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Data.ImageManager");
 
     /// <summary>Lock object to protect access to referenceCounter.</summary>
     private object referenceCounterLock = new object();
@@ -51,6 +53,9 @@ namespace ProfileServer.Data
       try
       {
         imageManager = this;
+
+        Configuration.Default.AddImageFormat(new JpegFormat());
+        Configuration.Default.AddImageFormat(new PngFormat());
 
         if (InitializeReferenceCounter()
           && DeleteUnusedImages())
@@ -509,14 +514,16 @@ namespace ProfileServer.Data
     public static bool ValidateImageFormat(byte[] Data)
     {
       log.Trace("(Data.Length:{0})", Data.Length);
-#warning TODO: This function currently does nothing, waiting for some libraries to be released.
-      // TODO: 
-      // * check image is valid PNG or JPEG format
-      // * waiting for https://github.com/JimBobSquarePants/ImageSharp to release
-      //   or https://magick.codeplex.com/documentation to support all OS with NET Core releases
-      log.Fatal("TODO UNIMPLEMENTED");
 
-      bool res = Data.Length > 2;
+      bool res = false;
+      try
+      {
+        Image image = new Image(Data);
+        res = true;
+      }
+      catch
+      {
+      }
 
       log.Trace("(-):{0}", res);
       return res;
@@ -528,26 +535,116 @@ namespace ProfileServer.Data
     /// </summary>
     /// <param name="ProfileImage">Binary data of the profile image data.</param>
     /// <param name="ThumbnailImage">On the output, this is filled with thumbnail image data.</param>
+    /// <remarks>The caller is responsible for validating the image data provided in <paramref name="ProfileImage"/> before calling this function.</remarks>
     public static void ProfileImageToThumbnailImage(byte[] ProfileImage, out byte[] ThumbnailImage)
     {
       log.Trace("(ProfileImage.Length:{0})", ProfileImage.Length);
 
-#warning TODO: This function currently does nothing, waiting for some libraries to be released.
-      // TODO: 
-      // * check if ProfileImage is small enough to represent thumbnail image without changes
-      // * if it is too big, check if it is PNG or JPEG
-      // * if it is PNG, convert to JPEG
-      // * resize and increase compression until small enough
-      // * waiting for https://github.com/JimBobSquarePants/ImageSharp to release
-      //   or https://magick.codeplex.com/documentation to support all OS with NET Core releases
+      ThumbnailImage = null;
 
-      log.Fatal("TODO UNIMPLEMENTED");
+      if (ProfileImage.Length <= IdentityBase.MaxThumbnailImageLengthBytes)
+      {
+        ThumbnailImage = ProfileImage;
+      }
+      else
+      {
+        // We need to make the picture smaller.
+        // If it is PNG, we try to convert it to JPEG of equivalent quality.
+        // If it is still too big, we resize it.
+        // If it is still too big, we reduce the quality down to 60 %.
+        // If it is still too big, we resize it again.
+        Image originalImage = ImageDataToJpegImage(ProfileImage);
+        Image<Color> image = new Image(originalImage);
+        double resizeRatio = 1;
+        bool done = false;
+        while (!done)
+        {
+          byte[] imageData = ImageToJpegByteArray(image);
+          log.Trace("Current image data size is {0} bytes, width is {1} px, height is {2} px, quality is {3} %.", imageData.Length, image.Width, image.Height, image.Quality);
 
-      int size = Math.Min(ProfileImage.Length, Data.Models.IdentityBase.MaxThumbnailImageLengthBytes);
-      ThumbnailImage = new byte[size];
-      Array.Copy(ProfileImage, ThumbnailImage, ThumbnailImage.Length);
+          if (imageData.Length <= IdentityBase.MaxThumbnailImageLengthBytes)
+          {
+            ThumbnailImage = imageData;
+            break;
+          }
 
-      log.Trace("(-):{0})", ThumbnailImage.Length);
+          // Try to resize the image based on its data size.
+          bool largeImage = (double)imageData.Length > 2 * (double)IdentityBase.MaxThumbnailImageLengthBytes;
+          if (largeImage)
+          {
+            double dataSizeRatio = Math.Sqrt((double)IdentityBase.MaxThumbnailImageLengthBytes / (double)imageData.Length);
+            resizeRatio *= dataSizeRatio;
+            log.Trace("Changing image size from {0}x{1}px to {2}x{3}px.", image.Width, image.Height, (int)(originalImage.Width * resizeRatio), (int)(originalImage.Height * resizeRatio));
+            image = ImageResizeByRatio(originalImage, resizeRatio);
+            continue;
+          }
+
+          // Try to lower the quality.
+          if (image.Quality > 60)
+          {
+            int newQuality = image.Quality - 10;
+            if (newQuality < 60) newQuality = 60;
+            log.Trace("Changing image quality from {0} % to {1} %.", image.Quality, newQuality);
+            image.Quality = newQuality;
+            continue;
+          }
+
+          // Try to resize the image.
+          resizeRatio *= 0.9;
+          log.Trace("Changing image size from {0}x{1}px to {2}x{3}px.", image.Width, image.Height, (int)(originalImage.Width * resizeRatio), (int)(originalImage.Height * resizeRatio));
+          image = ImageResizeByRatio(originalImage, resizeRatio);
+        }
+      }
+
+      log.Trace("(-):ThumbnailImage.Length:{0}", ThumbnailImage.Length);
+    }
+
+
+    /// <summary>
+    /// Converts the image to JPEG format or equivalent quality.
+    /// </summary>
+    /// <param name="OriginalImage">Binary data of original image.</param>
+    /// <returns>JPEG image.</returns>
+    private static Image ImageDataToJpegImage(byte[] OriginalImage)
+    {
+      Image image = new Image(OriginalImage);
+      image.Quality = 90;
+      if (image.CurrentImageFormat.Extension == "jpg") return image;
+
+      byte[] jpegData = ImageToJpegByteArray(image);
+      Image res = new Image(jpegData);
+      res.Quality = 90;
+      return res;
+    }
+
+    /// <summary>
+    /// Converts image to JPEG byte array of specified quality.
+    /// </summary>
+    /// <param name="Image">Image to save as JPEG byte array.</param>
+    /// <returns>Byte array representing JPEG image.</returns>
+    private static byte[] ImageToJpegByteArray(Image<Color> Image)
+    {
+      byte[] res = null;
+      using (MemoryStream ms = new MemoryStream())
+      {
+        Image.SaveAsJpeg(ms, Image.Quality);
+        res = ms.ToArray();
+      }
+      return res;
+    }
+
+    /// <summary>
+    /// Resizes image to a new size using the specific ratio.
+    /// </summary>
+    /// <param name="OriginalImage">Image to resize.</param>
+    /// <param name="Ratio">Resizing ratio.</param>
+    /// <returns>New image, which width and height is smaller than of the original image by the given ratio.</returns>
+    private static Image<Color> ImageResizeByRatio(Image OriginalImage, double Ratio)
+    {
+      int newImageWidth = (int)((double)OriginalImage.Width * Ratio);
+      int newImageHeight = (int)((double)OriginalImage.Height * Ratio);
+      Image<Color> res = new Image(OriginalImage).Resize(newImageWidth, newImageHeight);
+      return res;
     }
   }
 }

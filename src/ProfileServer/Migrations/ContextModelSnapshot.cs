@@ -134,6 +134,8 @@ namespace ProfileServer.Migrations
 
                     b.Property<int>("PrimaryPort");
 
+                    b.Property<int>("SharedProfiles");
+
                     b.Property<int?>("SrNeighborPort");
 
                     b.HasKey("DbId");

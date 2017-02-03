@@ -22,9 +22,9 @@ using System.Linq;
 namespace ProfileServer.Network.CAN
 {
   /// <summary>
-  /// Location based network (LBN) is a part of IoP that the profile server relies on.
-  /// When the node starts, this component connects to LBN and obtains information about the node's neighborhood.
-  /// Then it keep receiving updates from LBN about changes in the neighborhood structure.
+  /// Location based network (LOC) is a part of IoP that the profile server relies on.
+  /// When the profile server starts, this component connects to LOC and obtains information about the profile 
+  /// server's neighborhood. Then it keeps receiving updates from LOC about changes in the neighborhood structure.
   /// The profile server needs to share its database of hosted identities with its neighbors and it also accepts 
   /// requests to share foreign profiles and consider them during its own search queries.
   /// </summary>
@@ -36,9 +36,7 @@ namespace ProfileServer.Network.CAN
     private const int IpnsRecordExpirationTimeSeconds = 24 * 60 * 60;
 
     /// <summary>IPNS record refresh frequency in milliseconds.</summary>
-#warning put back
-    //private const int IpnsRecordRefreshIntervalMs = 7 * 60 * 60 * 1000;
-    private const int IpnsRecordRefreshIntervalMs = 17 * 1000;
+    private const int IpnsRecordRefreshIntervalMs = 7 * 60 * 60 * 1000;
 
     /// <summary>Time format of IPNS record.</summary>
     private const string Rfc3339DateTimeFormat = "yyyy-MM-dd'T'HH:mm:ss.fffK";

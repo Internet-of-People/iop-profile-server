@@ -62,7 +62,7 @@ namespace ProfileServer.Config
   /// and partly in the database. The instance of the configuration class is accessible via <c>Kernel.Base.Configuration</c>.
   /// </summary>
   /// <remarks>
-  /// Loading configuration is essential for the node's startup. If any part of it fails, the node will refuse to start.
+  /// Loading configuration is essential for the profile server's startup. If any part of it fails, the profile server will refuse to start.
   /// </remarks>
   public class Config : Kernel.Component
   {
@@ -71,7 +71,7 @@ namespace ProfileServer.Config
     /// <summary>Default name of the configuration file.</summary>
     public const string ConfigFileName = "ProfileServer.conf";
 
-    /// <summary>Specification of network interface, on which the node servers will operate.</summary>
+    /// <summary>Specification of network interface, on which the profile server will operate.</summary>
     public IPAddress ServerInterface;
 
     /// <summary>Certificate to be used for TCP TLS server.</summary>
@@ -86,22 +86,22 @@ namespace ProfileServer.Config
     /// <summary>Path to the directory where temporary files are stored.</summary>
     public string TempDataFolder;
 
-    /// <summary>Maximal total number of identities hosted by this node.</summary>
+    /// <summary>Maximal total number of identities hosted by this profile server.</summary>
     public int MaxHostedIdentities;
 
     /// <summary>Maximum number of relations that an identity is allowed to have. Must be lower than RelatedIdentity.MaxIdentityRelations.</summary>
     public int MaxIdenityRelations;
 
-    /// <summary>Maximum number of parallel neighborhood initialization processes that the node is willing to process.</summary>
+    /// <summary>Maximum number of parallel neighborhood initialization processes that the profile server is willing to process.</summary>
     public int NeighborhoodInitializationParallelism;
 
     /// <summary>End point of the Location Based Network server.</summary>
-    public IPEndPoint LbnEndPoint;
+    public IPEndPoint LocEndPoint;
 
     /// <summary>End point of the Content Address Network server.</summary>
     public IPEndPoint CanEndPoint;
 
-    /// <summary>Cryptographic keys of the node that can be used for signing messages and verifying signatures.</summary>
+    /// <summary>Cryptographic keys of the profile server that can be used for signing messages and verifying signatures.</summary>
     public KeysEd25519 Keys;
 
     /// <summary>Time in seconds between the last update of shared profiles received from a neighbor server up to the point when 
@@ -200,7 +200,7 @@ namespace ProfileServer.Config
     /// <para>Loads global configuration from a string array that corresponds to lines of configuration file.</para>
     /// <seealso cref="LoadConfigurationFromFile"/>
     /// </summary>
-    /// <param name="Lines">Node configuration as a string array.</param>
+    /// <param name="Lines">Profile server configuration as a string array.</param>
     /// <returns>true if the function succeeds, false otherwise.</returns>
     public bool LoadConfigurationFromStringArray(string[] Lines)
     {
@@ -219,9 +219,9 @@ namespace ProfileServer.Config
         int maxHostedIdentities = 0;
         int maxIdentityRelations = 0;
         int neighborhoodInitializationParallelism = 0;
-        int lbnPort = 0;
+        int locPort = 0;
         int canPort = 0;
-        IPEndPoint lbnEndPoint = null;
+        IPEndPoint locEndPoint = null;
         IPEndPoint canEndPoint = null;
         int neighborProfilesExpirationTimeSeconds = 0;
         int followerRefreshTimeSeconds = 0;
@@ -246,7 +246,7 @@ namespace ProfileServer.Config
           { "max_hosted_identities",                   ConfigValueType.Int            },
           { "max_identity_relations",                  ConfigValueType.Int            },
           { "neighborhood_initialization_parallelism", ConfigValueType.Int            },
-          { "lbn_port",                                ConfigValueType.Port           },
+          { "loc_port",                                ConfigValueType.Port           },
           { "can_api_port",                            ConfigValueType.Port           },
           { "neighbor_profiles_expiration_time",       ConfigValueType.Int            },
           { "max_neighborhood_size",                   ConfigValueType.Int            },
@@ -272,7 +272,7 @@ namespace ProfileServer.Config
           maxIdentityRelations = (int)nameVal["max_identity_relations"];
           neighborhoodInitializationParallelism = (int)nameVal["neighborhood_initialization_parallelism"];
 
-          lbnPort = (int)nameVal["lbn_port"];
+          locPort = (int)nameVal["loc_port"];
           canPort = (int)nameVal["can_api_port"];
 
           neighborProfilesExpirationTimeSeconds = (int)nameVal["neighbor_profiles_expiration_time"];
@@ -392,16 +392,16 @@ namespace ProfileServer.Config
         {
           foreach (RoleServerConfiguration rsc in serverRoles.RoleServers.Values)
           {
-            if (lbnPort == rsc.Port)
+            if (locPort == rsc.Port)
             {
-              log.Error("lbn_port {0} collides with port of server role {1}.", lbnPort, rsc.Roles);
+              log.Error("loc_port {0} collides with port of server role {1}.", locPort, rsc.Roles);
               error = true;
               break;
             }
           }
 
           if (!error)
-            lbnEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), lbnPort);
+            locEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), locPort);
         }
 
         if (!error)
@@ -416,9 +416,9 @@ namespace ProfileServer.Config
             }
           }
 
-          if (canPort == lbnPort)
+          if (canPort == locPort)
           {
-            log.Error("can_api_port {0} collides with lbn_port.", canPort);
+            log.Error("can_api_port {0} collides with loc_port.", canPort);
             error = true;
           }
 
@@ -475,7 +475,7 @@ namespace ProfileServer.Config
           MaxHostedIdentities = maxHostedIdentities;
           MaxIdenityRelations = maxIdentityRelations;
           NeighborhoodInitializationParallelism = neighborhoodInitializationParallelism;
-          LbnEndPoint = lbnEndPoint;
+          LocEndPoint = locEndPoint;
           CanEndPoint = canEndPoint;
           NeighborProfilesExpirationTimeSeconds = neighborProfilesExpirationTimeSeconds;
           FollowerRefreshTimeSeconds = followerRefreshTimeSeconds;

@@ -562,7 +562,7 @@ namespace ProfileServerProtocol
     /// <summary>
     /// Creates a new RegisterHostingRequest message.
     /// </summary>
-    /// <param name="Contract">Hosting contract for one of the node's plan to base the hosting agreement on.</param>
+    /// <param name="Contract">Hosting contract for one of the profile server's plan to base the hosting agreement on.</param>
     /// <returns>RegisterHostingRequest message that is ready to be sent.</returns>
     public Message CreateRegisterHostingRequest(HostingPlanContract Contract)
     {
@@ -1090,8 +1090,8 @@ namespace ProfileServerProtocol
     /// <param name="Location">GPS location, near which the target identities has to be located. If no location filtering is required this is set to null.</param>
     /// <param name="Radius">If <paramref name="Location"/> is not 0, this is radius in metres that together with <paramref name="Location"/> defines the target area.</param>
     /// <param name="MaxResponseRecordCount">Maximal number of results to be included in the response. This is an integer between 1 and 100 if <paramref name="IncludeThumnailImages"/> is true, otherwise this is integer between 1 and 1000.</param>
-    /// <param name="MaxTotalRecordCount">Maximal number of total results that the node will look for and save. This is an integer between 1 and 1000 if <paramref name="IncludeThumnailImages"/> is true, otherwise this is integer between 1 and 10000.</param>
-    /// <param name="IncludeHostedOnly">If set to true, the node only returns profiles of its own hosted identities. Otherwise, identities from the node's neighborhood can be included.</param>
+    /// <param name="MaxTotalRecordCount">Maximal number of total results that the profile server will look for and save. This is an integer between 1 and 1000 if <paramref name="IncludeThumnailImages"/> is true, otherwise this is integer between 1 and 10000.</param>
+    /// <param name="IncludeHostedOnly">If set to true, the profile server only returns profiles of its own hosted identities. Otherwise, identities from the profile server's neighborhood can be included.</param>
     /// <param name="IncludeThumbnailImages">If set to true, the response will include a thumbnail image of each profile.</param>
     /// <returns>ProfileSearchRequest message that is ready to be sent.</returns>
     public Message CreateProfileSearchRequest(string IdentityType, string Name, string ExtraData, GpsLocation Location = null, uint Radius = 0, uint MaxResponseRecordCount = 100, uint MaxTotalRecordCount = 1000, bool IncludeHostedOnly = false, bool IncludeThumbnailImages = true)

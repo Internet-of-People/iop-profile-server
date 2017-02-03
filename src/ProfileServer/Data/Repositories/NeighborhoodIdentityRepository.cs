@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 namespace ProfileServer.Data.Repositories
 {
   /// <summary>
-  /// Repository for identities hosted within this node's neighborhood.
+  /// Repository for identities hosted within this profile server's neighborhood.
   /// </summary>
   public class NeighborIdentityRepository : IdentityRepository<NeighborIdentity>
   {
