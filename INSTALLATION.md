@@ -5,13 +5,16 @@ In order to install and run Profile Server, you need to
  * Install .NET Core,
  * install OpenSSL (needed only for TLS certificate generation),
  * download the Profile Server source codes from GitHub,
- * build the Profile Server binaries,
+   * AND build the Profile Server binaries,
+ * OR download the Profile Server binaries,
  * configure the Profile Server,
  * run the Profile Server.
+
 
 ## Install .NET Core
 
 Simply go to [Microsoft .NET Core website](https://www.microsoft.com/net/core) and follow the instruction on how to install .NET Core to your system.
+
 
 ## Install OpenSSL
 
@@ -19,11 +22,12 @@ Please visit [OpenSSL website](https://www.openssl.org/) and follow the instruct
 [Win32 OpenSSL Installation Project website](https://slproweb.com/products/Win32OpenSSL.html).
 
 
-## Download Profile Server
+## Download Profile Server Source Codes
 
 If you are familiar with GIT and GitHub, you will probably know what to do.
-Id you are not familiar with it, simply go to the [Main Page](https://github.com/Fermat-ORG/iop-profile-server/) of the repository and click the *Clone and download* green button 
+If you are not familiar with it, simply go to the [Main Page](https://github.com/Fermat-ORG/iop-profile-server/) of the repository and click the *Clone and download* green button 
 on the right side. Then click the *Download ZIP* link and save the file on your disk. Unzip the file to any folder of your choice. This folder will be called `$InstDir` in the text below.
+
 
 ## Build Profile Server
 
@@ -56,6 +60,12 @@ dotnet ef database update
 ```
 
 to initialize the Profile Server's database.
+
+
+## Download Profile Server Binaries
+
+Go to [Releases Page](https://github.com/Fermat-ORG/iop-profile-server/releases) and download the latest release for your platform, if available.
+
 
 ## Configure Profile Server
 
@@ -90,7 +100,8 @@ Copy logging configuration file `$InstDir\src\ProfileServer\Nlog.conf` to your `
 
 ## Run Profile Server
 
-There are two ways how to run the Profile Server. If your system is one of the supported system, on which the build process generated executable files, you simply got to your `$BinDir` and execute:
+There are two ways how to run the Profile Server. If your system is one of the supported system, on which the build process generated executable files, or you were able to download Profile Server binaries, 
+you simply got to your `$BinDir` and execute:
 
 ```
 ProfileServer
@@ -106,6 +117,6 @@ dotnet run
 ## Troubleshooting
 
 If you added a logging configuration file to your `$BinDir` as described above, every time you run the Profile Server, logs are going to be created in `$BinDir\Logs` folder. If there are any problems 
-with your Profile Server, the log file will contain detailed information about it and may help you overcome the problems.
+with your Profile Server, the log file will contain detailed information about it and may help you solve the problems.
 
 

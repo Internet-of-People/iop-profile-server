@@ -1,5 +1,71 @@
 # IoP Profile Server - TODOs and Possible Improvements
 
+
+
+## Features Not Yet Implemented
+
+Some of the following features are going to be implemented, others will be considered.
+
+### Network Simulator LOC Support
+
+The network simulator is a tool that allows developers to run multiple instances of the profile server on a single machine and create a testing network, 
+in which various scenarios can be played. Currently, the network simulator implements a dummy LOC server, which simulates a basic functionality of a LOC server.
+We need to improve the network simulator to support real LOC software, to help us test LOC functionality within the simulator as well as the integration 
+between the profile server and the LOC server.
+
+
+### Multimachine Network Simulator Support
+
+Currently, the network simulator can only run on a single machine, which limits the size of the simulated networks because of the simulator's hardware resource demands.
+It may be possible to extend the functionality of the network simulator to support execution on multiple machines, thus allowing simulating large 
+network environments on just couple of testing servers.
+
+
+### Profile Changes Notification
+
+Some end user IoP applications may be interested in being notified every time a certain profile is updated on its profile server.
+Currently, there is no system of offline messages, so it is expected that the notification could only be provided if the interested application 
+has an open connection to the profile server that hosts the monitored profile. However, such an implementation could singnificantly increase
+the resources consumed by the profile server, if the number of watchers is high.
+
+
+### Hosting Plans and Invoicing
+
+Currently, the profile server does not charge anything for its services and everyone is free to register and use it, unless the profile server hits 
+its configured limits. A system of hosting plans is intended to limit the free use of the profile server by introducing various quotas on each 
+functionality the profile server offers. It is expected that each profile server will offer a very limited free hosting plan that will allow 
+new network users to join the network free of charge, as well as to offer paid plans for users that are able to provide monthly payments.
+
+Invoicing is the intended system of payment requests delivered to the clients to ask them to pay for the profile server services to its wallet.
+
+
+### Backup Node
+
+To prevent losing the access to the network when a client's hosting profile servers is not available, a system of backup nodes can be created.
+A backup node will contain up to date profile information about the client, but it will not be used until the client requests it due to problems 
+with its primary hosting server. The backup node will then replace the role of the client's hosting server until its primary server is available again.
+In case of permanent unavailability of the primary server, the client is expected to fully migrate to the backup server, or another profile server.
+
+
+
+### Admin Interface
+
+A special interface for the administrator of the profile server should be implemented to allow easier management and change of settings of the profile 
+server without a need to restart it, as well as to provide various statistics about the profile server's operations.
+
+
+### Regression Test Mode
+
+Once the admin interface is ready, we can implement a regression test mode that will allow developers to create new kinds of tests of the profile server.
+
+
+
+
+### DoS Protection and Blacklisting
+
+See [Security](#security) below.
+
+
 ## Security
 
 ### DoS and Sybil Attack using Neighborhood Initialization Process
@@ -22,7 +88,6 @@ operation for the client compared to the amount of work that the server is poten
 Similarly, there are currently no limits on other requests such as profile updates.
 
 To mitigate this issue, we would need to introduce identity based or IP based limits on search queries and other requests.
-
 
 
 ### Sybil Attack on Profile Hosting Registration
