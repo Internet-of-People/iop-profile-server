@@ -402,26 +402,34 @@ namespace ProfileServerProtocolTests
     /// <summary>
     /// Returns location network node information.
     /// </summary>
+    /// <param name="LocPort">Port of the associated LOC server.</param>
     /// <returns>NodeInfo structure describing the server in location network.</returns>
-    public Iop.Locnet.NodeInfo GetNodeInfo()
+    public Iop.Locnet.NodeInfo GetNodeInfo(int LocPort)
     {
       Iop.Locnet.NodeInfo res = new Iop.Locnet.NodeInfo()
       {
+        NodeId = ProtocolHelper.ByteArrayToByteString(new byte[0]),
         Location = new Iop.Locnet.GpsLocation()
         {
           Latitude = location.GetLocationTypeLatitude(),
           Longitude = location.GetLocationTypeLongitude()
         },
-        Profile = new Iop.Locnet.NodeProfile()
+        Contact = new Iop.Locnet.NodeContact()
         {
-          NodeId = ProtocolHelper.ByteArrayToByteString(Crypto.Sha256(keys.PublicKey)),
-          Contact = new Iop.Locnet.Contact()
-          {
-            IpAddress = ProtocolHelper.ByteArrayToByteString(ipAddress.GetAddressBytes()),
-            Port = (uint)primaryPort
-          }
-        }
+          IpAddress = ProtocolHelper.ByteArrayToByteString(ipAddress.GetAddressBytes()),
+          NodePort = (uint)LocPort,
+          ClientPort = (uint)LocPort
+        },
       };
+
+      Iop.Locnet.ServiceInfo serviceInfo = new Iop.Locnet.ServiceInfo()
+      {
+        Type = Iop.Locnet.ServiceType.Profile,
+        Port = (uint)primaryPort,
+        ServiceData = ProtocolHelper.ByteArrayToByteString(Crypto.Sha256(keys.PublicKey))
+      };
+
+      res.Services.Add(serviceInfo); 
       return res;
     }
 

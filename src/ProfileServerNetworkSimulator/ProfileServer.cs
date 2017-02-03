@@ -97,14 +97,19 @@ namespace ProfileServerNetworkSimulator
     /// <summary>Lock object to protect access to some internal fields.</summary>
     private object internalLock = new object();
 
-    /// <summary>Node profile in LOC.</summary>
-    private Iop.Locnet.NodeProfile nodeProfile;
+    /// <summary>Network ID of the profile server, or null if it has not been initialized yet.</summary>
+    private byte[] networkId = null;
 
-    /// <summary>Network ID of the profile server.</summary>
-    private byte[] networkId;
+    /// <summary>
+    /// Profile server is initialized if it registered with its associated LOC server and filled in its network ID.
+    /// If it deregisters with its LOC server, it is set to false again, but its network ID remains.
+    /// </summary>
+    private bool initialized = false;
 
     /// <summary>Node location in LOC.</summary>
     private Iop.Locnet.GpsLocation nodeLocation;
+    /// <summary>Node location in LOC.</summary>
+    public Iop.Locnet.GpsLocation NodeLocation { get { return nodeLocation; } }
 
     /// <summary>List of profile servers for which this server acts as a neighbor, that are to be informed once this server is initialized.</summary>
     private HashSet<ProfileServer> initializationNeighborhoodNotificationList;
@@ -278,7 +283,13 @@ namespace ProfileServerNetworkSimulator
         log.Trace("Waiting for profile server to start ...");
         if (serverProcessInitializationCompleteEvent.WaitOne(60 * 1000))
         {
-          res = true;
+          log.Trace("Waiting for profile server to initialize with its LOC server ...");
+          int counter = 45;
+          while (!IsInitialized() && (counter > 0))
+          {
+            Thread.Sleep(1000);
+          }
+          res = counter > 0;
         }
         else log.Error("Instance process failed to start on time.");
 
@@ -303,7 +314,7 @@ namespace ProfileServerNetworkSimulator
         log.Trace("Instance process is running, stopping it now.");
         if (StopProcess())
         {
-          RemoveNodeProfile();
+          Uninitialize();
           res = true;
         }
       }
@@ -490,18 +501,18 @@ namespace ProfileServerNetworkSimulator
 
 
     /// <summary>
-    /// Sets profile server's node profile.
+    /// Sets profile server's network identifier.
     /// </summary>
-    /// <param name="NodeProfile">Node profile to set.</param>
-    public void SetNodeProfile(Iop.Locnet.NodeProfile NodeProfile)
+    /// <param name="NetworkId">Profile server's network identifier.</param>
+    public void SetNetworkId(byte[] NetworkId)
     {
-      log.Trace("()");
+      log.Trace("(NetworkId:'{0}')", Crypto.ToHex(NetworkId));
 
       List<ProfileServer> serversToNotify = null;
       lock (internalLock)
       {
-        nodeProfile = NodeProfile;
-        networkId = nodeProfile.NodeId.ToByteArray();
+        networkId = NetworkId;
+        initialized = true;
 
         if (initializationNeighborhoodNotificationList.Count != 0)
         {
@@ -521,15 +532,15 @@ namespace ProfileServerNetworkSimulator
     }
 
     /// <summary>
-    /// Removes profile server's node profile.
+    /// Sets the profile server's to uninitialized state.
     /// </summary>
-    public void RemoveNodeProfile()
+    public void Uninitialize()
     {
       log.Trace("()");
 
       lock (internalLock)
       {
-        nodeProfile = null;
+        initialized = false;
       }
 
       log.Trace("(-)");
@@ -550,7 +561,7 @@ namespace ProfileServerNetworkSimulator
         res = networkId;
       }
 
-      log.Trace("(-):{0}", res != null ? ProfileServerCrypto.Crypto.ToHex(res) : "null");
+      log.Trace("(-):{0}", res != null ? Crypto.ToHex(res) : "null");
       return res;
     }
 
@@ -567,7 +578,7 @@ namespace ProfileServerNetworkSimulator
 
       lock (internalLock)
       {
-        res = nodeProfile != null;
+        res = initialized;
       }
 
       log.Trace("(-):{0}", res);
@@ -611,9 +622,23 @@ namespace ProfileServerNetworkSimulator
       {
         res = new Iop.Locnet.NodeInfo()
         {
-          Profile = nodeProfile,
-          Location = nodeLocation
+          NodeId = ProtocolHelper.ByteArrayToByteString(new byte[0]),
+          Contact = new Iop.Locnet.NodeContact()
+          {
+            IpAddress = ProtocolHelper.ByteArrayToByteString(ipAddress.GetAddressBytes()),
+            ClientPort = (uint)locPort,
+            NodePort = (uint)locPort
+          },
+          Location = nodeLocation,
         };
+
+        Iop.Locnet.ServiceInfo serviceInfo = new Iop.Locnet.ServiceInfo()
+        {
+          Type = Iop.Locnet.ServiceType.Profile,
+          Port = (uint)primaryInterfacePort,
+          ServiceData = ProtocolHelper.ByteArrayToByteString(networkId)
+        };
+        res.Services.Add(serviceInfo);
       }
 
       log.Trace("(-)");
@@ -893,16 +918,11 @@ namespace ProfileServerNetworkSimulator
       res.locServer = new LocServer(res);
 
       byte[] ipBytes = res.ipAddress.GetAddressBytes();
-      Iop.Locnet.Contact contact = new Iop.Locnet.Contact()
+      Iop.Locnet.NodeContact contact = new Iop.Locnet.NodeContact()
       {
         IpAddress = ProtocolHelper.ByteArrayToByteString(ipBytes),
-        Port = (uint)res.primaryInterfacePort
-      };
-
-      res.nodeProfile = new Iop.Locnet.NodeProfile()
-      {
-        NodeId = ProtocolHelper.ByteArrayToByteString(res.networkId),
-        Contact = contact
+        ClientPort = (uint)res.locPort,
+        NodePort = (uint)res.locPort
       };
 
       return res;

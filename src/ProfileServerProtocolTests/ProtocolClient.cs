@@ -744,7 +744,7 @@ namespace ProfileServerProtocolTests
       {
         using (HttpClient client = new HttpClient())
         {
-          client.Timeout = TimeSpan.FromSeconds(8);
+          client.Timeout = TimeSpan.FromSeconds(30);
 
           using (HttpResponseMessage message = await client.PostAsync(url, null))
           {

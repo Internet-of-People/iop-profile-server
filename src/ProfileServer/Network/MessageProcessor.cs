@@ -3424,7 +3424,7 @@ namespace ProfileServer.Network
           {
             if (Neighbor.SharedProfiles >= IdentityBase.MaxHostedIdentities)
             {
-              log.Error("Neighbor ID '{0}' already shares the maximum number of profiles.", Neighbor.NeighborId.ToHex());
+              log.Warn("Neighbor ID '{0}' already shares the maximum number of profiles.", Neighbor.NeighborId.ToHex());
               res.ErrorResponse = MessageBuilder.CreateErrorInvalidValueResponse(RequestMessage, UpdateItemIndex + ".add");
               res.Error = true;
               break;
@@ -3462,7 +3462,7 @@ namespace ProfileServer.Network
             }
             else
             {
-              log.Error("Identity ID '{0}' already exists with hosting server ID '{1}'.", identityId.ToHex(), Neighbor.NeighborId.ToHex());
+              log.Warn("Identity ID '{0}' already exists with hosting server ID '{1}'.", identityId.ToHex(), Neighbor.NeighborId.ToHex());
               res.ErrorResponse = MessageBuilder.CreateErrorInvalidValueResponse(RequestMessage, UpdateItemIndex + ".add.identityPublicKey");
               res.Error = true;
             }
@@ -3503,7 +3503,7 @@ namespace ProfileServer.Network
             }
             else
             {
-              log.Error("Identity ID '{0}' does exists with hosting server ID '{1}'.", identityId.ToHex(), Neighbor.NeighborId.ToHex());
+              log.Warn("Identity ID '{0}' does exists with hosting server ID '{1}'.", identityId.ToHex(), Neighbor.NeighborId.ToHex());
               res.ErrorResponse = MessageBuilder.CreateErrorInvalidValueResponse(RequestMessage, UpdateItemIndex + ".change.identityNetworkId");
               res.Error = true;
             }
@@ -3528,7 +3528,7 @@ namespace ProfileServer.Network
             }
             else
             {
-              log.Error("Identity ID '{0}' does exists with hosting server ID '{1}'.", identityId.ToHex(), Neighbor.NeighborId.ToHex());
+              log.Warn("Identity ID '{0}' does exists with hosting server ID '{1}'.", identityId.ToHex(), Neighbor.NeighborId.ToHex());
               res.ErrorResponse = MessageBuilder.CreateErrorInvalidValueResponse(RequestMessage, UpdateItemIndex + ".delete.identityNetworkId");
               res.Error = true;
             }

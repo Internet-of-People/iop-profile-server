@@ -219,7 +219,7 @@ namespace ProfileServerProtocolTests.Tests
         // Announce new neighbor.
         Iop.Locnet.NeighbourhoodChange change = new Iop.Locnet.NeighbourhoodChange()
         {
-          AddedNodeInfo = profileServer.GetNodeInfo()
+          AddedNodeInfo = profileServer.GetNodeInfo(LocPort)
         };
         
         bool changeNotificationOk = await locServer.SendChangeNotification(change);

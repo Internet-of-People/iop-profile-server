@@ -234,22 +234,15 @@ namespace ProfileServer.Network
 
       bool res = false;
 
-      IPAddress serverIpAddress = Base.Configuration.ServerInterface;
-      byte[] ipBytes = serverIpAddress.GetAddressBytes();
-      Contact contact = new Contact()
+      uint primaryPort = (uint)Base.Configuration.ServerRoles.GetRolePort(ServerRole.Primary);
+      ServiceInfo serviceInfo = new ServiceInfo()
       {
-        IpAddress = ProtocolHelper.ByteArrayToByteString(ipBytes),
-        Port = (uint)Base.Configuration.ServerRoles.GetRolePort(ServerRole.Primary)
+        Port = primaryPort,
+        Type = ServiceType.Profile,
+        ServiceData = ProtocolHelper.ByteArrayToByteString(Crypto.Sha256(Base.Configuration.Keys.PublicKey))
       };
-
-      byte[] networkId = Crypto.Sha256(Base.Configuration.Keys.PublicKey);
-      NodeProfile nodeProfile = new NodeProfile()
-      {
-        NodeId = ProtocolHelper.ByteArrayToByteString(networkId),
-        Contact = contact
-      };
-
-      Message request = messageBuilder.CreateRegisterServiceRequest(ServiceType.Profile, nodeProfile);
+      
+      Message request = messageBuilder.CreateRegisterServiceRequest(serviceInfo);
       if (await SendMessageAsync(request))
       {
         RawMessageReader messageReader = new RawMessageReader(stream);
@@ -648,14 +641,19 @@ namespace ProfileServer.Network
 
               foreach (NodeInfo nodeInfo in getNeighbourNodesByDistanceResponse.Nodes)
               {
-                byte[] serverId = nodeInfo.Profile.NodeId.ToByteArray();
-                Contact contact = nodeInfo.Profile.Contact;
+                // Check whether a profile server is running on this node.
+                // If not, it is not interesting for us at all, skip it.
+                int profileServerPort;
+                byte[] profileServerId;
+                if (!HasProfileServerService(nodeInfo, out profileServerPort, out profileServerId)) continue;
+
+                NodeContact contact = nodeInfo.Contact;
                 IPAddress ipAddress = new IPAddress(contact.IpAddress.ToByteArray());
-                int port = (int)contact.Port;
+                
                 int latitude = nodeInfo.Location.Latitude;
                 int longitude = nodeInfo.Location.Longitude;
 
-                AddOrChangeNeighborResult addChangeRes = await AddOrChangeNeighbor(unitOfWork, serverId, ipAddress, port, latitude, longitude, neighborhoodSize);
+                AddOrChangeNeighborResult addChangeRes = await AddOrChangeNeighbor(unitOfWork, profileServerId, ipAddress, profileServerPort, latitude, longitude, neighborhoodSize);
 
                 neighborhoodSize = addChangeRes.NeighborhoodSize;
 
@@ -904,18 +902,21 @@ namespace ProfileServer.Network
                 case NeighbourhoodChange.ChangeTypeOneofCase.UpdatedNodeInfo:
                   {
                     bool isAdd = change.ChangeTypeCase == NeighbourhoodChange.ChangeTypeOneofCase.AddedNodeInfo;
-                    NodeProfile nodeProfile = isAdd ? change.AddedNodeInfo.Profile : change.UpdatedNodeInfo.Profile;
-                    byte[] serverId = nodeProfile.NodeId.ToByteArray();
+                    NodeInfo nodeInfo = isAdd ? change.AddedNodeInfo : change.UpdatedNodeInfo;
 
-                    Contact contact = nodeProfile.Contact;
+                    // Check whether a profile server is running on this node.
+                    // If not, it is not interesting for us at all, skip it.
+                    int profileServerPort;
+                    byte[] profileServerId;
+                    if (!HasProfileServerService(nodeInfo, out profileServerPort, out profileServerId)) break;
+
+                    NodeContact contact = nodeInfo.Contact;
                     IPAddress ipAddress = new IPAddress(contact.IpAddress.ToByteArray());
-                    int port = (int)contact.Port;
-                    Iop.Locnet.GpsLocation location = isAdd ? change.AddedNodeInfo.Location : change.UpdatedNodeInfo.Location;
+                    Iop.Locnet.GpsLocation location = nodeInfo.Location;
                     int latitude =  location.Latitude;
                     int longitude = location.Longitude;
 
-
-                    AddOrChangeNeighborResult addChangeRes = await AddOrChangeNeighbor(unitOfWork, serverId, ipAddress, port, latitude, longitude, neighborhoodSize);
+                    AddOrChangeNeighborResult addChangeRes = await AddOrChangeNeighbor(unitOfWork, profileServerId, ipAddress, profileServerPort, latitude, longitude, neighborhoodSize);
 
                     neighborhoodSize = addChangeRes.NeighborhoodSize;
 
@@ -990,9 +991,10 @@ namespace ProfileServer.Network
                     }
                     else
                     {
-                      log.Warn("Neighbor ID '{0}' not found, can not be removed.", serverId.ToHex());
-                      // Nothing bad really happens here if we have profiles of such a neighbor in NeighborIdentity table.
-                      // Those entries will expire and will be deleted.
+                      log.Debug("Neighbor ID '{0}' not found, can not be removed.", serverId.ToHex());
+                      // It can be the case that this node has not an associated profile server, so in that case we should ignore it.
+                      // If the node has an associated profile server, then nothing bad really happens here if we have profiles 
+                      // of such a neighbor in NeighborIdentity table. Those entries will expire and will be deleted.
                     }
                     break;
                   }
@@ -1063,6 +1065,48 @@ namespace ProfileServer.Network
       }
 
       log.Trace("(-)");
+    }
+
+
+
+    /// <summary>
+    /// Checks whether LOC node information contains a Profile Server service and if so, it returns its port and network ID.
+    /// </summary>
+    /// <param name="NodeInfo">Node information structure to scan.</param>
+    /// <param name="ProfileServerPort">If the node informatino contains Profile Server type of service, this is filled with the Profile Server port.</param>
+    /// <param name="ProfileServerId">If the node informatino contains Profile Server type of service, this is filled with the Profile Server network ID.</param>
+    /// <returns>true if the node information contains Profile Server type of service, false otherwise.</returns>
+    public bool HasProfileServerService(NodeInfo NodeInfo, out int ProfileServerPort, out byte[] ProfileServerId)
+    {
+      log.Trace("()");
+
+      bool res = false;
+      ProfileServerPort = 0;
+      ProfileServerId = null;
+      foreach (ServiceInfo si in NodeInfo.Services)
+      {
+        if (si.Type == ServiceType.Profile)
+        {
+          bool portValid = (0 < si.Port) && (si.Port <= 65535);
+          bool serviceDataValid = si.ServiceData.Length == IdentityBase.IdentifierLength;
+          if (portValid && serviceDataValid)
+          {
+            ProfileServerPort = (int)si.Port;
+            ProfileServerId = si.ServiceData.ToByteArray();
+            res = true;
+          }
+          else
+          {
+            if (!portValid) log.Warn("Invalid service port {0}.", si.Port);
+            if (!serviceDataValid) log.Warn("Invalid identifier length in ServiceData: {0} bytes.", si.ServiceData.Length);
+          }
+
+          break;
+        }
+      }
+
+      log.Trace("(-):{0}", res);
+      return res;
     }
   }
 }

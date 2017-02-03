@@ -101,8 +101,8 @@ namespace ProfileServer.Network.CAN
       {
         ShutdownSignaling.SignalShutdown();
 
-        if ((initThread != null) && !initThreadFinished.WaitOne(10000))
-          log.Error("Init thread did not terminated in 10 seconds.");
+        if ((initThread != null) && !initThreadFinished.WaitOne(25000))
+          log.Error("Init thread did not terminated in 25 seconds.");
 
         if (ipnsRecordRefreshTimer != null) ipnsRecordRefreshTimer.Dispose();
         ipnsRecordRefreshTimer = null;
@@ -122,8 +122,8 @@ namespace ProfileServer.Network.CAN
       if (ipnsRecordRefreshTimer != null) ipnsRecordRefreshTimer.Dispose();
       ipnsRecordRefreshTimer = null;
 
-      if ((initThread != null) && !initThreadFinished.WaitOne(10000))
-        log.Error("Init thread did not terminated in 10 seconds.");
+      if ((initThread != null) && !initThreadFinished.WaitOne(25000))
+        log.Error("Init thread did not terminated in 25 seconds.");
 
       log.Info("(-)");
     }
@@ -203,6 +203,7 @@ namespace ProfileServer.Network.CAN
         }
         else log.Trace("No old object to delete.");
 
+        if (ShutdownSignaling.IsShutdown) break;
         if (!error)
         {
           if (Base.Configuration.CanProfileServerContactInformationChanged)
