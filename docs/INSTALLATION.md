@@ -46,7 +46,7 @@ dotnet restore
 Go to `$InstDir\src\ProfileServer` and execute 
 
 ```
-dotnet restore
+dotnet restore --configfile NuGet.Config
 dotnet build
 ```
 
