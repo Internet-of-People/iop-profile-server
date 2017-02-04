@@ -52,4 +52,7 @@ Profile server does not connect directly to any other network except for those m
 and servers in IoP network, but profile servers do not need to understand the details of their protocols. For example, the WebRTC protocol for direct client to client communication requires 
 signalling, which is where profile servers' online communication between identities can be used, but profile servers will not analyze nor understand the messages transferred in those channels. 
 
+
+---
 ![IoP Network, Profile Servers point of view](images/iop-network.png "IoP Network, Profile Servers point of view")
+*IoP Network, Profile Servers point of view*
