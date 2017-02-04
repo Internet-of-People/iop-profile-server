@@ -55,4 +55,5 @@ signalling, which is where profile servers' online communication between identit
 
 ![IoP Network, Profile Servers point of view](images/iop-network.png "IoP Network, Profile Servers point of view")
 
+---
 [Index](ARCHITECTURE.md) » [Profile Server Components](ARCH-PS-Components.md)

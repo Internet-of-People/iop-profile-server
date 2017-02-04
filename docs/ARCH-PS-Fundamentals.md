@@ -30,4 +30,5 @@ this is replaced due to performance reasons for a fully mature database engine. 
 We implement extensive logging in all profile server code, for which we use [NLog library](http://nlog-project.org/).
 
 
+---
 [Profile Server in IoP Network](ARCH-PS-in-IoP.md) « [Index](ARCHITECTURE.md) » [xxx](ARCH-PS-Components.md)
