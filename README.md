@@ -9,9 +9,19 @@ start with the Profile Server. See the IoP architecture post linked above and th
 
 ## Installation
 
-Are you interested to run the Profile Server software on your machine? See [Installation](INSTALLATION.md) file on how to proceed. 
+Are you interested to run the Profile Server software on your machine? See [Installation](docs/INSTALLATION.md) file on how to proceed. 
+
+
+## Resrouces for Developers
+
+To get more information about Profile Server's internals, check out [Architecture Overview](docs/ARCHITECTURE.md). This is a must read for anyone considering joining the development of the Profile Server itself.
+
+If you want to develop a client application that connects to the Profile Server and consumes its services, you will want to read [Introduction for Developer of Client Apps](docs/CLIENT-APPS.md)
+
+
+
 
 ## TODOs and Possible Improvements
 
-See [TODO](TODO.md) file. 
+[TODO](docs/TODO.md) file contains possible improvements that are being considered, some of them are on the project's roadmap and will be implemented in the upcoming versions.
 
