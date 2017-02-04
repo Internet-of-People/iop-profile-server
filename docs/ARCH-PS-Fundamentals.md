@@ -31,4 +31,4 @@ We implement extensive logging in all profile server code, for which we use [NLo
 
 
 ---
-[Profile Server in IoP Network](ARCH-PS-in-IoP.md) « [Index](ARCHITECTURE.md) » [xxx](ARCH-PS-Components.md)
+[Profile Server in IoP Network](ARCH-PS-in-IoP.md) « [Index](ARCHITECTURE.md) » [Profile Server Components](ARCH-PS-Components.md)
