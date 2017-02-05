@@ -44,7 +44,7 @@ are modules related to logging, helper file handling modules, extension classes 
 
 
 ---
-*Components and Layers*
+*Components and Layers (click the image and then on download to see it in full size)*
 
 ![Profile Servers components and layers](images/ps-component-layers.png "Profile Servers components and layers")
 
