@@ -4,14 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ProfileServer.Config
+namespace ProfileServer.Kernel.Config
 {
   /// <summary>
   /// Class that implements with logic of the role server configuration.
   /// </summary>
   public class ServerRolesConfig
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Config.ServerRolesConfig");
+    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Kernel.Config.ServerRolesConfig");
 
     /// <summary>Mapping of opened server service ports to configured role servers.</summary>
     public Dictionary<int, RoleServerConfiguration> RoleServers = new Dictionary<int, RoleServerConfiguration>();

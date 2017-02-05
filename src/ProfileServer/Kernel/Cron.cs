@@ -1,7 +1,7 @@
 ﻿using System;
 using ProfileServer.Kernel;
+using ProfileServer.Kernel.Config;
 using System.Collections.Generic;
-using ProfileServer.Config;
 using System.Net;
 using System.Threading;
 using ProfileServer.Utils;
@@ -10,7 +10,7 @@ using ProfileServer.Data.Models;
 using System.Linq;
 using Microsoft.EntityFrameworkCore.Storage;
 
-namespace ProfileServer.Network
+namespace ProfileServer.Kernel
 {
   /// <summary>
   /// The Cron component is responsible for several maintanence tasks:
@@ -22,7 +22,7 @@ namespace ProfileServer.Network
   /// </summary>
   public class Cron : Component
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Network.Cron");
+    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Kernel.Cron");
 
     /// <summary>How quickly (in milliseconds) after the component start will checkFollowersRefreshTimer signal for the first time.</summary>
     private const int CheckFollowersRefreshTimerStartDelay = 19 * 1000;
@@ -228,7 +228,7 @@ namespace ProfileServer.Network
         {
           log.Trace("checkExpiredNeighborIdentitiesEvent activated.");
 
-          LocationBasedNetwork locationBasedNetwork = (LocationBasedNetwork)Base.ComponentDictionary["Network.LocationBasedNetwork"];
+          Network.LocationBasedNetwork locationBasedNetwork = (Network.LocationBasedNetwork)Base.ComponentDictionary["Network.LocationBasedNetwork"];
           if (locationBasedNetwork.LocServerInitialized)
           {
             CheckExpiredNeighborIdentities();
@@ -246,7 +246,7 @@ namespace ProfileServer.Network
         {
           log.Trace("refreshLocDataEvent activated.");
 
-          LocationBasedNetwork locationBasedNetwork = (LocationBasedNetwork)Base.ComponentDictionary["Network.LocationBasedNetwork"];
+          Network.LocationBasedNetwork locationBasedNetwork = (Network.LocationBasedNetwork)Base.ComponentDictionary["Network.LocationBasedNetwork"];
           locationBasedNetwork.RefreshLoc();
         }
       }

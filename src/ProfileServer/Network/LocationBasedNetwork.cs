@@ -1,7 +1,7 @@
 ﻿using System;
 using ProfileServer.Kernel;
+using ProfileServer.Kernel.Config;
 using System.Collections.Generic;
-using ProfileServer.Config;
 using System.Net;
 using System.Threading;
 using ProfileServer.Utils;
@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using System.IO;
 using ProfileServerProtocol;
 using Iop.Locnet;
-using Google.Protobuf;
 using ProfileServer.Data;
 using System.Linq;
 using ProfileServer.Data.Models;

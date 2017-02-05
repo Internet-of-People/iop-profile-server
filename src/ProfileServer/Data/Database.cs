@@ -1,7 +1,7 @@
 ﻿using System;
 using ProfileServer.Kernel;
+using ProfileServer.Kernel.Config;
 using System.Collections.Generic;
-using ProfileServer.Config;
 using System.Net;
 using System.Threading;
 using ProfileServer.Utils;
