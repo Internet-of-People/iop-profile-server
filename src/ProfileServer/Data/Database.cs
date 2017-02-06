@@ -8,6 +8,7 @@ using ProfileServer.Utils;
 using ProfileServer.Data.Models;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace ProfileServer.Data
 {
@@ -281,6 +282,184 @@ namespace ProfileServer.Data
 
       log.Info("(-):{0}", res);
       return res;
+    }
+
+
+
+    /// <summary>
+    /// Checks if any of the follower servers need refresh.
+    /// If so, a neighborhood action is created.
+    /// </summary>
+    public void CheckFollowersRefresh()
+    {
+      log.Trace("()");
+
+      // If a follower server's LastRefreshTime is lower than this limit, it should be refreshed.
+      DateTime limitLastRefreshTime = DateTime.UtcNow.AddSeconds(-Base.Configuration.FollowerRefreshTimeSeconds);
+
+      using (UnitOfWork unitOfWork = new UnitOfWork())
+      {
+        DatabaseLock[] lockObjects = new DatabaseLock[] { UnitOfWork.FollowerLock, UnitOfWork.NeighborhoodActionLock };
+        unitOfWork.AcquireLock(lockObjects);
+        try
+        {
+          List<Follower> followersToRefresh = unitOfWork.FollowerRepository.Get(f => f.LastRefreshTime < limitLastRefreshTime, null, true).ToList();
+          if (followersToRefresh.Count > 0)
+          {
+            log.Debug("There are {0} followers that need refresh.", followersToRefresh.Count);
+            foreach (Follower follower in followersToRefresh)
+            {
+              NeighborhoodAction action = new NeighborhoodAction()
+              {
+                ServerId = follower.FollowerId,
+                Type = NeighborhoodActionType.RefreshProfiles,
+                Timestamp = DateTime.UtcNow,
+                ExecuteAfter = DateTime.UtcNow,
+                TargetIdentityId = null,
+                AdditionalData = null
+              };
+
+              unitOfWork.NeighborhoodActionRepository.Insert(action);
+              log.Debug("Refresh neighborhood action for follower ID '{0}' will be inserted to the database.", follower.FollowerId.ToHex());
+            }
+
+            unitOfWork.SaveThrow();
+            log.Debug("{0} new neighborhood actions saved to the database.", followersToRefresh.Count);
+          }
+          else log.Debug("No followers need refresh now.");
+        }
+        catch (Exception e)
+        {
+          log.Error("Exception occurred: {0}", e.ToString());
+        }
+
+        unitOfWork.ReleaseLock(lockObjects);
+      }
+
+      log.Trace("(-)");
+    }
+
+
+    /// <summary>
+    /// Checks if any of the hosted identities expired.
+    /// If so, it deletes them.
+    /// </summary>
+    public void CheckExpiredHostedIdentities()
+    {
+      log.Trace("()");
+
+      DateTime now = DateTime.UtcNow;
+      List<byte[]> imagesToDelete = new List<byte[]>();
+      using (UnitOfWork unitOfWork = new UnitOfWork())
+      {
+        // Disable change tracking for faster multiple deletes.
+        unitOfWork.Context.ChangeTracker.AutoDetectChangesEnabled = false;
+
+        DatabaseLock lockObject = UnitOfWork.HostedIdentityLock;
+        unitOfWork.AcquireLock(lockObject);
+        try
+        {
+          List<HostedIdentity> expiredIdentities = unitOfWork.HostedIdentityRepository.Get(i => i.ExpirationDate < now, null, true).ToList();
+          if (expiredIdentities.Count > 0)
+          {
+            log.Debug("There are {0} expired hosted identities.", expiredIdentities.Count);
+            foreach (HostedIdentity identity in expiredIdentities)
+            {
+              if (identity.ProfileImage != null) imagesToDelete.Add(identity.ProfileImage);
+              if (identity.ThumbnailImage != null) imagesToDelete.Add(identity.ThumbnailImage);
+
+              unitOfWork.HostedIdentityRepository.Delete(identity);
+              log.Debug("Identity ID '{0}' expired and will be deleted.", identity.IdentityId.ToHex());
+            }
+
+            unitOfWork.SaveThrow();
+            log.Debug("{0} expired hosted identities were deleted.", expiredIdentities.Count);
+          }
+          else log.Debug("No expired hosted identities found.");
+        }
+        catch (Exception e)
+        {
+          log.Error("Exception occurred: {0}", e.ToString());
+        }
+
+        unitOfWork.ReleaseLock(lockObject);
+      }
+
+
+      if (imagesToDelete.Count > 0)
+      {
+        ImageManager imageManager = (ImageManager)Base.ComponentDictionary["Data.ImageManager"];
+
+        foreach (byte[] hash in imagesToDelete)
+          imageManager.RemoveImageReference(hash);
+      }
+
+
+      log.Trace("(-)");
+    }
+
+
+
+    /// <summary>
+    /// Checks if any of the neighbor identities expired.
+    /// If so, it deletes them.
+    /// </summary>
+    public void CheckExpiredNeighborIdentities()
+    {
+      log.Trace("()");
+
+      // If a neighbor server's LastRefreshTime is lower than this limit, it is expired.
+      DateTime limitLastRefreshTime = DateTime.UtcNow.AddSeconds(-Base.Configuration.NeighborProfilesExpirationTimeSeconds);
+
+      using (UnitOfWork unitOfWork = new UnitOfWork())
+      {
+        bool success = false;
+        DatabaseLock[] lockObjects = new DatabaseLock[] { UnitOfWork.NeighborLock, UnitOfWork.NeighborhoodActionLock };
+        using (IDbContextTransaction transaction = unitOfWork.BeginTransactionWithLock(lockObjects))
+        {
+          try
+          {
+            List<Neighbor> expiredNeighbors = unitOfWork.NeighborRepository.Get(n => n.LastRefreshTime < limitLastRefreshTime, null, true).ToList();
+            if (expiredNeighbors.Count > 0)
+            {
+              log.Debug("There are {0} expired neighbors.", expiredNeighbors.Count);
+              foreach (Neighbor neighbor in expiredNeighbors)
+              {
+                // This action will cause our profile server to erase all profiles of the neighbor that has been removed.
+                NeighborhoodAction action = new NeighborhoodAction()
+                {
+                  ServerId = neighbor.NeighborId,
+                  Timestamp = DateTime.UtcNow,
+                  Type = NeighborhoodActionType.RemoveNeighbor,
+                  TargetIdentityId = null,
+                  AdditionalData = null
+                };
+                unitOfWork.NeighborhoodActionRepository.Insert(action);
+              }
+
+              unitOfWork.SaveThrow();
+              transaction.Commit();
+            }
+            else log.Debug("No expired neighbors found.");
+
+            success = true;
+          }
+          catch (Exception e)
+          {
+            log.Error("Exception occurred: {0}", e.ToString());
+          }
+
+          if (!success)
+          {
+            log.Warn("Rolling back transaction.");
+            unitOfWork.SafeTransactionRollback(transaction);
+          }
+
+          unitOfWork.ReleaseLock(lockObjects);
+        }
+      }
+
+      log.Trace("(-)");
     }
 
   }
