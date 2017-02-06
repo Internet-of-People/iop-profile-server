@@ -1,4 +1,4 @@
-# Profile Server Component Layers
+# Profile Server Kernel Layer
 
 Each of the profile server's components belongs to one of the four layers - kernel layer, data layer, network layer, and utility layer.
 In profile server's design a *component* is a special module that is controlled by the component manager and has a controlled life cycle. 
@@ -49,4 +49,4 @@ are modules related to logging, helper file handling modules, extension classes 
 ![Profile Servers components and layers](images/ps-component-layers.png "Profile Servers components and layers")
 
 ---
-[Profile Server Fundamentals](ARCH-PS-Fundamentals.md) « [Index](ARCHITECTURE.md) » [Profile Server Kernel Layer](ARCH-PS-Kernel-Layer.md)
+[Profile Server Component Layers](ARCH-PS-Component-Layers.md) « [Index](ARCHITECTURE.md) » [Profile Server Data Layer](ARCH-PS-Data-Layer.md)

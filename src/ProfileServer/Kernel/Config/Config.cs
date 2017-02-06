@@ -64,7 +64,7 @@ namespace ProfileServer.Kernel.Config
   /// <remarks>
   /// Loading configuration is essential for the profile server's startup. If any part of it fails, the profile server will refuse to start.
   /// </remarks>
-  public class Config : Kernel.Component
+  public class Config : Component
   {
     private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Kernel.Config.Config");
 
