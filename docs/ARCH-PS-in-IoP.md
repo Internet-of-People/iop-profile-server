@@ -5,7 +5,10 @@
 Profile servers form a network of servers that hold information about identity profiles of end users and client applications and allow these identities to find and interact with each other. 
 The profile server network is formed of neighborhoods. Vaguely, a neighborhood is a group of profile servers that are geographically close to each other. Within the neighborhood, profile servers
 share profiles of the identities hosted among them. This allows the servers within a neighborhood to answer search queries about all identity profiles within the neighborhood. A neighborhood 
-is a subjective view of each profile server, which means that if a profile server considers two other servers as its neighbors, those two servers might not consider to be neighbor of each other.
+is a subjective view of each profile server, which means that if a profile server considers two other servers as its neighbors, those two servers might not consider to be neighbor of each other. 
+
+If *profile server A* is considered as a *neighbor* of another *profile server B* then *A* shares its database of hosted profiles with *B*. In this relationship, *profile server B* is considered 
+as a *follower* of *profile server A*. It is common that two profile servers are both *neighbors* to each other as well as *followers* of each other.
 
 
 ## Connections to Location Based Network

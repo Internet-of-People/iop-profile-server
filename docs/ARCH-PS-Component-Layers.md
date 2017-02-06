@@ -15,11 +15,11 @@ Kernel layer contains the following:
 
 ## Data Layer
 
-Profile server stores most of its data to a database, but images of identity profiles are stored in separate files on disk. 
-Data layer thus contains:
+Profile server stores all of its data to a database, except for images of identity profiles that are stored in separate files on disk. 
+Data layer contains:
 
- * Modules related to database access and structure.
- * Database component that is responsible for initialization of the database during the startup and cleanup during shutdown.
+ * Modules related to the database access and its structure.
+ * Database component that is responsible for initialization of the database during the startup and database cleanup tasks.
  * Image manager component that cares about loading and storing images as well as image processing.
 
 

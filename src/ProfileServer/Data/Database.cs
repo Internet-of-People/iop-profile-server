@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 namespace ProfileServer.Data
 {
   /// <summary>
-  /// Database component is responsible for initialization of the database during the startup and cleanup during shutdown.
+  /// Database component is responsible for initialization of the database during the startup and performing database cleanup tasks.
   /// </summary>
   public class Database : Component
   {

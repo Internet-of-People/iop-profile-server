@@ -22,7 +22,7 @@ The configuration component is the first component to be initialized during the 
 file and check the configuration settings in it. 
 
 Then it loads the configuration from the database, or initializes the configuration in the database. This part of configuration 
-includes the profile server's identity (i.e. its cryptographic keys).
+includes the profile server's identity (i.e. its cryptographic keys). First time the profile server is started, its identity is generated.
 
 The loaded configuration from both the configuration file and the database is then available to all other components.
 
