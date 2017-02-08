@@ -16,7 +16,7 @@ Are you interested to run the Profile Server software on your machine? See [Inst
 
 To get more information about Profile Server's internals, check out [Architecture Overview](docs/ARCHITECTURE.md). This is a must read for anyone considering joining the development of the Profile Server itself.
 
-If you want to develop a client application that connects to the Profile Server and consumes its services, you will want to read [Introduction for Developer of Client Apps](docs/CLIENT-APPS.md)
+[//]: # TBD: If you want to develop a client application that connects to the Profile Server and consumes its services, you will want to read [Introduction for Developer of Client Apps](docs/CLIENT-APPS.md)
 
 
 
