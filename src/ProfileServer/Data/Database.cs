@@ -401,10 +401,10 @@ namespace ProfileServer.Data
 
 
     /// <summary>
-    /// Checks if any of the neighbor identities expired.
-    /// If so, it deletes them.
+    /// Checks if any of the neighbors expired.
+    /// If so, it starts the process of their removal.
     /// </summary>
-    public void CheckExpiredNeighborIdentities()
+    public void CheckExpiredNeighbors()
     {
       log.Trace("()");
 

@@ -36,22 +36,6 @@ namespace ProfileServer.Network
 #warning Regtest needed - update failed hard -> follower is deleted; server won't send updates to the follower -> neighbor expires on the follower -> LOC refreshes -> neighbor relationship established again
     private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Network.NeighborhoodActionProcessor");
 
-    /// <summary>Interval for checking the list of neighborhood actions.</summary>
-    private const int CheckActionListTimerInterval = 20000;
-
-
-    /// <summary>Timer that invokes checks of the list of neighborhood actions.</summary>
-    private static Timer checkActionListTimer;
-
-    /// <summary>Event that triggers checking the list of neighborhood actions.</summary>
-    private static AutoResetEvent checkActionListEvent = new AutoResetEvent(false);
-
-
-    /// <summary>Event that is set when actionListHandlerThread is not running.</summary>
-    private ManualResetEvent actionListHandlerThreadFinished = new ManualResetEvent(true);
-
-    /// <summary>Thread that is responsible for processing neighborhood actions.</summary>
-    private Thread actionListHandlerThread;
 
     /// <summary>Profile serever's primary interface port.</summary>
     private uint primaryPort;
@@ -85,11 +69,6 @@ namespace ProfileServer.Network
             srNeighborPort = (uint)roleServer.EndPoint.Port;
         }
 
-        checkActionListTimer = new Timer(CheckActionListTimerCallback, null, CheckActionListTimerInterval, CheckActionListTimerInterval);
-
-        actionListHandlerThread = new Thread(new ThreadStart(ActionListHandlerThread));
-        actionListHandlerThread.Start();
-
         res = true;
         Initialized = true;
       }
@@ -101,12 +80,6 @@ namespace ProfileServer.Network
       if (!res)
       {
         ShutdownSignaling.SignalShutdown();
-
-        if ((actionListHandlerThread != null) && !actionListHandlerThreadFinished.WaitOne(10000))
-          log.Error("Action list handler thread did not terminated in 10 seconds.");
-
-        if (checkActionListTimer != null) checkActionListTimer.Dispose();
-        checkActionListTimer = null;
       }
 
       log.Info("(-):{0}", res);
@@ -119,12 +92,6 @@ namespace ProfileServer.Network
       log.Info("()");
 
       ShutdownSignaling.SignalShutdown();
-
-      if (checkActionListTimer != null) checkActionListTimer.Dispose();
-      checkActionListTimer = null;
-
-      if ((actionListHandlerThread != null) && !actionListHandlerThreadFinished.WaitOne(10000))
-        log.Error("Action list handler thread did not terminated in 10 seconds.");
 
       bool done = false;
       int counter = 0;
@@ -164,66 +131,18 @@ namespace ProfileServer.Network
     {
       log.Trace("()");
 
-      checkActionListEvent.Set();
+      Cron cron = (Cron)Base.ComponentDictionary["Kernel.Cron"];
+      cron.SignalEvent("checkNeighborhoodActionList");
 
       log.Trace("(-)");
     }
 
-
-    /// <summary>
-    /// Callback routine of checkActionListTimer.
-    /// We simply set an event to be handled by action list handler thread, not to occupy the timer for a long time.
-    /// </summary>
-    /// <param name="State">Not used.</param>
-    private void CheckActionListTimerCallback(object State)
-    {
-      log.Trace("()");
-
-      checkActionListEvent.Set();
-
-      log.Trace("(-)");
-    }
-
-
-    /// <summary>
-    /// Thread that is responsible for maintenance tasks invoked by event timers.
-    /// </summary>
-    private void ActionListHandlerThread()
-    {
-      log.Info("()");
-
-      actionListHandlerThreadFinished.Reset();
-
-      while (!ShutdownSignaling.IsShutdown)
-      {
-        log.Info("Waiting for event.");
-
-        WaitHandle[] handles = new WaitHandle[] { ShutdownSignaling.ShutdownEvent, checkActionListEvent };
-
-        int index = WaitHandle.WaitAny(handles);
-        if (handles[index] == ShutdownSignaling.ShutdownEvent)
-        {
-          log.Info("Shutdown detected.");
-          break;
-        }
-
-        if (handles[index] == checkActionListEvent)
-        {
-          log.Trace("checkActionListEvent activated.");
-          CheckActionList();
-        }
-      }
-
-      actionListHandlerThreadFinished.Set();
-
-      log.Info("(-)");
-    }
-
+    
 
     /// <summary>
     /// Loads list of actions from the database and executes actions that can be executed.
     /// </summary>
-    private void CheckActionList()
+    public void CheckActionList()
     {
       log.Trace("()");
 

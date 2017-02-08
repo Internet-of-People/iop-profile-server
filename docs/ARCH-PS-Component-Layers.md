@@ -29,7 +29,8 @@ The largest layer in profile server is the network layer, it consists of the fol
 
  * Network server component that manages all running TCP role servers.
  * TCP role server module that represents a single open port which offers services of one or more profile server's interfaces.
- * Message processor module that processes incoming messages to TCP role servers.
+ * Incoming client module that represents an incoming TCP connection to the TCP role server.
+ * Message processor module that processes messages from incoming clients.
  * Location based network component that implements communication with Location Based Network server.
  * Content address network component that implements communication with Content Address Network server.
  * Neighborhood action processor component which is responsible for handling of events related to profile server neighborhood interactions.
