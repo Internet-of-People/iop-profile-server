@@ -12,7 +12,7 @@ start with the Profile Server. See the IoP architecture post linked above and th
 Are you interested to run the Profile Server software on your machine? See [Installation](docs/INSTALLATION.md) file on how to proceed. 
 
 
-## Resrouces for Developers
+## Resources for Developers
 
 To get more information about Profile Server's internals, check out [Architecture Overview](docs/ARCHITECTURE.md). This is a must read for anyone considering joining the development of the Profile Server itself.
 
