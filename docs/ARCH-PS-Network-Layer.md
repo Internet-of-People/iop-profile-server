@@ -74,14 +74,14 @@ Represents a list of names of application services that an online hosted client 
 
 When the profile server starts, this component tries to connect to a LOC server running on the same machine. If it succeeds, the profile server tells 
 the LOC server on which port its primary interface can be found and asks the LOC server for information about the current view of the profile server's neighborhood. 
-The connection to the LOC server keeps open so that the LOC server is able to send any updates in the neighborhood structure to the profile server.
+The connection to the LOC server is kept open so that the LOC server is able to send any updates in the neighborhood structure to the profile server.
 When a change happens, this component creates a new neighborhood action which is then processed by [Neighborhood Action Processor](#neighborhood-action-processor).
 
 Despite the periodical updates sent by the LOC server to the profile server, it is possible that the profile server's view of the neighborhood gets out of sync 
 due to enforcement of various policies that the profile server implements when it communicates with servers in its neighborhood. For example, if a remote 
 profile server violates the protocol, or in case the profile server finds out that the remote server's profile database is out of sync, the profile server 
-may delete the remote server its list of neighbors. This is why this component periodically asks LOC server to provide a fresh data, so that cancelled relationships 
-with profile server's neighbors can be reestablished.
+may delete the remote server from its list of neighbors and thus force resynchronization of their databases. This is why this component periodically asks 
+the LOC server to provide a fresh data, so that cancelled relationships with profile server's neighbors can be reestablished.
 
 
 ### Neighborhood Action Processor
@@ -91,8 +91,8 @@ hosting with its profile server, do require an action to be performed by the pro
 is the module that consumes such events from the database and executes the necessary actions in order to keep all related servers in sync.
 
 The neighborhood action processor processes the actions in parallel, if possible. Two actions can be processed in parallel if they can not influence each other 
-and their order of processing can not affect their result. For example, if an identity changes its profile on the profile server, this change has to be propagated 
-to the profile server's followers. This creates as many neighborhood actions in the database as there are followers. All these actions can be processed in parallel 
+and their order of processing can not affect their results. For example, if an identity changes its profile on the profile server, this change has to be propagated 
+to all followers of the profile server. This creates as many neighborhood actions in the database as there are followers. All these actions can be processed in parallel 
 because they target different servers. However, if the same identity changes its profile again, an action that propagates this second change to a follower 
 must not be processed in parallel with the action that propagates the first change of this profile to the same follower.
 
