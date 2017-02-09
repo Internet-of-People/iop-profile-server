@@ -56,7 +56,7 @@ differs with each operating system. The final folder with the binaries will be c
 Finally, go to `$InstDir\src\ProfileServer` and execute 
 
 ```
-dotnet ef database update
+dotnet ef --configuration Release database update
 ```
 
 to initialize the Profile Server's database file `ProfileServer.db`, which should be created in `$BinDir`.
