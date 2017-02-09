@@ -15,8 +15,8 @@ over a long period of time have to actively keep their connections alive.
 
 ### TCP Role Server
 
-Profile server runs multiple roles that each serve different purposes and types of clients. Each TCP role server represents a single opened TCP port
-(also called an interface of a profile server) on which one or more roles can be served. Currently, the following interfaces are present:
+Profile server runs multiple roles (also called an interface of a profile server) that each serve different purposes and types of clients. Each TCP role server represents a single open TCP port
+on which one or more roles can be served. Currently, the following interfaces are present:
 
  * Primary Interface is the primary contact point of the profile server. When we publish a profile server contact information anywhere in the IoP network 
 it points to this interface. It is an unencrypted interface on which other peers can get information about where to find other profile server's interfaces.
@@ -28,7 +28,7 @@ It is used when an online hosted identity is called through its application serv
 This interface then acts as a bridge between the two clients and the profile server only forwards the messages between them.
 
 The profile server's administrator can configure each role to run on a separate TCP port, or to use a single port for multiple roles. 
-Two roles can be served over a single TCP port if the communication on them is either encrypted on both of them, or unencrypted on both of them. 
+Two roles can be served over a single TCP port if the communication on them is either encrypted on both of them or unencrypted on both of them. 
 An encrypted interface can not be combined with an unencrypted one on the same port.
 
 
@@ -46,14 +46,14 @@ may contain any of the following information:
  * In case of a connection to Application Service Interface, a reference to the relay object (see [Relay Connection](#relay-connection) below). 
  * Search result cache (see ProfileSearchRequest call in [Profile Server Network Protocol](https://github.com/Internet-of-People/message-protocol/blob/master/IopProfileServer.proto) for more information).
  * In case of a neighbor connection, information about the status of the neighborhood initialization process (see StartNeighborhoodInitializationRequest call in [Profile Server Network Protocol](https://github.com/Internet-of-People/message-protocol/blob/master/IopProfileServer.proto) for more information).
- * List of requests sent to the client, for which no response has been received and processed yet.
+ * List of requests sent to the client for which no response has been received and processed yet.
 
 
 
 ### Message Processor
 
 Message processor is the module that is responsible for validation and processing all Profile Server Network protocol messages that are received by incoming clients.
-Most of the messages are fully processed here except for some more complicated cases, such as application service messaged relayed over the Application Service Interface.
+Most of the messages are fully processed here except for some more complicated cases, such as application service messages relayed over the Application Service Interface.
 
 
 ### Relay Connection
@@ -73,9 +73,9 @@ Represents a list of names of application services that an online hosted client 
 ### Location Based Network Component
 
 When the profile server starts, this component tries to connect to a LOC server running on the same machine. If it succeeds, the profile server tells 
-the LOC servers on which port its primary interface can be found and asks LOC server for information about the current view of the profile server's neighborhood. 
+the LOC server on which port its primary interface can be found and asks the LOC server for information about the current view of the profile server's neighborhood. 
 The connection to the LOC server keeps open so that the LOC server is able to send any updates in the neighborhood structure to the profile server.
-When a change happens, this component creates a new neighborhood action which is then processed by [Neighborhood Action Processor](#neighborhood-aciton-processor).
+When a change happens, this component creates a new neighborhood action which is then processed by [Neighborhood Action Processor](#neighborhood-action-processor).
 
 Despite the periodical updates sent by the LOC server to the profile server, it is possible that the profile server's view of the neighborhood gets out of sync 
 due to enforcement of various policies that the profile server implements when it communicates with servers in its neighborhood. For example, if a remote 

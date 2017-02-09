@@ -1,6 +1,6 @@
 # Profile Server Data Layer
 
-Profile server distinguish between profile images and all other data. Images are stored on the disk in the images folder, separately of all other data,
+Profile server distinguishes between profile images and all other data. Images are stored on the disk in the images folder, separately of all other data,
 which is stored in the database.
 
 
@@ -16,9 +16,10 @@ Each database table is represented by its model class and is accessed through it
  * Settings - Stores part of the configuration of the profile server including the profile server cryptographic identity.
  * Identities - Stores all identities that are hosted on this profile server. All identity profile data are stored in this table 
 except for the profile images that are stored outside the database.
- * NeighborIdentities - Stores all identities that are hosted on neighbor profile servers.
- * RelatedIdentities - Stores information about relationships between profiles. These relationships are announced by the identities themselves, but they has to be cryptographically proved.
- * NeighborhoodActions - Lists of pending actions related to the management of the profile server's neighborhood is stored in this table. When a profile server is informed about a change 
+ * NeighborIdentities - Stores all identities that are hosted on neighbor profile servers. All identity profile data are stored in this table 
+except for the thumbnail image that is stored outside the database.
+ * RelatedIdentities - Stores information about relationships between profiles. These relationships are announced by the identities themselves, but they has to be cryptographically proved to be accepted.
+ * NeighborhoodActions - Lists of pending actions related to the management of the profile server's neighborhood are stored in this table. When a profile server is informed about a change 
 in its neighborhood, such as a new server joined the neighborhood, or a server left the neighborhood, a new action is added. Similarly, in case of a change in the profile server's hosted 
 profiles database, the change has to be propagated to the followers, which is done through actions in this table.
  * Neighbors - Stores a list of profile servers that the profile server considers to be its neighbors, i.e. updates of their hosted profiles can come from them.

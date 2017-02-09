@@ -1,7 +1,7 @@
 # Profile Server Utility Layer
 
 This layer contains various helper modules that are used by other components and modules across all layers. 
-Most of the modules here are very simple modules to speed up a development or make the code more readable 
+Most of the modules here are very simple modules to speed up the development or make the code more readable 
 or faster to write. Those modules are not described in detail below.
 
 
@@ -15,7 +15,7 @@ which allows us to log database queries.
 
 ## RegexUtils
 
-This module implements the RegexType as it is defined in [Profile Server Network Protocol](https://github.com/Internet-of-People/message-protocol/blob/master/IopProfileServer.proto).
+This module implements the RegexType type as it is defined in [Profile Server Network Protocol](https://github.com/Internet-of-People/message-protocol/blob/master/IopProfileServer.proto).
 It is a limited regular expression that is used in search queries for profiles in the profile server network. 
 The implementation in this module makes sure the regular expression is valid according to the protocol definition 
 and it also imposes time constraints on the execution of a regular expression, so that the profile server is protected 
