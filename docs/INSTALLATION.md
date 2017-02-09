@@ -1,6 +1,6 @@
 # IoP Profile Server - Installation
 
-In order to install and run Profile Server, you need to 
+In order to install and run the Profile Server, you need to 
 
  * Install .NET Core,
  * install OpenSSL (needed only for TLS certificate generation),
@@ -13,7 +13,7 @@ In order to install and run Profile Server, you need to
 
 ## Install .NET Core
 
-Simply go to [Microsoft .NET Core website](https://www.microsoft.com/net/core) and follow the instruction on how to install .NET Core to your system.
+Simply go to [Microsoft .NET Core website](https://www.microsoft.com/net/core) and follow the instructions on how to install .NET Core to your system.
 
 
 ## Install OpenSSL
@@ -25,8 +25,8 @@ Please visit [OpenSSL website](https://www.openssl.org/) and follow the instruct
 ## Download Profile Server Source Codes
 
 If you are familiar with GIT and GitHub, you will probably know what to do.
-If you are not familiar with it, simply go to the [Main Page](https://github.com/Fermat-ORG/iop-profile-server/) of the repository and click the *Clone and download* green button 
-on the right side. Then click the *Download ZIP* link and save the file on your disk. Unzip the file to any folder of your choice. This folder will be called `$InstDir` in the text below.
+If you are not familiar with it, simply go to the [Main Page](https://github.com/Fermat-ORG/iop-profile-server/) of the repository and click the *Clone or download* green button 
+on the right side. Then click the *Download ZIP* link and save the file to your disk. Unzip the file to any folder of your choice. This folder will be called `$InstDir` in the text below.
 
 
 ## Build Profile Server
@@ -70,15 +70,15 @@ Go to [Releases Page](https://github.com/Fermat-ORG/iop-profile-server/releases)
 ## Configure Profile Server
 
 ### Generate TLS Certificate
-You will need to generate a TLS certificate and then modify the configuration file.
+You will need to generate a TLS certificate in PFX format and then modify the configuration file.
 
-To generate PFX certificate, you can use OpenSSL as follows. Make sure that the final certificate is NOT password protected.
+To generate a PFX certificate, you can use OpenSSL as follows. Make sure that the final certificate is NOT password protected.
 ```
 openssl req -x509 -newkey rsa:4096 -keyout ProfileServer.key -out ProfileServer.cer -days 365000
 openssl pkcs12 -export -out ProfileServer.pfx -inkey ProfileServer.key -in ProfileServer.cer
 ```
 
-The new file `ProfileServer.pfx` is your TLS certificate that you need to put it in the `$BinDir`.
+The new file `ProfileServer.pfx` is your TLS certificate that you need to put it in `$BinDir`.
 
 
 ### Modify Configuration File
@@ -101,7 +101,7 @@ Copy logging configuration file `$InstDir\src\ProfileServer\Nlog.conf` to your `
 ## Run Profile Server
 
 There are two ways how to run the Profile Server. If your system is one of the supported system, on which the build process generated executable files, or you were able to download Profile Server binaries, 
-you simply got to your `$BinDir` and execute:
+you simply go to your `$BinDir` and execute:
 
 ```
 ProfileServer
@@ -116,7 +116,7 @@ dotnet run
 
 ## Troubleshooting
 
-If you added a logging configuration file to your `$BinDir` as described above, every time you run the Profile Server, logs are going to be created in `$BinDir\Logs` folder. If there are any problems 
+If you added the logging configuration file to your `$BinDir` as described above, every time you run the Profile Server, logs are going to be created in `$BinDir\Logs` folder. If there are any problems 
 with your Profile Server, the log file will contain detailed information about it and may help you solve the problems.
 
 
