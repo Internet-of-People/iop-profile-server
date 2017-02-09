@@ -34,10 +34,10 @@ We implement extensive logging in all profile server code, for which we use [NLo
 
 ## Projects
 
-The development of the profile server consists of several projects. Besides the main Profile Server project, there are two projects that the profile server 
+The development of the profile server consists of several projects. Besides the main profile server project, there are two projects that the profile server project
 itself depends on:
 
- * Profile Server Crypto library which implements the Ed25519 cryptography subsystem.
+ * Profile Server Crypto library which implements the Ed25519 cryptographic subsystem.
  * Profile Server Protocol library which implements IoP Network Protocol. 
 
 Besides that there are projects to support the development:
