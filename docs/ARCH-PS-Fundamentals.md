@@ -4,13 +4,15 @@
 
 Profile server is a TCP network server that implements services defined by [IoP Profile Server Protocol](https://github.com/Internet-of-People/message-protocol).
 This particular implementation is a fully asynchronous, multithreaded server written in C# and runs on [.NET Core platform](https://www.microsoft.com/net/core) 
-and the further description related to this implementation and may not be accurate for other implementations of IoP Profile Servers.
+and the further text is related to this implementation only and it may not be accurate for other implementations of IoP Profile Servers.
 
 
 ## Cryptography 
 
 Profile server uses [Ed25519](http://ed25519.cr.yp.to/) signature system for the representation of identities, this implementation is based on [Chaos.NaCl](https://github.com/CodesInChaos/Chaos.NaCl/) library. 
 For encryption of data transferred over the network, we use [TLS 1.2](https://en.wikipedia.org/wiki/Transport_Layer_Security#TLS_1.2), which is built in .NET Core.
+
+Each identity in the IoP network is represented by a single Ed25519 key pair. A network identifier of an identity is then a SHA256 hash of its public key.
 
 
 ## Serialization Protocol
@@ -21,8 +23,8 @@ Profile server uses [Google Protocol Buffers library](https://www.nuget.org/pack
 
 ## Database
 
-Profile server currently uses [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/index) on SQLite 3 database. In the future it might be possible that 
-this is replaced due to performance reasons for a fully mature database engine. As of now the database performance is not an issue.
+Profile server currently uses [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/index) on SQLite 3 database. In the future it might be 
+replaced with a fully mature database engine due to performance reasons. As of now the database performance is not an issue.
 
 
 ## Logging
