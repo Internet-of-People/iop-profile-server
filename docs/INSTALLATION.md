@@ -47,7 +47,7 @@ Go to `$InstDir\src\ProfileServer` and execute
 
 ```
 dotnet restore --configfile NuGet.Config
-dotnet build
+dotnet build --configuration Release
 ```
 
 The last command will create `$InstDir\src\ProfileServer\bin` folder with a subfolder that contains the compiled Profile Server binaries. The actual name of the final binary folder 
