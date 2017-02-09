@@ -140,14 +140,6 @@ namespace ProfileServer.Network
     private Server serverComponent;
 
 
-    /// <summary>Log message prefix to help to distinguish between different instances of this class.</summary>
-    private string logPrefix;
-
-    /// <summary>Name of the class logger.</summary>
-    private string logName;
-
-
-
 
     /// <summary>
     /// Creates a new TCP server to listen on specific IP address and port.
@@ -169,9 +161,8 @@ namespace ProfileServer.Network
     /// <param name="Roles">One or more roles of this server.</param>
     public TcpRoleServer(IPEndPoint EndPoint, bool UseTls, ServerRole Roles)
     {
-      logPrefix = string.Format("[{0}/tcp{1}] ", EndPoint.Port, UseTls ? "_tls" : "");
-      logName = "ProfileServer.Network.TcpRoleServer";
-      log = new PrefixLogger(logName, logPrefix);
+      string logPrefix = string.Format("[{0}/tcp{1}] ", EndPoint.Port, UseTls ? "_tls" : "");
+      log = new PrefixLogger("ProfileServer.Network.TcpRoleServer", logPrefix);
 
       this.UseTls = UseTls;
       this.Roles = Roles;

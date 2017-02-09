@@ -12,7 +12,7 @@ using ProfileServer.Utils;
 using System.Globalization;
 using ProfileServerProtocol.Multiformats;
 
-namespace ProfileServer.Config
+namespace ProfileServer.Kernel.Config
 {
   /// <summary>
   /// Types of values allowed in the configuration file.
@@ -64,9 +64,9 @@ namespace ProfileServer.Config
   /// <remarks>
   /// Loading configuration is essential for the profile server's startup. If any part of it fails, the profile server will refuse to start.
   /// </remarks>
-  public class Config : Kernel.Component
+  public class Config : Component
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Config.Config");
+    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Kernel.Config.Config");
 
     /// <summary>Default name of the configuration file.</summary>
     public const string ConfigFileName = "ProfileServer.conf";

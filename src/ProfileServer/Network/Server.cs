@@ -1,7 +1,7 @@
 ﻿using System;
 using ProfileServer.Kernel;
+using ProfileServer.Kernel.Config;
 using System.Collections.Generic;
-using ProfileServer.Config;
 using System.Net;
 using System.Threading;
 using ProfileServer.Utils;
@@ -9,34 +9,14 @@ using ProfileServer.Utils;
 namespace ProfileServer.Network
 {
   /// <summary>
-  /// Network server component is responsible managing the profile's TCP servers.
+  /// Network server component is responsible managing the role TCP servers.
   /// </summary>
   public class Server : Component
   {
     private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Network.Server");
 
-    /// <summary>Interval for role servers inactive client connection checks.</summary>
-    private const int CheckInactiveClientConnectionsTimerInterval = 120000;
-
-
-
     /// <summary>Collection of running TCP role servers sorted by their port.</summary>
     private Dictionary<int, TcpRoleServer> tcpServers = new Dictionary<int, TcpRoleServer>();
-
-
-    /// <summary>Timer that invokes checks of role servers client connections.</summary>
-    private static Timer checkInactiveClientConnectionsTimer;
-
-    /// <summary>Event that is set by checkInactiveClientConnectionsTimer.</summary>
-    private static AutoResetEvent checkInactiveClientConnectionsEvent = new AutoResetEvent(false);
-
-
-
-    /// <summary>Event that is set when serversMaintenanceThread is not running.</summary>
-    private ManualResetEvent serversMaintenanceThreadFinished = new ManualResetEvent(true);
-
-    /// <summary>Thread that is responsible for maintenance of servers - e.g. closing inactive connections to their clients.</summary>
-    private Thread serversMaintenanceThread;
 
 
     /// <summary>List of network peers and clients across all role servers.</summary>
@@ -60,11 +40,6 @@ namespace ProfileServer.Network
       {
         serverId = ProfileServerCrypto.Crypto.Sha256(Base.Configuration.Keys.PublicKey);
         clientList = new IncomingClientList();
-
-        checkInactiveClientConnectionsTimer = new Timer(CheckInactiveClientConnectionsTimerCallback, null, CheckInactiveClientConnectionsTimerInterval, CheckInactiveClientConnectionsTimerInterval);
-
-        serversMaintenanceThread = new Thread(new ThreadStart(ServersMaintenanceThread));
-        serversMaintenanceThread.Start();
 
         foreach (RoleServerConfiguration roleServer in Base.Configuration.ServerRoles.RoleServers.Values)
         {
@@ -108,12 +83,6 @@ namespace ProfileServer.Network
       {
         ShutdownSignaling.SignalShutdown();
 
-        if ((serversMaintenanceThread != null) && !serversMaintenanceThreadFinished.WaitOne(10000))
-          log.Error("Servers maintenance thread did not terminated in 10 seconds.");
-
-        if (checkInactiveClientConnectionsTimer != null) checkInactiveClientConnectionsTimer.Dispose();
-        checkInactiveClientConnectionsTimer = null;
-
         foreach (TcpRoleServer server in tcpServers.Values)
         {
           if (server.IsRunning)
@@ -132,12 +101,6 @@ namespace ProfileServer.Network
       log.Info("()");
 
       ShutdownSignaling.SignalShutdown();
-
-      if (checkInactiveClientConnectionsTimer != null) checkInactiveClientConnectionsTimer.Dispose();
-      checkInactiveClientConnectionsTimer = null;
-
-      if ((serversMaintenanceThread != null) && !serversMaintenanceThreadFinished.WaitOne(10000))
-        log.Error("Servers maintenance thread did not terminated in 10 seconds.");
 
       List<IncomingClient> clients = clientList.GetNetworkClientList();
       try
@@ -161,54 +124,7 @@ namespace ProfileServer.Network
     }
 
 
-    /// <summary>
-    /// Thread that is responsible for maintenance tasks invoked by event timers.
-    /// </summary>
-    private void ServersMaintenanceThread()
-    {
-      log.Info("()");
 
-      serversMaintenanceThreadFinished.Reset();
-
-      while (!ShutdownSignaling.IsShutdown)
-      {
-        log.Info("Waiting for event.");
-
-        WaitHandle[] handles = new WaitHandle[] { ShutdownSignaling.ShutdownEvent, checkInactiveClientConnectionsEvent };
-
-        int index = WaitHandle.WaitAny(handles);
-        if (handles[index] == ShutdownSignaling.ShutdownEvent)
-        {
-          log.Info("Shutdown detected.");
-          break;
-        }
-
-        if (handles[index] == checkInactiveClientConnectionsEvent)
-        {
-          log.Trace("checkInactiveClientConnectionsEvent activated.");
-          CheckInactiveClientConnections();
-        }
-      }
-
-      serversMaintenanceThreadFinished.Set();
-
-      log.Info("(-)");
-    }
-
-
-    /// <summary>
-    /// Callback routine of checkInactiveClientConnectionsTimer.
-    /// We simply set an event to be handled by maintenance thread, not to occupy the timer for a long time.
-    /// </summary>
-    /// <param name="State">Not used.</param>
-    private void CheckInactiveClientConnectionsTimerCallback(object State)
-    {
-      log.Trace("()");
-
-      checkInactiveClientConnectionsEvent.Set();
-
-      log.Trace("(-)");
-    }
 
     /// <summary>
     /// This method is responsible for going through all existing client connections 
@@ -216,7 +132,7 @@ namespace ProfileServer.Network
     /// Note that we are touching resources from different threads, so we have to expect the object are being 
     /// disposed at any time.
     /// </summary>
-    private void CheckInactiveClientConnections()
+    public void CheckInactiveClientConnections()
     {
       log.Trace("()");
 

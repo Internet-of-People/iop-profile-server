@@ -39,7 +39,7 @@ namespace ProfileServer.Kernel
       Configuration = new Config.Config();
       ComponentDictionary = new Dictionary<string, Component>(StringComparer.Ordinal)
       {
-        { "Config.Config", Configuration },
+        { "Kernel.Config.Config", Configuration },
         { "Data.Database", new Data.Database() },
         { "Data.ImageManager", new Data.ImageManager() },
         { "Network.Server", new Network.Server() },
@@ -47,13 +47,13 @@ namespace ProfileServer.Kernel
         { "Network.ContentAddressNetwork", new Network.CAN.ContentAddressNetwork() },
         { "Network.LocationBasedNetwork", new Network.LocationBasedNetwork() },
         { "Network.NeighborhoodActionProcessor", new Network.NeighborhoodActionProcessor() },
-        { "Network.Cron", new Network.Cron() },
+        { "Kernel.Cron", new Cron() },
       };
 
       // The component list specifies the order in which the components are going to be initialized.
       List<Component> componentList = new List<Component>()
       {
-        ComponentDictionary["Config.Config"],
+        ComponentDictionary["Kernel.Config.Config"],
         ComponentDictionary["Data.Database"],
         ComponentDictionary["Data.ImageManager"],
         ComponentDictionary["Network.Server"],
@@ -61,7 +61,7 @@ namespace ProfileServer.Kernel
         ComponentDictionary["Network.ContentAddressNetwork"],
         ComponentDictionary["Network.LocationBasedNetwork"],
         ComponentDictionary["Network.NeighborhoodActionProcessor"],
-        ComponentDictionary["Network.Cron"],
+        ComponentDictionary["Kernel.Cron"],
       };
 
       res = Components.Init(componentList);

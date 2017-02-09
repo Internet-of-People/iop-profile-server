@@ -367,11 +367,16 @@ namespace ProfileServerProtocolTests.Tests
           pc.Dispose();
         }
 
-        // Select 40 profiles for change.
+        // Select 40 profiles for change, but avoid updating one profile twice in a single update message, which is forbidden.
+        HashSet<int> usedIndexes = new HashSet<int>();
         List<SharedProfileUpdateItem> changeUpdateItems = new List<SharedProfileUpdateItem>();
         while (changeUpdateItems.Count < 40)
         {
           int index = Rng.Next(TestProfiles.Count);
+
+          if (usedIndexes.Contains(index)) continue;
+          usedIndexes.Add(index);
+
           ProtocolClient pc = TestProfiles.ElementAt(index).Value;
           pc.Profile.ExtraData = "1234567890";
           SharedProfileUpdateItem changeUpdateItem = new SharedProfileUpdateItem()
