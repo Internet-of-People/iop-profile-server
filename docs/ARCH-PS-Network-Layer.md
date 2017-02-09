@@ -109,23 +109,23 @@ other profile servers that live in the neighborhood of the profile server.
 ### Content Address Network Component
 
 CAN network can be used to store data that can later be found by their identifiers. In IoP network, client applications do not have write access to CAN network 
-and has to ask their profile servers to save the data on their behalf. 
+and has to ask their profile servers to save data on their behalf. 
 
-As the identifiers of the stored data are counted from the binary forms of the stored data, it would not be possible to find the data that belong to a certain identity 
-without knowing the identifier or the data itself. To solve this problem there is a system of so called IPNS records, that allows finding stored data that belong 
-to a certain user, just by knowing the identity of the user.
+As the identifiers of the stored data are calculated from the binary forms of the stored data, it would not be possible to find data that belong to a certain identity 
+without knowing the identifier or the data. To solve this problem there is a system of so called IPNS records, that allows finding stored data that belong 
+to a certain user, just by knowing the identity of the user (its network identifier).
 
 Profile server uses the IPNS system to store its contact information to the CAN network. This allows users of IoP network to find the contact information to 
 a profile server just by knowing its network identifier. When a contact information of a profile server changes (e.g. its primary port is changed by its administrator) 
 the profile server updates its IPNS record.
 
-Similarly to this mechanism, the profile server creates IPNS records for its hosted identities that want to store their data to CAN network. Any other user of 
-the network can then find this data provided that they know the network identifier of the identity. And again, if the user changes its data in CAN, the profile 
+Similarly to this mechanism, the profile server submits IPNS records of its hosted identities that want to store their data to CAN network. Any other user of 
+the network can then find these data provided that they know the network identifiers of the data owners. And again, if the user changes its data in CAN, the profile 
 server updates its IPNS record.
 
 IPNS records in CAN network expire in time and it is necessary for each IPNS record to be refreshed once in a while. It is the responsibility of this component 
-to refresh the IPNS record of the profile servers when it is needed. Refreshing IPNS records of hosted identities has to be invoke by themselves. The clients 
-has to contact their profile server and ask it to refresh their IPNS record before it expires in CAN network.
+to refresh the IPNS record of the profile server when it is needed. Refreshing IPNS records of hosted identities has to be initiated by themselves. The clients 
+have to contact their profile servers and ask them to refresh their IPNS records before they expire in CAN network.
 
 
 
