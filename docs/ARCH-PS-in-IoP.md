@@ -13,7 +13,7 @@ as a *follower* of *profile server A*. It is common that two profile servers are
 
 ## Connections to Location Based Network
 
-Profile servers do not manage their neighborhoods relationship by themselves. Each profile server relies on a [Location Based Network server](https://github.com/Fermat-ORG/iop-location-based-network) (LOC server)
+Profile servers do not manage their neighborhood relationships by themselves. Each profile server relies on a [Location Based Network server](https://github.com/Fermat-ORG/iop-location-based-network) (LOC server)
 that runs locally with it to provide information about the profile server's neighborhood. The profile server thus only has some information about its own neighborhood, but it has no information about 
 the other parts of the network.
 
@@ -24,11 +24,11 @@ Note that while each profile server needs its associated LOC server to run on th
 
 ## Connections to Content Address Network
 
-Content Address Network (CAN) is a network of servers that can store arbitrary content and allows it to be found and downloaded. Profile servers use CAN servers for two different purposes. 
+Content Address Network (CAN) is a network of servers that can store arbitrary content and allow it to be found and downloaded. Profile servers use CAN servers for two different purposes. 
 In the first place, profile servers use CAN as an indexing service that allows members of IoP network to find contact information to profile servers using their network identifiers.
 Secondly, profile servers allow their clients to indirectly store content to CAN network. In this case, the profile server plays a role of an authorization layer which is missing in CAN.
 
-Each profile server expects a CAN server to run with it on the same machine. A profile server communicates with its CAN server over a trusted local TCP channel using API that CAN server provies.
+Each profile server expects a CAN server to run with it on the same machine. A profile server communicates with its CAN server over a trusted local TCP channel using API that CAN server provides.
 
 Note that while each profile server needs its associated CAN server to run on the same machine, not every CAN server needs to be associated with a profile server.
 
@@ -48,7 +48,7 @@ Some of these services are offered only to the clients hosted on the particular 
 
 ## Connections to Other Networks
 
-Profile server does not connect directly to any other network except for those mentioned above. Clients may need to use services offered by profile servers to be able to work in with other networks 
+Profile server does not connect directly to any other network except for those mentioned above. Clients may need to use services offered by profile servers to be able to operate in other networks 
 and servers in IoP network, but profile servers do not need to understand the details of their protocols. For example, the WebRTC protocol for direct client to client communication requires 
 signalling, which is where profile servers' online communication between identities can be used, but profile servers will not analyze nor understand the messages transferred in those channels. 
 
