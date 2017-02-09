@@ -23,5 +23,5 @@ To get more information about Profile Server's internals, check out [Architectur
 
 ## TODOs and Possible Improvements
 
-[TODO](docs/TODO.md) file contains possible improvements that are being considered, some of them are on the project's roadmap and will be implemented in the upcoming versions.
+[TODO](docs/TODO.md) file contains possible improvements that are being considered, some of them are on the project's roadmap and will be implemented in upcoming versions.
 
