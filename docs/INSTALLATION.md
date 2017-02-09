@@ -59,7 +59,7 @@ Finally, go to `$InstDir\src\ProfileServer` and execute
 dotnet ef database update
 ```
 
-to initialize the Profile Server's database.
+to initialize the Profile Server's database file `ProfileServer.db`, which should be created in `$BinDir`.
 
 
 ## Download Profile Server Binaries
@@ -113,8 +113,8 @@ Otherwise, you can go to `$InstDir\src\ProfileServer` and execute
 dotnet run
 ```
 
-but in this case your `$BinDir` is going to be `$InstDir\src\ProfileServer`, which means you will have to copy the TLS certificate PFX file and the configuration files to this directory and also you 
-will have to copy the database file `ProfileServer.db` to this directory.
+but in this case your execution directory is going to be `$InstDir\src\ProfileServer`, which means you will have to copy the TLS certificate PFX file and the configuration files to this directory and also you 
+will have to copy the database file `ProfileServer.db` to this directory. 
 
 
 ## Troubleshooting
