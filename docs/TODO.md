@@ -10,14 +10,14 @@ Some of the following features are going to be implemented, others will be consi
 
 The network simulator is a tool that allows developers to run multiple instances of the profile server on a single machine and create a testing network, 
 in which various scenarios can be played. Currently, the network simulator implements a dummy LOC server, which simulates a basic functionality of a LOC server.
-We need to improve the network simulator to support real LOC software, to help us test LOC functionality within the simulator as well as the integration 
+We need to improve the network simulator to support real LOC software, to help us testing LOC functionality within the simulator as well as the integration 
 between the profile server and the LOC server.
 
 
 ### Multimachine Network Simulator Support
 
-Currently, the network simulator can only run on a single machine, which limits the size of the simulated networks because of the simulator's hardware resource demands.
-It may be possible to extend the functionality of the network simulator to support execution on multiple machines, thus allowing simulating large 
+Currently, the network simulator can only run on a single machine, which limits the size of the simulated network because of the simulator's demands on hardware resources.
+It may be possible to extend the functionality of the network simulator to support execution on multiple machines, which would allow is to simulate large 
 network environments on just couple of testing servers.
 
 
@@ -41,7 +41,7 @@ Invoicing is the intended system of payment requests delivered to the clients to
 
 ### Backup Node
 
-To prevent losing the access to the network when a client's hosting profile servers is not available, a system of backup nodes can be created.
+To prevent losing an access to the network when a client's hosting profile server is not available, a system of backup nodes can be created.
 A backup node will contain up to date profile information about the client, but it will not be used until the client requests it due to problems 
 with its primary hosting server. The backup node will then replace the role of the client's hosting server until its primary server is available again.
 In case of permanent unavailability of the primary server, the client is expected to fully migrate to the backup server, or another profile server.
@@ -51,7 +51,7 @@ In case of permanent unavailability of the primary server, the client is expecte
 ### Admin Interface
 
 A special interface for the administrator of the profile server should be implemented to allow easier management and change of settings of the profile 
-server without a need to restart it, as well as to provide various statistics about the profile server's operations.
+server without a need to restart it, as well as to provide various statistics about the profile server's operations and performance.
 
 
 ### Regression Test Mode
@@ -73,11 +73,11 @@ See [Security](#security) below.
 Currently, there is no verification whether an incoming profile server that requests uploading its profile database is authorized to do so. 
 Mitigation of this problem depends on design decisions to be made about the final definition of the server neighborhood.
 
-Depending on the neighborhood design and definitions is also the possibility of spawning a large number of servers within a certain location.
-Mitigation of this should probably be done on LBN and CAN level with IP subnet based limitation.
+Regardless of the neighborhood design and definitions, there is also the possibility of spawning a large number of servers within a certain location.
+Mitigation of this should probably be done on LOC level with IP subnet based limitation.
 
-Also currently, there is no limit on number of attempts for the Neighborhood Initialization Process if it fails. This allows the attacker to 
-perform a DoS. To mitiage this issue, we can introduce IP based limit.
+Also currently, there is no limit on a number of attempts for the Neighborhood Initialization Process if it fails. This allows the attacker to 
+perform a DoS attack. To mitigate this issue, we can introduce IP based limits.
 
 
 ### DoS Attack Using Search Queries, Profile Updates, and Other Requests
@@ -92,10 +92,10 @@ To mitigate this issue, we would need to introduce identity based or IP based li
 
 ### Sybil Attack on Profile Hosting Registration
 
-Currently, there is no limit on a number of profile that a single IP address can register on the server. A single attacker can occupy all free slots 
+Currently, there is no limit on a number of profiles that a single IP address can register on the server. A single attacker can occupy all free slots 
 the profile server has for hosting identities. 
 
-To mitigate this issue, we would need to introduce IP based limits on search queries.
+To mitigate this issue, we would need to introduce IP based limits on hosting registrations.
 
 
 
@@ -104,12 +104,12 @@ To mitigate this issue, we would need to introduce IP based limits on search que
 ### Updates Between Neighbors
 
 Neighbor servers share their profile databases and keep their information synchronized. The initial database upload to a neighbor is efficient, 
-but individual updates that follows are somehow inefficient as we currently use a new TCP TLS connection to the target neighbor, verify our identity 
-and send a single update of a single profile. 
+but individual updates that follow are somehow inefficient as we currently use a new TCP TLS connection to the target neighbor, verify our identity 
+and send a single update of a single profile even if there are more updates to be done. 
 
 As the number of neighbors is potentially high and the frequency of changes in the hosted profiles is low, reusing a connection does not seem 
 to be a good option unless it is used by both peers. Such optimizations should not be done until the final design of the server neighborhood 
-is decided.
+is decided because it is currently uncertain whether any optimization is needed.
 
 Making batch updates instead of individual updates would save resources but it would potentially affect the UX as the profile search feature would 
 greatly suffer. 
