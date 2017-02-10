@@ -24,7 +24,8 @@ Note that while each profile server needs its associated LOC server to run on th
 
 ## Connections to Content Address Network
 
-Content Address Network (CAN) is a network of servers that can store arbitrary content and allow it to be found and downloaded. Profile servers use CAN servers for two different purposes. 
+[Content Address Network](https://github.com/Fermat-ORG/iop-content-address-network) (CAN) is a network of servers that can store arbitrary content and allow it to be found and downloaded. 
+Profile servers use CAN servers for two different purposes. 
 In the first place, profile servers use CAN as an indexing service that allows members of IoP network to find contact information to profile servers using their network identifiers.
 Secondly, profile servers allow their clients to indirectly store content to CAN network. In this case, the profile server plays a role of an authorization layer which is missing in CAN.
 
