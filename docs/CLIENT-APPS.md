@@ -1,4 +1,4 @@
-# IoP Profile Server - Introduction for Developer of Client Apps
+# IoP Profile Server - Introduction for Developers of Client Apps
 
 
 ## Table of Contents
