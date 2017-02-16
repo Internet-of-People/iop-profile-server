@@ -20,7 +20,6 @@ namespace ProfileServer.Kernel
     /// <summary>
     /// Initializes a component and connects its shutdown signaling to the global shutdown.
     /// </summary>
-    /// <param name="GlobalShutdown">Global shutdown signaling object.</param>
     public Component()
     {
       ShutdownSignaling = new ComponentShutdown(Base.Components.GlobalShutdown);

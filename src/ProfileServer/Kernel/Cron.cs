@@ -64,10 +64,15 @@ namespace ProfileServer.Kernel
       { new CronJob() { Name = "refreshLocData", StartDelay = 67 * 60 * 1000, Interval = 601 * 60 * 1000, } },
 
       // Checks if any of the opened TCP connections are inactive and if so, it closes them.
-      { new CronJob() { Name = "checkInactiveClientConnections", StartDelay = 120000, Interval = 120000, } },
+      { new CronJob() { Name = "checkInactiveClientConnections", StartDelay = 2 * 60 * 1000, Interval = 2 * 60 *1000, } },
 
       // Checks if there are any neighborhood actions to process.
-      { new CronJob() { Name = "checkNeighborhoodActionList", StartDelay = 20000, Interval = 20000, } },
+      { new CronJob() { Name = "checkNeighborhoodActionList", StartDelay = 20 * 1000, Interval = 20 * 1000, } },
+
+      // Refreshes profile server's IPNS record.
+      //{ new CronJob() { Name = "ipnsRecordRefresh", StartDelay = 2 * 60 * 60 * 1000, Interval = 7 * 60 * 60 * 1000, } },
+#warning put back
+      { new CronJob() { Name = "ipnsRecordRefresh", StartDelay = 30 * 1000, Interval = 60 * 1000, } },
     };
 
 
@@ -162,6 +167,7 @@ namespace ProfileServer.Kernel
       ImageManager imageManager = (ImageManager)Base.ComponentDictionary["Data.ImageManager"];
       Network.Server server = (Network.Server)Base.ComponentDictionary["Network.Server"];
       Network.NeighborhoodActionProcessor neighborhoodActionProcessor = (Network.NeighborhoodActionProcessor)Base.ComponentDictionary["Network.NeighborhoodActionProcessor"];
+      Network.CAN.ContentAddressNetwork contentAddressNetwork = (Network.CAN.ContentAddressNetwork)Base.ComponentDictionary["Network.ContentAddressNetwork"];
 
       while (!ShutdownSignaling.IsShutdown)
       {
@@ -218,6 +224,10 @@ namespace ProfileServer.Kernel
           case "checkNeighborhoodActionList":
             neighborhoodActionProcessor.CheckActionList();
             break;
+
+          case "ipnsRecordRefresh":
+            contentAddressNetwork.IpnsRecordRefresh().Wait();
+            break;
         }
       }
 
@@ -228,7 +238,7 @@ namespace ProfileServer.Kernel
 
 
     /// <summary>
-    /// Callback routine of checkFollowersRefreshTimer.
+    /// Callback routine of cron timers.
     /// We simply set an event to be handled by maintenance thread, not to occupy the timer for a long time.
     /// </summary>
     /// <param name="State">Event to signal.</param>

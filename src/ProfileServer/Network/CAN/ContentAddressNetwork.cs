@@ -32,22 +32,14 @@ namespace ProfileServer.Network.CAN
   {
     private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Network.ContentAddressNetwork");
 
-    /// <summary>Validity of profile server's IPNS record in milliseconds. </summary>
+    /// <summary>Validity of profile server's IPNS record in seconds. </summary>
     private const int IpnsRecordExpirationTimeSeconds = 24 * 60 * 60;
-
-    /// <summary>IPNS record refresh frequency in milliseconds.</summary>
-    private const int IpnsRecordRefreshIntervalMs = 7 * 60 * 60 * 1000;
 
     /// <summary>Time format of IPNS record.</summary>
     private const string Rfc3339DateTimeFormat = "yyyy-MM-dd'T'HH:mm:ss.fffK";
 
-    /// <summary>Timer that invokes IPNS record refreshment.</summary>
-    private static Timer ipnsRecordRefreshTimer;
-
-
     /// <summary>Profile server's IPNS record.</summary>
     private CanIpnsEntry canIpnsRecord;
-
 
 
     /// <summary>Profile server's contact information object in CAN.</summary>
@@ -103,9 +95,6 @@ namespace ProfileServer.Network.CAN
 
         if ((initThread != null) && !initThreadFinished.WaitOne(25000))
           log.Error("Init thread did not terminated in 25 seconds.");
-
-        if (ipnsRecordRefreshTimer != null) ipnsRecordRefreshTimer.Dispose();
-        ipnsRecordRefreshTimer = null;
       }
 
       log.Info("(-):{0}", res);
@@ -119,21 +108,17 @@ namespace ProfileServer.Network.CAN
 
       ShutdownSignaling.SignalShutdown();
 
-      if (ipnsRecordRefreshTimer != null) ipnsRecordRefreshTimer.Dispose();
-      ipnsRecordRefreshTimer = null;
-
       if ((initThread != null) && !initThreadFinished.WaitOne(25000))
-        log.Error("Init thread did not terminated in 25 seconds.");
+        log.Error("Init thread did not terminate in 25 seconds.");
 
       log.Info("(-)");
     }
 
 
     /// <summary>
-    /// Callback routine of ipnsRecordRefreshTimer. Simply invokes IPNS record refresh procedure.
+    /// Refreshes porofile server's IPNS record.
     /// </summary>
-    /// <param name="State">Not used.</param>
-    private async void IpnsRecordRefreshTimerCallback(object State)
+    public async Task IpnsRecordRefresh()
     {
       log.Trace("()");
 
@@ -249,7 +234,7 @@ namespace ProfileServer.Network.CAN
         }
 
         // Finally, start IPNS record refreshing timer.
-        ipnsRecordRefreshTimer = new Timer(IpnsRecordRefreshTimerCallback, null, 10 * 1000, IpnsRecordRefreshIntervalMs);
+        await IpnsRecordRefresh();
       }
 
 
@@ -315,7 +300,7 @@ namespace ProfileServer.Network.CAN
       string validityString = DateTime.UtcNow.AddMonths(1).ToString(Rfc3339DateTimeFormat, DateTimeFormatInfo.InvariantInfo);
       byte[] validityBytes = Encoding.UTF8.GetBytes(validityString);
 
-      UInt64 ttlNanoSec = (UInt64)(TimeSpan.FromMinutes(10).TotalMilliseconds) * (UInt64)1000000;
+      UInt64 ttlNanoSec = (UInt64)(TimeSpan.FromSeconds(IpnsRecordExpirationTimeSeconds).TotalMilliseconds) * (UInt64)1000000;
 
       string valueString = CanApi.CreateIpfsPathFromHash(Hash);
       byte[] valueBytes = Encoding.UTF8.GetBytes(valueString);
