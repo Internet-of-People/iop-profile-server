@@ -10,4 +10,4 @@
 
 
 ---
-» [Protocol and Profile Server Interfaces](CA-Protocol-PS-Interfaces.md)
+» [Protocol Basics](CA-Protocol-Basics.md)
