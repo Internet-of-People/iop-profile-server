@@ -51,27 +51,27 @@ of server notification usually results in server sending a notification request 
 
 ## Server Roles
 
-Profile servers has different roles, which can be served on different TCP ports. When you obtain a contact information (IP address and port) 
+Profile servers have different roles, which can be served on different TCP ports. When you obtain a contact information (IP address and port) 
 it almost always refers to the profile server's primary interface. Most of the time, you will receive contact to a profile server from a LOC server. 
-If this is what you want to achieve, please see its documentation.
+If this is what you want to achieve, please see LOC servers documentation.
 
-You can use the primary interface (via `ListRolesRequest` message) to obtain a list of roles with their assigned ports. 
-As a client, you may be interested either in non customer client interface or customer client interface. 
-If your client does not represent an identity hosted on the profile server you are communicating with, you are going to use non customer client.
-Otherwise, you will use customer client interace.
+You can use the primary interface to obtain a list of roles with their assigned ports, using `ListRolesRequest` message. 
+As a client, you may be interested either in the non customer client interface or the customer client interface. 
+If your client does not represent an identity hosted on the profile server you are communicating with, you are going to use the non customer client interface.
+Otherwise, you will use the customer client interace.
 
 
 
 ## Conversations
 
 As you know from the protocol definition file, each request is either a single request without further context, 
-or it is a part of the conversation, which is a series of requests with a common context. In order to communicate within a conversation, 
+or it is a part of a conversation, which is a series of requests with a common context. In order to communicate within a conversation, 
 your client needs to represent an identity. Each pair of Ed25519 keys represents an identity in profile server's protocol. 
 You should never be required to disclose the private key to any peer in the network.
 
 During the conversation setup (using `StartConversationRequest`), the requestor (usually the client application) provides a challenge to 
 be signed by the requestee (usually the profile server) and the signature is delivered in the response together with the requestee's identity 
-(a public key). As a client, you should always verify that the presented signature corresponds the claimed identity. Also, if you know 
+(a public key). As a client, you should always verify that the presented signature is a valid signature created by the claimed identity. Also, if you know 
 the profile server network identifier from another source (e.g. LOC server), or you had a conversation with the same profile server before, 
 you should verify that its identity matches the expected value and has not changed.
 
