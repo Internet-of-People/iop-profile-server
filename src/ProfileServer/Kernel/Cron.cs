@@ -70,9 +70,7 @@ namespace ProfileServer.Kernel
       { new CronJob() { Name = "checkNeighborhoodActionList", StartDelay = 20 * 1000, Interval = 20 * 1000, } },
 
       // Refreshes profile server's IPNS record.
-      //{ new CronJob() { Name = "ipnsRecordRefresh", StartDelay = 2 * 60 * 60 * 1000, Interval = 7 * 60 * 60 * 1000, } },
-#warning put back
-      { new CronJob() { Name = "ipnsRecordRefresh", StartDelay = 30 * 1000, Interval = 60 * 1000, } },
+      { new CronJob() { Name = "ipnsRecordRefresh", StartDelay = 2 * 60 * 60 * 1000, Interval = 7 * 60 * 60 * 1000, } },
     };
 
 

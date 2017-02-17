@@ -2,12 +2,13 @@
 
 ## Installation
 
-To setup a local development environment, you are going to follow most of the steps of the standard [installation procedure](INSTALLATION.md).
+To setup a local development environment, you are going to follow most of the steps of the standard [profile server installation procedure](INSTALLATION.md).
 
 What is different for the development environment is the configuration of the profile server.
 In order to use a localhost interface, you will have to set the following settings in the configuration file:
 
 `test_mode = on`
+
 `server_interface = 127.0.0.1`
 
 Without enabling the test mode, the profile server will not allow you to set the interface to IP address 127.0.0.1 or any other local network IP address.
