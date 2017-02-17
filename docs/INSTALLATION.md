@@ -25,7 +25,7 @@ Please visit [OpenSSL website](https://www.openssl.org/) and follow the instruct
 ## Download Profile Server Source Codes
 
 If you are familiar with GIT and GitHub, you will probably know what to do.
-If you are not familiar with it, simply go to the [Main Page](https://github.com/Fermat-ORG/iop-profile-server/) of the repository and click the *Clone or download* green button 
+If you are not familiar with them, simply go to the [Main Page](https://github.com/Fermat-ORG/iop-profile-server/) of the repository and click the *Clone or download* green button 
 on the right side. Then click the *Download ZIP* link and save the file to your disk. Unzip the file to any folder of your choice. This folder will be called `$InstDir` in the text below.
 
 
@@ -50,7 +50,7 @@ dotnet restore --configfile NuGet.Config
 dotnet build --configuration Release
 ```
 
-The last command will create `$InstDir\src\ProfileServer\bin` folder with a subfolder that contains the compiled Profile Server binaries. The actual name of the final binary folder 
+The last command will create `$InstDir\src\ProfileServer\bin` a folder with a subfolder that contains the compiled Profile Server binaries. The actual name of the final binary folder 
 differs with each operating system. The final folder with the binaries will be called `$BinDir` in the text below. 
 
 Finally, go to `$InstDir\src\ProfileServer` and execute 
