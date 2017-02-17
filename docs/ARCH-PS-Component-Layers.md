@@ -1,7 +1,7 @@
 # Profile Server Component Layers
 
-Each of the profile server's components belongs to one of the four layers - kernel layer, data layer, network layer, and utility layer.
-In profile server's design a *component* is a special module that is controlled by the component manager and has a controlled life cycle. 
+Each of the profile server's components belong to one of the four layers - kernel layer, data layer, network layer, and utility layer.
+In the profile server's design a *component* is a special module that is controlled by the component manager and has a controlled life cycle. 
 
 
 ## Kernel Layer
@@ -9,7 +9,7 @@ In profile server's design a *component* is a special module that is controlled 
 Kernel layer contains the following:
 
  * Modules that define component structure and implement component life cycle management.
- * Configuration component that loads ands stores the profile server configuration from the configuration file.
+ * Configuration component that loads and stores the profile server configuration from the configuration file.
  * Cron component that is responsible for running repeated tasks.
 
 
@@ -34,7 +34,7 @@ The largest layer in profile server is the network layer, it consists of the fol
  * Location based network component that implements communication with Location Based Network server.
  * Content address network component that implements communication with Content Address Network server.
  * Neighborhood action processor component which is responsible for handling events related to profile server neighborhood interactions.
- * Other network related modules, such as modules represening outgoing network clients, modules related to application service calls functionality etc.
+ * Other network related modules, such as modules representing outgoing network clients, modules related to application service calls functionality etc.
 
 
 ## Utility Layer
