@@ -14,15 +14,15 @@ As a client, you should always check the returned status code and implement a pr
 
 There are two groups of status codes that you can receive in a response to a request:
 
- * general status code,
- * request specific status code.
+ * general status codes,
+ * request specific status codes.
 
-General status codes are related to the protocol itself, or the status of the profile server that you are communicating with. 
+General status codes are related to the protocol itself or the status of the profile server that you are communicating with. 
 A good example of an error that returns a general status code is a protocol violation error. Any request can result in a general 
 status code being returned.
 
-Request specific codes are errors that can only be returned by requests that explicitly declare them as possible response status codes.
-For example, to `VerifyIdentityRequest` message a profile server can reply with `ERROR_INVALID_SIGNATURE` or `ERROR_INVALID_VALUE`, 
+Request specific codes are error results that can only be returned by requests that explicitly declare them as their possible response status codes.
+For example, a profile server can reply with `ERROR_INVALID_SIGNATURE` or `ERROR_INVALID_VALUE` to `VerifyIdentityRequest` message
 but not with any other request specific status code.
 
 Besides returning an error code to a client, the profile server can also terminate the conection. This is done only if necessary 
