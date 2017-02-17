@@ -2,15 +2,15 @@
 
 ## Prerequisites
 
-We assume that you are familiar with [Profile Server Architecture](ARCHITECTURE.md), if not, please read it first. 
-You should also be familiar with profile server network protocol, which is described briefly in its [.proto file](https://github.com/Internet-of-People/message-protocol/blob/master/IopProfileServer.proto).
+We assume that you are familiar with [Profile Server Architecture](ARCHITECTURE.md). If not, please read it first. 
+You should also be familiar with profile server network protocol, which is described in its [.proto file](https://github.com/Internet-of-People/message-protocol/blob/master/IopProfileServer.proto).
 We are going to explain the protocol in greater details in this introduction.
 
 
 ## Error Handling
 
 Status codes (or error codes) are the first thing defined in the protocol definition file. In profile server network, every peer is expected to be very strict in its error handling. 
-As a client, you should always check the status code and handle properly every possible error code that you can receive. 
+As a client, you should always check the returned status code and implement a proper handling of every possible code that you can receive. 
 
 There are two groups of status codes that you can receive in a response to a request:
 
