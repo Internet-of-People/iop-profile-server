@@ -1,7 +1,7 @@
 # Profile Server Network Layer
 
-On the network layer, profile server communicates using three different network protocols to connect to other servers and clients in the IoP network.
-This gives us a chance to divide this layer to three groups of components and modules by the protocol they are mostly connected to.
+On the network layer, the profile server communicates using three different network protocols to connect to other servers and clients in the IoP network.
+This gives us a chance to divide this layer into three groups of components and modules by the protocol they are mostly connected to.
 
 
 ## Profile Server Protocol
@@ -15,7 +15,7 @@ over a long period of time have to actively keep their connections alive.
 
 ### TCP Role Server
 
-Profile server runs multiple roles (also called an interface of a profile server) that each serve different purposes and types of clients. Each TCP role server represents a single open TCP port
+Profile server runs multiple roles (also called an interface of a profile server) where each serve different purposes and types of clients. Each TCP role server represents a single open TCP port
 on which one or more roles can be served. Currently, the following interfaces are present:
 
  * Primary Interface is the primary contact point of the profile server. When we publish a profile server contact information anywhere in the IoP network 
@@ -29,7 +29,7 @@ This interface then acts as a bridge between the two clients and the profile ser
 
 The profile server's administrator can configure each role to run on a separate TCP port, or to use a single port for multiple roles. 
 Two roles can be served over a single TCP port if the communication on them is either encrypted on both of them or unencrypted on both of them. 
-An encrypted interface can not be combined with an unencrypted one on the same port.
+An encrypted interface cannot be combined with an unencrypted one on the same port.
 
 
 ### Incoming Client
@@ -52,7 +52,7 @@ may contain any of the following information:
 
 ### Message Processor
 
-Message processor is the module that is responsible for validation and processing all Profile Server Network protocol messages that are received by incoming clients.
+Message processor is the module that is responsible for validation and processing of all Profile Server Network protocol messages that are received by incoming clients.
 Most of the messages are fully processed here except for some more complicated cases, such as application service messages relayed over the Application Service Interface.
 
 
@@ -86,12 +86,12 @@ the LOC server to provide a fresh data, so that cancelled relationships with pro
 
 ### Neighborhood Action Processor
 
-Events related to the profile server's neighborhood, such as a server joins or leaves the neighborhood, or a new identity becomes hosted, or an identity cancels its 
+Events related to the profile server's neighborhood, such as if a server joins or leaves the neighborhood, or a new identity becomes hosted, or an identity cancels its 
 hosting with its profile server, do require an action to be performed by the profile server towards its neighbors or followers. The neighborhood action processor 
 is the module that consumes such events from the database and executes the necessary actions in order to keep all related servers in sync.
 
 The neighborhood action processor processes the actions in parallel, if possible. Two actions can be processed in parallel if they can not influence each other 
-and their order of processing can not affect their results. For example, if an identity changes its profile on the profile server, this change has to be propagated 
+and their order of processing cannot affect their results. For example, if an identity changes its profile on the profile server, this change has to be propagated 
 to all followers of the profile server. This creates as many neighborhood actions in the database as there are followers. All these actions can be processed in parallel 
 because they target different servers. However, if the same identity changes its profile again, an action that propagates this second change to a follower 
 must not be processed in parallel with the action that propagates the first change of this profile to the same follower.
@@ -108,8 +108,8 @@ other profile servers that live in the neighborhood of the profile server.
 
 ### Content Address Network Component
 
-CAN network can be used to store data that can later be found by their identifiers. In IoP network, client applications do not have write access to CAN network 
-and has to ask their profile servers to save data on their behalf. 
+CAN network can be used to store data that can later be found by their identifiers. In the IoP network, client applications do not have writing access to CAN network 
+and have to ask their profile servers to save data on their behalf. 
 
 As the identifiers of the stored data are calculated from the binary forms of the stored data, it would not be possible to find data that belong to a certain identity 
 without knowing the identifier or the data. To solve this problem there is a system of so called IPNS records, that allows finding stored data that belong 
