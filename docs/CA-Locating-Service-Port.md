@@ -5,8 +5,8 @@
 As a client that wants to communicate with a profile server, you need to be able to find its contact information - i.e. its IP address and port. 
 We already mentioned that most commonly, clients use LOC servers to obtain the contact information of a profile server for the first time. 
 
-The contact information one gets from LOC server refers to the profile server's primary interface. Let's say the client is interested 
-to communicate with the profile server over its non customer interface. The client is expected to connect to this port and send `ListRolesRequest` 
+The contact information one gets from a LOC server refers to the profile server's primary interface. Let's say the client is interested 
+to communicate with the profile server over its non customer interface. The client is expected to connect to the primary interface port and send `ListRolesRequest` 
 message to obtain a mapping of server roles to ports, which includes information about the non customer interface. The client can now 
 connect to this interface.
 
@@ -26,9 +26,9 @@ of the profile server, it should initiate a conversation with the profile server
 in the response and this will allow the client to calculate the network identifier as the network identfiers are equal to `SHA256(publicKey)`.
 
 Once a client obtains the mapping of server roles to TCP ports from the server using `ListRolesRequest`, it should save the whole information
-for later use again.
+for later use.
 
-If the client later fails to connect to the profile server's non customer port, the first thing to resolve the situation should be to 
+If the client later fails to connect to the profile server's non customer port, the first way to resolve this situation is to 
 try to connect to its primary port and use `ListRolesRequest` again to get the current port mapping information. 
 
 If the connection to the primary port fails as well, this can be either because the primary port has changed, or that profile server is offline 

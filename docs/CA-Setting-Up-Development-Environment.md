@@ -30,12 +30,12 @@ However, some features may not be available if one or both of those servers are 
 
 ## Multiple Profile Servers Instances
 
-It is perfectly fine to run two or more profile server instances on a same machine. You only need to make sure that each server 
+It is perfectly fine to run two or more profile server instances on a single machine. You only need to make sure that each server 
 has its own directory with its own database and configuration and you have to make sure that there are no port collisions 
 among any two instances in their configuration files - i.e. a single port number can only be used in configuration file of one instance 
 and must not be used for anything else in configuration files of other instances.
 
-Note that if you run multiple instances on a same machine, they will not know about each other and they will not form a neighborhood relation.
+Note that if you run multiple instances on a single machine, they will not know about each other and they will not form a neighborhood relation.
 Such a setup is more complicated and would need a LOC server to be involved. As a client application developer, you should not need such a setup, however.
 
 
