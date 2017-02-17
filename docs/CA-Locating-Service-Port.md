@@ -31,7 +31,7 @@ for later use.
 If the client later fails to connect to the profile server's non customer port, the first way to resolve this situation is to 
 try to connect to its primary port and use `ListRolesRequest` again to get the current port mapping information. 
 
-If the connection to the primary port fails as well, this can be either because the primary port has changed, or that profile server is offline 
+If the connection to the primary port fails as well, this can be either because the primary port has changed, or that the target profile server is offline 
 for whatever reason. To resolve this, the client should use CAN network to obtain the up to date contact information. 
 Each profile server publishes its contact information to CAN network and creates an IPNS record under its network identifier
 so that everyone knowing its identifier can find its latest contact information. The client thus needs to find a CAN server and resolve 
