@@ -43,7 +43,7 @@ itself depends on:
 Besides that there are projects to support the development:
 
  * Unit Tests project simply implements unit tests for profile server code where needed.
- * Profile Server Protocol Tests is a project that contains all functional IoP Network protocol tests related to the profile server, but the implementation is independent of a specific profile server implementation. 
+ * Profile Server Protocol Tests is a project that contains all functional IoP Network protocol tests related to the profile server, but the implementation is independent from a specific profile server implementation. 
 These tests verify that a particular implementation of the profile server conforms to the protocol specification.
  * Profile Server Protocol Tests Executor project is a tool that allows easy batch execution of the tests from the Profile Server Protocol Tests project.
  * Profile Server Network Simulator project is a tool with which we can simulate a network of profile servers and execute various scenarios and verify the correctness of each server's behavior.
