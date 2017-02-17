@@ -24,4 +24,3 @@ If you want to develop a client application (or a server in a role of a network 
 ## TO-DOs and Possible Improvements
 
 [TODO](docs/TODO.md) file contains possible improvements that are being considered, some of them are on the project's roadmap and will be implemented in upcoming versions.
-
