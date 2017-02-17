@@ -27,25 +27,25 @@ but not with any other request specific status code.
 
 Besides returning an error code to a client, the profile server can also terminate the conection. This is done only if necessary 
 and it usually means that the profile server does not consider it possible to recover from the error. This is mostly the case 
-of protocol violation errors, but being banned is another case when this makes sense. Most of the errors will not cause the connection 
+of protocol violation errors, but being banned is another case in which disconnecting makes sense. Most of the errors will not cause the connection 
 to be terminated.
 
 
 ## Request - Response
 
 Each message is either a request or a response to a request that was previously sent within the same connection. Each request 
-comes with a unique message identifier and the response repeats the identifier so that the requestor can match incoming response 
+comes with a unique message identifier and the response repeats the identifier so that the requestor can match the incoming response 
 to its corresponding request. The requestor is the one responsible for the uniqueness of request identifiers. The requestee 
 may not (and if the profile server is the requestee, it does not) check it and if a duplicate identifier is used the behavior
 is undefined.
 
 It is possible to send another request before previous requests are processed and produced responses. The order of the responses 
-is not guranteed if there are multiple unfinished requests. The message identifier in the response must be use to recognize 
+is not guranteed if there are multiple unfinished requests. The message identifier in the response must be used to recognize 
 the corresponding request.
 
 Note that not always the client application is the side to send request and the profile server is the side to send response. 
-The most obvious examples of inverse message flows are some messages related to application service calls. In general, any type 
-of server notification usually results in server sending a notification request and the client replying with a reponse.
+The most obvious examples of inverse message flows are certain messages related to application service calls. In general, any kind 
+of server notification usually results in server sending a notification request and a client replying with a reponse.
 
 
 
