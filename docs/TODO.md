@@ -1,4 +1,4 @@
-# IoP Profile Server - TODOs and Possible Improvements
+# IoP Profile Server - TO-DOs and Possible Improvements
 
 
 
@@ -17,8 +17,8 @@ between the profile server and the LOC server.
 ### Multimachine Network Simulator Support
 
 Currently, the network simulator can only run on a single machine, which limits the size of the simulated network because of the simulator's demands on hardware resources.
-It may be possible to extend the functionality of the network simulator to support execution on multiple machines, which would allow is to simulate large 
-network environments on just couple of testing servers.
+It may be possible to extend the functionality of the network simulator to support execution on multiple machines, which would allow it to simulate large 
+network environments on just a couple of testing servers.
 
 
 ### Profile Changes Notification
@@ -36,7 +36,7 @@ its configured limits. A system of hosting plans is intended to limit the free u
 functionality the profile server offers. It is expected that each profile server will offer a very limited free hosting plan that will allow 
 new network users to join the network free of charge, as well as to offer paid plans for users that are able to provide monthly payments.
 
-Invoicing is the intended system of payment requests delivered to the clients to ask them to pay for the profile server services to its wallet.
+Invoicing is the intended system of payment requests delivered to the clients to ask them to pay for the profile server services, to its wallet.
 
 
 ### Backup Node
@@ -50,8 +50,8 @@ In case of permanent unavailability of the primary server, the client is expecte
 
 ### Admin Interface
 
-A special interface for the administrator of the profile server should be implemented to allow easier management and change of settings of the profile 
-server without a need to restart it, as well as to provide various statistics about the profile server's operations and performance.
+A special interface for the administrator of the profile server should be implemented to allow easier management and change of profile server settings 
+without a need to restart it, as well as to provide various statistics about the profile server's operations and performances.
 
 
 ### Regression Test Mode
@@ -109,7 +109,7 @@ and send a single update of a single profile even if there are more updates to b
 
 As the number of neighbors is potentially high and the frequency of changes in the hosted profiles is low, reusing a connection does not seem 
 to be a good option unless it is used by both peers. Such optimizations should not be done until the final design of the server neighborhood 
-is decided because it is currently uncertain whether any optimization is needed.
+is decided because, it is currently uncertain whether any optimization is needed.
 
 Making batch updates instead of individual updates would save resources but it would potentially affect the UX as the profile search feature would 
 greatly suffer. 
