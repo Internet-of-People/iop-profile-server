@@ -34,8 +34,8 @@ to be terminated.
 ## Request - Response
 
 Each message is either a request or a response to a request that was previously sent within the same connection. Each request 
-comes with a unique message identifier and the response repeats the identifier so that the requester can match the incoming response 
-to its corresponding request. The requester is the one responsible for the uniqueness of request identifiers. The requestee 
+comes with a unique message identifier and the response repeats the identifier so that the requestor can match the incoming response 
+to its corresponding request. The requestor is the one responsible for the uniqueness of request identifiers. The requestee 
 may not (and if the profile server is the requestee, it does not) check it and if a duplicate identifier is used the behavior
 is undefined.
 
@@ -69,7 +69,7 @@ or it is a part of a conversation, which is a series of requests with a common c
 your client needs to represent an identity. Each pair of Ed25519 keys represents an identity in the profile server's protocol. 
 You should never be required to disclose the private key to any peer in the network.
 
-During the conversation setup (using `StartConversationRequest`), the requester (usually the client application) provides a challenge to 
+During the conversation setup (using `StartConversationRequest`), the requestor (usually the client application) provides a challenge to 
 be signed by the requestee (usually the profile server) and the signature is delivered in the response together with the requestee's identity 
 (a public key). As a client, you should always verify that the presented signature is a valid signature created by the claimed identity. Also, if you know 
 the profile server network identifier from another source (e.g. LOC server), or you had a conversation with the same profile server before, 
