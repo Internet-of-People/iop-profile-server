@@ -13,19 +13,19 @@ as a *follower* of *profile server A*. It is common that two profile servers are
 
 ## Connections to Location Based Network
 
-Profile servers do not manage their neighborhood relationships by themselves. Each profile server relies on a [Location Based Network server](https://github.com/Fermat-ORG/iop-location-based-network) (LOC server)
+Profile servers do not manage their neighborhood relationships by themselves. Each profile server relies on a [Location Based Network node](https://github.com/Fermat-ORG/iop-location-based-network) (LOC NODE)
 that runs locally with it, to provide information about the profile server's neighborhood. The profile server thus only has some information about its own neighborhood, but it has no information about 
 the other parts of the network.
 
-A profile server communicates with its LOC server over a trusted local TCP channel using [IoP Location Based Network protocol](https://github.com/Internet-of-People/message-protocol/blob/master/IopLocNet.proto).
+A profile server communicates with its LOC node over a trusted local TCP channel using [IoP Location Based Network protocol](https://github.com/Internet-of-People/message-protocol/blob/master/IopLocNet.proto).
 
-Note that while each profile server needs its associated LOC server to run on the same machine, not every LOC server needs to be associated with a profile server.
+Note that while each profile server needs its associated LOC node to run on the same machine, not every LOC server needs to be associated with a profile server.
 
 
 ## Connections to Content Address Network
 
 [Content Address Network](https://github.com/Fermat-ORG/iop-content-address-network) (CAN) is a network of servers that can store arbitrary content and allow it to be found and downloaded. 
-Profile servers use CAN servers for two different purposes. 
+Profile servers use CAN nodes for two different purposes. 
 In the first place, profile servers use CAN as an indexing service that allows members of IoP network to find contact information to profile servers using their network identifiers.
 Secondly, profile servers allow their clients to indirectly store content to CAN network. In this case, the profile server plays a role of an authorization layer which is missing in CAN.
 
