@@ -52,8 +52,8 @@ of server notification usually results in server sending a notification request 
 ## Server Roles
 
 Profile servers have different roles, which can be served on different TCP ports. When you obtain a contact information (IP address and port) 
-it almost always refers to the profile server's primary interface. Most of the time, you will receive contact to a profile server from a LOC server. 
-If this is what you want to achieve, please see LOC servers documentation.
+it almost always refers to the profile server's primary interface. Most of the time, you will receive contact to a profile server from a LOC node. 
+If this is what you want to achieve, please see LOC nodes documentation.
 
 You can use the primary interface to obtain a list of roles with their assigned ports, using the `ListRolesRequest` message. 
 As a client, you may be interested either in the non customer client interface or the customer client interface. 
