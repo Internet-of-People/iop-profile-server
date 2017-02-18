@@ -28,7 +28,7 @@ profiles database, the change has to be propagated to the followers, which is do
 
 ### Database Component
 
-The Database component cares about maintaining the database in a good shape, which means that it performs a number of cleanup tasks 
+The database component cares about maintaining the database in a good shape, which means that it performs a number of cleanup tasks 
 both during the startup as well as periodically during the normal life of the profile server. These tasks remove unused records from 
 the database which were not removed as a part of normal execution flow for performance or practical reasons.
 
