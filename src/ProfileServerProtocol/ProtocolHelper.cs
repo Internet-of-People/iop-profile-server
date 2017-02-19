@@ -39,9 +39,9 @@ namespace ProfileServerProtocol
 
 
     /// <summary>
-    /// Converts an IoP Home Network protocol message to a binary format.
+    /// Converts an IoP Network protocol message to a binary format.
     /// </summary>
-    /// <param name="Data">Home Network protocol message.</param>
+    /// <param name="Data">IoP Network protocol message.</param>
     /// <returns>Binary representation of the message to be sent over the network.</returns>
     public static byte[] GetMessageBytes(Message Data)
     {

@@ -12,7 +12,7 @@ using System.Collections;
 namespace ProfileServerProtocol
 {
   /// <summary>
-  /// Allows easy construction of Home Network requests and responses.
+  /// Allows easy construction of IoP Network requests and responses.
   /// </summary>
   public class MessageBuilder
   {
