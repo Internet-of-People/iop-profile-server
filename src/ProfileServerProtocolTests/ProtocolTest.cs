@@ -49,7 +49,7 @@ namespace ProfileServerProtocolTests
   /// </summary>
   public abstract class ProtocolTest
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("Test.ProtocolTest");
+    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocolTests.Tests.ProtocolTest");
 
     /// <summary>Name of the test.</summary>
     public abstract string Name { get; }
