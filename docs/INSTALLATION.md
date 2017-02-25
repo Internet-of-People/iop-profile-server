@@ -6,7 +6,7 @@ In order to install and run the Profile Server, you need to
  * install OpenSSL (needed only for TLS certificate generation),
  * download the Profile Server source codes from GitHub,
    * AND build the Profile Server binaries,
- * OR download the Profile Server binaries,
+ * OR download the Profile Server binaries and install dependencies,
  * configure the Profile Server,
  * run the Profile Server.
 
@@ -65,6 +65,19 @@ to initialize the Profile Server's database file `ProfileServer.db`, which shoul
 ## Download Profile Server Binaries
 
 Go to [Releases Page](https://github.com/Fermat-ORG/iop-profile-server/releases) and download the latest release for your platform, if available.
+
+
+### Dependencies for Windows 
+
+Make sure your system is fully updated using Windows Update. Then you need to install [Visual C++ Redistributable for Visual Studio 2015 (64-bit)](https://www.microsoft.com/en-gb/download/details.aspx?id=48145).
+
+
+### Dependencies for Linux
+
+You need to have `libunwind` installed. If you do not have it, install it with the following command:
+
+`apt-get install libunwind8`
+
 
 
 ## Configure Profile Server
