@@ -21,7 +21,7 @@ namespace ProfileServerProtocolTests.Tests
   public class PS08012 : ProtocolTest
   {
     public const string TestName = "PS08012";
-    private static NLog.Logger log = NLog.LogManager.GetLogger("Test." + TestName);
+    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocolTests.Tests." + TestName);
 
     public override string Name { get { return TestName; } }
 
@@ -144,6 +144,8 @@ namespace ProfileServerProtocolTests.Tests
           // Meanwhile we expect updates to arrive on our simulated profile server.
           bool error = false;
           List<IncomingServerMessage> psMessages = profileServer.GetMessageList();
+          if (psMessages.Count == 0) continue;
+
           foreach (IncomingServerMessage ism in psMessages)
           {
             if (ism.Role != ServerRole.ServerNeighbor) continue;

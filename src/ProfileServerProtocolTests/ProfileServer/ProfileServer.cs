@@ -212,6 +212,7 @@ namespace ProfileServerProtocolTests
       {
         primaryListener.Stop();
         serverNeighborListener.Stop();
+        clientNonCustomerListener.Stop();
       }
 
 

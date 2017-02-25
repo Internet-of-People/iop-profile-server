@@ -19,7 +19,7 @@ namespace ProfileServerProtocolTests.Tests
   public class PS02002 : ProtocolTest
   {
     public const string TestName = "PS02002";
-    private static NLog.Logger log = NLog.LogManager.GetLogger("Test." + TestName);
+    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocolTests.Tests." + TestName);
 
     public override string Name { get { return TestName; } }
 
