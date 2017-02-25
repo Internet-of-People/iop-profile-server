@@ -141,7 +141,7 @@ namespace ProfileServerProtocolTests
     /// <param name="Location">Location of the profile server.</param>
     public ProfileServer(string Name, IPAddress IpAddress, int BasePort, KeysEd25519 Keys = null, GpsLocation Location = null)
     {
-      log = NLog.LogManager.GetLogger("Test.ProfileServer." + Name);
+      log = NLog.LogManager.GetLogger("ProfileServerProtocolTests.Tests.ProfileServer." + Name);
       log.Trace("(IpAddress:'{0}',BasePort:{1})", IpAddress, BasePort);
 
       keys = Keys != null ? Keys : Ed25519.GenerateKeys();

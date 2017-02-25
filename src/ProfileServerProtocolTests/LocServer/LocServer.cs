@@ -75,7 +75,7 @@ namespace ProfileServerProtocolTests
     /// <param name="Port">Port on which LOC server will listen.</param>
     public LocServer(string Name, IPAddress IpAddress, int Port)
     {
-      log = NLog.LogManager.GetLogger("Test.LocServer." + Name);
+      log = NLog.LogManager.GetLogger("ProfileServerProtocolTests.Tests.LocServer." + Name);
       log.Trace("(IpAddress:'{0}',Port:{1})", IpAddress, Port);
 
       ipAddress = IpAddress;

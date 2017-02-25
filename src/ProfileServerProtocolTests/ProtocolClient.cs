@@ -26,7 +26,7 @@ namespace ProfileServerProtocolTests
   /// </summary>
   public class ProtocolClient : IDisposable
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("Test.ProtocolClient");
+    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocolTests.Tests.ProtocolClient");
 
     /// <summary>TCP client for communication with the server.</summary>
     private TcpClient client;
@@ -820,7 +820,7 @@ namespace ProfileServerProtocolTests
     /// </summary>
     public class CanIpnsResolveResult : CanApiResult
     {
-      private static NLog.Logger log = NLog.LogManager.GetLogger("Test.ProtocolClient.CanIpnsResolveResult");
+      private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocolTests.Tests.ProtocolClient.CanIpnsResolveResult");
 
       /// <summary>
       /// Structure of the JSON response of CAN '/api/v0/name/resolve' call.
@@ -889,7 +889,7 @@ namespace ProfileServerProtocolTests
     /// </summary>
     public class CanDeleteResult : CanApiResult
     {
-      private static NLog.Logger log = NLog.LogManager.GetLogger("Test.ProtocolClient.CanDeleteResult");
+      private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocolTests.Tests.ProtocolClient.CanDeleteResult");
 
       /// <summary>
       /// Structure of the JSON response of CAN '/api/v0/pin/rm' call.
@@ -964,7 +964,7 @@ namespace ProfileServerProtocolTests
     /// </summary>
     public class CanCatResult : CanApiResult
     {
-      private static NLog.Logger log = NLog.LogManager.GetLogger("Test.ProtocolClient.CanCanResult");
+      private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocolTests.Tests.ProtocolClient.CanCanResult");
 
       /// <summary>
       /// Structure of the JSON response of CAN '/api/v0/name/resolve' call.
