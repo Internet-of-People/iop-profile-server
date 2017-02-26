@@ -100,7 +100,7 @@ namespace ProfileServerProtocolTests
     /// </summary>
     public async Task ReceiveMessageLoop()
     {
-      log.Trace("()");
+      log.Trace("(UseTls:{0})", UseTls);
 
       try
       {

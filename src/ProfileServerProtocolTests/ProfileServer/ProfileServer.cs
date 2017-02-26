@@ -94,7 +94,7 @@ namespace ProfileServerProtocolTests
 
     /// <summary>Thread that is waiting for the new clients to connect to one of the opened TCP server ports.</summary>
     private Thread acceptThread;
-
+     
     /// <summary>True if the shutdown was initiated, false otherwise.</summary>
     private bool isShutdown = false;
     /// <summary>True if the shutdown was initiated, false otherwise.</summary>
@@ -259,14 +259,14 @@ namespace ProfileServerProtocolTests
       shutdownCancellationTokenSource.Cancel();
 
       Stop();
-
+      
       if ((acceptThread != null) && !acceptThreadFinished.WaitOne(10000))
         log.Error("Accept thread did not terminated in 10 seconds.");
 
       log.Trace("(-)");
     }
 
-
+    
     /// <summary>
     /// Thread procedure that is responsible for accepting new clients on the TCP server ports.
     /// </summary>
@@ -280,17 +280,18 @@ namespace ProfileServerProtocolTests
       AutoResetEvent acceptServerNeighborTaskEvent = new AutoResetEvent(false);
       AutoResetEvent acceptClientNonCustomerTaskEvent = new AutoResetEvent(false);
 
+      Task<TcpClient> acceptPrimaryTask = primaryListener.AcceptTcpClientAsync();
+      acceptPrimaryTask.ContinueWith(t => acceptPrimaryTaskEvent.Set());
+
+      Task<TcpClient> acceptServerNeighborTask = serverNeighborListener.AcceptTcpClientAsync();
+      acceptServerNeighborTask.ContinueWith(t => acceptServerNeighborTaskEvent.Set());
+
+      Task<TcpClient> acceptClientNonCustomerTask = clientNonCustomerListener.AcceptTcpClientAsync();
+      acceptClientNonCustomerTask.ContinueWith(t => acceptClientNonCustomerTaskEvent.Set());
+
       while (!isShutdown)
       {
         log.Debug("Waiting for new client.");
-        Task<TcpClient> acceptPrimaryTask = primaryListener.AcceptTcpClientAsync();
-        acceptPrimaryTask.ContinueWith(t => acceptPrimaryTaskEvent.Set());
-
-        Task<TcpClient> acceptServerNeighborTask = serverNeighborListener.AcceptTcpClientAsync();
-        acceptServerNeighborTask.ContinueWith(t => acceptServerNeighborTaskEvent.Set());
-
-        Task<TcpClient> acceptClientNonCustomerTask = clientNonCustomerListener.AcceptTcpClientAsync();
-        acceptClientNonCustomerTask.ContinueWith(t => acceptClientNonCustomerTaskEvent.Set());
 
         WaitHandle[] handles = new WaitHandle[] { acceptPrimaryTaskEvent, acceptServerNeighborTaskEvent, acceptClientNonCustomerTaskEvent, shutdownEvent };
         int index = WaitHandle.WaitAny(handles);
@@ -306,22 +307,28 @@ namespace ProfileServerProtocolTests
           {
             // acceptPrimaryTaskEvent is finished here, asking for Result won't block.
             TcpClient client = acceptPrimaryTask.Result;
-            log.Debug("New client '{0}' accepted on primary interface.", client.Client.RemoteEndPoint);
             ClientHandlerAsync(client, ServerRole.Primary);
+
+            acceptPrimaryTask = primaryListener.AcceptTcpClientAsync();
+            acceptPrimaryTask.ContinueWith(t => acceptPrimaryTaskEvent.Set());
           }
           else if (handles[index] == acceptServerNeighborTaskEvent)
           {
             // acceptServerNeighborTaskEvent is finished here, asking for Result won't block.
             TcpClient client = acceptServerNeighborTask.Result;
-            log.Debug("New client '{0}' accepted on srNeighbor interface.", client.Client.RemoteEndPoint);
             ClientHandlerAsync(client, ServerRole.ServerNeighbor);
+
+            acceptServerNeighborTask = serverNeighborListener.AcceptTcpClientAsync();
+            acceptServerNeighborTask.ContinueWith(t => acceptServerNeighborTaskEvent.Set());
           }
           else if (handles[index] == acceptClientNonCustomerTaskEvent)
           {
             // acceptClientNonCustomerTaskEvent is finished here, asking for Result won't block.
             TcpClient client = acceptClientNonCustomerTask.Result;
-            log.Debug("New client '{0}' accepted on clNonCustomer interface.", client.Client.RemoteEndPoint);
             ClientHandlerAsync(client, ServerRole.ClientNonCustomer);
+
+            acceptClientNonCustomerTask = clientNonCustomerListener.AcceptTcpClientAsync();
+            acceptClientNonCustomerTask.ContinueWith(t => acceptClientNonCustomerTaskEvent.Set());
           }
         }
         catch (Exception e)
@@ -335,7 +342,7 @@ namespace ProfileServerProtocolTests
       log.Trace("(-)");
     }
 
-
+    
     /// <summary>
     /// Handler for each client that connects to the TCP server.
     /// </summary>

@@ -105,7 +105,7 @@ namespace ProfileServer.Network
     /// <returns>true if the connection was established succcessfully, false otherwise.</returns>
     public async Task<bool> ConnectAsync()
     {
-      log.Trace("()");
+      log.Trace("(Address:{0},Port:{1})", remoteEndPoint.Address, remoteEndPoint.Port);
 
       bool res = false;
       try

@@ -109,6 +109,18 @@ namespace ProfileServer.Network
       log.Info("(-)");
     }
 
+
+    /// <summary>
+    /// Creates new TCP client.
+    /// </summary>
+    private void InitializeClient()
+    {
+      client = new TcpClient();
+      client.NoDelay = true;
+      client.LingerState = new LingerOption(true, 0);
+    }
+
+
     /// <summary>
     /// Frees resources used by the TCP client.
     /// </summary>
@@ -187,9 +199,7 @@ namespace ProfileServer.Network
       CloseClient();
 
       // Create new TCP client.
-      client = new TcpClient();
-      client.NoDelay = true;
-      client.LingerState = new LingerOption(true, 0);
+      InitializeClient();
       messageBuilder = new MessageBuilderLocNet(0, new List<SemVer> { SemVer.V100 });
 
       while (!res && !ShutdownSignaling.IsShutdown)
@@ -201,9 +211,15 @@ namespace ProfileServer.Network
           stream = client.GetStream();
           res = true;
         }
-        catch
+        catch 
         {
           log.Warn("Unable to connect to LOC server '{0}', waiting 10 seconds and then retrying.", Base.Configuration.LocEndPoint);
+
+          // On Ubuntu we get exception "Sockets on this platform are invalid for use after a failed connection attempt" 
+          // when we try to reconnect to the same IP:port again, after it failed for the first time. 
+          // We have to close the socket and initialize it again to be able to connect.
+          CloseClient();
+          InitializeClient();
         }
 
         if (!res)
@@ -222,6 +238,7 @@ namespace ProfileServer.Network
       log.Trace("(-):{0}", res);
       return res;
     }
+
 
     /// <summary>
     /// Announces profile server's primary server role interface to the LOC server.
