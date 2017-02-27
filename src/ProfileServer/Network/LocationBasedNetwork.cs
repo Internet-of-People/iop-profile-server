@@ -870,7 +870,7 @@ namespace ProfileServer.Network
         }
 
         // We consider a fresh LOC info to be accurate, so we do not want to delete the neighbors received here
-        // and hence we update their refresh time..
+        // and hence we update their refresh time.
         existingNeighbor.LastRefreshTime = DateTime.UtcNow;
 
         UnitOfWork.NeighborRepository.Update(existingNeighbor);
