@@ -122,6 +122,13 @@ namespace ProfileServer.Network.CAN
     {
       log.Trace("()");
 
+      if (canContactInformationHash == null)
+      {
+        log.Debug("No CAN contact information hash, can't refresh IPNS record, will try later.");
+        log.Trace("(-)");
+        return;
+      }
+
       Base.Configuration.CanIpnsLastSequenceNumber++;
       canIpnsRecord = CreateIpnsRecord(canContactInformationHash, Base.Configuration.CanIpnsLastSequenceNumber);
       CanRefreshIpnsResult cres = await canApi.RefreshIpnsRecord(canIpnsRecord, Base.Configuration.Keys.PublicKey);
