@@ -124,7 +124,11 @@ namespace ProfileServer.Kernel.Config
     /// <summary>Last sequence number used for IPNS record.</summary>
     public UInt64 CanIpnsLastSequenceNumber;
 
-    /// <summary>CAN hash of profile server's contact information object in CAN.</summary>
+    /// <summary>
+    /// CAN hash of profile server's contact information object in CAN loaded from the database.
+    /// This information may not reflect the current contact information hash. That one is stored in ContentAddressNetwork.canContactInformationHash.
+    /// This is used for initialization only.
+    /// </summary>
     public byte[] CanProfileServerContactInformationHash;
 
     /// <summary>True if the profile server's contact information loaded from the database differs from the one loaded from the configuration file.</summary>
@@ -668,13 +672,20 @@ namespace ProfileServer.Kernel.Config
           Setting canIpnsLastSequenceNumber = unitOfWork.SettingsRepository.Get(s => s.Name == "CanIpnsLastSequenceNumber").FirstOrDefault();
           Setting canProfileServerContactInformationHash = unitOfWork.SettingsRepository.Get(s => s.Name == "CanProfileServerContactInformationHash").FirstOrDefault();
 
-          if ((privateKeyHex != null) && (!string.IsNullOrEmpty(privateKeyHex.Value))
-            && (publicKeyHex != null) && (!string.IsNullOrEmpty(publicKeyHex.Value))
-            && (expandedPrivateKeyHex != null) && (!string.IsNullOrEmpty(expandedPrivateKeyHex.Value))
-            && (primaryPort != null)
-            && (networkInterface != null) && (!string.IsNullOrEmpty(networkInterface.Value))
-            && (canIpnsLastSequenceNumber != null)
-            && (canProfileServerContactInformationHash != null) && (!string.IsNullOrEmpty(canProfileServerContactInformationHash.Value)))
+          bool havePrivateKey = (privateKeyHex != null) && !string.IsNullOrEmpty(privateKeyHex.Value);
+          bool havePublicKey = (publicKeyHex != null) && !string.IsNullOrEmpty(publicKeyHex.Value);
+          bool haveExpandedPrivateKey = (expandedPrivateKeyHex != null) && !string.IsNullOrEmpty(expandedPrivateKeyHex.Value);
+          bool havePrimaryPort = primaryPort != null;
+          bool haveNetworkInterface = (networkInterface != null) && !string.IsNullOrEmpty(networkInterface.Value);
+          bool haveCanIpnsLastSequenceNumber = canIpnsLastSequenceNumber != null;
+          bool haveCanContactInformationHash = (canProfileServerContactInformationHash != null) && !string.IsNullOrEmpty(canProfileServerContactInformationHash.Value);
+
+          if (havePrivateKey
+            && havePublicKey
+            && haveExpandedPrivateKey
+            && havePrimaryPort
+            && haveNetworkInterface
+            && haveCanIpnsLastSequenceNumber)
           {
             Keys = new KeysEd25519();
             Keys.PrivateKeyHex = privateKeyHex.Value;
@@ -686,7 +697,7 @@ namespace ProfileServer.Kernel.Config
             Keys.ExpandedPrivateKeyHex = expandedPrivateKeyHex.Value;
             Keys.ExpandedPrivateKey = Crypto.FromHex(Keys.ExpandedPrivateKeyHex);
 
-            bool error = false; 
+            bool error = false;
             if (!UInt64.TryParse(canIpnsLastSequenceNumber.Value, out CanIpnsLastSequenceNumber))
             {
               log.Error("Invalid CanIpnsLastSequenceNumber value '{0}' in the database.", canIpnsLastSequenceNumber.Value);
@@ -695,12 +706,16 @@ namespace ProfileServer.Kernel.Config
 
             if (!error)
             {
-              CanProfileServerContactInformationHash = Base58Encoding.Encoder.DecodeRaw(canProfileServerContactInformationHash.Value);
-              if (CanProfileServerContactInformationHash == null)
+              if (haveCanContactInformationHash)
               {
-                log.Error("Invalid CanProfileServerContactInformationHash value '{0}' in the database.", canProfileServerContactInformationHash.Value);
-                error = true;
+                CanProfileServerContactInformationHash = Base58Encoding.Encoder.DecodeRaw(canProfileServerContactInformationHash.Value);
+                if (CanProfileServerContactInformationHash == null)
+                {
+                  log.Error("Invalid CanProfileServerContactInformationHash value '{0}' in the database.", canProfileServerContactInformationHash.Value);
+                  error = true;
+                }
               }
+              else CanProfileServerContactInformationChanged = true;
             }
 
             if (!error)
@@ -728,7 +743,17 @@ namespace ProfileServer.Kernel.Config
 
             res = !error;
           }
-          else log.Error("Database settings are corrupted, DB has to be reinitialized.");
+          else
+          {
+            log.Error("Database settings are corrupted, DB has to be reinitialized.");
+            if (!havePrivateKey) log.Debug("Private key is missing.");
+            if (!havePublicKey) log.Debug("Public key is missing.");
+            if (!haveExpandedPrivateKey) log.Debug("Expanded private key is missing.");
+            if (!havePrimaryPort) log.Debug("Primary port is missing.");
+            if (!haveNetworkInterface) log.Debug("Network interface is missing.");
+            if (!haveCanIpnsLastSequenceNumber) log.Debug("Last CAN IPNS sequence number is missing.");
+            if (!haveCanContactInformationHash) log.Debug("CAN contact information hash is missing.");
+          }
         }
 
         if (!res)
@@ -777,7 +802,7 @@ namespace ProfileServer.Kernel.Config
       {
         log.Debug("Server public key hex is '{0}'.", Keys.PublicKeyHex);
         log.Debug("Server network ID is '{0}'.", Crypto.Sha256(Keys.PublicKey).ToHex());
-        log.Debug("Server network ID in CAN endoing is '{0}'.", Network.CAN.CanApi.PublicKeyToId(Keys.PublicKey).ToBase58());
+        log.Debug("Server network ID in CAN encoding is '{0}'.", Network.CAN.CanApi.PublicKeyToId(Keys.PublicKey).ToBase58());
         log.Debug("Server primary interface is '{0}:{1}'.", ServerInterface, ServerRoles.GetRolePort(ServerRole.Primary));
       }
 
