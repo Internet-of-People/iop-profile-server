@@ -610,9 +610,11 @@ namespace ProfileServerNetworkSimulator
       log.Trace("()");
 
       SearchQueryInfo res = null;
+      bool connected = false;
       try
       {
         await ConnectAsync(Server.IpAddress, Server.ClientNonCustomerInterfacePort, true);
+        connected = true;
         if (await StartConversationAsync())
         {
           uint maxResults = (uint)(IncludeImages ? 1000 : 10000);
@@ -659,6 +661,8 @@ namespace ProfileServerNetworkSimulator
       {
         log.Error("Exception occurred: {0}", e.ToString());
       }
+
+      if (connected) CloseTcpClient();
 
       if (res != null) log.Trace("(-):*.Results.Count={0},*.CoveredServers.Count={1}", res.Results.Count, res.CoveredServers.Count);
       else log.Trace("(-):null");
