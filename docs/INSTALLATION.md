@@ -113,7 +113,7 @@ Copy logging configuration file `$InstDir\src\ProfileServer\Nlog.conf` to your `
 
 ## Open Firewall Ports 
 
-By default, profile server operates on TCP ports 16987 and 16988. These ports must be open and publicly accessible on the IP `external_server_address` address. However, if you decide to change the configuration 
+By default, Profile Server operates on TCP ports 16987 and 16988. These ports must be open and publicly accessible on the IP `external_server_address` address. However, if you decide to change the configuration 
 of the profile server, you will have to open all ports specified by `primary_interface_port`, `server_neighbor_interface_port`, `client_non_customer_interface_port`, `client_customer_interface_port`, 
 and `client_app_service_interface_port` settings in the configuration file.
 
@@ -143,3 +143,17 @@ If you added the logging configuration file to your `$BinDir` as described above
 with your Profile Server, the log file will contain detailed information about it and may help you solve the problems.
 
 
+### CoreCLR Initialization Error On Linux
+
+If you run Profile Server on Linux and you see the following error
+
+```
+Failed to initialize CoreCLR, HRESULT: 0x8007001F
+```
+ 
+it is probably caused by access rights of the Profile Server binaries. Make sure to add execution right to all binaries.
+
+
+### Problem To Run Profile Server On Background On Linux, Nohup Crashes
+
+If you are having problems to run Profile Server on background on Linux, run `screen` and run Profile Server there and then detach the screen using CTRL+A, CTRL+D.
