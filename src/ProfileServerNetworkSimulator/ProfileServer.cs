@@ -222,7 +222,8 @@ namespace ProfileServerNetworkSimulator
       try
       {
         string config = "test_mode = on\n"
-          + "server_interface = 127.0.0.1\n"
+          + "external_server_address = 127.0.0.1\n"
+          + "bind_to_interface = 0.0.0.0\n"
           + "primary_interface_port = " + primaryInterfacePort.ToString() + "\n"
           + "server_neighbor_interface_port = " + serverNeighborInterfacePort.ToString() + "\n"
           + "client_non_customer_interface_port = " + clientNonCustomerInterfacePort.ToString() + "\n"

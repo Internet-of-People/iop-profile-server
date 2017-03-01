@@ -9,10 +9,10 @@ In order to use a localhost interface, you will have to set the following settin
 
 ```
 test_mode = on
-server_interface = 127.0.0.1
+external_server_address = 127.0.0.1
 ```
 
-Without enabling the test mode, the profile server will not allow you to set the interface to IP address 127.0.0.1 or any other local network IP address.
+Without enabling the test mode, the profile server will not allow you to set IP address 127.0.0.1 or any other local network IP address.
 Note that the test mode relaxes some checks of settings in the configuration file, so be careful when changing other settings.
 
 Before you start the profile server, consider making a backup of its empty database file, so that you can revert to an empty database easily any time you need it.

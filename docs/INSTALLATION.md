@@ -97,11 +97,11 @@ The new file `ProfileServer.pfx` is your TLS certificate that you need to put it
 ### Modify Configuration File
 
 Next step is to find the configuration file `$InstDir\src\ProfileServer\ProfileServer.conf` and copy it to the `$BinDir`. Then you have to modify it.
-If you want to use the Profile Server in its default configuration, there is only one setting that you need to modify - `server_interface`. 
+If you want to use the Profile Server in its default configuration, there is only one setting that you need to modify - `external_server_address`. 
 You have to set its value to the static public IP address of your server. For example, if your server's IP address is `198.51.100.53`, change the relevant line of the configuration file as follows:
 
 ```
-server_interface = 198.51.100.53
+external_server_address = 198.51.100.53
 ```
 
 

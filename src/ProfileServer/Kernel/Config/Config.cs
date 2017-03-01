@@ -71,8 +71,11 @@ namespace ProfileServer.Kernel.Config
     /// <summary>Default name of the configuration file.</summary>
     public const string ConfigFileName = "ProfileServer.conf";
 
-    /// <summary>Specification of network interface, on which the profile server will operate.</summary>
-    public IPAddress ServerInterface;
+    /// <summary>External IP address of the server from its network peers' point of view.</summary>
+    public IPAddress ExternalServerAddress;
+
+    /// <summary>Specification of a machine's network interface, on which the profile server will listen.</summary>
+    public IPAddress BindToInterface;
 
     /// <summary>Certificate to be used for TCP TLS server.</summary>
     public X509Certificate TcpServerTlsCertificate;
@@ -217,7 +220,8 @@ namespace ProfileServer.Kernel.Config
         string tcpServerTlsCertificateFileName = null;
         X509Certificate tcpServerTlsCertificate = null;
         ServerRolesConfig serverRoles = null;
-        IPAddress serverInterface = null;
+        IPAddress externalServerAddress = null;
+        IPAddress bindToInterface = null;
         string imageDataFolder = null;
         string tempDataFolder = null;
         int maxHostedIdentities = 0;
@@ -238,7 +242,8 @@ namespace ProfileServer.Kernel.Config
         Dictionary<string, ConfigValueType> namesDefinition = new Dictionary<string, ConfigValueType>(StringComparer.Ordinal)
         {
           { "test_mode",                               ConfigValueType.OnOffSwitch    },
-          { "server_interface",                        ConfigValueType.IpAddress      },
+          { "external_server_address",                 ConfigValueType.IpAddress      },
+          { "bind_to_interface",                       ConfigValueType.IpAddress      },
           { "primary_interface_port",                  ConfigValueType.Port           },
           { "server_neighbor_interface_port",          ConfigValueType.Port           },
           { "client_non_customer_interface_port",      ConfigValueType.Port           },
@@ -262,7 +267,8 @@ namespace ProfileServer.Kernel.Config
         if (!error)
         {
           testModeEnabled = (bool)nameVal["test_mode"];
-          serverInterface = (IPAddress)nameVal["server_interface"];
+          externalServerAddress = (IPAddress)nameVal["external_server_address"];
+          bindToInterface = (IPAddress)nameVal["bind_to_interface"];
           int primaryInterfacePort = (int)nameVal["primary_interface_port"];
           int serverNeighborInterfacePort = (int)nameVal["server_neighbor_interface_port"];
           int clientNonCustomerInterfacePort = (int)nameVal["client_non_customer_interface_port"];
@@ -296,9 +302,9 @@ namespace ProfileServer.Kernel.Config
 
         if (!error)
         {
-          if (!testModeEnabled && serverInterface.IsReservedOrLocal())
+          if (!testModeEnabled && externalServerAddress.IsReservedOrLocal())
           {
-            log.Error("server_interface must be an IP address of external, publicly accessible interface.");
+            log.Error("external_server_address must be an IP address of external, publicly accessible interface.");
             error = true;
           }
         }
@@ -471,7 +477,8 @@ namespace ProfileServer.Kernel.Config
         if (!error)
         {
           TestModeEnabled = testModeEnabled;
-          ServerInterface = serverInterface;
+          ExternalServerAddress = externalServerAddress;
+          BindToInterface = bindToInterface;
           ServerRoles = serverRoles;
           TcpServerTlsCertificate = tcpServerTlsCertificate;
           ImageDataFolder = imageDataFolder;
@@ -667,7 +674,7 @@ namespace ProfileServer.Kernel.Config
           Setting privateKeyHex = unitOfWork.SettingsRepository.Get(s => s.Name == "PrivateKeyHex").FirstOrDefault();
           Setting publicKeyHex = unitOfWork.SettingsRepository.Get(s => s.Name == "PublicKeyHex").FirstOrDefault();
           Setting expandedPrivateKeyHex = unitOfWork.SettingsRepository.Get(s => s.Name == "ExpandedPrivateKeyHex").FirstOrDefault();
-          Setting networkInterface = unitOfWork.SettingsRepository.Get(s => s.Name == "NetworkInterface").FirstOrDefault();
+          Setting externalServerAddress = unitOfWork.SettingsRepository.Get(s => s.Name == "ExternalServerAddress").FirstOrDefault();
           Setting primaryPort = unitOfWork.SettingsRepository.Get(s => s.Name == "PrimaryPort").FirstOrDefault();
           Setting canIpnsLastSequenceNumber = unitOfWork.SettingsRepository.Get(s => s.Name == "CanIpnsLastSequenceNumber").FirstOrDefault();
           Setting canProfileServerContactInformationHash = unitOfWork.SettingsRepository.Get(s => s.Name == "CanProfileServerContactInformationHash").FirstOrDefault();
@@ -676,7 +683,7 @@ namespace ProfileServer.Kernel.Config
           bool havePublicKey = (publicKeyHex != null) && !string.IsNullOrEmpty(publicKeyHex.Value);
           bool haveExpandedPrivateKey = (expandedPrivateKeyHex != null) && !string.IsNullOrEmpty(expandedPrivateKeyHex.Value);
           bool havePrimaryPort = primaryPort != null;
-          bool haveNetworkInterface = (networkInterface != null) && !string.IsNullOrEmpty(networkInterface.Value);
+          bool haveExternalServerAddress = (externalServerAddress != null) && !string.IsNullOrEmpty(externalServerAddress.Value);
           bool haveCanIpnsLastSequenceNumber = canIpnsLastSequenceNumber != null;
           bool haveCanContactInformationHash = (canProfileServerContactInformationHash != null) && !string.IsNullOrEmpty(canProfileServerContactInformationHash.Value);
 
@@ -684,7 +691,7 @@ namespace ProfileServer.Kernel.Config
             && havePublicKey
             && haveExpandedPrivateKey
             && havePrimaryPort
-            && haveNetworkInterface
+            && haveExternalServerAddress
             && haveCanIpnsLastSequenceNumber)
           {
             Keys = new KeysEd25519();
@@ -720,12 +727,12 @@ namespace ProfileServer.Kernel.Config
 
             if (!error)
             {
-              // Database settings contain information on previous network interface and primary port values.
+              // Database settings contain information on previous external network address and primary port values.
               // If they are different to what was found in the configuration file, it means the contact 
               // information of the profile server changed. Such a change must be propagated to profile server's 
               // CAN records.
-              string configNetworkInterface = ServerInterface.ToString();
-              if (configNetworkInterface != networkInterface.Value)
+              string configExternalServerAddress = ExternalServerAddress.ToString();
+              if (configExternalServerAddress != externalServerAddress.Value)
               {
                 log.Info("Network interface address in configuration file is different from the database value.");
 
@@ -750,7 +757,7 @@ namespace ProfileServer.Kernel.Config
             if (!havePublicKey) log.Debug("Public key is missing.");
             if (!haveExpandedPrivateKey) log.Debug("Expanded private key is missing.");
             if (!havePrimaryPort) log.Debug("Primary port is missing.");
-            if (!haveNetworkInterface) log.Debug("Network interface is missing.");
+            if (!haveExternalServerAddress) log.Debug("External server address is missing.");
             if (!haveCanIpnsLastSequenceNumber) log.Debug("Last CAN IPNS sequence number is missing.");
             if (!haveCanContactInformationHash) log.Debug("CAN contact information hash is missing.");
           }
@@ -774,8 +781,8 @@ namespace ProfileServer.Kernel.Config
           Setting expandedPrivateKey = new Setting("ExpandedPrivateKeyHex", Keys.ExpandedPrivateKeyHex);
           unitOfWork.SettingsRepository.Insert(expandedPrivateKey);
 
-          Setting networkInterface = new Setting("NetworkInterface", ServerInterface.ToString());
-          unitOfWork.SettingsRepository.Insert(networkInterface);
+          Setting externalServerAddress = new Setting("ExternalServerAddress", ExternalServerAddress.ToString());
+          unitOfWork.SettingsRepository.Insert(externalServerAddress);
 
           Setting primaryPort = new Setting("PrimaryPort", ServerRoles.GetRolePort(ServerRole.Primary).ToString());
           unitOfWork.SettingsRepository.Insert(primaryPort);
@@ -803,7 +810,7 @@ namespace ProfileServer.Kernel.Config
         log.Debug("Server public key hex is '{0}'.", Keys.PublicKeyHex);
         log.Debug("Server network ID is '{0}'.", Crypto.Sha256(Keys.PublicKey).ToHex());
         log.Debug("Server network ID in CAN encoding is '{0}'.", Network.CAN.CanApi.PublicKeyToId(Keys.PublicKey).ToBase58());
-        log.Debug("Server primary interface is '{0}:{1}'.", ServerInterface, ServerRoles.GetRolePort(ServerRole.Primary));
+        log.Debug("Server primary external contact is '{0}:{1}'.", ExternalServerAddress, ServerRoles.GetRolePort(ServerRole.Primary));
       }
 
       log.Trace("(-):{0}", res);

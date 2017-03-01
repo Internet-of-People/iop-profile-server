@@ -45,7 +45,7 @@ namespace ProfileServer.Network
         {
           if (roleServer.IsTcpServer)
           {
-            IPEndPoint endPoint = new IPEndPoint(Base.Configuration.ServerInterface, roleServer.Port);
+            IPEndPoint endPoint = new IPEndPoint(Base.Configuration.BindToInterface, roleServer.Port);
             TcpRoleServer server = new TcpRoleServer(endPoint, roleServer.Encrypted, roleServer.Roles);
             tcpServers.Add(server.EndPoint.Port, server);
           }

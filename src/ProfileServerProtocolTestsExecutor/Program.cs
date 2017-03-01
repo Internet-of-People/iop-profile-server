@@ -226,7 +226,8 @@ namespace ProfileServerProtocolTestsExecutor
         "ProfileServer-default.conf", new List<string>()
         {
           "test_mode = on",
-          "server_interface = 127.0.0.1",
+          "external_server_address = 127.0.0.1",
+          "bind_to_interface = 0.0.0.0",
           "primary_interface_port = 16987",
           "server_neighbor_interface_port = 16988",
           "client_non_customer_interface_port = 16988",
@@ -250,7 +251,8 @@ namespace ProfileServerProtocolTestsExecutor
         "ProfileServer-different-ports.conf", new List<string>()
         {
           "test_mode = on",
-          "server_interface = 127.0.0.1",
+          "external_server_address = 127.0.0.1",
+          "bind_to_interface = 0.0.0.0",
           "primary_interface_port = 16987",
           "server_neighbor_interface_port = 16986",
           "client_non_customer_interface_port = 16988",
@@ -274,7 +276,8 @@ namespace ProfileServerProtocolTestsExecutor
         "ProfileServer-max-identities-1.conf", new List<string>()
         {
           "test_mode = on",
-          "server_interface = 127.0.0.1",
+          "external_server_address = 127.0.0.1",
+          "bind_to_interface = 0.0.0.0",
           "primary_interface_port = 16987",
           "server_neighbor_interface_port = 16988",
           "client_non_customer_interface_port = 16988",
@@ -298,7 +301,8 @@ namespace ProfileServerProtocolTestsExecutor
         "ProfileServer-max-follower-servers-count-1.conf", new List<string>()
         {
           "test_mode = on",
-          "server_interface = 127.0.0.1",
+          "external_server_address = 127.0.0.1",
+          "bind_to_interface = 0.0.0.0",
           "primary_interface_port = 16987",
           "server_neighbor_interface_port = 16988",
           "client_non_customer_interface_port = 16988",
@@ -322,7 +326,8 @@ namespace ProfileServerProtocolTestsExecutor
         "ProfileServer-neighborhood-initialization-parallelism-1.conf", new List<string>()
         {
           "test_mode = on",
-          "server_interface = 127.0.0.1",
+          "external_server_address = 127.0.0.1",
+          "bind_to_interface = 0.0.0.0",
           "primary_interface_port = 16987",
           "server_neighbor_interface_port = 16988",
           "client_non_customer_interface_port = 16988",

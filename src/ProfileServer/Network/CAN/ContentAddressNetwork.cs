@@ -73,7 +73,7 @@ namespace ProfileServer.Network.CAN
         canContactInformation = new CanProfileServerContact()
         {
           PublicKey = ProtocolHelper.ByteArrayToByteString(Base.Configuration.Keys.PublicKey),
-          IpAddress = ProtocolHelper.ByteArrayToByteString(Base.Configuration.ServerInterface.GetAddressBytes()),
+          IpAddress = ProtocolHelper.ByteArrayToByteString(Base.Configuration.ExternalServerAddress.GetAddressBytes()),
           PrimaryPort = (uint)Base.Configuration.ServerRoles.GetRolePort(ServerRole.Primary)
         };
 
@@ -267,16 +267,16 @@ namespace ProfileServer.Network.CAN
 
         try
         {
-          string addr = Base.Configuration.ServerInterface.ToString();
+          string addr = Base.Configuration.ExternalServerAddress.ToString();
           string port = Base.Configuration.ServerRoles.GetRolePort(ServerRole.Primary).ToString();
           string hash = canContactInformationHash.ToBase58();
           log.Debug("Saving contact information values to database: {0}:{1}, '{2}'", addr, port, hash);
 
           Setting primaryPort = new Setting("PrimaryPort", port);
-          Setting networkInterface = new Setting("NetworkInterface", addr);
+          Setting externalServerAddress = new Setting("ExternalServerAddress", addr);
           Setting canProfileServerContactInformationHash = new Setting("CanProfileServerContactInformationHash", hash);
 
-          await unitOfWork.SettingsRepository.AddOrUpdate(networkInterface);
+          await unitOfWork.SettingsRepository.AddOrUpdate(externalServerAddress);
           await unitOfWork.SettingsRepository.AddOrUpdate(primaryPort);
           await unitOfWork.SettingsRepository.AddOrUpdate(canProfileServerContactInformationHash);
 
