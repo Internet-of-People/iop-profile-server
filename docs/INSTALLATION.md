@@ -75,10 +75,10 @@ Make sure your system is fully updated using Windows Update. Then you need to in
 
 ### Dependencies for Linux
 
-You need to have `libunwind` installed. If you do not have it, install it with the following command:
+You need to have `libunwind8` and `libcurl4-openssl-dev` installed. If you do not have then, install then with the following command:
 
 `apt-get install libunwind8`
-
+`apt-get install libcurl4-openssl-dev`
 
 
 ## Configure Profile Server
