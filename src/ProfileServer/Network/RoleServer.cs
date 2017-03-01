@@ -226,7 +226,7 @@ namespace ProfileServer.Network
         int waitTime = tryCounter * 3;
         log.Info("Will wait {0} seconds and then try again.", waitTime);
         Thread.Sleep(waitTime * 1000);
-        tryCounter--;
+        tryCounter++;
       }
 
       if (res)
