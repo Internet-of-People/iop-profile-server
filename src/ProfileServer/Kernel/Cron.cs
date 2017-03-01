@@ -64,7 +64,7 @@ namespace ProfileServer.Kernel
       { new CronJob() { Name = "refreshLocData", StartDelay = 67 * 60 * 1000, Interval = 601 * 60 * 1000, } },
 
       // Checks if any of the opened TCP connections are inactive and if so, it closes them.
-      { new CronJob() { Name = "checkInactiveClientConnections", StartDelay = 2 * 60 * 1000, Interval = 2 * 60 *1000, } },
+      { new CronJob() { Name = "checkInactiveClientConnections", StartDelay = 2 * 60 * 1000, Interval = 2 * 60 * 1000, } },
 
       // Checks if there are any neighborhood actions to process.
       { new CronJob() { Name = "checkNeighborhoodActionList", StartDelay = 20 * 1000, Interval = 20 * 1000, } },
