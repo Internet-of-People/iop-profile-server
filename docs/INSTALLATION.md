@@ -8,6 +8,7 @@ In order to install and run the Profile Server, you need to
    * AND build the Profile Server binaries,
  * OR download the Profile Server binaries and install dependencies,
  * configure the Profile Server,
+ * open ports on your firewall,
  * run the Profile Server.
 
 
@@ -109,6 +110,12 @@ external_server_address = 198.51.100.53
 
 Copy logging configuration file `$InstDir\src\ProfileServer\Nlog.conf` to your `$BinDir`.
 
+
+## Open Firewall Ports 
+
+By default, profile server operates on ports 16987 and 16988. These ports must be open and publicly accessible on the IP `external_server_address` address. However, if you decide to change the configuration 
+of the profile server, you will have to open all ports specified by `primary_interface_port`, `server_neighbor_interface_port`, `client_non_customer_interface_port`, `client_customer_interface_port`, 
+and `client_app_service_interface_port` settings in the configuration file.
 
 
 ## Run Profile Server
