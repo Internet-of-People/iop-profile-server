@@ -77,8 +77,10 @@ Make sure your system is fully updated using Windows Update. Then you need to in
 
 You need to have `libunwind8` and `libcurl4-openssl-dev` installed. If you do not have then, install then with the following command:
 
-`apt-get install libunwind8`
-`apt-get install libcurl4-openssl-dev`
+```
+apt-get install libunwind8
+apt-get install libcurl4-openssl-dev
+```
 
 
 ## Configure Profile Server
@@ -163,4 +165,4 @@ it is probably caused by access rights of the Profile Server binaries. Make sure
 
 ### Problem To Run Profile Server On Background On Linux, Nohup Crashes
 
-If you are having problems to run Profile Server on background on Linux, run `screen` and run Profile Server there and then detach the screen using CTRL+A, CTRL+D.
+If you are having problems to run Profile Server on background on Linux, run `screen` and run Profile Server there and then detach the screen using CTRL+A+D.
