@@ -4,7 +4,7 @@
 
 The Profile Server is a core component of the [Internet of People architecture](https://hackernoon.com/fermat-the-internet-of-people-and-the-person-to-person-economy-ce933865a0b0). 
 If you are not familiar with IoP, the Profile Server itself will probably make not much sense to you. If that is the case, it is highly recommended to explore IoP first before you 
-start with the Profile Server. See the IoP architecture post linked above and then possibly continue with [more articles about IoP](https://medium.com/@luisfernandomolina).
+start with the Profile Server. See the IoP architecture post linked above and then possibly continue with [more articles about IoP](https://medium.com/@luisfernandomolina). Also you can try this specific [post: The Profile Server](https://medium.com/@luisfernandomolina/the-profile-server-4ffc9e45b312#.ehqo9pimx) talking about this topic.
 
 
 ## Installation
