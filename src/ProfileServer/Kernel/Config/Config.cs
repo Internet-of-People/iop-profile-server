@@ -186,12 +186,12 @@ namespace ProfileServer.Kernel.Config
       bool res = false;
       try
       {
-        if (File.Exists(ConfigFileName))
+        if (File.Exists(FileName))
         {
-          string[] lines = File.ReadAllLines(ConfigFileName);
+          string[] lines = File.ReadAllLines(FileName);
           res = LoadConfigurationFromStringArray(lines);
         }
-        else log.Error("Unable to find configuration file '{0}'.", ConfigFileName);
+        else log.Error("Unable to find configuration file '{0}'.", FileName);
       }
       catch (Exception e)
       {
