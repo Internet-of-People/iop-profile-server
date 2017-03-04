@@ -470,7 +470,7 @@ namespace ProfileServerProtocolTestsExecutor
               }
 
               log.Trace("Waiting for profile server process to stop.");
-              if (profileServerProcess.WaitForExit(10 * 1000))
+              if (profileServerProcess.WaitForExit(30 * 1000))
               {
                 log.Trace("Profile server process stopped.");
                 if (TestPassed)
