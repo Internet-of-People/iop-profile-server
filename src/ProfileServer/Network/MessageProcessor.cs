@@ -2075,8 +2075,9 @@ namespace ProfileServer.Network
 
       if ((details == null) && (ProfileSearchRequest.ExtraData != null))
       {
+        bool validLength = (Encoding.UTF8.GetByteCount(ProfileSearchRequest.ExtraData) <= ProtocolHelper.MaxProfileSearchExtraDataLengthBytes);
         bool extraDataValid = RegexTypeValidator.ValidateProfileSearchRegex(ProfileSearchRequest.ExtraData);
-        if (!extraDataValid)
+        if (!validLength || !extraDataValid)
         {
           log.Debug("Invalid extraData regular expression filter.");
           details = "extraData";
