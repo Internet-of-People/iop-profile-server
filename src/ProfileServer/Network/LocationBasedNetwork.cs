@@ -428,7 +428,7 @@ namespace ProfileServer.Network
       {
         res = MessageWithHeader.Parser.ParseFrom(Data).Body;
         string msgStr = res.ToString();
-        log.Trace("Received message:\n{0}", msgStr.SubstrMax(512));
+        log.Trace("Received message:\n{0}", msgStr.SubstrMax(4096));
       }
       catch (Exception e)
       {
@@ -664,7 +664,8 @@ namespace ProfileServer.Network
                 if (!HasProfileServerService(nodeInfo, out profileServerPort, out profileServerId)) continue;
 
                 NodeContact contact = nodeInfo.Contact;
-                IPAddress ipAddress = new IPAddress(contact.IpAddress.ToByteArray());
+                byte[] ipBytes = contact.IpAddress.ToByteArray();
+                IPAddress ipAddress = new IPAddress(ipBytes);
                 
                 int latitude = nodeInfo.Location.Latitude;
                 int longitude = nodeInfo.Location.Longitude;
