@@ -1,6 +1,7 @@
-﻿using Google.Protobuf;
-using ProfileServerCrypto;
-using ProfileServerProtocol;
+﻿using IopCommon;
+using Google.Protobuf;
+using IopCrypto;
+using IopProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -21,7 +22,7 @@ namespace ProfileServerProtocolTests.Tests
   public class PS08020 : ProtocolTest
   {
     public const string TestName = "PS08020";
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocolTests.Tests." + TestName);
+    private static Logger log = new Logger("ProfileServerProtocolTests.Tests." + TestName);
 
     public override string Name { get { return TestName; } }
 
@@ -131,7 +132,7 @@ namespace ProfileServerProtocolTests.Tests
       LocServer locServer = null;
       try
       {
-        MessageBuilder mb = client.MessageBuilder;
+        PsMessageBuilder mb = client.MessageBuilder;
 
         // Step 1
         log.Trace("Step 1");
@@ -242,7 +243,7 @@ namespace ProfileServerProtocolTests.Tests
 
           profilesToSend.RemoveRange(0, batchSize);
 
-          Message updateRequest = await profileServer.SendNeighborhoodSharedProfileUpdateRequest(incomingServerMessage.Client, updateItems);
+          PsProtocolMessage updateRequest = await profileServer.SendNeighborhoodSharedProfileUpdateRequest(incomingServerMessage.Client, updateItems);
           incomingServerMessage = await profileServer.WaitForResponse(ServerRole.ServerNeighbor, updateRequest);
           statusOk = incomingServerMessage.IncomingMessage.Response.Status == Status.Ok;
           bool batchOk = (updateRequest != null) && statusOk;
@@ -255,7 +256,7 @@ namespace ProfileServerProtocolTests.Tests
 
 
         // Finish neighborhood initialization process.
-        Message finishRequest = await profileServer.SendFinishNeighborhoodInitializationRequest(incomingServerMessage.Client);
+        PsProtocolMessage finishRequest = await profileServer.SendFinishNeighborhoodInitializationRequest(incomingServerMessage.Client);
 
         incomingServerMessage = await profileServer.WaitForResponse(ServerRole.ServerNeighbor, finishRequest);
         statusOk = incomingServerMessage.IncomingMessage.Response.Status == Status.Ok;
@@ -277,10 +278,10 @@ namespace ProfileServerProtocolTests.Tests
         HashSet<byte[]> expectedCoveredServers = new HashSet<byte[]>(StructuralEqualityComparer<byte[]>.Default) { client.GetIdentityId(), Crypto.Sha256(client.ServerKey) };
 
         // Search all profiles.
-        Message requestMessage = mb.CreateProfileSearchRequest(null, null, null, null, 0, 1000, 1000, false, false);
+        PsProtocolMessage requestMessage = mb.CreateProfileSearchRequest(null, null, null, null, 0, 1000, 1000, false, false);
         await client.SendMessageAsync(requestMessage);
 
-        Message responseMessage = await client.ReceiveMessageAsync();
+        PsProtocolMessage responseMessage = await client.ReceiveMessageAsync();
         bool idOk = responseMessage.Id == requestMessage.Id;
         statusOk = responseMessage.Response.Status == Status.Ok;
 

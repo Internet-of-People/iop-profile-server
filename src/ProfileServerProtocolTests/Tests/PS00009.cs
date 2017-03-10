@@ -1,4 +1,4 @@
-﻿using ProfileServerProtocol;
+﻿using IopProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections.Generic;
@@ -11,6 +11,7 @@ using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using IopCommon;
 
 namespace ProfileServerProtocolTests.Tests
 {
@@ -21,7 +22,7 @@ namespace ProfileServerProtocolTests.Tests
   public class PS00009 : ProtocolTest
   {
     public const string TestName = "PS00009";
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocolTests.Tests." + TestName);
+    private static Logger log = new Logger("ProfileServerProtocolTests.Tests." + TestName);
 
     public override string Name { get { return TestName; } }
 
@@ -51,7 +52,7 @@ namespace ProfileServerProtocolTests.Tests
       ProtocolClient client = new ProtocolClient();
       try
       {
-        MessageBuilder mb = client.MessageBuilder;
+        PsMessageBuilder mb = client.MessageBuilder;
 
         // Step 1
         await client.ConnectAsync(ServerIp, NonCustomerPort, false);

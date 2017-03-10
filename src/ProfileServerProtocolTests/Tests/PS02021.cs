@@ -1,6 +1,7 @@
-﻿using Google.Protobuf;
-using ProfileServerCrypto;
-using ProfileServerProtocol;
+﻿using IopCommon;
+using Google.Protobuf;
+using IopCrypto;
+using IopProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -21,7 +22,7 @@ namespace ProfileServerProtocolTests.Tests
   public class PS02021 : ProtocolTest
   {
     public const string TestName = "PS02021";
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocolTests.Tests." + TestName);
+    private static Logger log = new Logger("ProfileServerProtocolTests.Tests." + TestName);
 
     public override string Name { get { return TestName; } }
 
@@ -52,8 +53,8 @@ namespace ProfileServerProtocolTests.Tests
       ProtocolClient client2 = new ProtocolClient();
       try
       {
-        MessageBuilder mb1 = client1.MessageBuilder;
-        MessageBuilder mb2 = client2.MessageBuilder;
+        PsMessageBuilder mb1 = client1.MessageBuilder;
+        PsMessageBuilder mb2 = client2.MessageBuilder;
         byte[] identityId1 = client1.GetIdentityId();
 
         // Step 1
@@ -69,9 +70,9 @@ namespace ProfileServerProtocolTests.Tests
         await client2.ConnectAsync(ServerIp, ClNonCustomerPort, true);
         bool verifyIdentityOk = await client2.VerifyIdentityAsync();
 
-        Message requestMessage = mb2.CreateCallIdentityApplicationServiceRequest(identityId1, "Test Service");
+        PsProtocolMessage requestMessage = mb2.CreateCallIdentityApplicationServiceRequest(identityId1, "Test Service");
         await client2.SendMessageAsync(requestMessage);
-        Message responseMessage = await client2.ReceiveMessageAsync();
+        PsProtocolMessage responseMessage = await client2.ReceiveMessageAsync();
 
         bool idOk = responseMessage.Id == requestMessage.Id;
         bool statusOk = responseMessage.Response.Status == Status.ErrorUninitialized;

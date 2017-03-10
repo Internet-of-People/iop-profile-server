@@ -1,12 +1,9 @@
-﻿using Iop.Profileserver;
-using Microsoft.EntityFrameworkCore.Storage;
+﻿using Microsoft.EntityFrameworkCore.Storage;
 using Newtonsoft.Json;
 using ProfileServer.Data;
 using ProfileServer.Data.Models;
-using ProfileServer.Kernel;
-using ProfileServer.Utils;
-using ProfileServerCrypto;
-using ProfileServerProtocol;
+using IopCrypto;
+using IopProtocol;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +11,11 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using IopCommon;
+using IopServerCore.Kernel;
+using IopServerCore.Data;
+using IopServerCore.Network;
+using Iop.Profileserver;
 
 namespace ProfileServer.Network
 {
@@ -34,7 +36,12 @@ namespace ProfileServer.Network
 #warning Regtest needed - update failed soft -> server retries again
 #warning Regtest needed - update failed hard -> follower is deleted
 #warning Regtest needed - update failed hard -> follower is deleted; server won't send updates to the follower -> neighbor expires on the follower -> LOC refreshes -> neighbor relationship established again
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Network.NeighborhoodActionProcessor");
+    /// <summary>Name of the component.</summary>
+    public const string ComponentName = "Network.NeighborhoodActionProcessor";
+
+    /// <summary>Class logger.</summary>
+    private static Logger log = new Logger("ProfileServer." + ComponentName);
+
 
 
     /// <summary>Profile serever's primary interface port.</summary>
@@ -51,6 +58,15 @@ namespace ProfileServer.Network
     private int actionExecutorCounter = 0;
 
 
+    /// <summary>
+    /// Initializes the component.
+    /// </summary>
+    public NeighborhoodActionProcessor():
+      base(ComponentName)
+    {
+    }
+
+
     public override bool Init()
     {
       log.Info("()");
@@ -58,16 +74,18 @@ namespace ProfileServer.Network
       bool res = false;
       try
       {
-        Server serverComponent = (Server)Base.ComponentDictionary["Network.Server"];
-        List<TcpRoleServer> roleServers = serverComponent.GetRoleServers();
-        foreach (TcpRoleServer roleServer in roleServers)
+        Server serverComponent = (Server)Base.ComponentDictionary[Server.ComponentName];
+        List<TcpRoleServer<IncomingClient>> roleServers = serverComponent.GetRoleServers();
+        foreach (TcpRoleServer<IncomingClient> roleServer in roleServers)
         {
-          if (roleServer.Roles.HasFlag(ServerRole.Primary))
+          if ((roleServer.Roles & (uint)ServerRole.Primary) != 0)
             primaryPort = (uint)roleServer.EndPoint.Port;
 
-          if (roleServer.Roles.HasFlag(ServerRole.ServerNeighbor))
+          if ((roleServer.Roles & (uint)ServerRole.ServerNeighbor) != 0)
             srNeighborPort = (uint)roleServer.EndPoint.Port;
         }
+
+        RegisterCronJobs();
 
         res = true;
         Initialized = true;
@@ -125,13 +143,52 @@ namespace ProfileServer.Network
 
 
     /// <summary>
+    /// Registers component's cron jobs.
+    /// </summary>
+    public void RegisterCronJobs()
+    {
+      log.Trace("()");
+
+      List<CronJob> cronJobDefinitions = new List<CronJob>()
+      {
+        // Checks if there are any neighborhood actions to process.
+        { new CronJob() { Name = "checkNeighborhoodActionList", StartDelay = 20 * 1000, Interval = 20 * 1000, HandlerAsync = CronJobHandlerCheckNeighborhoodActionListAsync } },
+      };
+
+      Cron cron = (Cron)Base.ComponentDictionary[Cron.ComponentName];
+      cron.AddJobs(cronJobDefinitions);
+
+      log.Trace("(-)");
+    }
+
+
+    /// <summary>
+    /// Handler for "checkNeighborhoodActionList" cron job.
+    /// </summary>
+    public async void CronJobHandlerCheckNeighborhoodActionListAsync()
+    {
+      log.Trace("()");
+
+      if (ShutdownSignaling.IsShutdown)
+      {
+        log.Trace("(-):[SHUTDOWN]");
+        return;
+      }
+
+      await CheckActionListAsync();
+
+      log.Trace("(-)");
+    }
+
+
+    /// <summary>
     /// Signals check action list event.
     /// </summary>
     public void Signal()
     {
       log.Trace("()");
 
-      Cron cron = (Cron)Base.ComponentDictionary["Kernel.Cron"];
+      Cron cron = (Cron)Base.ComponentDictionary[Cron.ComponentName];
       cron.SignalEvent("checkNeighborhoodActionList");
 
       log.Trace("(-)");
@@ -142,7 +199,7 @@ namespace ProfileServer.Network
     /// <summary>
     /// Loads list of actions from the database and executes actions that can be executed.
     /// </summary>
-    public void CheckActionList()
+    public async Task CheckActionListAsync()
     {
       log.Trace("()");
 
@@ -150,7 +207,7 @@ namespace ProfileServer.Network
       {
         while (!ShutdownSignaling.IsShutdown)
         {
-          NeighborhoodAction action = LoadNextAction();
+          NeighborhoodAction action = await LoadNextActionAsync();
           if (action != null)
           {
             ProcessActionAsync(action);
@@ -165,7 +222,7 @@ namespace ProfileServer.Network
       catch (Exception e)
       {
         log.Error("Exception occurred (and rethrowing): {0}", e.ToString());
-        Thread.Sleep(5000);
+        await Task.Delay(5000);
         throw e;
       }
 
@@ -229,7 +286,7 @@ namespace ProfileServer.Network
     /// </para>
     /// </summary>
     /// <returns>Next action to process or null if there is no action to process now.</returns>
-    private NeighborhoodAction LoadNextAction()
+    private async Task<NeighborhoodAction> LoadNextActionAsync()
     {
       log.Trace("()");
 
@@ -259,11 +316,11 @@ namespace ProfileServer.Network
       {
         DateTime now = DateTime.UtcNow;
         DatabaseLock lockObject = UnitOfWork.NeighborhoodActionLock;
-        unitOfWork.AcquireLock(lockObject);
+        await unitOfWork.AcquireLockAsync(lockObject);
         try
         {
           NeighborhoodAction actionToProcess = null;
-          List<NeighborhoodAction> actions = unitOfWork.NeighborhoodActionRepository.Get(null, q => q.OrderBy(a => a.Id)).ToList();
+          List<NeighborhoodAction> actions = (await unitOfWork.NeighborhoodActionRepository.GetAsync(null, q => q.OrderBy(a => a.Id))).ToList();
           foreach (NeighborhoodAction action in actions)
           {
             bool isProfileAction = action.IsProfileAction();
@@ -298,7 +355,7 @@ namespace ProfileServer.Network
             // We MUST make sure, the action is processed before ExecuteAfter, otherwise it will be picked up again for processing!
             actionToProcess.ExecuteAfter = now.AddSeconds(600);
             unitOfWork.NeighborhoodActionRepository.Update(actionToProcess);
-            unitOfWork.SaveThrow();
+            await unitOfWork.SaveThrowAsync();
 
             res = actionToProcess;
           }
@@ -469,10 +526,10 @@ namespace ProfileServer.Network
                     break;
                   }
 
-                  Message requestMessage = await client.ReceiveMessageAsync();
+                  PsProtocolMessage requestMessage = await client.ReceiveMessageAsync();
                   if (requestMessage != null)
                   {
-                    Message responseMessage = client.MessageBuilder.CreateErrorProtocolViolationResponse(requestMessage);
+                    PsProtocolMessage responseMessage = client.MessageBuilder.CreateErrorProtocolViolationResponse(requestMessage);
 
                     if (requestMessage.MessageTypeCase == Message.MessageTypeOneofCase.Request)
                     {
@@ -537,7 +594,7 @@ namespace ProfileServer.Network
                 {
                   log.Debug("Error occurred, erasing images of all profiles received from neighbor ID '{0}'.", NeighborId.ToHex());
 
-                  ImageManager imageManager = (ImageManager)Base.ComponentDictionary["Data.ImageManager"];
+                  ImageManager imageManager = (ImageManager)Base.ComponentDictionary[ImageManager.ComponentName];
                   foreach (NeighborIdentity identity in identityDatabase.Values)
                   {
                     if (identity.ThumbnailImage != null)
@@ -877,7 +934,7 @@ namespace ProfileServer.Network
           {
             if (client.MatchServerId(NeighborId))
             {
-              Message requestMessage = client.MessageBuilder.CreateStopNeighborhoodUpdatesRequest();
+              PsProtocolMessage requestMessage = client.MessageBuilder.CreateStopNeighborhoodUpdatesRequest();
               if (!await client.SendStopNeighborhoodUpdates(requestMessage))
               {
                 if (client.LastResponseStatus == Status.ErrorNotFound) log.Info("Neighbor ID '{0}' does not register us as followers.", NeighborId.ToHex());
@@ -1056,7 +1113,7 @@ namespace ProfileServer.Network
               if (client.MatchServerId(FollowerId))
               {
                 List<SharedProfileUpdateItem> updateList = new List<SharedProfileUpdateItem>() { updateItem };
-                Message updateMessage = client.MessageBuilder.CreateNeighborhoodSharedProfileUpdateRequest(updateList);
+                PsProtocolMessage updateMessage = client.MessageBuilder.CreateNeighborhoodSharedProfileUpdateRequest(updateList);
                 if (await client.SendNeighborhoodSharedProfileUpdate(updateMessage))
                 {
                   if (updateItem.ActionTypeCase == SharedProfileUpdateItem.ActionTypeOneofCase.Refresh)
@@ -1148,12 +1205,12 @@ namespace ProfileServer.Network
     /// <param name="Client">Client that received the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the remote peer.</returns>
-    private async Task<Message> ProcessMessageNeighborhoodSharedProfileUpdateRequestAsync(OutgoingClient Client, Message RequestMessage)
+    private async Task<PsProtocolMessage> ProcessMessageNeighborhoodSharedProfileUpdateRequestAsync(OutgoingClient Client, PsProtocolMessage RequestMessage)
     {
       log.Trace("()");
 
-      MessageBuilder messageBuilder = Client.MessageBuilder;
-      Message res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
+      PsMessageBuilder messageBuilder = Client.MessageBuilder;
+      PsProtocolMessage res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
 
       bool error = false;
       NeighborhoodSharedProfileUpdateRequest neighborhoodSharedProfileUpdateRequest = RequestMessage.Request.ConversationRequest.NeighborhoodSharedProfileUpdate;
@@ -1166,7 +1223,7 @@ namespace ProfileServer.Network
         if (updateItem.ActionTypeCase == SharedProfileUpdateItem.ActionTypeOneofCase.Add)
         {
           SharedProfileAddItem addItem = updateItem.Add;
-          Message errorResponse;
+          PsProtocolMessage errorResponse;
           if (ValidateInMemorySharedProfileAddItem(addItem, itemIndex, identityDatabase, Client.MessageBuilder, RequestMessage, out errorResponse))
           {
             byte[] thumbnailImageHash = null;
@@ -1238,7 +1295,7 @@ namespace ProfileServer.Network
     /// <param name="RequestMessage">Full request message received by the client.</param>
     /// <param name="ErrorResponse">If the validation fails, this is filled with response message to be sent to the neighbor.</param>
     /// <returns>true if the validation is successful, false otherwise.</returns>
-    private bool ValidateInMemorySharedProfileAddItem(SharedProfileAddItem AddItem, int Index, Dictionary<byte[], NeighborIdentity> IdentityDatabase, MessageBuilder MessageBuilder, Message RequestMessage, out Message ErrorResponse)
+    private bool ValidateInMemorySharedProfileAddItem(SharedProfileAddItem AddItem, int Index, Dictionary<byte[], NeighborIdentity> IdentityDatabase, PsMessageBuilder MessageBuilder, PsProtocolMessage RequestMessage, out PsProtocolMessage ErrorResponse)
     {
       log.Trace("(Index:{0})", Index);
       
@@ -1368,12 +1425,12 @@ namespace ProfileServer.Network
     /// <param name="Client">Client that received the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the remote peer.</returns>
-    private async Task<Message> ProcessMessageFinishNeighborhoodInitializationRequestAsync(OutgoingClient Client, Message RequestMessage)
+    private async Task<PsProtocolMessage> ProcessMessageFinishNeighborhoodInitializationRequestAsync(OutgoingClient Client, PsProtocolMessage RequestMessage)
     {
       log.Trace("()");
 
-      MessageBuilder messageBuilder = Client.MessageBuilder;
-      Message res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
+      PsMessageBuilder messageBuilder = Client.MessageBuilder;
+      PsProtocolMessage res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
 
       FinishNeighborhoodInitializationRequest finishNeighborhoodInitializationRequest = RequestMessage.Request.ConversationRequest.FinishNeighborhoodInitialization;
 

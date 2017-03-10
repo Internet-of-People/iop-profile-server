@@ -1,6 +1,7 @@
-﻿using Google.Protobuf;
-using ProfileServerCrypto;
-using ProfileServerProtocol;
+﻿using IopCommon;
+using Google.Protobuf;
+using IopCrypto;
+using IopProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -21,7 +22,7 @@ namespace ProfileServerProtocolTests.Tests
   public class PS04011 : ProtocolTest
   {
     public const string TestName = "PS04011";
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocolTests.Tests." + TestName);
+    private static Logger log = new Logger("ProfileServerProtocolTests.Tests." + TestName);
 
     public override string Name { get { return TestName; } }
 
@@ -54,7 +55,7 @@ namespace ProfileServerProtocolTests.Tests
       ProtocolClient client2 = new ProtocolClient(0, SemVer.V100, client1.GetIdentityKeys());
       try
       {
-        MessageBuilder mb1 = client1.MessageBuilder;
+        PsMessageBuilder mb1 = client1.MessageBuilder;
 
         // Step 1
         await client1.ConnectAsync(ServerIp, ClNonCustomerPort, true);
@@ -83,7 +84,7 @@ namespace ProfileServerProtocolTests.Tests
 
         // Step 4
         byte[] payload = Encoding.UTF8.GetBytes("test");
-        Message requestMessage = mb1.CreatePingRequest(payload);
+        PsProtocolMessage requestMessage = mb1.CreatePingRequest(payload);
         bool disconnectedOk = false;
 
         // We should be disconnected by now, so sending or receiving should throw.

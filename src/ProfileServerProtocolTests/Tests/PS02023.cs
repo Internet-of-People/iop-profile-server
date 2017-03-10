@@ -1,5 +1,6 @@
-﻿using Google.Protobuf;
-using ProfileServerProtocol;
+﻿using IopCommon;
+using Google.Protobuf;
+using IopProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -20,7 +21,7 @@ namespace ProfileServerProtocolTests.Tests
   public class PS02023 : ProtocolTest
   {
     public const string TestName = "PS02023";
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocolTests.Tests." + TestName);
+    private static Logger log = new Logger("ProfileServerProtocolTests.Tests." + TestName);
 
     public override string Name { get { return TestName; } }
 
@@ -69,7 +70,7 @@ namespace ProfileServerProtocolTests.Tests
         testIdentities.Add(new ProtocolClient());
       try
       {
-        MessageBuilder mb = client.MessageBuilder;
+        PsMessageBuilder mb = client.MessageBuilder;
 
         // Step 1
         log.Trace("Step 1");
@@ -92,9 +93,9 @@ namespace ProfileServerProtocolTests.Tests
 
 
         await client.ConnectAsync(ServerIp, ClNonCustomerPort, true);
-        Message requestMessage = mb.CreateProfileStatsRequest();
+        PsProtocolMessage requestMessage = mb.CreateProfileStatsRequest();
         await client.SendMessageAsync(requestMessage);
-        Message responseMessage = await client.ReceiveMessageAsync();
+        PsProtocolMessage responseMessage = await client.ReceiveMessageAsync();
 
         bool idOk = responseMessage.Id == requestMessage.Id;
         bool statusOk = responseMessage.Response.Status == Status.Ok;

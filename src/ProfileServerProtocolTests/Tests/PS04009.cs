@@ -1,6 +1,7 @@
-﻿using Google.Protobuf;
-using ProfileServerCrypto;
-using ProfileServerProtocol;
+﻿using IopCommon;
+using Google.Protobuf;
+using IopCrypto;
+using IopProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -21,7 +22,7 @@ namespace ProfileServerProtocolTests.Tests
   public class PS04009 : ProtocolTest
   {
     public const string TestName = "PS04009";
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocolTests.Tests." + TestName);
+    private static Logger log = new Logger("ProfileServerProtocolTests.Tests." + TestName);
 
     public override string Name { get { return TestName; } }
 
@@ -53,7 +54,7 @@ namespace ProfileServerProtocolTests.Tests
       ProtocolClient client = new ProtocolClient();
       try
       {
-        MessageBuilder mb = client.MessageBuilder;
+        PsMessageBuilder mb = client.MessageBuilder;
         byte[] testIdentityId = client.GetIdentityId();
 
         // Step 1
@@ -70,9 +71,9 @@ namespace ProfileServerProtocolTests.Tests
         bool checkInOk = await client.CheckInAsync();
 
         byte[] newProfileServerId = Crypto.Sha256(Encoding.UTF8.GetBytes("test"));
-        Message requestMessage = mb.CreateCancelHostingAgreementRequest(newProfileServerId);
+        PsProtocolMessage requestMessage = mb.CreateCancelHostingAgreementRequest(newProfileServerId);
         await client.SendMessageAsync(requestMessage);
-        Message responseMessage = await client.ReceiveMessageAsync();
+        PsProtocolMessage responseMessage = await client.ReceiveMessageAsync();
 
         bool idOk = responseMessage.Id == requestMessage.Id;
         bool statusOk = responseMessage.Response.Status == Status.Ok;

@@ -6,9 +6,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
-using ProfileServerProtocol;
+using IopProtocol;
 using ProfileServer.Utils;
 using Microsoft.EntityFrameworkCore.Storage;
+using IopCommon;
+using IopServerCore.Data;
 
 namespace ProfileServer.Data.Repositories
 {
@@ -17,7 +19,8 @@ namespace ProfileServer.Data.Repositories
   /// </summary>
   public class HostedIdentityRepository : IdentityRepository<HostedIdentity>
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Data.Repositories.HostedIdentityRepository");
+    /// <summary>Class logger.</summary>
+    private static Logger log = new Logger("ProfileServer.Data.Repositories.HostedIdentityRepository");
 
     /// <summary>
     /// Creates instance of the repository.

@@ -2,60 +2,19 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ProfileServerCrypto;
+using IopCrypto;
 using ProfileServer.Data.Models;
 using System.Security.Cryptography.X509Certificates;
 using System.Net;
 using System.IO;
 using ProfileServer.Network;
-using ProfileServer.Utils;
 using System.Globalization;
-using ProfileServerProtocol.Multiformats;
+using IopCommon.Multiformats;
+using IopCommon;
+using IopServerCore.Kernel;
 
 namespace ProfileServer.Kernel.Config
 {
-  /// <summary>
-  /// Types of values allowed in the configuration file.
-  /// </summary>
-  public enum ConfigValueType
-  {
-    /// <summary>Boolean switch "on" or "off".</summary>
-    OnOffSwitch,
-
-    /// <summary>String value that can not be empty.</summary>
-    StringNonEmpty,
-
-    /// <summary>String value that can be empty.</summary>
-    StringEmpty,
-
-    /// <summary>Integer value.</summary>
-    Int,
-
-    /// <summary>TCP/UDP port number - i.e. integer in range 0-65535.</summary>
-    Port,
-
-    /// <summary>IPv4 or IPv6 address or string "any".</summary>
-    IpAddress
-  }
-
-  /// <summary>
-  /// Description of each server role interface.
-  /// </summary>
-  public class RoleServerConfiguration
-  {
-    /// <summary>Roles of this server.</summary>
-    public ServerRole Roles;
-
-    /// <summary>Are the services on this port encrypted?</summary>
-    public bool Encrypted;
-
-    /// <summary>true if the server is operating on TCP protocol, false if on UDP.</summary>
-    public bool IsTcpServer;
-
-    /// <summary>Port on which this server provides its services.</summary>
-    public int Port;
-  }
-
 
   /// <summary>
   /// Provides access to the global configuration. The configuration is partly stored in the configuration file 
@@ -64,24 +23,20 @@ namespace ProfileServer.Kernel.Config
   /// <remarks>
   /// Loading configuration is essential for the profile server's startup. If any part of it fails, the profile server will refuse to start.
   /// </remarks>
-  public class Config : Component
+  public class Config : ConfigBase
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Kernel.Config.Config");
+    /// <summary>Instance logger.</summary>
+    protected new Logger log = new Logger("ProfileServer." + ComponentName);
 
     /// <summary>Default name of the configuration file.</summary>
     public const string ConfigFileName = "ProfileServer.conf";
 
+    /// <summary>Instance of the configuration component to be easily referenced by other components.</summary>
+    public static Config Configuration;
+
+
     /// <summary>External IP address of the server from its network peers' point of view.</summary>
     public IPAddress ExternalServerAddress;
-
-    /// <summary>Specification of a machine's network interface, on which the profile server will listen.</summary>
-    public IPAddress BindToInterface;
-
-    /// <summary>Certificate to be used for TCP TLS server.</summary>
-    public X509Certificate TcpServerTlsCertificate;
-
-    /// <summary>Description of role servers.</summary>
-    public ServerRolesConfig ServerRoles;
 
     /// <summary>Path to the directory where images are stored.</summary>
     public string ImageDataFolder;
@@ -103,9 +58,6 @@ namespace ProfileServer.Kernel.Config
 
     /// <summary>End point of the Content Address Network server.</summary>
     public IPEndPoint CanEndPoint;
-
-    /// <summary>Cryptographic keys of the profile server that can be used for signing messages and verifying signatures.</summary>
-    public KeysEd25519 Keys;
 
     /// <summary>Time in seconds between the last update of shared profiles received from a neighbor server up to the point when 
     /// the profile server is allowed to delete the profiles if they were not refreshed.</summary>
@@ -138,11 +90,15 @@ namespace ProfileServer.Kernel.Config
     public bool CanProfileServerContactInformationChanged;
 
 
+
+
+
     public override bool Init()
     {
       log.Trace("()");
 
       bool res = false;
+      Configuration = this;
 
       try
       {
@@ -173,35 +129,6 @@ namespace ProfileServer.Kernel.Config
       log.Trace("(-)");
     }
     
-    /// <summary>
-    /// Loads global configuration from a file.
-    /// </summary>
-    /// <param name="FileName">Name of the configuration file. This can be both relative or full path to the file.</param>
-    /// <returns>true if the function succeeds, false otherwise.</returns>
-    /// <remarks>See the configuration file comments for the file format and accepted values.</remarks>
-    public bool LoadConfigurationFromFile(string FileName)
-    {
-      log.Trace("()");
-
-      bool res = false;
-      try
-      {
-        if (File.Exists(FileName))
-        {
-          string[] lines = File.ReadAllLines(FileName);
-          res = LoadConfigurationFromStringArray(lines);
-        }
-        else log.Error("Unable to find configuration file '{0}'.", FileName);
-      }
-      catch (Exception e)
-      {
-        log.Error("Exception occurred: {0}", e.ToString());
-      }
-
-      log.Trace("(-):{0}", res);
-      return res;
-    }
-
 
     /// <summary>
     /// <para>Loads global configuration from a string array that corresponds to lines of configuration file.</para>
@@ -209,7 +136,7 @@ namespace ProfileServer.Kernel.Config
     /// </summary>
     /// <param name="Lines">Profile server configuration as a string array.</param>
     /// <returns>true if the function succeeds, false otherwise.</returns>
-    public bool LoadConfigurationFromStringArray(string[] Lines)
+    public override bool LoadConfigurationFromStringArray(string[] Lines)
     {
       log.Trace("()");
 
@@ -219,7 +146,7 @@ namespace ProfileServer.Kernel.Config
         bool testModeEnabled = false;
         string tcpServerTlsCertificateFileName = null;
         X509Certificate tcpServerTlsCertificate = null;
-        ServerRolesConfig serverRoles = null;
+        ConfigServerRoles serverRoles = null;
         IPAddress externalServerAddress = null;
         IPAddress bindToInterface = null;
         string imageDataFolder = null;
@@ -292,12 +219,12 @@ namespace ProfileServer.Kernel.Config
           maxFollowerServersCount = (int)nameVal["max_follower_servers_count"];
 
 
-          serverRoles = new ServerRolesConfig();          
-          error = !(serverRoles.AddRoleServer(primaryInterfacePort, ServerRole.Primary)
-                 && serverRoles.AddRoleServer(serverNeighborInterfacePort, ServerRole.ServerNeighbor)
-                 && serverRoles.AddRoleServer(clientNonCustomerInterfacePort, ServerRole.ClientNonCustomer)
-                 && serverRoles.AddRoleServer(clientCustomerInterfacePort, ServerRole.ClientCustomer)
-                 && serverRoles.AddRoleServer(clientAppServiceInterfacePort, ServerRole.ClientAppService));
+          serverRoles = new ConfigServerRoles();          
+          error = !(serverRoles.AddRoleServer(primaryInterfacePort, (uint)ServerRole.Primary, false, Server.ServerKeepAliveIntervalMs)
+                 && serverRoles.AddRoleServer(serverNeighborInterfacePort, (uint)ServerRole.ServerNeighbor, true, Server.ServerKeepAliveIntervalMs)
+                 && serverRoles.AddRoleServer(clientNonCustomerInterfacePort, (uint)ServerRole.ClientNonCustomer, true, Server.ClientKeepAliveIntervalMs)
+                 && serverRoles.AddRoleServer(clientCustomerInterfacePort, (uint)ServerRole.ClientCustomer, true, Server.ClientKeepAliveIntervalMs)
+                 && serverRoles.AddRoleServer(clientAppServiceInterfacePort, (uint)ServerRole.ClientAppService, true, Server.ClientKeepAliveIntervalMs));
         }
 
         if (!error)
@@ -506,153 +433,6 @@ namespace ProfileServer.Kernel.Config
 
 
     /// <summary>
-    /// Converts an array of configuration lines to a dictionary name-value structure,
-    /// while checking if all names are defined, values are valid, and no required name is missing.
-    /// </summary>
-    /// <param name="Lines">Array of configuration lines.</param>
-    /// <param name="NamesDefinition">Definition of configuration names.</param>
-    /// <param name="NameVal">Empty dictionary to be filled with name-value pairs if the function succeeds.</param>
-    /// <returns>true if the function succeeds, false otherwise.</returns>
-    public bool LinesToNameValueDictionary(string[] Lines, Dictionary<string, ConfigValueType> NamesDefinition, Dictionary<string, object> NameVal)
-    {
-      bool error = false;
-      int lineNumber = 0;
-      foreach (string aline in Lines)
-      {
-        lineNumber++;
-        string line = aline.Trim();
-        if ((line.Length == 0) || (line[0] == '#')) continue;
-
-        int epos = line.IndexOf('=');
-        if (epos == -1)
-        {
-          log.Error("Line {0} does not contain equal sign.", lineNumber);
-          error = true;
-          break;
-        }
-
-        string name = line.Substring(0, epos).Trim();
-        string value = line.Substring(epos + 1).Trim();
-
-        if (string.IsNullOrEmpty(name))
-        {
-          log.Error("No name before equal sign on line {0}.", lineNumber);
-          error = true;
-          break;
-        }
-
-        if (NameVal.ContainsKey(name))
-        {
-          log.Error("Name '{0}' redefined on line {1}.", name, lineNumber);
-          error = true;
-          break;
-        }
-
-        if (!NamesDefinition.ContainsKey(name))
-        {
-          log.Error("Unknown name '{0}' on line {1}.", name, lineNumber);
-          error = true;
-          break;
-        }
-
-        error = true;
-        ConfigValueType type = NamesDefinition[name];
-        switch (type)
-        {
-          case ConfigValueType.Int:
-            {
-              int val;
-              if (int.TryParse(value, out val))
-              {
-                NameVal.Add(name, val);
-                error = false;
-              }
-              else log.Error("Invalid integer value '{0}' on line {1}.", value, lineNumber);
-              break;
-            }
-
-          case ConfigValueType.Port:
-            {
-              int val;
-              if (int.TryParse(value, out val))
-              {
-                if ((val >= 0) || (val <= 65535))
-                {
-                  NameVal.Add(name, val);
-                  error = false;
-                }
-                else log.Error("Invalid port value '{0}' on line {1}.", value, lineNumber);
-              }
-              else log.Error("Invalid port value '{0}' on line {1}.", value, lineNumber);
-
-              break;
-            }
-
-          case ConfigValueType.IpAddress:
-            {
-              IPAddress val = IPAddress.Any;
-              if (IPAddress.TryParse(value, out val))
-              {
-                NameVal.Add(name, val);
-                error = false;
-              }
-              else log.Error("Invalid IP address interface value '{0}' on line {1}.", value, lineNumber);
-
-              break;
-            }
-
-          case ConfigValueType.StringEmpty:
-          case ConfigValueType.StringNonEmpty:
-            {
-              if (!string.IsNullOrEmpty(value) || (type == ConfigValueType.StringEmpty))
-              {
-                NameVal.Add(name, value);
-                error = false;
-              }
-              else log.Error("Value for name '{0}' on line {1} can not be empty.", name, lineNumber);
-
-              break;
-            }
-
-          case ConfigValueType.OnOffSwitch:
-            {
-              if ((value == "on") || (value == "off"))
-              {
-                NameVal.Add(name, value == "on");
-                error = false;
-              }
-              else log.Error("Value for name '{0}' on line {1} can only be either 'on' or 'off'.", name, lineNumber);
-
-              break;
-            }
-
-          default:
-            log.Error("Internal error parsing line line {0}, type '{1}'.", lineNumber, type);
-            break;
-        }
-
-        if (error) break;
-      }
-
-      if (!error)
-      {
-        // Check that all values are in NameVal dictionary.
-        foreach (string key in NamesDefinition.Keys)
-        {
-          if (!NameVal.ContainsKey(key))
-          {
-            log.Error("Missing definition of '{0}'.", key);
-            error = true;
-            break;
-          }
-        }
-      }
-
-      bool res = !error;
-      return res;
-    }
-
-    /// <summary>
     /// Initializes the database, or loads database configuration if the database already exists.
     /// </summary>
     /// <returns>true if the function succeeds, false otherwise.</returns>
@@ -696,13 +476,13 @@ namespace ProfileServer.Kernel.Config
           {
             Keys = new KeysEd25519();
             Keys.PrivateKeyHex = privateKeyHex.Value;
-            Keys.PrivateKey = Crypto.FromHex(Keys.PrivateKeyHex);
+            Keys.PrivateKey = Keys.PrivateKeyHex.FromHex();
 
             Keys.PublicKeyHex = publicKeyHex.Value;
-            Keys.PublicKey = Crypto.FromHex(Keys.PublicKeyHex);
+            Keys.PublicKey = Keys.PublicKeyHex.FromHex();
 
             Keys.ExpandedPrivateKeyHex = expandedPrivateKeyHex.Value;
-            Keys.ExpandedPrivateKey = Crypto.FromHex(Keys.ExpandedPrivateKeyHex);
+            Keys.ExpandedPrivateKey = Keys.ExpandedPrivateKeyHex.FromHex();
 
             bool error = false;
             if (!UInt64.TryParse(canIpnsLastSequenceNumber.Value, out CanIpnsLastSequenceNumber))
@@ -739,7 +519,7 @@ namespace ProfileServer.Kernel.Config
                 CanProfileServerContactInformationChanged = true;
               }
 
-              string configPrimaryPort = ServerRoles.GetRolePort(ServerRole.Primary).ToString();
+              string configPrimaryPort = ServerRoles.GetRolePort((uint)ServerRole.Primary).ToString();
               if (configPrimaryPort != primaryPort.Value)
               {
                 log.Info("Primary port in configuration file is different from the database value.");
@@ -784,7 +564,7 @@ namespace ProfileServer.Kernel.Config
           Setting externalServerAddress = new Setting("ExternalServerAddress", ExternalServerAddress.ToString());
           unitOfWork.SettingsRepository.Insert(externalServerAddress);
 
-          Setting primaryPort = new Setting("PrimaryPort", ServerRoles.GetRolePort(ServerRole.Primary).ToString());
+          Setting primaryPort = new Setting("PrimaryPort", ServerRoles.GetRolePort((uint)ServerRole.Primary).ToString());
           unitOfWork.SettingsRepository.Insert(primaryPort);
 
           Setting canIpnsLastSequenceNumber = new Setting("CanIpnsLastSequenceNumber", "0");
@@ -810,7 +590,7 @@ namespace ProfileServer.Kernel.Config
         log.Debug("Server public key hex is '{0}'.", Keys.PublicKeyHex);
         log.Debug("Server network ID is '{0}'.", Crypto.Sha256(Keys.PublicKey).ToHex());
         log.Debug("Server network ID in CAN encoding is '{0}'.", Network.CAN.CanApi.PublicKeyToId(Keys.PublicKey).ToBase58());
-        log.Debug("Server primary external contact is '{0}:{1}'.", ExternalServerAddress, ServerRoles.GetRolePort(ServerRole.Primary));
+        log.Debug("Server primary external contact is '{0}:{1}'.", ExternalServerAddress, ServerRoles.GetRolePort((uint)ServerRole.Primary));
       }
 
       log.Trace("(-):{0}", res);

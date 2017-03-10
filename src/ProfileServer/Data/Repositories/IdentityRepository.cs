@@ -6,8 +6,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
-using ProfileServerProtocol;
+using IopProtocol;
 using ProfileServer.Network;
+using IopCommon;
+using IopServerCore.Data;
 
 namespace ProfileServer.Data.Repositories
 {
@@ -15,9 +17,10 @@ namespace ProfileServer.Data.Repositories
   /// Generic repository for identities, which is the base for HomeIdentityReposity for identities hosted on this profile server
   /// and NeighborIdentityRepository for identities hosted in this profile server's neighborhood.
   /// </summary>
-  public class IdentityRepository<T> : GenericRepository<T> where T:IdentityBase
+  public class IdentityRepository<T> : GenericRepository<Context, T> where T:IdentityBase
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Data.Repositories.IdentityRepository");
+    /// <summary>Class logger.</summary>
+    private static Logger log = new Logger("ProfileServer.Data.Repositories.IdentityRepository");
 
 
     /// <summary>

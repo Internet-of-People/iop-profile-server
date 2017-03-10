@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IopCommon;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -59,7 +60,7 @@ namespace ProfileServerProtocolTestsExecutor
   /// </summary>
   public class Program
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocolTestsExecutor.Program");
+    private static Logger log = new Logger("ProfileServerProtocolTestsExecutor.Program");
 
     /// <summary>
     /// Information about all tests required for their execution.
@@ -147,6 +148,7 @@ namespace ProfileServerProtocolTestsExecutor
       new Test("PS04013", "ProfileServer-default.conf",          new string[] { "127.0.0.1", "16988", "16988" }, false),
       new Test("PS04014", "ProfileServer-default.conf",          new string[] { "127.0.0.1", "16988", "16988" }, false),
       new Test("PS04015", "ProfileServer-default.conf",          new string[] { "127.0.0.1", "16988", "16988" }, false),
+      new Test("PS04016", "ProfileServer-default.conf",          new string[] { "127.0.0.1", "16988", "16988" }, false),
 
       new Test("PS05001", "ProfileServer-default.conf",          new string[] { "127.0.0.1", "16987" }, false),
       new Test("PS05002", "ProfileServer-default.conf",          new string[] { "127.0.0.1", "16987" }, false),

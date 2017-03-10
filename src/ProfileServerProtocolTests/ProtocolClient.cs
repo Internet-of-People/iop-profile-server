@@ -1,6 +1,6 @@
 ﻿using Google.Protobuf;
-using ProfileServerCrypto;
-using ProfileServerProtocol;
+using IopCrypto;
+using IopProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -13,11 +13,12 @@ using System.Net.Sockets;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
-using ProfileServerProtocol.Multiformats;
 using System.Text;
 using System.Net.Http;
 using System.Collections.Specialized;
 using Newtonsoft.Json;
+using IopCommon;
+using IopCommon.Multiformats;
 
 namespace ProfileServerProtocolTests
 {
@@ -26,7 +27,7 @@ namespace ProfileServerProtocolTests
   /// </summary>
   public class ProtocolClient : IDisposable
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocolTests.Tests.ProtocolClient");
+    private static Logger log = new Logger("ProfileServerProtocolTests.Tests.ProtocolClient");
 
     /// <summary>TCP client for communication with the server.</summary>
     private TcpClient client;
@@ -38,7 +39,7 @@ namespace ProfileServerProtocolTests
     private Stream stream;
 
     /// <summary>Message builder for easy creation of protocol message.</summary>
-    public MessageBuilder MessageBuilder;
+    public PsMessageBuilder MessageBuilder;
 
     /// <summary>Client's identity.</summary>
     private KeysEd25519 keys;
@@ -98,7 +99,7 @@ namespace ProfileServerProtocolTests
       client.NoDelay = true;
       client.LingerState = new LingerOption(true, 0);
       keys = Keys;
-      MessageBuilder = new MessageBuilder(IdBase, new List<SemVer>() { ProtocolVersion }, keys);
+      MessageBuilder = new PsMessageBuilder(IdBase, new List<SemVer>() { ProtocolVersion }, keys);
     }
 
 
@@ -142,12 +143,12 @@ namespace ProfileServerProtocolTests
     /// Sends IoP protocol message over the network stream.
     /// </summary>
     /// <param name="Data">Message to send.</param>
-    public async Task SendMessageAsync(Message Data)
+    public async Task SendMessageAsync(PsProtocolMessage Data)
     {
       string dataStr = Data.ToString();
       log.Trace("()\n{0}", dataStr.Substring(0, Math.Min(dataStr.Length, 512)));
 
-      byte[] rawData = ProtocolHelper.GetMessageBytes(Data);
+      byte[] rawData = PsMessageBuilder.MessageToByteArray(Data);
       await stream.WriteAsync(rawData, 0, rawData.Length);
 
       log.Trace("(-)");
@@ -158,11 +159,11 @@ namespace ProfileServerProtocolTests
     /// Reads and parses protocol message from the network stream.
     /// </summary>
     /// <returns>Parsed protocol message or null if the function fails.</returns>
-    public async Task<Message> ReceiveMessageAsync()
+    public async Task<PsProtocolMessage> ReceiveMessageAsync()
     {
       log.Trace("()");
 
-      Message res = null;
+      PsProtocolMessage res = null;
 
       byte[] header = new byte[ProtocolHelper.HeaderSize];
       int headerBytesRead = 0;
@@ -206,7 +207,7 @@ namespace ProfileServerProtocolTests
         remain -= readAmount;
       }
 
-      res = MessageWithHeader.Parser.ParseFrom(messageBytes).Body;
+      res = new PsProtocolMessage(MessageWithHeader.Parser.ParseFrom(messageBytes).Body);
 
       string resStr = res.ToString();
       log.Trace("(-):\n{0}", resStr.Substring(0, Math.Min(resStr.Length, 512)));
@@ -218,11 +219,11 @@ namespace ProfileServerProtocolTests
     /// Generates client's challenge and creates start conversation request with it.
     /// </summary>
     /// <returns>StartConversationRequest message that is ready to be sent to the profile server.</returns>
-    public Message CreateStartConversationRequest()
+    public PsProtocolMessage CreateStartConversationRequest()
     {
-      ClientChallenge = new byte[ProtocolHelper.ChallengeDataSize];
+      ClientChallenge = new byte[PsMessageBuilder.ChallengeDataSize];
       Crypto.Rng.GetBytes(ClientChallenge);
-      Message res = MessageBuilder.CreateStartConversationRequest(ClientChallenge);
+      PsProtocolMessage res = MessageBuilder.CreateStartConversationRequest(ClientChallenge);
       return res;
     }
 
@@ -234,9 +235,9 @@ namespace ProfileServerProtocolTests
     {
       log.Trace("()");      
 
-      Message requestMessage = CreateStartConversationRequest();
+      PsProtocolMessage requestMessage = CreateStartConversationRequest();
       await SendMessageAsync(requestMessage);
-      Message responseMessage = await ReceiveMessageAsync();
+      PsProtocolMessage responseMessage = await ReceiveMessageAsync();
 
       bool idOk = responseMessage.Id == requestMessage.Id;
       bool statusOk = responseMessage.Response.Status == Status.Ok;
@@ -277,9 +278,9 @@ namespace ProfileServerProtocolTests
         contract.IdentityType = IdentityType;
       }
 
-      Message requestMessage = MessageBuilder.CreateRegisterHostingRequest(contract);
+      PsProtocolMessage requestMessage = MessageBuilder.CreateRegisterHostingRequest(contract);
       await SendMessageAsync(requestMessage);
-      Message responseMessage = await ReceiveMessageAsync();
+      PsProtocolMessage responseMessage = await ReceiveMessageAsync();
 
       bool idOk = responseMessage.Id == requestMessage.Id;
       bool statusOk = responseMessage.Response.Status == Status.Ok;
@@ -306,9 +307,9 @@ namespace ProfileServerProtocolTests
       await ConnectAsync(ServerIp, CustomerPort, true);
       bool checkInOk = await CheckInAsync();
 
-      Message requestMessage = MessageBuilder.CreateCancelHostingAgreementRequest(null);
+      PsProtocolMessage requestMessage = MessageBuilder.CreateCancelHostingAgreementRequest(null);
       await SendMessageAsync(requestMessage);
-      Message responseMessage = await ReceiveMessageAsync();
+      PsProtocolMessage responseMessage = await ReceiveMessageAsync();
 
       bool idOk = responseMessage.Id == requestMessage.Id;
       bool statusOk = responseMessage.Response.Status == Status.Ok;
@@ -334,9 +335,9 @@ namespace ProfileServerProtocolTests
 
       bool startConversationOk = await StartConversationAsync();
 
-      Message requestMessage = MessageBuilder.CreateCheckInRequest(Challenge);
+      PsProtocolMessage requestMessage = MessageBuilder.CreateCheckInRequest(Challenge);
       await SendMessageAsync(requestMessage);
-      Message responseMessage = await ReceiveMessageAsync();
+      PsProtocolMessage responseMessage = await ReceiveMessageAsync();
 
       bool idOk = responseMessage.Id == requestMessage.Id;
       bool statusOk = responseMessage.Response.Status == Status.Ok;
@@ -360,9 +361,9 @@ namespace ProfileServerProtocolTests
 
       bool startConversationOk = await StartConversationAsync();
 
-      Message requestMessage = MessageBuilder.CreateVerifyIdentityRequest(Challenge);
+      PsProtocolMessage requestMessage = MessageBuilder.CreateVerifyIdentityRequest(Challenge);
       await SendMessageAsync(requestMessage);
-      Message responseMessage = await ReceiveMessageAsync();
+      PsProtocolMessage responseMessage = await ReceiveMessageAsync();
 
       bool idOk = responseMessage.Id == requestMessage.Id;
       bool statusOk = responseMessage.Response.Status == Status.Ok;
@@ -385,10 +386,10 @@ namespace ProfileServerProtocolTests
     {
       log.Trace("()");
 
-      Message requestMessage = MessageBuilder.CreateListRolesRequest();
+      PsProtocolMessage requestMessage = MessageBuilder.CreateListRolesRequest();
       await SendMessageAsync(requestMessage);
 
-      Message responseMessage = await ReceiveMessageAsync();
+      PsProtocolMessage responseMessage = await ReceiveMessageAsync();
 
       bool idOk = responseMessage.Id == requestMessage.Id;
       bool statusOk = responseMessage.Response.Status == Status.Ok;
@@ -421,9 +422,9 @@ namespace ProfileServerProtocolTests
     {
       log.Trace("()");
 
-      Message requestMessage = MessageBuilder.CreateUpdateProfileRequest(SemVer.V100, Name, Image, Location, ExtraData);
+      PsProtocolMessage requestMessage = MessageBuilder.CreateUpdateProfileRequest(SemVer.V100, Name, Image, Location, ExtraData);
       await SendMessageAsync(requestMessage);
-      Message responseMessage = await ReceiveMessageAsync();
+      PsProtocolMessage responseMessage = await ReceiveMessageAsync();
 
       bool idOk = responseMessage.Id == requestMessage.Id;
       bool statusOk = responseMessage.Response.Status == Status.Ok;
@@ -444,9 +445,9 @@ namespace ProfileServerProtocolTests
     {
       log.Trace("()");
 
-      Message requestMessage = MessageBuilder.CreateApplicationServiceAddRequest(ServiceNames);
+      PsProtocolMessage requestMessage = MessageBuilder.CreateApplicationServiceAddRequest(ServiceNames);
       await SendMessageAsync(requestMessage);
-      Message responseMessage = await ReceiveMessageAsync();
+      PsProtocolMessage responseMessage = await ReceiveMessageAsync();
 
       bool idOk = responseMessage.Id == requestMessage.Id;
       bool statusOk = responseMessage.Response.Status == Status.Ok;
@@ -513,7 +514,7 @@ namespace ProfileServerProtocolTests
     /// </summary>
     /// <param name="StartConversationResponse">StartConversationResponse received from the profile server.</param>
     /// <returns>true if the signature is valid, false otherwise.</returns>
-    public bool VerifyServerChallengeSignature(Message StartConversationResponse)
+    public bool VerifyServerChallengeSignature(PsProtocolMessage StartConversationResponse)
     {
       log.Trace("()");
 
@@ -744,39 +745,62 @@ namespace ProfileServerProtocolTests
       {
         using (HttpClient client = new HttpClient())
         {
-          client.Timeout = TimeSpan.FromSeconds(30);
-
-          using (HttpResponseMessage message = await client.PostAsync(url, null))
+          bool done = false;
+          int attempt = 1;
+          while (!done)
           {
-            res.Success = message.IsSuccessStatusCode;
-            byte[] data = await message.Content.ReadAsByteArrayAsync();
-            string dataStr = null;
             try
             {
-              dataStr = Encoding.UTF8.GetString(data);
+              client.Timeout = TimeSpan.FromSeconds(15);
+
+              using (HttpResponseMessage message = await client.PostAsync(url, null))
+              {
+                res.Success = message.IsSuccessStatusCode;
+                byte[] data = await message.Content.ReadAsByteArrayAsync();
+                string dataStr = null;
+                try
+                {
+                  dataStr = Encoding.UTF8.GetString(data);
+                }
+                catch
+                {
+                }
+
+                if (res.Success)
+                {
+                  res.Data = data;
+                  res.DataStr = dataStr;
+                }
+                else
+                {
+                  try
+                  {
+                    CanErrorResponse cer = JsonConvert.DeserializeObject<CanErrorResponse>(dataStr);
+                    res.Message = cer.Message;
+                  }
+                  catch
+                  {
+                    res.Message = dataStr != null ? dataStr : "Invalid response.";
+                  }
+                  res.IsCanError = true;
+                }
+              }
+              done = true;
             }
-            catch
+            catch (TaskCanceledException)
             {
+              if (attempt < 3)
+              {
+                log.Debug("Task cancelled, trying again.");
+              }
+              else
+              {
+                log.Debug("Task cancelled 3 times in a row, giving up.");
+                done = true;
+              }
             }
 
-            if (res.Success)
-            {
-              res.Data = data;
-              res.DataStr = dataStr;
-            }
-            else
-            {
-              try
-              {
-                CanErrorResponse cer = JsonConvert.DeserializeObject<CanErrorResponse>(dataStr);
-                res.Message = cer.Message;
-              }
-              catch
-              {
-                res.Message = dataStr != null ? dataStr : "Invalid response.";
-              }
-              res.IsCanError = true;
-            }
+            attempt++;
           }
         }
       }
@@ -820,7 +844,7 @@ namespace ProfileServerProtocolTests
     /// </summary>
     public class CanIpnsResolveResult : CanApiResult
     {
-      private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocolTests.Tests.ProtocolClient.CanIpnsResolveResult");
+      private static Logger log = new Logger("ProfileServerProtocolTests.Tests.ProtocolClient.CanIpnsResolveResult");
 
       /// <summary>
       /// Structure of the JSON response of CAN '/api/v0/name/resolve' call.
@@ -889,7 +913,7 @@ namespace ProfileServerProtocolTests
     /// </summary>
     public class CanDeleteResult : CanApiResult
     {
-      private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocolTests.Tests.ProtocolClient.CanDeleteResult");
+      private static Logger log = new Logger("ProfileServerProtocolTests.Tests.ProtocolClient.CanDeleteResult");
 
       /// <summary>
       /// Structure of the JSON response of CAN '/api/v0/pin/rm' call.
@@ -964,7 +988,7 @@ namespace ProfileServerProtocolTests
     /// </summary>
     public class CanCatResult : CanApiResult
     {
-      private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocolTests.Tests.ProtocolClient.CanCanResult");
+      private static Logger log = new Logger("ProfileServerProtocolTests.Tests.ProtocolClient.CanCanResult");
 
       /// <summary>
       /// Structure of the JSON response of CAN '/api/v0/name/resolve' call.
@@ -1131,10 +1155,10 @@ namespace ProfileServerProtocolTests
         bool imageOk = false;
         if (Profile.ProfileImage != null)
         {
-          Message requestMessage = MessageBuilder.CreateGetIdentityInformationRequest(GetIdentityId(), false, true, false);
+          PsProtocolMessage requestMessage = MessageBuilder.CreateGetIdentityInformationRequest(GetIdentityId(), false, true, false);
           await SendMessageAsync(requestMessage);
 
-          Message responseMessage = await ReceiveMessageAsync();
+          PsProtocolMessage responseMessage = await ReceiveMessageAsync();
           Profile.ThumbnailImage = responseMessage.Response.SingleResponse.GetIdentityInformation.ThumbnailImage.ToByteArray();
           imageOk = Profile.ThumbnailImage.Length > 0;
         }
@@ -1257,18 +1281,18 @@ namespace ProfileServerProtocolTests
       bool verifyIdentityOk = await VerifyIdentityAsync();
 
       // Start neighborhood initialization process.
-      Message requestMessage = MessageBuilder.CreateStartNeighborhoodInitializationRequest((uint)PrimaryPort, (uint)SrNeighborPort);
+      PsProtocolMessage requestMessage = MessageBuilder.CreateStartNeighborhoodInitializationRequest((uint)PrimaryPort, (uint)SrNeighborPort);
       await SendMessageAsync(requestMessage);
 
-      Message responseMessage = await ReceiveMessageAsync();
+      PsProtocolMessage responseMessage = await ReceiveMessageAsync();
       bool idOk = responseMessage.Id == requestMessage.Id;
       bool statusOk = responseMessage.Response.Status == Status.Ok;
       bool startNeighborhoodInitializationOk = idOk && statusOk;
 
 
       // Wait for update request.
-      Message serverRequestMessage = null;
-      Message clientResponseMessage = null;
+      PsProtocolMessage serverRequestMessage = null;
+      PsProtocolMessage clientResponseMessage = null;
       bool typeOk = false;
 
       List<SharedProfileAddItem> receivedItems = new List<SharedProfileAddItem>();
@@ -1384,7 +1408,7 @@ namespace ProfileServerProtocolTests
         byte[] receivedItemId = receivedItem.IdentityNetworkId.ToByteArray();
         if (!clientList.Contains(receivedItemId))
         {
-          log.Trace("Received item ID '{0}' not found among expected items.", Crypto.ToHex(receivedItemId));
+          log.Trace("Received item ID '{0}' not found among expected items.", receivedItemId.ToHex());
           error = true;
           break;
         }
@@ -1417,7 +1441,7 @@ namespace ProfileServerProtocolTests
         SharedProfileChangeItem expectedItem;
         if (!clientList.TryGetValue(receivedItemId, out expectedItem))
         {
-          log.Trace("Received item ID '{0}' not found among expected items.", Crypto.ToHex(receivedItemId));
+          log.Trace("Received item ID '{0}' not found among expected items.", receivedItemId.ToHex());
           error = true;
           break;
         }
@@ -1426,7 +1450,7 @@ namespace ProfileServerProtocolTests
         byte[] receivedItemBytes = receivedItem.ToByteArray();
         if (StructuralComparisons.StructuralComparer.Compare(receivedItemBytes, expectedItemBytes) != 0)
         {
-          log.Trace("Data of item ID '{0}' do not match.", Crypto.ToHex(receivedItemId));
+          log.Trace("Data of item ID '{0}' do not match.", receivedItemId.ToHex());
           error = true;
           break;
         }

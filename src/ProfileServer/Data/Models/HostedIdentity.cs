@@ -1,5 +1,4 @@
-﻿using ProfileServer.Utils;
-using ProfileServerProtocol;
+﻿using IopProtocol;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,6 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
+using IopCommon;
 
 namespace ProfileServer.Data.Models
 {
@@ -15,7 +15,7 @@ namespace ProfileServer.Data.Models
   /// </summary>
   public class HostedIdentity : IdentityBase
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Data.Models.HostedIdentity");
+    private static Logger log = new Logger("ProfileServer.Data.Models.HostedIdentity");
 
     /// <summary>Maximum number of bytes that profile image can occupy.</summary>
     public const int MaxProfileImageLengthBytes = 20 * 1024;

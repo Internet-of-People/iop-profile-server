@@ -1,5 +1,5 @@
-﻿using ProfileServer.Utils;
-using ProfileServerProtocol;
+﻿using IopCommon;
+using IopProtocol;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -16,7 +16,7 @@ namespace ProfileServer.Data.Models
   /// </summary>
   public abstract class IdentityBase 
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Data.Models.IdentityBase");
+    private static Logger log = new Logger("ProfileServer.Data.Models.IdentityBase");
 
     /// <summary>Maximum number of identities that a profile server can host.</summary>
     public const int MaxHostedIdentities = 20000;

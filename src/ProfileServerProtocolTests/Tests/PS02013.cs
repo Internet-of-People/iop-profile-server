@@ -1,5 +1,6 @@
-﻿using Google.Protobuf;
-using ProfileServerProtocol;
+﻿using IopCommon;
+using Google.Protobuf;
+using IopProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -20,7 +21,7 @@ namespace ProfileServerProtocolTests.Tests
   public class PS02013 : ProtocolTest
   {
     public const string TestName = "PS02013";
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocolTests.Tests." + TestName);
+    private static Logger log = new Logger("ProfileServerProtocolTests.Tests." + TestName);
 
     public override string Name { get { return TestName; } }
 
@@ -48,20 +49,20 @@ namespace ProfileServerProtocolTests.Tests
       Passed = false;
 
       ProtocolClient client1 = new ProtocolClient();
-      MessageBuilder mb1 = client1.MessageBuilder;
+      PsMessageBuilder mb1 = client1.MessageBuilder;
 
       // Second client will use the same identity as the first client.
       ProtocolClient client2 = new ProtocolClient(0, SemVer.V100, client1.GetIdentityKeys() );
-      MessageBuilder mb2 = client2.MessageBuilder;
+      PsMessageBuilder mb2 = client2.MessageBuilder;
       try
       {
         // Step 1
         await client1.ConnectAsync(ServerIp, ClNonCustomerPort, true);
         bool startConversationOk = await client1.StartConversationAsync();
 
-        Message requestMessage = mb1.CreateVerifyIdentityRequest(client1.Challenge);
+        PsProtocolMessage requestMessage = mb1.CreateVerifyIdentityRequest(client1.Challenge);
         await client1.SendMessageAsync(requestMessage);
-        Message responseMessage = await client1.ReceiveMessageAsync();
+        PsProtocolMessage responseMessage = await client1.ReceiveMessageAsync();
 
         bool idOk = responseMessage.Id == requestMessage.Id;
         bool statusOk = responseMessage.Response.Status == Status.Ok;

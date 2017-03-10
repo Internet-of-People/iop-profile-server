@@ -5,12 +5,10 @@
   },
 
   "dependencies": {
-    "ProfileServerProtocol": "1.0.0-*",
-    "ProfileServerCrypto": "1.0.0-*",
     "Microsoft.NETCore.App": {
       "version": "1.1.0"
     },
-    "NLog": "5.0.0-beta03",
+    "NLog": "5.0.0-beta06",
     "System.Runtime.InteropServices": "4.3.0",
     "Microsoft.EntityFrameworkCore.Sqlite": "1.1.0",
     "Microsoft.EntityFrameworkCore.Design": "1.1.0",
@@ -21,7 +19,12 @@
     "ImageSharp.Formats.Png": "1.0.0-alpha1-00051",
     "ImageSharp.Formats.Jpeg": "1.0.0-alpha1-00051",
     "ImageSharp.Processing": "1.0.0-alpha1-00051",
-    "ImageSharp.Drawing": "1.0.0-alpha1-00051"
+    "ImageSharp.Drawing": "1.0.0-alpha1-00051",
+    "IopCrypto": "1.0.0-*",
+    "IopProtocol": "1.0.0-*",
+    "IopServerCore": "1.0.0-*",
+    "IopCommon": "1.0.0-*",
+    "Google.Protobuf": "3.2.0"
   },
 
   "frameworks": {

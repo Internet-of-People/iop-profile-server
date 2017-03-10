@@ -4,20 +4,23 @@ using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Threading.Tasks;
-using ProfileServerProtocol;
+using IopProtocol;
 using System.Net;
 using System.Runtime.InteropServices;
 using ProfileServer.Kernel;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
-using ProfileServer.Utils;
 using ProfileServer.Data.Models;
 using Iop.Profileserver;
-using ProfileServerCrypto;
+using IopCrypto;
 using System.Security.Authentication;
 using ProfileServer.Data;
 using Microsoft.EntityFrameworkCore.Storage;
+using IopCommon;
+using ProfileServer.Kernel.Config;
+using IopServerCore.Data;
+using IopServerCore.Network;
 
 namespace ProfileServer.Network
 {
@@ -43,16 +46,13 @@ namespace ProfileServer.Network
   /// <summary>
   /// Incoming client class represents any kind of TCP client that connects to one of the profile server's TCP servers.
   /// </summary>
-  public class IncomingClient : ClientBase, IDisposable
+  public class IncomingClient : IncomingClientBase, IDisposable
   {   
     /// <summary>Maximum number of bytes that application service name can occupy.</summary>
     public const int MaxApplicationServiceNameLengthBytes = 32;
 
     /// <summary>Maximum number of application services that a client can have enabled within a session.</summary>
     public const int MaxClientApplicationServices = 50;
-
-    /// <summary>Maximal number of unconfirmed messages that one relay client can send to the other one.</summary>
-    public const int MaxUnfinishedRequests = 20;
 
 
     /// <summary>
@@ -62,33 +62,16 @@ namespace ProfileServer.Network
     public const int ProfileSearchResultCacheExpirationTimeSeconds = 180;
 
 
-    /// <summary>Role server assigned client identifier.</summary>
-    public ulong Id;
-
-    /// <summary>UTC time before next message has to come over the connection from this client or the profile server can close the connection due to inactivity.</summary>
-    public DateTime NextKeepAliveTime;
-
-    /// <summary>This is either TcpRoleServer.ClientKeepAliveIntervalSeconds for end user client device connections, 
-    /// or TcpRoleServer.ServerKeepAliveIntervalSeconds for server to server or unknown connections.</summary>
-    public int KeepAliveIntervalSeconds;
+    /// <summary>Protocol message builder.</summary>
+    private PsMessageBuilder messageBuilder;
+    /// <summary>Protocol message builder.</summary>
+    public PsMessageBuilder MessageBuilder { get { return messageBuilder; } }
 
 
     // Client Context Section
-    
+
     /// <summary>Current status of the conversation with the client.</summary>
     public ClientConversationStatus ConversationStatus;
-
-    /// <summary>Client's public key.</summary>
-    public byte[] PublicKey;
-
-    /// <summary>Client's public key hash.</summary>
-    public byte[] IdentityId;
-
-    /// <summary>Random data used for client's authentication.</summary>
-    public byte[] AuthenticationChallenge;
-
-    /// <summary>true if the network client represents identity hosted by the profile server that is checked-in, false otherwise.</summary>
-    public bool IsOurCheckedInClient;
 
     /// <summary>Client's application services available for the current session.</summary>
     public ApplicationServices ApplicationServices;
@@ -100,7 +83,6 @@ namespace ProfileServer.Network
     /// but this connection is not the one being relayed.
     /// </summary>
     public RelayConnection Relay;
-
 
 
     /// <summary>Lock object to protect access to profile search result cache objects.</summary>
@@ -132,13 +114,6 @@ namespace ProfileServer.Network
     // \Client Context Section
 
 
-    /// <summary>Server to which the client is connected to.</summary>
-    private TcpRoleServer server;
-
-    /// <summary>Component responsible for processing logic behind incoming messages.</summary>
-    private MessageProcessor messageProcessor;
-
-
     /// <summary>
     /// Creates the instance for a new TCP server client.
     /// </summary>
@@ -146,107 +121,47 @@ namespace ProfileServer.Network
     /// <param name="TcpClient">TCP client class that holds the connection and allows communication with the client.</param>
     /// <param name="Id">Unique identifier of the client's connection.</param>
     /// <param name="UseTls">true if the client is connected to the TLS port, false otherwise.</param>
-    /// <param name="KeepAliveIntervalSeconds">Number of seconds for the connection to this client to be without any message until the profile server can close it for inactivity.</param>
-    public IncomingClient(TcpRoleServer Server, TcpClient TcpClient, ulong Id, bool UseTls, int KeepAliveIntervalSeconds):
-      base(TcpClient, UseTls, Server.IdBase)
+    /// <param name="KeepAliveIntervalMs">Number of seconds for the connection to this client to be without any message until the profile server can close it for inactivity.</param>
+    /// <param name="LogPrefix">Prefix for log entries created by the client.</param>
+    public IncomingClient(TcpRoleServer<IncomingClient> Server, TcpClient TcpClient, ulong Id, bool UseTls, int KeepAliveIntervalMs, string LogPrefix) :
+      base(TcpClient, new MessageProcessor(Server, LogPrefix), Id, UseTls, KeepAliveIntervalMs, Server.IdBase, Server.ShutdownSignaling, LogPrefix)
     {
       this.Id = Id;
-      server = Server;
-      string logPrefix = string.Format("[{0}<=>{1}|{2}] ", server.EndPoint, RemoteEndPoint, Id.ToHex());
-      string logName = "ProfileServer.Network.IncomingClient";
-      log = new PrefixLogger(logName, logPrefix);
+      log = new Logger("ProfileServer.Network.IncomingClient", LogPrefix);
 
-      log.Trace("(UseTls:{0},KeepAliveIntervalSeconds:{1})", UseTls, KeepAliveIntervalSeconds);
+      log.Trace("(UseTls:{0},KeepAliveIntervalMs:{1})", UseTls, KeepAliveIntervalMs);
 
-      messageProcessor = new MessageProcessor(server, logPrefix);
-
-      this.KeepAliveIntervalSeconds = KeepAliveIntervalSeconds;
-      NextKeepAliveTime = DateTime.UtcNow.AddSeconds(this.KeepAliveIntervalSeconds);
+      messageBuilder = new PsMessageBuilder(Server.IdBase, new List<SemVer>() { SemVer.V100 }, Config.Configuration.Keys);
+      this.KeepAliveIntervalMs = KeepAliveIntervalMs;
+      NextKeepAliveTime = DateTime.UtcNow.AddMilliseconds(this.KeepAliveIntervalMs);
     
       ConversationStatus = ClientConversationStatus.NoConversation;
-      IsOurCheckedInClient = false;
 
-      ApplicationServices = new ApplicationServices(logPrefix);
-
-      log.Trace("(-)");
-    }
-
-    /// <summary>
-    /// Reads messages from the client stream and processes them in a loop until the client disconnects 
-    /// or until an action (such as a protocol violation) that leads to disconnecting of the client occurs.
-    /// </summary>
-    public async Task ReceiveMessageLoop()
-    {
-      log.Trace("()");
-
-      try
-      {
-        if (UseTls) 
-        {
-          SslStream sslStream = (SslStream)Stream;
-          await sslStream.AuthenticateAsServerAsync(Base.Configuration.TcpServerTlsCertificate, false, SslProtocols.Tls12, false);
-        }
-
-        RawMessageReader messageReader = new RawMessageReader(Stream);
-        while (!server.ShutdownSignaling.IsShutdown)
-        {
-          RawMessageResult rawMessage = await messageReader.ReceiveMessageAsync(server.ShutdownSignaling.ShutdownCancellationTokenSource.Token);
-          bool disconnect = rawMessage.Data == null;
-          bool protocolViolation = rawMessage.ProtocolViolation;
-          if (rawMessage.Data != null)
-          {
-            Message message = CreateMessageFromRawData(rawMessage.Data);
-            if (message != null) disconnect = !await messageProcessor.ProcessMessageAsync(this, message);
-            else protocolViolation = true;
-          }
-
-          if (protocolViolation)
-          {
-            await messageProcessor.SendProtocolViolation(this);
-            break;
-          }
-
-          if (disconnect)
-            break;
-        }
-      }
-      catch (Exception e)
-      {
-        log.Error("Exception occurred: {0}", e.ToString());
-      }
+      ApplicationServices = new ApplicationServices(LogPrefix);
 
       log.Trace("(-)");
     }
 
 
+    /// <summary>
+    /// Constructs ProtoBuf message from raw data read from the network stream.
+    /// </summary>
+    /// <param name="Data">Raw data to be decoded to the message.</param>
+    /// <returns>ProtoBuf message or null if the data do not represent a valid message.</returns>
+    public override IProtocolMessage CreateMessageFromRawData(byte[] Data)
+    {
+      return PsMessageBuilder.CreateMessageFromRawData(Data);
+    }
 
 
     /// <summary>
-    /// Sends a request message to the client over the open network stream and stores the request to the list of unfinished requests.
+    /// Converts an IoP Profile Server Network protocol message to a binary format.
     /// </summary>
-    /// <param name="Message">Message to send.</param>
-    /// <param name="Context">Caller's defined context to store information required for later response processing.</param>
-    /// <returns>true if the connection to the client should remain open, false otherwise.</returns>
-    public async Task<bool> SendMessageAndSaveUnfinishedRequestAsync(Message Message, object Context)
+    /// <param name="Data">IoP Profile Server Network protocol message.</param>
+    /// <returns>Binary representation of the message to be sent over the network.</returns>
+    public override byte[] MessageToByteArray(IProtocolMessage Data)
     {
-      log.Trace("()");
-      bool res = false;
-
-      UnfinishedRequest unfinishedRequest = new UnfinishedRequest(Message, Context);
-      if (AddUnfinishedRequest(unfinishedRequest))
-      {
-        res = await SendMessageInternalAsync(Message);
-        if (res)
-        {
-          // If the message was sent successfully to the target, we close the connection only in case it was a protocol violation error response.
-          if (Message.MessageTypeCase == Message.MessageTypeOneofCase.Response)
-            res = Message.Response.Status != Status.ErrorProtocolViolation;
-        }
-        else RemoveUnfinishedRequest(unfinishedRequest.RequestMessage.Id);
-      }
-
-      log.Trace("(-):{0}", res);
-      return res;
+      return PsMessageBuilder.MessageToByteArray(Data);
     }
 
 
@@ -254,11 +169,11 @@ namespace ProfileServer.Network
     /// Handles client disconnection. Destroys objects that are connected to this client 
     /// and frees the resources.
     /// </summary>
-    public async Task HandleDisconnect()
+    public override async Task HandleDisconnect()
     {
       log.Trace("()");
 
-      await EmptyStream();
+      await base.HandleDisconnect();
 
       if (Relay != null)
       {
@@ -275,89 +190,6 @@ namespace ProfileServer.Network
       }
 
       log.Trace("(-)");
-    }
-
-
-    /// <summary>
-    /// Adds unfinished request to the list of unfinished requests.
-    /// </summary>
-    /// <param name="Request">Request to add to the list.</param>
-    /// <returns>true if the function succeeds, false if the number of unfinished requests is over the limit.</returns>
-    public bool AddUnfinishedRequest(UnfinishedRequest Request)
-    {
-      log.Trace("(Request.RequestMessage.Id:{0})", Request.RequestMessage.Id);
-
-      bool res = false;
-      lock (unfinishedRequestsLock)
-      {
-        if (unfinishedRequests.Count < MaxUnfinishedRequests)
-        {
-          unfinishedRequests.Add(Request.RequestMessage.Id, Request);
-          res = true;
-        }
-      }
-
-      log.Trace("(-):{0},unfinishedRequests.Count={1}", res, unfinishedRequests.Count);
-      return res;
-    }
-
-    /// <summary>
-    /// Removes unfinished request from the list of unfinished requests.
-    /// </summary>
-    /// <param name="Id">Identifier of the unfinished request message to remove from the list.</param>
-    public bool RemoveUnfinishedRequest(uint Id)
-    {
-      log.Trace("(Id:{0})", Id);
-
-      bool res = false;
-      lock (unfinishedRequestsLock)
-      {
-        res = unfinishedRequests.Remove(Id);
-      }
-
-      log.Trace("(-):{0},unfinishedRequests.Count={1}", res, unfinishedRequests.Count);
-      return res;
-    }
-
-
-    /// <summary>
-    /// Finds an unfinished request message by its ID and removes it from the list.
-    /// </summary>
-    /// <param name="Id">Identifier of the message to find.</param>
-    /// <returns>Unfinished request with the given ID, or null if no such request is in the list.</returns>
-    public UnfinishedRequest GetAndRemoveUnfinishedRequest(uint Id)
-    {
-      log.Trace("(Id:{0})", Id);
-
-      UnfinishedRequest res = null;
-      lock (unfinishedRequestsLock)
-      {
-        if (unfinishedRequests.TryGetValue(Id, out res))
-          unfinishedRequests.Remove(Id);
-      }
-
-      log.Trace("(-):{0},unfinishedRequests.Count={1}", res != null ? "UnfinishedRequest" : "null", unfinishedRequests.Count);
-      return res;
-    }
-
-
-    /// <summary>
-    /// Finds all unfinished request message and removes them from the list.
-    /// </summary>
-    /// <returns>Unfinished request messages of the client.</returns>
-    public List<UnfinishedRequest> GetAndRemoveUnfinishedRequests()
-    {
-      log.Trace("()");
-
-      List<UnfinishedRequest> res = new List<UnfinishedRequest>();
-      lock (unfinishedRequestsLock)
-      {
-        res = unfinishedRequests.Values.ToList();
-        unfinishedRequests.Clear();
-      }
-
-      log.Trace("(-):*.Count={0}", res.Count);
-      return res;
     }
 
 
@@ -434,6 +266,7 @@ namespace ProfileServer.Network
       log.Trace("(-):*.Count={0}", res != null ? res.Count.ToString() : "N/A");
       return res;
     }
+
 
     /// <summary>
     /// Callback routine that is called once the profileSearchResultCacheExpirationTimer expires to delete cached search results.

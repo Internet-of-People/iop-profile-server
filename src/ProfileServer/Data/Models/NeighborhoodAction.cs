@@ -1,5 +1,5 @@
 ﻿using ProfileServer.Utils;
-using ProfileServerProtocol;
+using IopProtocol;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,6 +8,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using IopCommon;
 
 namespace ProfileServer.Data.Models
 {
@@ -77,7 +78,8 @@ namespace ProfileServer.Data.Models
   /// </summary>
   public class NeighborhoodAction
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Data.Models.NeighborhoodAction");
+    /// <summary>Class logger.</summary>
+    private static Logger log = new Logger("ProfileServer.Data.Models.NeighborhoodAction");
 
     /// <summary>Unique identifier of the action for ordering purposes.</summary>
     /// <remarks>This is index and key - see ProfileServer.Data.Context.OnModelCreating.</remarks>

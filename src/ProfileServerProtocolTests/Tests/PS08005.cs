@@ -1,6 +1,6 @@
 ﻿using Google.Protobuf;
-using ProfileServerCrypto;
-using ProfileServerProtocol;
+using IopCrypto;
+using IopProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -11,6 +11,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using IopCommon;
 
 namespace ProfileServerProtocolTests.Tests
 {
@@ -21,7 +22,7 @@ namespace ProfileServerProtocolTests.Tests
   public class PS08005 : ProtocolTest
   {
     public const string TestName = "PS08005";
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocolTests.Tests."+ TestName);
+    private static Logger log = new Logger("ProfileServerProtocolTests.Tests."+ TestName);
 
     public override string Name { get { return TestName; } }
 
@@ -61,7 +62,7 @@ namespace ProfileServerProtocolTests.Tests
       ProfileServer profileServer = null;
       try
       {
-        MessageBuilder mb = client.MessageBuilder;
+        PsMessageBuilder mb = client.MessageBuilder;
 
         // Step 1
         log.Trace("Step 1");
@@ -153,7 +154,7 @@ namespace ProfileServerProtocolTests.Tests
         foreach (IncomingServerMessage ism in psMessages)
         {
           if (ism.Role != ServerRole.ServerNeighbor) continue;
-          Message message = ism.IncomingMessage;
+          PsProtocolMessage message = ism.IncomingMessage;
 
           if ((message.MessageTypeCase == Message.MessageTypeOneofCase.Request)
             && (message.Request.ConversationTypeCase == Request.ConversationTypeOneofCase.ConversationRequest)
@@ -221,7 +222,7 @@ namespace ProfileServerProtocolTests.Tests
         foreach (IncomingServerMessage ism in psMessages)
         {
           if (ism.Role != ServerRole.ServerNeighbor) continue;
-          Message message = ism.IncomingMessage;
+          PsProtocolMessage message = ism.IncomingMessage;
 
           if ((message.MessageTypeCase == Message.MessageTypeOneofCase.Request)
             && (message.Request.ConversationTypeCase == Request.ConversationTypeOneofCase.ConversationRequest)
@@ -333,9 +334,9 @@ namespace ProfileServerProtocolTests.Tests
           await profileClient.ConnectAsync(ServerIp, (int)rolePorts[ServerRoleType.ClCustomer], true);
           bool ccheckInOk = await profileClient.CheckInAsync();
 
-          Message clientRequest = profileClient.MessageBuilder.CreateUpdateProfileRequest(null, changeItem.SetName ? changeItem.Name : null, changeItem.SetThumbnailImage ? profileClient.Profile.ProfileImage : null, changeItem.SetLocation ? profileClient.Profile.Location : null, changeItem.SetExtraData ? changeItem.ExtraData : null);
+          PsProtocolMessage clientRequest = profileClient.MessageBuilder.CreateUpdateProfileRequest(null, changeItem.SetName ? changeItem.Name : null, changeItem.SetThumbnailImage ? profileClient.Profile.ProfileImage : null, changeItem.SetLocation ? profileClient.Profile.Location : null, changeItem.SetExtraData ? changeItem.ExtraData : null);
           await profileClient.SendMessageAsync(clientRequest);
-          Message clientResponse = await profileClient.ReceiveMessageAsync();
+          PsProtocolMessage clientResponse = await profileClient.ReceiveMessageAsync();
 
           bool cidOk = clientResponse.Id == clientRequest.Id;
           bool cstatusOk = clientResponse.Response.Status == Status.Ok;
@@ -359,7 +360,7 @@ namespace ProfileServerProtocolTests.Tests
         foreach (IncomingServerMessage ism in psMessages)
         {
           if (ism.Role != ServerRole.ServerNeighbor) continue;
-          Message message = ism.IncomingMessage;
+          PsProtocolMessage message = ism.IncomingMessage;
 
           if ((message.MessageTypeCase == Message.MessageTypeOneofCase.Request)
             && (message.Request.ConversationTypeCase == Request.ConversationTypeOneofCase.ConversationRequest)
@@ -400,9 +401,9 @@ namespace ProfileServerProtocolTests.Tests
 
         await client.ConnectAsync(ServerIp, (int)rolePorts[ServerRoleType.SrNeighbor], true);
         bool verifyIdentityOk = await client.VerifyIdentityAsync();
-        Message request = mb.CreateStopNeighborhoodUpdatesRequest();
+        PsProtocolMessage request = mb.CreateStopNeighborhoodUpdatesRequest();
         await client.SendMessageAsync(request);
-        Message response = await client.ReceiveMessageAsync();
+        PsProtocolMessage response = await client.ReceiveMessageAsync();
 
         bool idOk = response.Id == request.Id;
         bool statusOk = response.Response.Status == Status.Ok;
@@ -492,9 +493,9 @@ namespace ProfileServerProtocolTests.Tests
           await profileClient.ConnectAsync(ServerIp, (int)rolePorts[ServerRoleType.ClCustomer], true);
           bool checkInOk = await profileClient.CheckInAsync();
 
-          Message clientRequest = profileClient.MessageBuilder.CreateUpdateProfileRequest(null, null, null, null, changeItem.ExtraData);
+          PsProtocolMessage clientRequest = profileClient.MessageBuilder.CreateUpdateProfileRequest(null, null, null, null, changeItem.ExtraData);
           await profileClient.SendMessageAsync(clientRequest);
-          Message clientResponse = await profileClient.ReceiveMessageAsync();
+          PsProtocolMessage clientResponse = await profileClient.ReceiveMessageAsync();
 
           bool cidOk = clientResponse.Id == clientRequest.Id;
           bool cstatusOk = clientResponse.Response.Status == Status.Ok;
@@ -521,7 +522,7 @@ namespace ProfileServerProtocolTests.Tests
         foreach (IncomingServerMessage ism in psMessages)
         {
           if (ism.Role != ServerRole.ServerNeighbor) continue;
-          Message message = ism.IncomingMessage;
+          PsProtocolMessage message = ism.IncomingMessage;
 
           if ((message.MessageTypeCase == Message.MessageTypeOneofCase.Request)
             && (message.Request.ConversationTypeCase == Request.ConversationTypeOneofCase.ConversationRequest)
@@ -598,8 +599,8 @@ namespace ProfileServerProtocolTests.Tests
 
 
         // Wait for update request.
-        Message serverRequestMessage = null;
-        Message clientResponseMessage = null;
+        PsProtocolMessage serverRequestMessage = null;
+        PsProtocolMessage clientResponseMessage = null;
         bool typeOk = false;
 
         List<SharedProfileAddItem> receivedItems = new List<SharedProfileAddItem>();
@@ -738,7 +739,7 @@ namespace ProfileServerProtocolTests.Tests
         foreach (IncomingServerMessage ism in psMessages)
         {
           if (ism.Role != ServerRole.ServerNeighbor) continue;
-          Message message = ism.IncomingMessage;
+          PsProtocolMessage message = ism.IncomingMessage;
 
           if ((message.MessageTypeCase == Message.MessageTypeOneofCase.Request)
             && (message.Request.ConversationTypeCase == Request.ConversationTypeOneofCase.ConversationRequest)

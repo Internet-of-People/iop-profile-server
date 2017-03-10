@@ -1,4 +1,4 @@
-﻿using ProfileServerProtocol;
+﻿using IopProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -9,6 +9,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using IopCommon;
 
 namespace ProfileServerProtocolTests.Tests
 {
@@ -19,7 +20,7 @@ namespace ProfileServerProtocolTests.Tests
   public class PS01005 : ProtocolTest
   {
     public const string TestName = "PS01005";
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocolTests.Tests." + TestName);
+    private static Logger log = new Logger("ProfileServerProtocolTests.Tests." + TestName);
 
     public override string Name { get { return TestName; } }
 
@@ -49,14 +50,14 @@ namespace ProfileServerProtocolTests.Tests
       ProtocolClient client = new ProtocolClient();
       try
       {
-        MessageBuilder mb = client.MessageBuilder;
+        PsMessageBuilder mb = client.MessageBuilder;
 
         // Step 1
         await client.ConnectAsync(ServerIp, PrimaryPort, false);
 
-        Message requestMessage = client.CreateStartConversationRequest();
+        PsProtocolMessage requestMessage = client.CreateStartConversationRequest();
         await client.SendMessageAsync(requestMessage);
-        Message responseMessage = await client.ReceiveMessageAsync();
+        PsProtocolMessage responseMessage = await client.ReceiveMessageAsync();
 
         bool idOk = responseMessage.Id == requestMessage.Id;
         bool statusOk = responseMessage.Response.Status == Status.Ok;

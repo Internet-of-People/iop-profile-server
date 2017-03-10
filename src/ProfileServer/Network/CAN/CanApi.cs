@@ -2,10 +2,9 @@
 using Iop.Profileserver;
 using Newtonsoft.Json;
 using ProfileServer.Kernel;
-using ProfileServer.Utils;
-using ProfileServerCrypto;
-using ProfileServerProtocol;
-using ProfileServerProtocol.Multiformats;
+using IopCrypto;
+using IopProtocol;
+using IopCommon.Multiformats;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -14,6 +13,9 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using IopCommon;
+using IopServerCore.Kernel;
+using ProfileServer.Kernel.Config;
 
 namespace ProfileServer.Network.CAN
 {
@@ -22,10 +24,23 @@ namespace ProfileServer.Network.CAN
   /// </summary>
   public class CanApi : Component
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Network.ContentAddressNetwork.CanApi");
+    /// <summary>Name of the component.</summary>
+    public const string ComponentName = "Network.ContentAddressNetwork.CanApi";
+
+    /// <summary>Class logger.</summary>
+    private static Logger log = new Logger("ProfileServer." + ComponentName);
 
     /// <summary>URL of the CAN API gateway.</summary>
     private static string apiUrl;
+
+    
+    /// <summary>
+    /// Initializes the component.
+    /// </summary>
+    public CanApi():
+      base(ComponentName)
+    {
+    }
 
 
     public override bool Init()
@@ -36,7 +51,7 @@ namespace ProfileServer.Network.CAN
 
       try
       {
-        apiUrl = string.Format("http://{0}:{1}/api/v0/", Base.Configuration.CanEndPoint.Address, Base.Configuration.CanEndPoint.Port);
+        apiUrl = string.Format("http://{0}:{1}/api/v0/", Config.Configuration.CanEndPoint.Address, Config.Configuration.CanEndPoint.Port);
 
         res = true;
         Initialized = true;
@@ -309,7 +324,7 @@ namespace ProfileServer.Network.CAN
   /// </summary>
   public class CanUploadResult : CanApiResult
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Network.ContentAddressNetwork.CanUploadResult");
+    private static Logger log = new Logger("ProfileServer.Network.ContentAddressNetwork.CanUploadResult");
 
     /// <summary>
     /// Structure of the JSON response of CAN '/api/v0/add' call.
@@ -391,7 +406,7 @@ namespace ProfileServer.Network.CAN
   /// </summary>
   public class CanDeleteResult : CanApiResult
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Network.ContentAddressNetwork.CanDeleteResult");
+    private static Logger log = new Logger("ProfileServer.Network.ContentAddressNetwork.CanDeleteResult");
 
     /// <summary>
     /// Structure of the JSON response of CAN '/api/v0/pin/rm' call.
@@ -466,7 +481,7 @@ namespace ProfileServer.Network.CAN
   /// </summary>
   public class CanRefreshIpnsResult : CanApiResult
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Network.ContentAddressNetwork.CanRefreshIpnsResult");
+    private static Logger log = new Logger("ProfileServer.Network.ContentAddressNetwork.CanRefreshIpnsResult");
 
     /// <summary>
     /// Structure of the JSON response of CAN '/api/v0/name/upload' call.

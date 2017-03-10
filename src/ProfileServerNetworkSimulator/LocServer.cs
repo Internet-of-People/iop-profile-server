@@ -1,5 +1,5 @@
 ﻿using Iop.Locnet;
-using ProfileServerProtocol;
+using IopProtocol;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -44,7 +44,7 @@ namespace ProfileServerNetworkSimulator
     private bool connectedProfileServerWantsUpdates;
 
     /// <summary>If profile server is connected, this is its message builder.</summary>
-    private MessageBuilderLocNet connectedProfileServerMessageBuilder;
+    private LocMessageBuilder connectedProfileServerMessageBuilder;
 
     /// <summary>Event that is set when acceptThread is not running.</summary>
     private ManualResetEvent acceptThreadFinished = new ManualResetEvent(true);
@@ -223,7 +223,7 @@ namespace ProfileServerNetworkSimulator
       log.Debug("(Client.Client.RemoteEndPoint:{0})", Client.Client.RemoteEndPoint);
 
       connectedProfileServer = Client;
-      connectedProfileServerMessageBuilder = new MessageBuilderLocNet(0, new List<SemVer>() { SemVer.V100 });
+      connectedProfileServerMessageBuilder = new LocMessageBuilder(0, new List<SemVer>() { SemVer.V100 });
 
       await ReceiveMessageLoop(Client, connectedProfileServerMessageBuilder);
 
@@ -243,7 +243,7 @@ namespace ProfileServerNetworkSimulator
     /// </summary>
     /// <param name="Client">TCP client.</param>
     /// <param name="MessageBuilder">Client's message builder.</param>
-    public async Task ReceiveMessageLoop(TcpClient Client, MessageBuilderLocNet MessageBuilder)
+    public async Task ReceiveMessageLoop(TcpClient Client, LocMessageBuilder MessageBuilder)
     {
       log.Trace("()");
 
@@ -258,7 +258,7 @@ namespace ProfileServerNetworkSimulator
           bool protocolViolation = rawMessage.ProtocolViolation;
           if (rawMessage.Data != null)
           {
-            Message message = CreateMessageFromRawData(rawMessage.Data);
+            LocProtocolMessage message = (LocProtocolMessage)LocMessageBuilder.CreateMessageFromRawData(rawMessage.Data);
             if (message != null) disconnect = !await ProcessMessageAsync(Client, MessageBuilder, message);
             else protocolViolation = true;
           }
@@ -282,31 +282,6 @@ namespace ProfileServerNetworkSimulator
     }
 
 
-    /// <summary>
-    /// Constructs ProtoBuf message from raw data read from the network stream.
-    /// </summary>
-    /// <param name="Data">Raw data to be decoded to the message.</param>
-    /// <returns>ProtoBuf message or null if the data do not represent a valid message.</returns>
-    public Message CreateMessageFromRawData(byte[] Data)
-    {
-      log.Trace("()");
-
-      Message res = null;
-      try
-      {
-        res = MessageWithHeader.Parser.ParseFrom(Data).Body;
-        log.Trace("Received message:\n{0}", res.ToString());
-      }
-      catch (Exception e)
-      {
-        log.Warn("Exception occurred, connection to the client will be closed: {0}", e.ToString());
-        // Connection will be closed in ReceiveMessageLoop.
-      }
-
-      log.Trace("(-):{0}", res != null ? "Message" : "null");
-      return res;
-    }
-
 
     /// <summary>
     /// Sends ERROR_PROTOCOL_VIOLATION to client with message ID set to 0x0BADC0DE.
@@ -314,8 +289,8 @@ namespace ProfileServerNetworkSimulator
     /// <param name="Client">Client to send the error to.</param>
     public async Task SendProtocolViolation(TcpClient Client)
     {
-      MessageBuilderLocNet mb = new MessageBuilderLocNet(0, new List<SemVer>() { SemVer.V100 });
-      Message response = mb.CreateErrorProtocolViolationResponse(new Message() { Id = 0x0BADC0DE });
+      LocMessageBuilder mb = new LocMessageBuilder(0, new List<SemVer>() { SemVer.V100 });
+      LocProtocolMessage response = mb.CreateErrorProtocolViolationResponse(new LocProtocolMessage(new Message() { Id = 0x0BADC0DE }));
 
       await SendMessageAsync(Client, response);
     }
@@ -328,7 +303,7 @@ namespace ProfileServerNetworkSimulator
     /// <param name="MessageBuilder">Client's message builder.</param>
     /// <param name="IncomingMessage">Full ProtoBuf message to be processed.</param>
     /// <returns>true if the conversation with the client should continue, false if a protocol violation error occurred and the client should be disconnected.</returns>
-    public async Task<bool> ProcessMessageAsync(TcpClient Client, MessageBuilderLocNet MessageBuilder, Message IncomingMessage)
+    public async Task<bool> ProcessMessageAsync(TcpClient Client, LocMessageBuilder MessageBuilder, LocProtocolMessage IncomingMessage)
     {
       bool res = false;
       log.Debug("()");
@@ -339,7 +314,7 @@ namespace ProfileServerNetworkSimulator
         {
           case Message.MessageTypeOneofCase.Request:
             {
-              Message responseMessage = MessageBuilder.CreateErrorProtocolViolationResponse(IncomingMessage);
+              LocProtocolMessage responseMessage = MessageBuilder.CreateErrorProtocolViolationResponse(IncomingMessage);
               Request request = IncomingMessage.Request;
 
               bool setKeepAlive = false;
@@ -383,7 +358,14 @@ namespace ProfileServerNetworkSimulator
                 // Send response to client.
                 res = await SendMessageAsync(Client, responseMessage);
 
-                if (setKeepAlive)
+                if (res)
+                {
+                  // If the message was sent successfully to the target, we close the connection only in case of protocol violation error.
+                  if (responseMessage.MessageTypeCase == Message.MessageTypeOneofCase.Response)
+                    res = responseMessage.Response.Status != Status.ErrorProtocolViolation;
+                }
+
+                if (res && setKeepAlive)
                 {
                   connectedProfileServerWantsUpdates = true;
                   log.Debug("Profile server '{0}' is now connected to its LOC server and waiting for updates.", profileServer.Name);
@@ -458,17 +440,11 @@ namespace ProfileServerNetworkSimulator
     /// <param name="Client">TCP client.</param>
     /// <param name="Message">Message to send.</param>
     /// <returns>true if the connection to the client should remain open, false otherwise.</returns>
-    public async Task<bool> SendMessageAsync(TcpClient Client, Message Message)
+    public async Task<bool> SendMessageAsync(TcpClient Client, LocProtocolMessage Message)
     {
       log.Trace("()");
 
       bool res = await SendMessageInternalAsync(Client, Message);
-      if (res)
-      {
-        // If the message was sent successfully to the target, we close the connection only in case of protocol violation error.
-        if (Message.MessageTypeCase == Message.MessageTypeOneofCase.Response)
-          res = Message.Response.Status != Status.ErrorProtocolViolation;
-      }
 
       log.Trace("(-):{0}", res);
       return res;
@@ -481,7 +457,7 @@ namespace ProfileServerNetworkSimulator
     /// <param name="Client">TCP client.</param>
     /// <param name="Message">Message to send.</param>
     /// <returns>true if the message was sent successfully to the target recipient.</returns>
-    private async Task<bool> SendMessageInternalAsync(TcpClient Client, Message Message)
+    private async Task<bool> SendMessageInternalAsync(TcpClient Client, LocProtocolMessage Message)
     {
       log.Trace("()");
 
@@ -489,7 +465,7 @@ namespace ProfileServerNetworkSimulator
 
       string msgStr = Message.ToString();
       log.Trace("Sending message:\n{0}", msgStr);
-      byte[] responseBytes = ProtocolHelper.GetMessageBytes(Message);
+      byte[] responseBytes = LocMessageBuilder.MessageToByteArray(Message);
 
       await StreamWriteLock.WaitAsync();
       try
@@ -526,11 +502,11 @@ namespace ProfileServerNetworkSimulator
     /// <param name="RequestMessage">Full request message.</param>
     /// <param name="KeepAlive">This is set to true if KeepAliveAndSendUpdates in the request was set.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public Message ProcessMessageGetNeighbourNodesByDistanceLocalRequest(TcpClient Client, MessageBuilderLocNet MessageBuilder, Message RequestMessage, out bool KeepAlive)
+    public LocProtocolMessage ProcessMessageGetNeighbourNodesByDistanceLocalRequest(TcpClient Client, LocMessageBuilder MessageBuilder, LocProtocolMessage RequestMessage, out bool KeepAlive)
     {
       log.Trace("()");
 
-      Message res = null;
+      LocProtocolMessage res = null;
 
       GetNeighbourNodesByDistanceLocalRequest getNeighbourNodesByDistanceLocalRequest = RequestMessage.Request.LocalService.GetNeighbourNodes;
       KeepAlive = getNeighbourNodesByDistanceLocalRequest.KeepAliveAndSendUpdates;
@@ -607,7 +583,7 @@ namespace ProfileServerNetworkSimulator
         if (changes.Count > 0)
         {
           log.Debug("Sending {0} neighborhood changes to profile server '{1}'.", changes.Count, profileServer.Name);
-          Message message = connectedProfileServerMessageBuilder.CreateNeighbourhoodChangedNotificationRequest(changes);
+          LocProtocolMessage message = connectedProfileServerMessageBuilder.CreateNeighbourhoodChangedNotificationRequest(changes);
           res = SendMessageAsync(connectedProfileServer, message).Result;
         }
         else
@@ -704,7 +680,7 @@ namespace ProfileServerNetworkSimulator
         if (changes.Count > 0)
         {
           log.Debug("Sending {0} neighborhood changes to profile server '{1}'.", changes.Count, profileServer.Name);
-          Message message = connectedProfileServerMessageBuilder.CreateNeighbourhoodChangedNotificationRequest(changes);
+          LocProtocolMessage message = connectedProfileServerMessageBuilder.CreateNeighbourhoodChangedNotificationRequest(changes);
           res = SendMessageAsync(connectedProfileServer, message).Result;
         }
         else
@@ -734,11 +710,11 @@ namespace ProfileServerNetworkSimulator
     /// <param name="MessageBuilder">Client's message builder.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public Message ProcessMessageRegisterServiceRequest(TcpClient Client, MessageBuilderLocNet MessageBuilder, Message RequestMessage)
+    public LocProtocolMessage ProcessMessageRegisterServiceRequest(TcpClient Client, LocMessageBuilder MessageBuilder, LocProtocolMessage RequestMessage)
     {
       log.Trace("()");
 
-      Message res = MessageBuilder.CreateRegisterServiceResponse(RequestMessage);
+      LocProtocolMessage res = MessageBuilder.CreateRegisterServiceResponse(RequestMessage);
 
       RegisterServiceRequest registerServiceRequest = RequestMessage.Request.LocalService.RegisterService;
 
@@ -761,11 +737,11 @@ namespace ProfileServerNetworkSimulator
     /// <param name="MessageBuilder">Client's message builder.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public Message ProcessMessageDeregisterServiceRequest(TcpClient Client, MessageBuilderLocNet MessageBuilder, Message RequestMessage)
+    public LocProtocolMessage ProcessMessageDeregisterServiceRequest(TcpClient Client, LocMessageBuilder MessageBuilder, LocProtocolMessage RequestMessage)
     {
       log.Trace("()");
 
-      Message res = MessageBuilder.CreateDeregisterServiceResponse(RequestMessage);
+      LocProtocolMessage res = MessageBuilder.CreateDeregisterServiceResponse(RequestMessage);
 
       DeregisterServiceRequest deregisterServiceRequest = RequestMessage.Request.LocalService.DeregisterService;
       profileServer.Uninitialize();

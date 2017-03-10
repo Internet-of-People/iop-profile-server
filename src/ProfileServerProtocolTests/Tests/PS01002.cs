@@ -1,4 +1,4 @@
-﻿using ProfileServerProtocol;
+﻿using IopProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -9,6 +9,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using IopCommon;
 
 namespace ProfileServerProtocolTests.Tests
 {
@@ -19,7 +20,7 @@ namespace ProfileServerProtocolTests.Tests
   public class PS01002 : ProtocolTest
   {
     public const string TestName = "PS01002";
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocolTests.Tests." + TestName);
+    private static Logger log = new Logger("ProfileServerProtocolTests.Tests." + TestName);
 
     public override string Name { get { return TestName; } }
 
@@ -49,18 +50,18 @@ namespace ProfileServerProtocolTests.Tests
       ProtocolClient client = new ProtocolClient();
       try
       {
-        MessageBuilder mb = client.MessageBuilder;
+        PsMessageBuilder mb = client.MessageBuilder;
 
         // Step 1
         await client.ConnectAsync(ServerIp, PrimaryPort, false);
 
         byte[] payload = Encoding.UTF8.GetBytes("Hello");
-        Message requestMessage = mb.CreatePingRequest(payload);
+        PsProtocolMessage requestMessage = mb.CreatePingRequest(payload);
         requestMessage.Request.SingleRequest.Version = ProtocolHelper.ByteArrayToByteString(new byte[] { 1, 0 });
 
         await client.SendMessageAsync(requestMessage);
 
-        Message responseMessage = await client.ReceiveMessageAsync();
+        PsProtocolMessage responseMessage = await client.ReceiveMessageAsync();
 
         bool idOk = responseMessage.Id == requestMessage.Id;
         bool statusOk = responseMessage.Response.Status == Status.ErrorProtocolViolation;

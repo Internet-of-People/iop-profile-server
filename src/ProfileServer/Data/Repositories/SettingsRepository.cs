@@ -1,4 +1,5 @@
-﻿using ProfileServer.Data.Models;
+﻿using IopServerCore.Data;
+using ProfileServer.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace ProfileServer.Data.Repositories
   /// <summary>
   /// Database key-value repository for profile server settings.
   /// </summary>
-  public class SettingsRepository : GenericRepository<Setting>
+  public class SettingsRepository : GenericRepository<Context, Setting>
   {
     /// <summary>
     /// Creates instance of the setting repository.

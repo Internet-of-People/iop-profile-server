@@ -1,7 +1,8 @@
 ﻿using Google.Protobuf;
 using Iop.Profileserver;
-using ProfileServerCrypto;
-using ProfileServerProtocol;
+using IopCommon;
+using IopCrypto;
+using IopProtocol;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -507,7 +508,7 @@ namespace ProfileServerNetworkSimulator
     /// <param name="NetworkId">Profile server's network identifier.</param>
     public void SetNetworkId(byte[] NetworkId)
     {
-      log.Trace("(NetworkId:'{0}')", Crypto.ToHex(NetworkId));
+      log.Trace("(NetworkId:'{0}')", NetworkId.ToHex());
 
       List<ProfileServer> serversToNotify = null;
       lock (internalLock)
@@ -562,7 +563,7 @@ namespace ProfileServerNetworkSimulator
         res = networkId;
       }
 
-      log.Trace("(-):{0}", res != null ? Crypto.ToHex(res) : "null");
+      log.Trace("(-):{0}", res != null ? res.ToHex() : "null");
       return res;
     }
 
@@ -889,7 +890,7 @@ namespace ProfileServerNetworkSimulator
         LocationLatitude = this.location.Latitude,
         LocationLongitude = this.location.Longitude,
         Name = this.name,
-        NetworkId = Crypto.ToHex(this.networkId),
+        NetworkId = this.networkId.ToHex(),
         PrimaryInterfacePort = this.primaryInterfacePort,
         ServerNeighborInterfacePort = this.serverNeighborInterfacePort        
       };
@@ -912,7 +913,7 @@ namespace ProfileServerNetworkSimulator
       res.clientNonCustomerInterfacePort = Snapshot.ClientNonCustomerInterfacePort;
       res.ipAddress = IPAddress.Parse(Snapshot.IpAddress);
       res.locPort = Snapshot.LocPort;
-      res.networkId = Crypto.FromHex(Snapshot.NetworkId);
+      res.networkId = Snapshot.NetworkId.FromHex();
       res.primaryInterfacePort = Snapshot.PrimaryInterfacePort;
       res.serverNeighborInterfacePort = Snapshot.ServerNeighborInterfacePort;
       res.instanceDirectory = res.GetInstanceDirectoryName();

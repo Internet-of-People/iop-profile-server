@@ -6,19 +6,21 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
-using ProfileServerProtocol;
+using IopProtocol;
 using ProfileServer.Network;
-using ProfileServer.Utils;
 using Microsoft.EntityFrameworkCore.Storage;
+using IopCommon;
+using IopServerCore.Data;
 
 namespace ProfileServer.Data.Repositories
 {
   /// <summary>
   /// Repository of profile server followers.
   /// </summary>
-  public class FollowerRepository : GenericRepository<Follower>
+  public class FollowerRepository : GenericRepository<Context, Follower>
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Data.Repositories.FollowerRepository");
+    /// <summary>Class logger.</summary>
+    private static Logger log = new Logger("ProfileServer.Data.Repositories.FollowerRepository");
 
 
     /// <summary>

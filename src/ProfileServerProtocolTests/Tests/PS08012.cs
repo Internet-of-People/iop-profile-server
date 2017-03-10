@@ -1,6 +1,7 @@
-﻿using Google.Protobuf;
-using ProfileServerCrypto;
-using ProfileServerProtocol;
+﻿using IopCommon;
+using Google.Protobuf;
+using IopCrypto;
+using IopProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -21,7 +22,7 @@ namespace ProfileServerProtocolTests.Tests
   public class PS08012 : ProtocolTest
   {
     public const string TestName = "PS08012";
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocolTests.Tests." + TestName);
+    private static Logger log = new Logger("ProfileServerProtocolTests.Tests." + TestName);
 
     public override string Name { get { return TestName; } }
 
@@ -61,7 +62,7 @@ namespace ProfileServerProtocolTests.Tests
       ProfileServer profileServer = null;
       try
       {
-        MessageBuilder mb = client.MessageBuilder;
+        PsMessageBuilder mb = client.MessageBuilder;
 
         // Step 1
         log.Trace("Step 1");
@@ -149,7 +150,7 @@ namespace ProfileServerProtocolTests.Tests
           foreach (IncomingServerMessage ism in psMessages)
           {
             if (ism.Role != ServerRole.ServerNeighbor) continue;
-            Message message = ism.IncomingMessage;
+            PsProtocolMessage message = ism.IncomingMessage;
 
             if ((message.MessageTypeCase == Message.MessageTypeOneofCase.Request)
               && (message.Request.ConversationTypeCase == Request.ConversationTypeOneofCase.ConversationRequest)

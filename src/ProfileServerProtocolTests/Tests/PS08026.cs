@@ -1,6 +1,7 @@
-﻿using Google.Protobuf;
-using ProfileServerCrypto;
-using ProfileServerProtocol;
+﻿using IopCommon;
+using Google.Protobuf;
+using IopCrypto;
+using IopProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -21,7 +22,7 @@ namespace ProfileServerProtocolTests.Tests
   public class PS08026 : ProtocolTest
   {
     public const string TestName = "PS08026";
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocolTests.Tests." + TestName);
+    private static Logger log = new Logger("ProfileServerProtocolTests.Tests." + TestName);
 
     public override string Name { get { return TestName; } }
 
@@ -59,8 +60,8 @@ namespace ProfileServerProtocolTests.Tests
       ProfileServer profileServer = null;
       try
       {
-        MessageBuilder mb1 = client1.MessageBuilder;
-        MessageBuilder mb2 = client2.MessageBuilder;
+        PsMessageBuilder mb1 = client1.MessageBuilder;
+        PsMessageBuilder mb2 = client2.MessageBuilder;
 
         // Step 1
         log.Trace("Step 1");
@@ -106,18 +107,18 @@ namespace ProfileServerProtocolTests.Tests
         bool verifyIdentityOk = await client1.VerifyIdentityAsync();
 
         // Start neighborhood initialization process.
-        Message requestMessage = mb1.CreateStartNeighborhoodInitializationRequest((uint)profileServer.PrimaryPort, (uint)profileServer.ServerNeighborPort);
+        PsProtocolMessage requestMessage = mb1.CreateStartNeighborhoodInitializationRequest((uint)profileServer.PrimaryPort, (uint)profileServer.ServerNeighborPort);
         await client1.SendMessageAsync(requestMessage);
 
-        Message responseMessage = await client1.ReceiveMessageAsync();
+        PsProtocolMessage responseMessage = await client1.ReceiveMessageAsync();
         bool idOk = responseMessage.Id == requestMessage.Id;
         bool statusOk = responseMessage.Response.Status == Status.Ok;
         bool startNeighborhoodInitializationOk = idOk && statusOk;
 
 
         // Wait for update request.
-        Message serverRequestMessage = null;
-        Message clientResponseMessage = null;
+        PsProtocolMessage serverRequestMessage = null;
+        PsProtocolMessage clientResponseMessage = null;
 
         List<SharedProfileAddItem> receivedItems = new List<SharedProfileAddItem>();
         bool error = false;
@@ -236,7 +237,7 @@ namespace ProfileServerProtocolTests.Tests
         foreach (IncomingServerMessage ism in psMessages)
         {
           if (ism.Role != ServerRole.ServerNeighbor) continue;
-          Message message = ism.IncomingMessage;
+          PsProtocolMessage message = ism.IncomingMessage;
 
           if ((message.MessageTypeCase == Message.MessageTypeOneofCase.Request)
             && (message.Request.ConversationTypeCase == Request.ConversationTypeOneofCase.ConversationRequest)

@@ -1,4 +1,4 @@
-﻿using ProfileServerCrypto;
+﻿using IopCrypto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using Iop.Profileserver;
-using ProfileServerProtocol;
+using IopProtocol;
 
 namespace ProfileServerProtocolTests
 {
@@ -44,7 +44,7 @@ namespace ProfileServerProtocolTests
     public ServerRole Role;
 
     /// <summary>Received message itself.</summary>
-    public Message IncomingMessage;
+    public PsProtocolMessage IncomingMessage;
 
     /// <summary>Connected client that sent the message or null if the client has been disconnected.</summary>
     public IncomingClient Client;
@@ -387,7 +387,7 @@ namespace ProfileServerProtocolTests
     /// Adds a new message to the message list.
     /// </summary>
     /// <param name="IncomingMessage">New message to add to the message list.</param>
-    public void AddMessage(Message IncomingMessage, ServerRole Role, IncomingClient Client)
+    public void AddMessage(PsProtocolMessage IncomingMessage, ServerRole Role, IncomingClient Client)
     {
       log.Trace("()");
 
@@ -462,7 +462,7 @@ namespace ProfileServerProtocolTests
           {
             if (!Role.HasFlag(ism.Role)) continue;
 
-            Message message = ism.IncomingMessage;
+            PsProtocolMessage message = ism.IncomingMessage;
             if (message.MessageTypeCase != Message.MessageTypeOneofCase.Request) continue;
 
             Request request = message.Request;
@@ -505,7 +505,7 @@ namespace ProfileServerProtocolTests
     /// <param name="RequestMessage">Request message for which corresponding response we are waiting for.</param>
     /// <param name="ClearMessageList">If set to true, the message list will be cleared once the wait is finished.</param>
     /// <returns>Message the profile server received.</returns>
-    public async Task<IncomingServerMessage> WaitForResponse(ServerRole Role, Message RequestMessage, bool ClearMessageList = true)
+    public async Task<IncomingServerMessage> WaitForResponse(ServerRole Role, PsProtocolMessage RequestMessage, bool ClearMessageList = true)
     {
       log.Trace("()");
       IncomingServerMessage res = null;
@@ -518,7 +518,7 @@ namespace ProfileServerProtocolTests
           {
             if (!Role.HasFlag(ism.Role)) continue;
 
-            Message message = ism.IncomingMessage;
+            PsProtocolMessage message = ism.IncomingMessage;
             if (message.MessageTypeCase != Message.MessageTypeOneofCase.Response) continue;
 
             if (message.Id != RequestMessage.Id) continue;
@@ -554,12 +554,12 @@ namespace ProfileServerProtocolTests
     /// </summary>
     /// <param name="Client">Client connected to the profile server, to which the message should be sent.</param>
     /// <returns>Message that was sent to the profile server, or null if the function failed.</returns>
-    public async Task<Message> SendFinishNeighborhoodInitializationRequest(IncomingClient Client)
+    public async Task<PsProtocolMessage> SendFinishNeighborhoodInitializationRequest(IncomingClient Client)
     {
       log.Trace("()");
 
-      Message res = null;
-      Message request = Client.MessageBuilder.CreateFinishNeighborhoodInitializationRequest();
+      PsProtocolMessage res = null;
+      PsProtocolMessage request = Client.MessageBuilder.CreateFinishNeighborhoodInitializationRequest();
       if (await Client.SendMessageAndSaveUnfinishedRequestAsync(request, null))
         res = request;
 
@@ -574,12 +574,12 @@ namespace ProfileServerProtocolTests
     /// <param name="Client">Client connected to the profile server, to which the message should be sent.</param>
     /// <param name="UpdateItems">List of update items to send to the client.</param>
     /// <returns>Message that was sent to the profile server, or null if the function failed.</returns>
-    public async Task<Message> SendNeighborhoodSharedProfileUpdateRequest(IncomingClient Client, List<SharedProfileUpdateItem> UpdateItems)
+    public async Task<PsProtocolMessage> SendNeighborhoodSharedProfileUpdateRequest(IncomingClient Client, List<SharedProfileUpdateItem> UpdateItems)
     {
       log.Trace("()");
 
-      Message res = null;
-      Message request = Client.MessageBuilder.CreateNeighborhoodSharedProfileUpdateRequest(UpdateItems);
+      PsProtocolMessage res = null;
+      PsProtocolMessage request = Client.MessageBuilder.CreateNeighborhoodSharedProfileUpdateRequest(UpdateItems);
       if (await Client.SendMessageAndSaveUnfinishedRequestAsync(request, null))
         res = request;
 

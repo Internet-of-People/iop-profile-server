@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IopCommon;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -49,7 +50,7 @@ namespace ProfileServerProtocolTests
   /// </summary>
   public abstract class ProtocolTest
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocolTests.Tests.ProtocolTest");
+    private static Logger log = new Logger("ProfileServerProtocolTests.Tests.ProtocolTest");
 
     /// <summary>Name of the test.</summary>
     public abstract string Name { get; }

@@ -1,11 +1,13 @@
 ﻿using ProfileServer.Utils;
-using ProfileServerCrypto;
+using IopCrypto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
+using IopCommon;
+using IopProtocol;
 
 namespace UnitTests
 {
@@ -101,7 +103,11 @@ namespace UnitTests
       };
 
       foreach (string input in inputs)
-        Assert.False(RegexTypeValidator.ValidateProfileSearchRegex(input));
+      {
+        bool validLength = (Encoding.UTF8.GetByteCount(input) <= PsMessageBuilder.MaxProfileSearchExtraDataLengthBytes);
+        if (validLength)
+          Assert.False(RegexTypeValidator.ValidateProfileSearchRegex(input));
+      }
     }
 
 

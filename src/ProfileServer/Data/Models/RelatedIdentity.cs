@@ -1,5 +1,5 @@
 ﻿using ProfileServer.Utils;
-using ProfileServerProtocol;
+using IopProtocol;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,6 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
+using IopCommon;
 
 namespace ProfileServer.Data.Models
 {
@@ -16,7 +17,8 @@ namespace ProfileServer.Data.Models
   /// </summary>
   public class RelatedIdentity
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Data.Models.RelatedIdentity");
+    /// <summary>Class logger.</summary>
+    private static Logger log = new Logger("ProfileServer.Data.Models.RelatedIdentity");
 
     /// <summary>
     /// Maximum number of relations that an identity is allowed to have. This is protocol limit. 

@@ -1,6 +1,7 @@
-﻿using Google.Protobuf;
-using ProfileServerCrypto;
-using ProfileServerProtocol;
+﻿using IopCommon;
+using Google.Protobuf;
+using IopCrypto;
+using IopProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -21,7 +22,7 @@ namespace ProfileServerProtocolTests.Tests
   public class PS06004 : ProtocolTest
   {
     public const string TestName = "PS06004";
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocolTests.Tests." + TestName);
+    private static Logger log = new Logger("ProfileServerProtocolTests.Tests." + TestName);
 
     public override string Name { get { return TestName; } }
 
@@ -50,7 +51,7 @@ namespace ProfileServerProtocolTests.Tests
       ProtocolClient client = new ProtocolClient();
       try
       {
-        MessageBuilder mb = client.MessageBuilder;
+        PsMessageBuilder mb = client.MessageBuilder;
 
         // Step 1
         log.Trace("Step 1");
@@ -65,10 +66,10 @@ namespace ProfileServerProtocolTests.Tests
         bool startConversationOk = await client.StartConversationAsync();
 
         // Search profile requests.
-        Message requestMessage = mb.CreateProfileSearchRequest(null, null, null, null, 0, 0, 1000, false, true);
+        PsProtocolMessage requestMessage = mb.CreateProfileSearchRequest(null, null, null, null, 0, 0, 1000, false, true);
         await client.SendMessageAsync(requestMessage);
 
-        Message responseMessage = await client.ReceiveMessageAsync();
+        PsProtocolMessage responseMessage = await client.ReceiveMessageAsync();
         bool idOk = responseMessage.Id == requestMessage.Id;
         bool statusOk = responseMessage.Response.Status == Status.ErrorInvalidValue;
         bool detailsOk = responseMessage.Response.Details == "maxResponseRecordCount";

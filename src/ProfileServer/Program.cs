@@ -1,5 +1,5 @@
 ﻿using System;
-using ProfileServer.Kernel;
+using IopCommon;
 
 namespace ProfileServer
 {
@@ -8,7 +8,7 @@ namespace ProfileServer
   /// </summary>
   public class Program
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Program");
+    private static Logger log = new Logger("ProfileServer.Program");
 
     /// <summary>
     /// Application entry point.
@@ -19,13 +19,13 @@ namespace ProfileServer
       log.Info("()");
       Console.WriteLine("Initializing ...");
 
-      if (Base.Init())
+      if (Kernel.Kernel.Init())
       {
         Console.WriteLine("Profile server is running now.");
         Console.WriteLine("Press ENTER to exit.");
         Console.ReadLine();
 
-        Base.Shutdown();
+        Kernel.Kernel.Shutdown();
       }
       else Console.WriteLine("Initialization failed.");
 

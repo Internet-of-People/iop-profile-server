@@ -4,20 +4,22 @@ using ProfileServer.Kernel.Config;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading;
-using ProfileServer.Utils;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using System.IO;
-using ProfileServerProtocol;
 using Iop.Locnet;
 using ProfileServer.Data;
 using System.Linq;
 using ProfileServer.Data.Models;
 using Microsoft.EntityFrameworkCore.Storage;
-using ProfileServerCrypto;
 using Newtonsoft.Json;
+using IopProtocol;
+using IopCrypto;
+using IopCommon;
+using IopServerCore.Kernel;
+using IopServerCore.Data;
 
-namespace ProfileServer.Network
+namespace ProfileServer.Network.LOC
 {
   /// <summary>
   /// Location based network (LOC) is a part of IoP that the profile server relies on.
@@ -29,7 +31,11 @@ namespace ProfileServer.Network
   public class LocationBasedNetwork : Component
   {
 #warning Regtest needed - LOC server refresh
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Network.LocationBasedNetwork");
+    /// <summary>Name of the component.</summary>
+    public const string ComponentName = "Network.LOC.LocationBasedNetwork";
+
+    /// <summary>Class logger.</summary>
+    private static Logger log = new Logger("ProfileServer." + ComponentName);
 
     /// <summary>Event that is set when LocConnectionThread is not running.</summary>
     private ManualResetEvent locConnectionThreadFinished = new ManualResetEvent(true);
@@ -38,27 +44,21 @@ namespace ProfileServer.Network
     private Thread locConnectionThread;
 
     /// <summary>TCP client to connect with LOC server.</summary>
-    private TcpClient client;
-
-    /// <summary>Network stream of the TCP connection to LOC server.</summary>
-    private NetworkStream stream;
-
-    /// <summary>Lock object for writing to the stream.</summary>
-    private SemaphoreSlim streamWriteLock = new SemaphoreSlim(1);
-
-    /// <summary>LOC message builder for the TCP client.</summary>
-    private MessageBuilderLocNet messageBuilder;
+    private LocClient client;
 
     /// <summary>true if the component received current information about the server's neighborhood from the LOC server.</summary>
     private bool locServerInitialized = false;
     /// <summary>true if the component received current information about the server's neighborhood from the LOC server.</summary>
     public bool LocServerInitialized { get { return locServerInitialized; } }
 
+
     /// <summary>
-    /// When this event triggers the message loop of the currently established connection to the LOC server is interrupted, 
-    /// which causes the profile server to disconnect from LOC server
+    /// Initializes the component.
     /// </summary>
-    private AutoResetEvent interruptLocMessageLoopEvent = new AutoResetEvent(false);
+    public LocationBasedNetwork():
+      base(ComponentName)
+    {
+    }
 
 
     public override bool Init()
@@ -72,6 +72,8 @@ namespace ProfileServer.Network
         locConnectionThread = new Thread(new ThreadStart(LocConnectionThread));
         locConnectionThread.Start();
 
+        RegisterCronJobs();
+
         res = true;
         Initialized = true;
       }
@@ -83,8 +85,6 @@ namespace ProfileServer.Network
       if (!res)
       {
         ShutdownSignaling.SignalShutdown();
-
-        CloseClient();
 
         if ((locConnectionThread != null) && !locConnectionThreadFinished.WaitOne(10000))
           log.Error("LOC connection thread did not terminated in 10 seconds.");
@@ -101,7 +101,7 @@ namespace ProfileServer.Network
 
       ShutdownSignaling.SignalShutdown();
 
-      CloseClient();
+      if (client != null) client.Dispose();
 
       if ((locConnectionThread != null) && !locConnectionThreadFinished.WaitOne(10000))
         log.Error("LOC connection thread did not terminated in 10 seconds.");
@@ -111,28 +111,44 @@ namespace ProfileServer.Network
 
 
     /// <summary>
-    /// Creates new TCP client.
+    /// Registers component's cron jobs.
     /// </summary>
-    private void InitializeClient()
+    public void RegisterCronJobs()
     {
-      client = new TcpClient();
-      client.NoDelay = true;
-      client.LingerState = new LingerOption(true, 0);
+      log.Trace("()");
+
+      List<CronJob> cronJobDefinitions = new List<CronJob>()
+      {
+        // Obtains fresh data from LOC server.
+        { new CronJob() { Name = "refreshLocData", StartDelay = 67 * 60 * 1000, Interval = 601 * 60 * 1000, HandlerAsync = CronJobHandlerRefreshLocDataAsync } },
+      };
+
+      Cron cron = (Cron)Base.ComponentDictionary[Cron.ComponentName];
+      cron.AddJobs(cronJobDefinitions);
+
+      log.Trace("(-)");
     }
 
 
     /// <summary>
-    /// Frees resources used by the TCP client.
+    /// Handler for "refreshLocData" cron job.
     /// </summary>
-    private void CloseClient()
+    public async void CronJobHandlerRefreshLocDataAsync()
     {
-      log.Info("()");
+      log.Trace("()");
 
-      if (stream != null) stream.Dispose();
-      if (client != null) client.Dispose();
+      if (ShutdownSignaling.IsShutdown)
+      {
+        log.Trace("(-):[SHUTDOWN]");
+        return;
+      }
 
-      log.Info("(-)");
+      await RefreshLocAsync();
+
+      log.Trace("(-)");
     }
+
+
 
 
     /// <summary>
@@ -177,7 +193,7 @@ namespace ProfileServer.Network
         throw e;
       }
 
-      CloseClient();
+      if (client != null) client.Dispose();
       locConnectionThreadFinished.Set();
 
       log.Info("(-)");
@@ -196,34 +212,27 @@ namespace ProfileServer.Network
       bool res = false;
 
       // Close TCP connection and dispose client in case it is connected.
-      CloseClient();
+      if (client != null) client.Dispose();
 
-      // Create new TCP client.
-      InitializeClient();
-      messageBuilder = new MessageBuilderLocNet(0, new List<SemVer> { SemVer.V100 });
+      client = new LocClient(Config.Configuration.LocEndPoint);
 
       while (!res && !ShutdownSignaling.IsShutdown)
       {
-        try
+        log.Trace("Connecting to LOC server '{0}'.", Config.Configuration.LocEndPoint);
+        if (await client.ConnectAsync())
         {
-          log.Trace("Connecting to LOC server '{0}'.", Base.Configuration.LocEndPoint);
-          await client.ConnectAsync(Base.Configuration.LocEndPoint.Address, Base.Configuration.LocEndPoint.Port);
-          stream = client.GetStream();
           res = true;
         }
-        catch 
+        else
         {
-          log.Warn("Unable to connect to LOC server '{0}', waiting 10 seconds and then retrying.", Base.Configuration.LocEndPoint);
+          log.Warn("Unable to connect to LOC server '{0}', waiting 10 seconds and then retrying.", Config.Configuration.LocEndPoint);
 
           // On Ubuntu we get exception "Sockets on this platform are invalid for use after a failed connection attempt" 
           // when we try to reconnect to the same IP:port again, after it failed for the first time. 
           // We have to close the socket and initialize it again to be able to connect.
-          CloseClient();
-          InitializeClient();
-        }
+          client.Dispose();
+          client = new LocClient(Config.Configuration.LocEndPoint);
 
-        if (!res)
-        {
           try
           {
             await Task.Delay(10000, ShutdownSignaling.ShutdownCancellationTokenSource.Token);
@@ -250,36 +259,30 @@ namespace ProfileServer.Network
 
       bool res = false;
 
-      uint primaryPort = (uint)Base.Configuration.ServerRoles.GetRolePort(ServerRole.Primary);
+      uint primaryPort = (uint)Config.Configuration.ServerRoles.GetRolePort((uint)ServerRole.Primary);
       ServiceInfo serviceInfo = new ServiceInfo()
       {
         Port = primaryPort,
         Type = ServiceType.Profile,
-        ServiceData = ProtocolHelper.ByteArrayToByteString(Crypto.Sha256(Base.Configuration.Keys.PublicKey))
+        ServiceData = ProtocolHelper.ByteArrayToByteString(Crypto.Sha256(Config.Configuration.Keys.PublicKey))
       };
       
-      Message request = messageBuilder.CreateRegisterServiceRequest(serviceInfo);
-      if (await SendMessageAsync(request))
+      LocProtocolMessage request = client.MessageBuilder.CreateRegisterServiceRequest(serviceInfo);
+      if (await client.SendMessageAsync(request))
       {
-        RawMessageReader messageReader = new RawMessageReader(stream);
-        RawMessageResult rawMessage = await messageReader.ReceiveMessageAsync(ShutdownSignaling.ShutdownCancellationTokenSource.Token);
-        if (rawMessage.Data != null)
+        LocProtocolMessage response = await client.ReceiveMessageAsync(ShutdownSignaling.ShutdownCancellationTokenSource.Token);
+        if (response != null)
         {
-          Message response = CreateMessageFromRawData(rawMessage.Data);
-          if (response != null)
-          {
-            res = (response.Id == request.Id)
-              && (response.MessageTypeCase == Message.MessageTypeOneofCase.Response)
-              && (response.Response.Status == Status.Ok)
-              && (response.Response.ResponseTypeCase == Response.ResponseTypeOneofCase.LocalService)
-              && (response.Response.LocalService.LocalServiceResponseTypeCase == LocalServiceResponse.LocalServiceResponseTypeOneofCase.RegisterService);
+          res = (response.Id == request.Id)
+            && (response.MessageTypeCase == Message.MessageTypeOneofCase.Response)
+            && (response.Response.Status == Status.Ok)
+            && (response.Response.ResponseTypeCase == Response.ResponseTypeOneofCase.LocalService)
+            && (response.Response.LocalService.LocalServiceResponseTypeCase == LocalServiceResponse.LocalServiceResponseTypeOneofCase.RegisterService);
 
-            if (res) log.Debug("Primary interface has been registered successfully on LOC server.");
-            else log.Error("Registration failed, response status is {0}.", response.Response != null ? response.Response.Status.ToString() : "n/a");
-          }
-          else log.Error("Invalid message received from LOC server.");
+          if (res) log.Debug("Primary interface has been registered successfully on LOC server.");
+          else log.Error("Registration failed, response status is {0}.", response.Response != null ? response.Response.Status.ToString() : "n/a");
         }
-        else log.Error("Connection to LOC server has been terminated.");
+        else log.Error("Invalid message received from LOC server.");
       }
       else log.Error("Unable to send register server request to LOC server.");
 
@@ -298,28 +301,22 @@ namespace ProfileServer.Network
 
       bool res = false;
 
-      Message request = messageBuilder.CreateDeregisterServiceRequest(ServiceType.Profile);
-      if (await SendMessageAsync(request))
+      LocProtocolMessage request = client.MessageBuilder.CreateDeregisterServiceRequest(ServiceType.Profile);
+      if (await client.SendMessageAsync(request))
       {
-        RawMessageReader messageReader = new RawMessageReader(stream);
-        RawMessageResult rawMessage = await messageReader.ReceiveMessageAsync(ShutdownSignaling.ShutdownCancellationTokenSource.Token);
-        if (rawMessage.Data != null)
+        LocProtocolMessage response = await client.ReceiveMessageAsync(ShutdownSignaling.ShutdownCancellationTokenSource.Token);
+        if (response != null)
         {
-          Message response = CreateMessageFromRawData(rawMessage.Data);
-          if (response != null)
-          {
-            res = (response.Id == request.Id)
-              && (response.MessageTypeCase == Message.MessageTypeOneofCase.Response)
-              && (response.Response.Status == Status.Ok)
-              && (response.Response.ResponseTypeCase == Response.ResponseTypeOneofCase.LocalService)
-              && (response.Response.LocalService.LocalServiceResponseTypeCase == LocalServiceResponse.LocalServiceResponseTypeOneofCase.DeregisterService);
+          res = (response.Id == request.Id)
+            && (response.MessageTypeCase == Message.MessageTypeOneofCase.Response)
+            && (response.Response.Status == Status.Ok)
+            && (response.Response.ResponseTypeCase == Response.ResponseTypeOneofCase.LocalService)
+            && (response.Response.LocalService.LocalServiceResponseTypeCase == LocalServiceResponse.LocalServiceResponseTypeOneofCase.DeregisterService);
 
-            if (res) log.Debug("Primary interface has been unregistered successfully on LOC server.");
-            else log.Error("Deregistration failed, response status is {0}.", response.Response != null ? response.Response.Status.ToString() : "n/a");
-          }
-          else log.Error("Invalid message received from LOC server.");
+          if (res) log.Debug("Primary interface has been unregistered successfully on LOC server.");
+          else log.Error("Deregistration failed, response status is {0}.", response.Response != null ? response.Response.Status.ToString() : "n/a");
         }
-        else log.Debug("Connection to LOC server has been terminated.");
+        else log.Error("Invalid message received from LOC server.");
       }
       else log.Debug("Unable to send deregister server request to LOC server.");
 
@@ -337,30 +334,23 @@ namespace ProfileServer.Network
       log.Info("()");
 
       bool res = false;
-      Message request = messageBuilder.CreateGetNeighbourNodesByDistanceLocalRequest();
-      if (await SendMessageAsync(request))
+      LocProtocolMessage request = client.MessageBuilder.CreateGetNeighbourNodesByDistanceLocalRequest();
+      if (await client.SendMessageAsync(request))
       {
         // Read response.
         bool responseOk = false;
-        Message response = null;
-        RawMessageReader messageReader = new RawMessageReader(stream);
-        RawMessageResult rawMessage = await messageReader.ReceiveMessageAsync(ShutdownSignaling.ShutdownCancellationTokenSource.Token);
-        if (rawMessage.Data != null)
+        LocProtocolMessage response = await client.ReceiveMessageAsync(ShutdownSignaling.ShutdownCancellationTokenSource.Token);
+        if (response != null)
         {
-          response = CreateMessageFromRawData(rawMessage.Data);
-          if (response != null)
-          {
-            responseOk = (response.Id == request.Id)
-              && (response.MessageTypeCase == Message.MessageTypeOneofCase.Response)
-              && (response.Response.Status == Status.Ok)
-              && (response.Response.ResponseTypeCase == Response.ResponseTypeOneofCase.LocalService)
-              && (response.Response.LocalService.LocalServiceResponseTypeCase == LocalServiceResponse.LocalServiceResponseTypeOneofCase.GetNeighbourNodes);
+          responseOk = (response.Id == request.Id)
+            && (response.MessageTypeCase == Message.MessageTypeOneofCase.Response)
+            && (response.Response.Status == Status.Ok)
+            && (response.Response.ResponseTypeCase == Response.ResponseTypeOneofCase.LocalService)
+            && (response.Response.LocalService.LocalServiceResponseTypeCase == LocalServiceResponse.LocalServiceResponseTypeOneofCase.GetNeighbourNodes);
 
-            if (!responseOk) log.Error("Obtaining neighborhood information failed, response status is {0}.", response.Response != null ? response.Response.Status.ToString() : "n/a");
-          }
-          else log.Error("Invalid message received from LOC server.");
+          if (!responseOk) log.Error("Obtaining neighborhood information failed, response status is {0}.", response.Response != null ? response.Response.Status.ToString() : "n/a");
         }
-        else log.Error("Connection to LOC server has been terminated.");
+        else log.Error("Invalid message received from LOC server.");
 
         // Process the response if valid and contains neighbors.
         if (responseOk)
@@ -382,24 +372,11 @@ namespace ProfileServer.Network
 
       try
       {
-        RawMessageReader messageReader = new RawMessageReader(stream);
         while (!ShutdownSignaling.IsShutdown)
         {
-          RawMessageResult rawMessage = await messageReader.ReceiveMessageAsync(ShutdownSignaling.ShutdownCancellationTokenSource.Token);
-          bool disconnect = rawMessage.Data == null;
-          bool protocolViolation = rawMessage.ProtocolViolation;
-          if (rawMessage.Data != null)
-          {
-            Message message = CreateMessageFromRawData(rawMessage.Data);
-            if (message != null) disconnect = !await ProcessMessageAsync(message);
-            else protocolViolation = true;
-          }
-
-          if (protocolViolation)
-          {
-            await SendProtocolViolation();
-            break;
-          }
+          LocProtocolMessage message = await client.ReceiveMessageAsync(ShutdownSignaling.ShutdownCancellationTokenSource.Token, true);
+          if (message == null) break;
+          bool disconnect = !await ProcessMessageAsync(message);
 
           if (disconnect)
             break;
@@ -413,114 +390,7 @@ namespace ProfileServer.Network
       log.Info("(-)");
     }
 
-
-    /// <summary>
-    /// Constructs ProtoBuf message from raw data read from the network stream.
-    /// </summary>
-    /// <param name="Data">Raw data to be decoded to the message.</param>
-    /// <returns>ProtoBuf message or null if the data do not represent a valid message.</returns>
-    public Message CreateMessageFromRawData(byte[] Data)
-    {
-      log.Trace("()");
-
-      Message res = null;
-      try
-      {
-        res = MessageWithHeader.Parser.ParseFrom(Data).Body;
-        string msgStr = res.ToString();
-        log.Trace("Received message:\n{0}", msgStr.SubstrMax(4096));
-      }
-      catch (Exception e)
-      {
-        log.Warn("Exception occurred, connection to the client will be closed: {0}", e.ToString());
-        // Connection will be closed in ReceiveMessageLoop.
-      }
-
-      log.Trace("(-):{0}", res != null ? "Message" : "null");
-      return res;
-    }
-
-    /// <summary>
-    /// Sends ERROR_PROTOCOL_VIOLATION to client with message ID set to 0x0BADC0DE.
-    /// </summary>
-    /// <param name="Client">Client to send the error to.</param>
-    public async Task SendProtocolViolation()
-    {
-      MessageBuilderLocNet mb = new MessageBuilderLocNet(0, new List<SemVer> { SemVer.V100 });
-      Message response = mb.CreateErrorProtocolViolationResponse(new Message() { Id = 0x0BADC0DE });
-
-      await SendMessageAsync(response);
-    }
-
-
-    /// <summary>
-    /// Sends a message to the client over the open network stream.
-    /// </summary>
-    /// <param name="Message">Message to send.</param>
-    /// <returns>true if the connection to the client should remain open, false otherwise.</returns>
-    public async Task<bool> SendMessageAsync(Message Message)
-    {
-      log.Trace("()");
-
-      bool res = await SendMessageInternalAsync(Message);
-      if (res)
-      {
-        // If the message was sent successfully to the target, we close the connection only in case of protocol violation error.
-        if (Message.MessageTypeCase == Message.MessageTypeOneofCase.Response)
-          res = Message.Response.Status != Status.ErrorProtocolViolation;
-      }
-
-      log.Trace("(-):{0}", res);
-      return res;
-    }
-
-
-    /// <summary>
-    /// Sends a message to the client over the open network stream.
-    /// </summary>
-    /// <param name="Message">Message to send.</param>
-    /// <returns>true if the message was sent successfully to the target recipient.</returns>
-    private async Task<bool> SendMessageInternalAsync(Message Message)
-    {
-      log.Trace("()");
-
-      bool res = false;
-
-      string msgStr = Message.ToString();
-      log.Trace("Sending message:\n{0}", msgStr.SubstrMax(512));
-      byte[] responseBytes = ProtocolHelper.GetMessageBytes(Message);
-
-      await streamWriteLock.WaitAsync();
-      try
-      {
-        if (stream != null)
-        {
-          await stream.WriteAsync(responseBytes, 0, responseBytes.Length);
-          res = true;
-        }
-        else log.Info("Connection to the client has been terminated.");
-      }
-      catch (Exception e)
-      {
-        if ((e is IOException) || (e is ObjectDisposedException))
-        {
-          log.Info("Connection to the client has been terminated.");
-        }
-        else
-        {
-          log.Error("Exception occurred (and rethrowing): {0}", e.ToString());
-          await Task.Delay(5000);
-          throw e;
-        }
-      }
-      finally
-      {
-        streamWriteLock.Release();
-      }
-
-      log.Trace("(-):{0}", res);
-      return res;
-    }
+    
 
 
     /// <summary>
@@ -528,7 +398,7 @@ namespace ProfileServer.Network
     /// </summary>
     /// <param name="IncomingMessage">Full ProtoBuf message to be processed.</param>
     /// <returns>true if the conversation with the client should continue, false if a protocol violation error occurred and the client should be disconnected.</returns>
-    public async Task<bool> ProcessMessageAsync(Message IncomingMessage)
+    public async Task<bool> ProcessMessageAsync(LocProtocolMessage IncomingMessage)
     {
       log.Debug("()");
 
@@ -541,7 +411,7 @@ namespace ProfileServer.Network
         {
           case Message.MessageTypeOneofCase.Request:
             {
-              Message responseMessage = messageBuilder.CreateErrorProtocolViolationResponse(IncomingMessage);
+              LocProtocolMessage responseMessage = client.MessageBuilder.CreateErrorProtocolViolationResponse(IncomingMessage);
               Request request = IncomingMessage.Request;
 
               SemVer version = new SemVer(request.Version);
@@ -576,7 +446,15 @@ namespace ProfileServer.Network
               if (responseMessage != null)
               {
                 // Send response to client.
-                res = await SendMessageAsync(responseMessage);
+                res = await client.SendMessageAsync(responseMessage);
+
+                if (res)
+                {
+                  // If the message was sent successfully to the target, we close the connection only in case of protocol violation error.
+                  if (responseMessage.MessageTypeCase == Message.MessageTypeOneofCase.Response)
+                    res = responseMessage.Response.Status != Status.ErrorProtocolViolation;
+                }
+
               }
               else
               {
@@ -610,7 +488,7 @@ namespace ProfileServer.Network
 
           default:
             log.Error("Unknown message type '{0}', connection to the client will be closed.", IncomingMessage.MessageTypeCase);
-            await SendProtocolViolation();
+            await client.SendProtocolViolation();
             // Connection will be closed in ReceiveMessageLoop.
             break;
         }
@@ -618,7 +496,7 @@ namespace ProfileServer.Network
       catch (Exception e)
       {
         log.Error("Exception occurred, connection to the client will be closed: {0}", e.ToString());
-        await SendProtocolViolation();
+        await client.SendProtocolViolation();
         // Connection will be closed in ReceiveMessageLoop.
       }
 
@@ -634,7 +512,7 @@ namespace ProfileServer.Network
     /// <param name="ResponseMessage">Full response message.</param>
     /// <param name="IsInitialization">true if the response was received to the request during the LOC initialization, false if it was received to the refresh request after the initialization.</param>
     /// <returns>true if the connection to the LOC server should remain open, false if it should be closed.</returns>
-    public async Task<bool> ProcessMessageGetNeighbourNodesByDistanceResponseAsync(Message ResponseMessage, bool IsInitialization)
+    public async Task<bool> ProcessMessageGetNeighbourNodesByDistanceResponseAsync(LocProtocolMessage ResponseMessage, bool IsInitialization)
     {
       log.Trace("(IsInitialization:{0})", IsInitialization);
 
@@ -714,7 +592,7 @@ namespace ProfileServer.Network
 
       if (signalActionProcessor) 
       {
-        NeighborhoodActionProcessor neighborhoodActionProcessor = (NeighborhoodActionProcessor)Base.ComponentDictionary["Network.NeighborhoodActionProcessor"];
+        NeighborhoodActionProcessor neighborhoodActionProcessor = (NeighborhoodActionProcessor)Base.ComponentDictionary[NeighborhoodActionProcessor.ComponentName];
         neighborhoodActionProcessor.Signal();
       }
 
@@ -783,7 +661,7 @@ namespace ProfileServer.Network
         return res;
       }
 
-      ProfileServerProtocol.GpsLocation location = new ProfileServerProtocol.GpsLocation(Latitude, Longitude);
+      IopProtocol.GpsLocation location = new IopProtocol.GpsLocation(Latitude, Longitude);
       if (!location.IsValid())
       {
         log.Error("Received invalid neighbor server location '{0}' from LOC server.", location);
@@ -797,7 +675,7 @@ namespace ProfileServer.Network
       if (existingNeighbor == null)
       {
         // New neighbor server.
-        if (NeighborhoodSize < Base.Configuration.MaxNeighborhoodSize)
+        if (NeighborhoodSize < Config.Configuration.MaxNeighborhoodSize)
         {
           // We have not reached the maximal size of the neighborhood yet, the server can be added.
           log.Trace("New neighbor ID '{0}' detected, IP address {1}, port {2}, latitude {3}, longitude {4}.", ServerId.ToHex(), IpAddress, Port, Latitude, Longitude);
@@ -838,7 +716,7 @@ namespace ProfileServer.Network
           res.SignalActionProcessor = true;
           res.SaveDb = true;
         }
-        else log.Error("Unable to add new neighbor ID '{0}', the profile server reached its neighborhood size limit {1}.", ServerId.ToHex(), Base.Configuration.MaxNeighborhoodSize);
+        else log.Error("Unable to add new neighbor ID '{0}', the profile server reached its neighborhood size limit {1}.", ServerId.ToHex(), Config.Configuration.MaxNeighborhoodSize);
       }
       else
       {
@@ -889,11 +767,11 @@ namespace ProfileServer.Network
     /// </summary>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public async Task<Message> ProcessMessageNeighbourhoodChangedNotificationRequestAsync(Message RequestMessage)
+    public async Task<LocProtocolMessage> ProcessMessageNeighbourhoodChangedNotificationRequestAsync(LocProtocolMessage RequestMessage)
     {
       log.Trace("()");
 
-      Message res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
+      LocProtocolMessage res = client.MessageBuilder.CreateErrorInternalResponse(RequestMessage);
       bool signalActionProcessor = false;
 
       NeighbourhoodChangedNotificationRequest neighbourhoodChangedNotificationRequest = RequestMessage.Request.LocalService.NeighbourhoodChanged;
@@ -1028,7 +906,7 @@ namespace ProfileServer.Network
               transaction.Commit();
             }
             success = true;
-            res = messageBuilder.CreateNeighbourhoodChangedNotificationResponse(RequestMessage);
+            res = client.MessageBuilder.CreateNeighbourhoodChangedNotificationResponse(RequestMessage);
           }
           catch (Exception e)
           {
@@ -1047,7 +925,7 @@ namespace ProfileServer.Network
 
       if (signalActionProcessor)
       {
-        NeighborhoodActionProcessor neighborhoodActionProcessor = (NeighborhoodActionProcessor)Base.ComponentDictionary["Network.NeighborhoodActionProcessor"];
+        NeighborhoodActionProcessor neighborhoodActionProcessor = (NeighborhoodActionProcessor)Base.ComponentDictionary[NeighborhoodActionProcessor.ComponentName];
         neighborhoodActionProcessor.Signal();
       }
 
@@ -1060,16 +938,16 @@ namespace ProfileServer.Network
     /// If the component is connected to LOC server, it sends a new GetNeighbourNodesByDistanceLocalRequest request 
     /// to get fresh information about the profile server's neighborhood.
     /// </summary>
-    public void RefreshLoc()
+    public async Task RefreshLocAsync()
     {
       log.Trace("()");
 
-      if (!ShutdownSignaling.IsShutdown && locServerInitialized)
+      if (locServerInitialized)
       {
         try
         {
-          Message request = messageBuilder.CreateGetNeighbourNodesByDistanceLocalRequest();
-          if (SendMessageAsync(request).Result)
+          LocProtocolMessage request = client.MessageBuilder.CreateGetNeighbourNodesByDistanceLocalRequest();
+          if (await client.SendMessageAsync(request))
           {
             log.Trace("GetNeighbourNodesByDistanceLocalRequest sent to LOC server to get fresh neighborhood data.");
           }
@@ -1080,6 +958,7 @@ namespace ProfileServer.Network
           log.Warn("Exception occurred: {0}", e.ToString());
         }
       }
+      else log.Debug("LOC server not initialized yet, can not refresh.");
 
       log.Trace("(-)");
     }

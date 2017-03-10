@@ -1,5 +1,6 @@
-﻿using Google.Protobuf;
-using ProfileServerProtocol;
+﻿using IopCommon;
+using Google.Protobuf;
+using IopProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -20,7 +21,7 @@ namespace ProfileServerProtocolTests.Tests
   public class PS02011 : ProtocolTest
   {
     public const string TestName = "PS02011";
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocolTests.Tests." + TestName);
+    private static Logger log = new Logger("ProfileServerProtocolTests.Tests." + TestName);
 
     public override string Name { get { return TestName; } }
 
@@ -50,7 +51,7 @@ namespace ProfileServerProtocolTests.Tests
       ProtocolClient client = new ProtocolClient();
       try
       {
-        MessageBuilder mb = client.MessageBuilder;
+        PsMessageBuilder mb = client.MessageBuilder;
 
         // Step 1
         await client.ConnectAsync(ServerIp, ClNonCustomerPort, true);
@@ -61,9 +62,9 @@ namespace ProfileServerProtocolTests.Tests
         Array.Copy(client.Challenge, challenge, challenge.Length);
         challenge[0] ^= 0x12;
 
-        Message requestMessage = mb.CreateVerifyIdentityRequest(challenge);
+        PsProtocolMessage requestMessage = mb.CreateVerifyIdentityRequest(challenge);
         await client.SendMessageAsync(requestMessage);
-        Message responseMessage = await client.ReceiveMessageAsync();
+        PsProtocolMessage responseMessage = await client.ReceiveMessageAsync();
 
         bool idOk = responseMessage.Id == requestMessage.Id;
         bool statusOk = responseMessage.Response.Status == Status.ErrorInvalidValue;

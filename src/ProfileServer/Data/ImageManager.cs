@@ -1,10 +1,12 @@
 ﻿using ImageSharp;
 using ImageSharp.Formats;
+using IopCommon;
+using IopProtocol;
+using IopServerCore.Data;
+using IopServerCore.Kernel;
 using ProfileServer.Data.Models;
 using ProfileServer.Kernel;
-using ProfileServer.Utils;
-using ProfileServerCrypto;
-using ProfileServerProtocol;
+using ProfileServer.Kernel.Config;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -27,7 +29,11 @@ namespace ProfileServer.Data
   /// </summary>
   public class ImageManager: Component
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Data.ImageManager");
+    /// <summary>Name of the component.</summary>
+    public const string ComponentName = "Data.ImageManager";
+
+    /// <summary>Class logger.</summary>
+    private static Logger log = new Logger("ProfileServer." + ComponentName);
 
     /// <summary>Lock object to protect access to referenceCounter.</summary>
     private object referenceCounterLock = new object();
@@ -45,6 +51,15 @@ namespace ProfileServer.Data
     private static ImageManager imageManager;
 
 
+    /// <summary>
+    /// Initializes the component.
+    /// </summary>
+    public ImageManager():
+      base(ComponentName)
+    {
+    }
+
+
     public override bool Init()
     {
       log.Info("()");
@@ -60,6 +75,8 @@ namespace ProfileServer.Data
         if (InitializeReferenceCounter()
           && DeleteUnusedImages())
         {
+          RegisterCronJobs();
+
           res = true;
           Initialized = true;
         }
@@ -87,6 +104,46 @@ namespace ProfileServer.Data
 
       log.Info("(-)");
     }
+
+
+    /// <summary>
+    /// Registers component's cron jobs.
+    /// </summary>
+    public void RegisterCronJobs()
+    {
+      log.Trace("()");
+
+      List<CronJob> cronJobDefinitions = new List<CronJob>()
+      {
+        // Deletes unused images from the images folder.
+        { new CronJob() { Name = "deleteUnusedImages", StartDelay = 200 * 1000, Interval = 37 * 60 * 1000, HandlerAsync = CronJobHandlerDeleteUnusedImagesAsync } },
+      };
+
+      Cron cron = (Cron)Base.ComponentDictionary[Cron.ComponentName];
+      cron.AddJobs(cronJobDefinitions);
+
+      log.Trace("(-)");
+    }
+
+
+    /// <summary>
+    /// Handler for "deleteUnusedImages" cron job.
+    /// </summary>
+    public async void CronJobHandlerDeleteUnusedImagesAsync()
+    {
+      log.Trace("()");
+
+      if (ShutdownSignaling.IsShutdown)
+      {
+        log.Trace("(-):[SHUTDOWN]");
+        return;
+      }
+
+      await Task.Run(() => ProcessImageDeleteList());
+
+      log.Trace("(-)");
+    }
+
 
 
     /// <summary>
@@ -241,7 +298,7 @@ namespace ProfileServer.Data
       log.Info("()");
 
       // No need to lock reference counter as this is done only during startup with exclusive access.
-      bool res = DeleteUnusedImages(Base.Configuration.ImageDataFolder);
+      bool res = DeleteUnusedImages(Config.Configuration.ImageDataFolder);
 
       log.Info("(-):{0}", res);
       return res;
@@ -268,7 +325,7 @@ namespace ProfileServer.Data
         {
           try
           {
-            byte[] fileHash = Crypto.FromHex(file.Name);
+            byte[] fileHash = file.Name.FromHex();
             int refCnt = 0;
             if (!referenceCounter.TryGetValue(fileHash, out refCnt))
               refCnt = 0;
@@ -348,7 +405,7 @@ namespace ProfileServer.Data
     /// <returns>File name with path for the image. The path can be relative or absolute depending on Configuration.ImageDataFolder settings.</returns>
     public static string GetImageFileName(byte[] ImageHash)
     {
-      return GetImageFileName(ImageHash, Kernel.Base.Configuration.ImageDataFolder);
+      return GetImageFileName(ImageHash, Config.Configuration.ImageDataFolder);
     }
 
 

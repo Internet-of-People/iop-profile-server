@@ -4,20 +4,23 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Net;
 using System.Threading;
-using ProfileServer.Utils;
 using System.Threading.Tasks;
 using System.IO;
-using ProfileServerProtocol;
+using IopProtocol;
 using Google.Protobuf;
 using ProfileServer.Data;
 using ProfileServer.Data.Models;
-using ProfileServerCrypto;
+using IopCrypto;
 using Iop.Profileserver;
 using System.Globalization;
 using System.Text;
-using ProfileServerProtocol.Multiformats;
+using IopCommon.Multiformats;
 using System.Net.Http;
 using System.Linq;
+using IopCommon;
+using IopServerCore.Kernel;
+using ProfileServer.Kernel.Config;
+using IopServerCore.Data;
 
 namespace ProfileServer.Network.CAN
 {
@@ -30,7 +33,11 @@ namespace ProfileServer.Network.CAN
   /// </summary>
   public class ContentAddressNetwork : Component
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Network.ContentAddressNetwork");
+    /// <summary>Name of the component.</summary>
+    public const string ComponentName = "Network.ContentAddressNetwork";
+
+    /// <summary>Class logger.</summary>
+    private static Logger log = new Logger("ProfileServer." + ComponentName);
 
     /// <summary>Validity of profile server's IPNS record in seconds. </summary>
     private const int IpnsRecordExpirationTimeSeconds = 24 * 60 * 60;
@@ -58,6 +65,19 @@ namespace ProfileServer.Network.CAN
     /// <summary>Access to CAN API.</summary>
     private CanApi canApi;
 
+    /// <summary>Last sequence number used for IPNS record.</summary>
+    private UInt64 canIpnsLastSequenceNumber;
+
+
+
+    /// <summary>
+    /// Initializes the component.
+    /// </summary>
+    public ContentAddressNetwork():
+      base(ComponentName)
+    {
+    }
+
 
     public override bool Init()
     {
@@ -67,19 +87,22 @@ namespace ProfileServer.Network.CAN
 
       try
       {
-        canApi = (CanApi)Base.ComponentDictionary["Network.ContentAddressNetwork.CanApi"];
+        canIpnsLastSequenceNumber = Config.Configuration.CanIpnsLastSequenceNumber;
+        canApi = (CanApi)Base.ComponentDictionary[CanApi.ComponentName];
 
         // Construct profile server's contact information CAN object.
         canContactInformation = new CanProfileServerContact()
         {
-          PublicKey = ProtocolHelper.ByteArrayToByteString(Base.Configuration.Keys.PublicKey),
-          IpAddress = ProtocolHelper.ByteArrayToByteString(Base.Configuration.ExternalServerAddress.GetAddressBytes()),
-          PrimaryPort = (uint)Base.Configuration.ServerRoles.GetRolePort(ServerRole.Primary)
+          PublicKey = ProtocolHelper.ByteArrayToByteString(Config.Configuration.Keys.PublicKey),
+          IpAddress = ProtocolHelper.ByteArrayToByteString(Config.Configuration.ExternalServerAddress.GetAddressBytes()),
+          PrimaryPort = (uint)Config.Configuration.ServerRoles.GetRolePort((uint)ServerRole.Primary)
         };
 
 
         initThread = new Thread(new ThreadStart(InitThread));
         initThread.Start();
+
+        RegisterCronJobs();
 
         res = true;
         Initialized = true;
@@ -115,10 +138,51 @@ namespace ProfileServer.Network.CAN
     }
 
 
+
+    /// <summary>
+    /// Registers component's cron jobs.
+    /// </summary>
+    public void RegisterCronJobs()
+    {
+      log.Trace("()");
+
+      List<CronJob> cronJobDefinitions = new List<CronJob>()
+      {
+        // Refreshes profile server's IPNS record.
+        { new CronJob() { Name = "ipnsRecordRefresh", StartDelay = 2 * 60 * 60 * 1000, Interval = 7 * 60 * 60 * 1000, HandlerAsync = CronJobHandlerIpnsRecordRefreshAsync  } },
+      };
+
+      Cron cron = (Cron)Base.ComponentDictionary[Cron.ComponentName];
+      cron.AddJobs(cronJobDefinitions);
+
+      log.Trace("(-)");
+    }
+
+
+
+    /// <summary>
+    /// Handler for "ipnsRecordRefresh" cron job.
+    /// </summary>
+    public async void CronJobHandlerIpnsRecordRefreshAsync()
+    {
+      log.Trace("()");
+
+      if (ShutdownSignaling.IsShutdown)
+      {
+        log.Trace("(-):[SHUTDOWN]");
+        return;
+      }
+
+      await IpnsRecordRefreshAsync();
+
+      log.Trace("(-)");
+    }
+
+
     /// <summary>
     /// Refreshes porofile server's IPNS record.
     /// </summary>
-    public async Task IpnsRecordRefresh()
+    public async Task IpnsRecordRefreshAsync()
     {
       log.Trace("()");
 
@@ -129,9 +193,9 @@ namespace ProfileServer.Network.CAN
         return;
       }
 
-      Base.Configuration.CanIpnsLastSequenceNumber++;
-      canIpnsRecord = CreateIpnsRecord(canContactInformationHash, Base.Configuration.CanIpnsLastSequenceNumber);
-      CanRefreshIpnsResult cres = await canApi.RefreshIpnsRecord(canIpnsRecord, Base.Configuration.Keys.PublicKey);
+      canIpnsLastSequenceNumber++;
+      canIpnsRecord = CreateIpnsRecord(canContactInformationHash, canIpnsLastSequenceNumber);
+      CanRefreshIpnsResult cres = await canApi.RefreshIpnsRecord(canIpnsRecord, Config.Configuration.Keys.PublicKey);
       if (cres.Success)
       {
         using (UnitOfWork unitOfWork = new UnitOfWork())
@@ -140,14 +204,14 @@ namespace ProfileServer.Network.CAN
 
           try
           {
-            Setting setting = new Setting("CanIpnsLastSequenceNumber", Base.Configuration.CanIpnsLastSequenceNumber.ToString());
+            Setting setting = new Setting("CanIpnsLastSequenceNumber", canIpnsLastSequenceNumber.ToString());
             await unitOfWork.SettingsRepository.AddOrUpdate(setting);
             await unitOfWork.SaveThrowAsync();
             log.Debug("CanIpnsLastSequenceNumber updated in database to new value {0}.", setting.Value);
           }
           catch (Exception e)
           {
-            log.Error("Unable to update CanIpnsLastSequenceNumber in the database to new value {0}, exception: {1}", Base.Configuration.CanIpnsLastSequenceNumber, e.ToString());
+            log.Error("Unable to update CanIpnsLastSequenceNumber in the database to new value {0}, exception: {1}", canIpnsLastSequenceNumber, e.ToString());
           }
 
           unitOfWork.ReleaseLock(UnitOfWork.SettingsLock);
@@ -168,10 +232,10 @@ namespace ProfileServer.Network.CAN
 
       initThreadFinished.Reset();
 
-      if (Base.Configuration.CanProfileServerContactInformationHash != null) log.Debug("Old CAN object hash is '{0}', object {1} change.", Base.Configuration.CanProfileServerContactInformationHash.ToBase58(), Base.Configuration.CanProfileServerContactInformationChanged ? "DID" : "did NOT");
+      if (Config.Configuration.CanProfileServerContactInformationHash != null) log.Debug("Old CAN object hash is '{0}', object {1} change.", Config.Configuration.CanProfileServerContactInformationHash.ToBase58(), Config.Configuration.CanProfileServerContactInformationChanged ? "DID" : "did NOT");
       else log.Debug("No CAN object found.");
 
-      bool deleteOldObject = Base.Configuration.CanProfileServerContactInformationChanged && (Base.Configuration.CanProfileServerContactInformationHash != null);
+      bool deleteOldObject = Config.Configuration.CanProfileServerContactInformationChanged && (Config.Configuration.CanProfileServerContactInformationHash != null);
       byte[] canObject = canContactInformation.ToByteArray();
       log.Trace("CAN object: {0}", canObject.ToHex());
 
@@ -181,15 +245,15 @@ namespace ProfileServer.Network.CAN
         bool error = false;
         if (deleteOldObject)
         {
-          string objectPath = CanApi.CreateIpfsPathFromHash(Base.Configuration.CanProfileServerContactInformationHash);
+          string objectPath = CanApi.CreateIpfsPathFromHash(Config.Configuration.CanProfileServerContactInformationHash);
           CanDeleteResult cres = await canApi.CanDeleteObject(objectPath);
           if (cres.Success)
           {
-            log.Info("Old CAN object hash '{0}' deleted.", Base.Configuration.CanProfileServerContactInformationHash.ToBase58());
+            log.Info("Old CAN object hash '{0}' deleted.", Config.Configuration.CanProfileServerContactInformationHash.ToBase58());
           }
           else
           {
-            log.Warn("Failed to delete old CAN object hash '{0}', error message '{1}', will retry.", Base.Configuration.CanProfileServerContactInformationHash.ToBase58(), cres.Message);
+            log.Warn("Failed to delete old CAN object hash '{0}', error message '{1}', will retry.", Config.Configuration.CanProfileServerContactInformationHash.ToBase58(), cres.Message);
             error = true;
           }
         }
@@ -198,7 +262,7 @@ namespace ProfileServer.Network.CAN
         if (ShutdownSignaling.IsShutdown) break;
         if (!error)
         {
-          if (Base.Configuration.CanProfileServerContactInformationChanged)
+          if (Config.Configuration.CanProfileServerContactInformationChanged)
           {
             // Now upload the new object.
             CanUploadResult cres = await canApi.CanUploadObject(canObject);
@@ -213,7 +277,7 @@ namespace ProfileServer.Network.CAN
           }
           else
           {
-            canContactInformationHash = Base.Configuration.CanProfileServerContactInformationHash;
+            canContactInformationHash = Config.Configuration.CanProfileServerContactInformationHash;
             log.Info("CAN object unchanged since last time, hash is '{0}'.", canContactInformationHash.ToBase58());
             break;
           }
@@ -233,7 +297,7 @@ namespace ProfileServer.Network.CAN
 
       if (canContactInformationHash != null)
       {
-        if (Base.Configuration.CanProfileServerContactInformationChanged)
+        if (Config.Configuration.CanProfileServerContactInformationChanged)
         {
           // Save the new data to the database.
           if (!await SaveProfileServerContactInformation())
@@ -241,7 +305,7 @@ namespace ProfileServer.Network.CAN
         }
 
         // Finally, start IPNS record refreshing timer.
-        await IpnsRecordRefresh();
+        await IpnsRecordRefreshAsync();
       }
 
 
@@ -267,8 +331,8 @@ namespace ProfileServer.Network.CAN
 
         try
         {
-          string addr = Base.Configuration.ExternalServerAddress.ToString();
-          string port = Base.Configuration.ServerRoles.GetRolePort(ServerRole.Primary).ToString();
+          string addr = Config.Configuration.ExternalServerAddress.ToString();
+          string port = Config.Configuration.ServerRoles.GetRolePort((uint)ServerRole.Primary).ToString();
           string hash = canContactInformationHash.ToBase58();
           log.Debug("Saving contact information values to database: {0}:{1}, '{2}'", addr, port, hash);
 
@@ -348,7 +412,7 @@ namespace ProfileServer.Network.CAN
       Array.Copy(validityTypeBytes, 0, dataToSign, offset, validityTypeBytes.Length);
       offset += validityTypeBytes.Length;
 
-      byte[] res = Ed25519.Sign(dataToSign, Base.Configuration.Keys.ExpandedPrivateKey);
+      byte[] res = Ed25519.Sign(dataToSign, Config.Configuration.Keys.ExpandedPrivateKey);
       
       return res;
     }
