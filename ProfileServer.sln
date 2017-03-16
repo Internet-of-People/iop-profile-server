@@ -1,31 +1,32 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26228.4
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{89D7AACD-E07B-44CF-AAC6-339DA84C423D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{661E729D-8199-407C-9DCB-F731CA4EA667}"
-	ProjectSection(SolutionItems) = preProject
-		global.json = global.json
-	EndProjectSection
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "ProfileServer", "src\ProfileServer\ProfileServer.xproj", "{64E58B68-704F-4260-878C-F8D46E10C4EA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProfileServer", "src\ProfileServer\ProfileServer.csproj", "{64E58B68-704F-4260-878C-F8D46E10C4EA}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "ProfileServerProtocol", "src\ProfileServerProtocol\ProfileServerProtocol.xproj", "{5E1CE53F-31D1-46C7-8C66-EC87F1AD5F49}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "ProfileServerCrypto", "src\ProfileServerCrypto\ProfileServerCrypto.xproj", "{64631B76-D6CC-4F87-95D4-8703C0E0577E}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "UnitTests", "src\UnitTests\UnitTests.xproj", "{1DED740D-F28F-4865-B01E-370E4BFDDBF0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "src\UnitTests\UnitTests.csproj", "{1DED740D-F28F-4865-B01E-370E4BFDDBF0}"
 	ProjectSection(ProjectDependencies) = postProject
 		{64E58B68-704F-4260-878C-F8D46E10C4EA} = {64E58B68-704F-4260-878C-F8D46E10C4EA}
 	EndProjectSection
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "ProfileServerProtocolTests", "src\ProfileServerProtocolTests\ProfileServerProtocolTests.xproj", "{BEEEB71B-D983-4907-ADA0-93A0FF33F7BC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProfileServerProtocolTests", "src\ProfileServerProtocolTests\ProfileServerProtocolTests.csproj", "{BEEEB71B-D983-4907-ADA0-93A0FF33F7BC}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "ProfileServerProtocolTestsExecutor", "src\ProfileServerProtocolTestsExecutor\ProfileServerProtocolTestsExecutor.xproj", "{B1683DD3-75F5-41F3-93B3-27C784557625}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProfileServerProtocolTestsExecutor", "src\ProfileServerProtocolTestsExecutor\ProfileServerProtocolTestsExecutor.csproj", "{B1683DD3-75F5-41F3-93B3-27C784557625}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "ProfileServerNetworkSimulator", "src\ProfileServerNetworkSimulator\ProfileServerNetworkSimulator.xproj", "{4E155391-DE1C-45D2-ABCE-B038B755C7A2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProfileServerNetworkSimulator", "src\ProfileServerNetworkSimulator\ProfileServerNetworkSimulator.csproj", "{4E155391-DE1C-45D2-ABCE-B038B755C7A2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IopCommon", "..\IoP-Server-Library\src\IopCommon\IopCommon.csproj", "{71AAF7FD-DDEF-4431-A86E-41D93CE30307}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IopCrypto", "..\IoP-Server-Library\src\IopCrypto\IopCrypto.csproj", "{FAA4A14E-6FF9-4CEC-BB44-9C46C0E3BCCE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IopProtocol", "..\IoP-Server-Library\src\IopProtocol\IopProtocol.csproj", "{496D7F5A-B831-4E76-A829-ED7E39C18556}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IopServerCore", "..\IoP-Server-Library\src\IopServerCore\IopServerCore.csproj", "{85DE8195-B5C6-4AE2-AE62-7C94CEFD8821}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,14 +38,6 @@ Global
 		{64E58B68-704F-4260-878C-F8D46E10C4EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{64E58B68-704F-4260-878C-F8D46E10C4EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{64E58B68-704F-4260-878C-F8D46E10C4EA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5E1CE53F-31D1-46C7-8C66-EC87F1AD5F49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5E1CE53F-31D1-46C7-8C66-EC87F1AD5F49}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5E1CE53F-31D1-46C7-8C66-EC87F1AD5F49}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5E1CE53F-31D1-46C7-8C66-EC87F1AD5F49}.Release|Any CPU.Build.0 = Release|Any CPU
-		{64631B76-D6CC-4F87-95D4-8703C0E0577E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{64631B76-D6CC-4F87-95D4-8703C0E0577E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{64631B76-D6CC-4F87-95D4-8703C0E0577E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{64631B76-D6CC-4F87-95D4-8703C0E0577E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1DED740D-F28F-4865-B01E-370E4BFDDBF0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1DED740D-F28F-4865-B01E-370E4BFDDBF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1DED740D-F28F-4865-B01E-370E4BFDDBF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -61,14 +54,28 @@ Global
 		{4E155391-DE1C-45D2-ABCE-B038B755C7A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4E155391-DE1C-45D2-ABCE-B038B755C7A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4E155391-DE1C-45D2-ABCE-B038B755C7A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71AAF7FD-DDEF-4431-A86E-41D93CE30307}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71AAF7FD-DDEF-4431-A86E-41D93CE30307}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71AAF7FD-DDEF-4431-A86E-41D93CE30307}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71AAF7FD-DDEF-4431-A86E-41D93CE30307}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FAA4A14E-6FF9-4CEC-BB44-9C46C0E3BCCE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FAA4A14E-6FF9-4CEC-BB44-9C46C0E3BCCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FAA4A14E-6FF9-4CEC-BB44-9C46C0E3BCCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FAA4A14E-6FF9-4CEC-BB44-9C46C0E3BCCE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{496D7F5A-B831-4E76-A829-ED7E39C18556}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{496D7F5A-B831-4E76-A829-ED7E39C18556}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{496D7F5A-B831-4E76-A829-ED7E39C18556}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{496D7F5A-B831-4E76-A829-ED7E39C18556}.Release|Any CPU.Build.0 = Release|Any CPU
+		{85DE8195-B5C6-4AE2-AE62-7C94CEFD8821}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{85DE8195-B5C6-4AE2-AE62-7C94CEFD8821}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{85DE8195-B5C6-4AE2-AE62-7C94CEFD8821}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{85DE8195-B5C6-4AE2-AE62-7C94CEFD8821}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{64E58B68-704F-4260-878C-F8D46E10C4EA} = {89D7AACD-E07B-44CF-AAC6-339DA84C423D}
-		{5E1CE53F-31D1-46C7-8C66-EC87F1AD5F49} = {89D7AACD-E07B-44CF-AAC6-339DA84C423D}
-		{64631B76-D6CC-4F87-95D4-8703C0E0577E} = {89D7AACD-E07B-44CF-AAC6-339DA84C423D}
 		{1DED740D-F28F-4865-B01E-370E4BFDDBF0} = {89D7AACD-E07B-44CF-AAC6-339DA84C423D}
 		{BEEEB71B-D983-4907-ADA0-93A0FF33F7BC} = {89D7AACD-E07B-44CF-AAC6-339DA84C423D}
 		{B1683DD3-75F5-41F3-93B3-27C784557625} = {89D7AACD-E07B-44CF-AAC6-339DA84C423D}

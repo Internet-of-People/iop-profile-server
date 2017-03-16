@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IopCommon;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,7 +18,7 @@ namespace ProfileServerProtocolTests
   /// </summary>
   public class Program
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocolTests.Program");
+    private static Logger log = new Logger("ProfileServerProtocolTests.Program");
 
     /// <summary>
     /// Runs the specific test with the given arguments.

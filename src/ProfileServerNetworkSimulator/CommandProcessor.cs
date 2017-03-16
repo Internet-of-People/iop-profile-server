@@ -1,6 +1,7 @@
 ﻿using Google.Protobuf;
 using Iop.Profileserver;
-using ProfileServerProtocol;
+using IopCommon;
+using IopProtocol;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,7 +16,7 @@ namespace ProfileServerNetworkSimulator
   /// </summary>
   public class CommandProcessor
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerNetworkSimulator.CommandProcessor");
+    private static Logger log = new Logger("ProfileServerNetworkSimulator.CommandProcessor");
 
     /// <summary>Directory of the assembly.</summary>
     public static string BaseDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);

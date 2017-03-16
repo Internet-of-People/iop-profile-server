@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ProfileServer.Data.Models;
 using ProfileServer.Kernel;
-using ProfileServer.Utils;
+using IopCommon;
 
 namespace ProfileServer.Data
 {

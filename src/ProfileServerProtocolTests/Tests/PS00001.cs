@@ -6,6 +6,8 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using IopCommon;
+using IopProtocol;
 
 namespace ProfileServerProtocolTests.Tests
 {
@@ -16,7 +18,7 @@ namespace ProfileServerProtocolTests.Tests
   public class PS00001 : ProtocolTest
   {
     public const string TestName = "PS00001";
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocolTests.Tests." + TestName);
+    private static Logger log = new Logger("ProfileServerProtocolTests.Tests." + TestName);
 
     public override string Name { get { return TestName; } }
 
@@ -52,7 +54,7 @@ namespace ProfileServerProtocolTests.Tests
         byte[] request = new byte[] { 0x46, 0x84, 0x21, 0x46, 0x87 };
         await client.SendRawAsync(request);
 
-        Message responseMessage = await client.ReceiveMessageAsync();
+        PsProtocolMessage responseMessage = await client.ReceiveMessageAsync();
 
         // Step 1 Acceptance
         bool statusOk = responseMessage.Response.Status == Status.ErrorProtocolViolation;

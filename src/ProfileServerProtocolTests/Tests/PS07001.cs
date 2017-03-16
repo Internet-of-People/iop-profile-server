@@ -1,6 +1,7 @@
-﻿using Google.Protobuf;
-using ProfileServerCrypto;
-using ProfileServerProtocol;
+﻿using IopCommon;
+using Google.Protobuf;
+using IopCrypto;
+using IopProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -21,7 +22,7 @@ namespace ProfileServerProtocolTests.Tests
   public class PS07001 : ProtocolTest
   {
     public const string TestName = "PS07001";
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocolTests.Tests." + TestName);
+    private static Logger log = new Logger("ProfileServerProtocolTests.Tests." + TestName);
 
     public override string Name { get { return TestName; } }
 
@@ -64,8 +65,8 @@ namespace ProfileServerProtocolTests.Tests
       ProtocolClient clientSecondary = new ProtocolClient();
       try
       {
-        MessageBuilder mbPrimary = clientPrimary.MessageBuilder;
-        MessageBuilder mbSecondary = clientSecondary.MessageBuilder;
+        PsMessageBuilder mbPrimary = clientPrimary.MessageBuilder;
+        PsMessageBuilder mbSecondary = clientSecondary.MessageBuilder;
 
         // Step 1
         log.Trace("Step 1");
@@ -127,11 +128,11 @@ namespace ProfileServerProtocolTests.Tests
         ProtocolClient Identity4 = CardIssuers[3];
         ProtocolClient Identity5 = CardIssuers[4];
 
-        log.Trace("Identity1 ID: {0}", Crypto.ToHex(Identity1.GetIdentityId()));
-        log.Trace("Identity2 ID: {0}", Crypto.ToHex(Identity2.GetIdentityId()));
-        log.Trace("Identity3 ID: {0}", Crypto.ToHex(Identity3.GetIdentityId()));
-        log.Trace("Identity4 ID: {0}", Crypto.ToHex(Identity4.GetIdentityId()));
-        log.Trace("Identity5 ID: {0}", Crypto.ToHex(Identity5.GetIdentityId()));
+        log.Trace("Identity1 ID: {0}", Identity1.GetIdentityId().ToHex());
+        log.Trace("Identity2 ID: {0}", Identity2.GetIdentityId().ToHex());
+        log.Trace("Identity3 ID: {0}", Identity3.GetIdentityId().ToHex());
+        log.Trace("Identity4 ID: {0}", Identity4.GetIdentityId().ToHex());
+        log.Trace("Identity5 ID: {0}", Identity5.GetIdentityId().ToHex());
 
 
         byte[] primaryPubKey = clientPrimary.GetIdentityKeys().PublicKey;
@@ -145,9 +146,9 @@ namespace ProfileServerProtocolTests.Tests
         CardApplicationInformation cardApplication = clientPrimary.CreateRelationshipCardApplication(applicationId, signedCard);
         CardApplications.Add(cardApplication);
 
-        Message requestMessage = mbPrimary.CreateAddRelatedIdentityRequest(cardApplication, signedCard);
+        PsProtocolMessage requestMessage = mbPrimary.CreateAddRelatedIdentityRequest(cardApplication, signedCard);
         await clientPrimary.SendMessageAsync(requestMessage);
-        Message responseMessage = await clientPrimary.ReceiveMessageAsync();
+        PsProtocolMessage responseMessage = await clientPrimary.ReceiveMessageAsync();
 
         bool idOk = responseMessage.Id == requestMessage.Id;
         bool statusOk = responseMessage.Response.Status == Status.Ok;
@@ -643,7 +644,7 @@ namespace ProfileServerProtocolTests.Tests
 
             if (!applicationOk)
             {
-              log.Trace("Card application ID '{0}' for card index {1} is corrupted.", Crypto.ToHex(cardApplication.ApplicationId.ToByteArray()), cardIndex + 1);
+              log.Trace("Card application ID '{0}' for card index {1} is corrupted.", cardApplication.ApplicationId.ToByteArray().ToHex(), cardIndex + 1);
               error = true;
               break;
             }
@@ -653,7 +654,7 @@ namespace ProfileServerProtocolTests.Tests
         }
         else
         {
-          log.Trace("Card ID '{0}' not recognized.", Crypto.ToHex(cardId));
+          log.Trace("Card ID '{0}' not recognized.", cardId.ToHex());
           error = true;
           break;
         }

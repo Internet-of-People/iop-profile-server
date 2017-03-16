@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IopCommon;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -17,7 +18,7 @@ namespace ProfileServerNetworkSimulator
   /// </summary>
   public class Program
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerNetworkSimulator.Program");
+    private static Logger log = new Logger("ProfileServerNetworkSimulator.Program");
 
     /// <summary>
     /// Main program routine.

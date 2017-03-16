@@ -6,16 +6,18 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
-using ProfileServer.Utils;
+using IopCommon;
+using IopServerCore.Data;
 
 namespace ProfileServer.Data.Repositories
 {
   /// <summary>
   /// Repository of relations between hosted identities and other identities.
   /// </summary>
-  public class RelatedIdentityRepository : GenericRepository<RelatedIdentity>
+  public class RelatedIdentityRepository : GenericRepository<Context, RelatedIdentity>
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Data.Repositories.RelatedIdentityRepository");
+    /// <summary>Class logger.</summary>
+    private static Logger log = new Logger("ProfileServer.Data.Repositories.RelatedIdentityRepository");
 
 
     /// <summary>

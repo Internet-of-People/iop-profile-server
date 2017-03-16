@@ -1,6 +1,7 @@
-﻿using Google.Protobuf;
-using ProfileServerCrypto;
-using ProfileServerProtocol;
+﻿using IopCommon;
+using Google.Protobuf;
+using IopCrypto;
+using IopProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -21,7 +22,7 @@ namespace ProfileServerProtocolTests.Tests
   public class PS08022 : ProtocolTest
   {
     public const string TestName = "PS08022";
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocolTests.Tests." + TestName);
+    private static Logger log = new Logger("ProfileServerProtocolTests.Tests." + TestName);
 
     public override string Name { get { return TestName; } }
 
@@ -63,7 +64,7 @@ namespace ProfileServerProtocolTests.Tests
       LocServer locServer = null;
       try
       {
-        MessageBuilder mb = client.MessageBuilder;
+        PsMessageBuilder mb = client.MessageBuilder;
 
         // Step 1
         log.Trace("Step 1");
@@ -140,7 +141,7 @@ namespace ProfileServerProtocolTests.Tests
 
           profilesToSend.RemoveRange(0, batchSize);
 
-          Message updateRequest = await profileServer.SendNeighborhoodSharedProfileUpdateRequest(incomingServerMessage.Client, updateItems);
+          PsProtocolMessage updateRequest = await profileServer.SendNeighborhoodSharedProfileUpdateRequest(incomingServerMessage.Client, updateItems);
           profilesSent += batchSize;
           incomingServerMessage = await profileServer.WaitForResponse(ServerRole.ServerNeighbor, updateRequest);
 
@@ -155,7 +156,7 @@ namespace ProfileServerProtocolTests.Tests
 
 
         // Finish neighborhood initialization process.
-        Message finishRequest = await profileServer.SendFinishNeighborhoodInitializationRequest(incomingServerMessage.Client);
+        PsProtocolMessage finishRequest = await profileServer.SendFinishNeighborhoodInitializationRequest(incomingServerMessage.Client);
 
         incomingServerMessage = await profileServer.WaitForResponse(ServerRole.ServerNeighbor, finishRequest);
         statusOk = incomingServerMessage.IncomingMessage.Response.Status == Status.Ok;
@@ -178,10 +179,10 @@ namespace ProfileServerProtocolTests.Tests
           badUpdateItems.Add(pc.GetSharedProfileUpdateAddItem());
 
 
-        Message requestMessage = mb.CreateNeighborhoodSharedProfileUpdateRequest(badUpdateItems);
+        PsProtocolMessage requestMessage = mb.CreateNeighborhoodSharedProfileUpdateRequest(badUpdateItems);
         await client.SendMessageAsync(requestMessage);
 
-        Message responseMessage = await client.ReceiveMessageAsync();
+        PsProtocolMessage responseMessage = await client.ReceiveMessageAsync();
         bool idOk = responseMessage.Id == requestMessage.Id;
         statusOk = responseMessage.Response.Status == Status.ErrorInvalidValue;
         bool detailsOk = responseMessage.Response.Details == "10.add";

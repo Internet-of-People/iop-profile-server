@@ -1,12 +1,13 @@
 ﻿using Newtonsoft.Json;
-using ProfileServerCrypto;
-using ProfileServerProtocol;
+using IopCrypto;
+using IopProtocol;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using IopCommon;
 
 namespace ProfileServerNetworkSimulator
 {
@@ -148,7 +149,7 @@ namespace ProfileServerNetworkSimulator
   /// </summary>
   public class Snapshot
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerNetworkSimulator.Snapshot");
+    private static Logger log = new Logger("ProfileServerNetworkSimulator.Snapshot");
 
     /// <summary>Name of the file with serialized profile server information.</summary>
     public const string ProfileServersFileName = "ProfileServers.json";
@@ -227,7 +228,7 @@ namespace ProfileServerNetworkSimulator
         {
           if (!this.Images.ContainsKey(identitySnapshot.ProfileImageHash))
           {
-            string imageDataHex = Crypto.ToHex(identity.ProfileImage);
+            string imageDataHex = identity.ProfileImage.ToHex();
             this.Images.Add(identitySnapshot.ProfileImageHash, imageDataHex);
           }
         }
@@ -236,7 +237,7 @@ namespace ProfileServerNetworkSimulator
         {
           if (!this.Images.ContainsKey(identitySnapshot.ThumbnailImageHash))
           {
-            string imageDataHex = Crypto.ToHex(identity.ThumbnailImage);
+            string imageDataHex = identity.ThumbnailImage.ToHex();
             this.Images.Add(identitySnapshot.ThumbnailImageHash, imageDataHex);
           }
         }

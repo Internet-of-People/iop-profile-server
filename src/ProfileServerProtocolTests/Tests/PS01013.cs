@@ -1,5 +1,6 @@
-﻿using ProfileServerCrypto;
-using ProfileServerProtocol;
+﻿using IopCommon;
+using IopCrypto;
+using IopProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -20,7 +21,7 @@ namespace ProfileServerProtocolTests.Tests
   public class PS01013 : ProtocolTest
   {
     public const string TestName = "PS01013";
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocolTests.Tests." + TestName);
+    private static Logger log = new Logger("ProfileServerProtocolTests.Tests." + TestName);
 
     public override string Name { get { return TestName; } }
 
@@ -50,13 +51,13 @@ namespace ProfileServerProtocolTests.Tests
       ProtocolClient client = new ProtocolClient();
       try
       {
-        MessageBuilder mb = client.MessageBuilder;
+        PsMessageBuilder mb = client.MessageBuilder;
 
         // Step 1
         await client.ConnectAsync(ServerIp, PrimaryPort, false);
 
-        Message requestMessage = mb.CreateApplicationServiceReceiveMessageNotificationRequest(new byte[] { 0 } );
-        Message responseMessage = mb.CreateApplicationServiceReceiveMessageNotificationResponse(requestMessage);
+        PsProtocolMessage requestMessage = mb.CreateApplicationServiceReceiveMessageNotificationRequest(new byte[] { 0 } );
+        PsProtocolMessage responseMessage = mb.CreateApplicationServiceReceiveMessageNotificationResponse(requestMessage);
         await client.SendMessageAsync(responseMessage);
 
         // We should be disconnected by now, so sending or receiving should throw.

@@ -1,5 +1,5 @@
-﻿using ProfileServerCrypto;
-using ProfileServerProtocol;
+﻿using IopCrypto;
+using IopProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -13,6 +13,7 @@ using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Google.Protobuf;
+using IopCommon;
 
 namespace ProfileServerNetworkSimulator
 {
@@ -68,7 +69,7 @@ namespace ProfileServerNetworkSimulator
     private Stream stream;
 
     /// <summary>Message builder for easy creation of protocol message.</summary>
-    private MessageBuilder messageBuilder;
+    private PsMessageBuilder messageBuilder;
 
     /// <summary>Cryptographic Keys that represent the client's identity.</summary>
     private KeysEd25519 keys;
@@ -127,7 +128,7 @@ namespace ProfileServerNetworkSimulator
       version = SemVer.V100;
       keys = Ed25519.GenerateKeys();
       identityId = Crypto.Sha256(keys.PublicKey);
-      messageBuilder = new MessageBuilder(0, new List<SemVer>() { SemVer.V100 }, keys);
+      messageBuilder = new PsMessageBuilder(0, new List<SemVer>() { SemVer.V100 }, keys);
 
       profileInitialized = false;
       hostingActive = false;
@@ -312,9 +313,9 @@ namespace ProfileServerNetworkSimulator
         contract.IdentityType = IdentityType;
       }
 
-      Message requestMessage = messageBuilder.CreateRegisterHostingRequest(contract);
+      PsProtocolMessage requestMessage = messageBuilder.CreateRegisterHostingRequest(contract);
       await SendMessageAsync(requestMessage);
-      Message responseMessage = await ReceiveMessageAsync();
+      PsProtocolMessage responseMessage = await ReceiveMessageAsync();
 
       bool idOk = responseMessage.Id == requestMessage.Id;
       bool statusOk = responseMessage.Response.Status == Status.Ok;
@@ -332,11 +333,11 @@ namespace ProfileServerNetworkSimulator
     /// Generates client's challenge and creates start conversation request with it.
     /// </summary>
     /// <returns>StartConversationRequest message that is ready to be sent to the profile server.</returns>
-    public Message CreateStartConversationRequest()
+    public PsProtocolMessage CreateStartConversationRequest()
     {
-      clientChallenge = new byte[ProtocolHelper.ChallengeDataSize];
+      clientChallenge = new byte[PsMessageBuilder.ChallengeDataSize];
       Crypto.Rng.GetBytes(clientChallenge);
-      Message res = messageBuilder.CreateStartConversationRequest(clientChallenge);
+      PsProtocolMessage res = messageBuilder.CreateStartConversationRequest(clientChallenge);
       return res;
     }
 
@@ -348,9 +349,9 @@ namespace ProfileServerNetworkSimulator
     {
       log.Trace("()");
 
-      Message requestMessage = CreateStartConversationRequest();
+      PsProtocolMessage requestMessage = CreateStartConversationRequest();
       await SendMessageAsync(requestMessage);
-      Message responseMessage = await ReceiveMessageAsync();
+      PsProtocolMessage responseMessage = await ReceiveMessageAsync();
 
       bool idOk = responseMessage.Id == requestMessage.Id;
       bool statusOk = responseMessage.Response.Status == Status.Ok;
@@ -376,12 +377,12 @@ namespace ProfileServerNetworkSimulator
     /// Sends IoP protocol message over the network stream.
     /// </summary>
     /// <param name="Data">Message to send.</param>
-    public async Task SendMessageAsync(Message Data)
+    public async Task SendMessageAsync(PsProtocolMessage Data)
     {
       string dataStr = Data.ToString();
       log.Trace("()\n{0}", dataStr.Substring(0, Math.Min(dataStr.Length, 512)));
 
-      byte[] rawData = ProtocolHelper.GetMessageBytes(Data);
+      byte[] rawData = PsMessageBuilder.MessageToByteArray(Data);
       await stream.WriteAsync(rawData, 0, rawData.Length);
 
       log.Trace("(-)");
@@ -392,11 +393,11 @@ namespace ProfileServerNetworkSimulator
     /// Reads and parses protocol message from the network stream.
     /// </summary>
     /// <returns>Parsed protocol message or null if the function fails.</returns>
-    public async Task<Message> ReceiveMessageAsync()
+    public async Task<PsProtocolMessage> ReceiveMessageAsync()
     {
       log.Trace("()");
 
-      Message res = null;
+      PsProtocolMessage res = null;
 
       byte[] header = new byte[ProtocolHelper.HeaderSize];
       int headerBytesRead = 0;
@@ -440,7 +441,7 @@ namespace ProfileServerNetworkSimulator
         remain -= readAmount;
       }
 
-      res = MessageWithHeader.Parser.ParseFrom(messageBytes).Body;
+      res = new PsProtocolMessage(MessageWithHeader.Parser.ParseFrom(messageBytes).Body);
 
       string resStr = res.ToString();
       log.Trace("(-):\n{0}", resStr.Substring(0, Math.Min(resStr.Length, 512)));
@@ -453,7 +454,7 @@ namespace ProfileServerNetworkSimulator
     /// </summary>
     /// <param name="StartConversationResponse">StartConversationResponse received from the profile server.</param>
     /// <returns>true if the signature is valid, false otherwise.</returns>
-    public bool VerifyProfileServerChallengeSignature(Message StartConversationResponse)
+    public bool VerifyProfileServerChallengeSignature(PsProtocolMessage StartConversationResponse)
     {
       log.Trace("()");
 
@@ -478,9 +479,9 @@ namespace ProfileServerNetworkSimulator
     {
       log.Trace("()");
 
-      Message requestMessage = messageBuilder.CreateUpdateProfileRequest(SemVer.V100, Name, Image, Location, ExtraData);
+      PsProtocolMessage requestMessage = messageBuilder.CreateUpdateProfileRequest(SemVer.V100, Name, Image, Location, ExtraData);
       await SendMessageAsync(requestMessage);
-      Message responseMessage = await ReceiveMessageAsync();
+      PsProtocolMessage responseMessage = await ReceiveMessageAsync();
 
       bool idOk = responseMessage.Id == requestMessage.Id;
       bool statusOk = responseMessage.Response.Status == Status.Ok;
@@ -499,9 +500,9 @@ namespace ProfileServerNetworkSimulator
     {
       log.Trace("()");
 
-      Message requestMessage = messageBuilder.CreateGetIdentityInformationRequest(identityId, false, true, false);
+      PsProtocolMessage requestMessage = messageBuilder.CreateGetIdentityInformationRequest(identityId, false, true, false);
       await SendMessageAsync(requestMessage);
-      Message responseMessage = await ReceiveMessageAsync();
+      PsProtocolMessage responseMessage = await ReceiveMessageAsync();
 
       bool idOk = responseMessage.Id == requestMessage.Id;
       bool statusOk = responseMessage.Response.Status == Status.Ok;
@@ -524,9 +525,9 @@ namespace ProfileServerNetworkSimulator
 
       bool startConversationOk = await StartConversationAsync();
 
-      Message requestMessage = messageBuilder.CreateCheckInRequest(challenge);
+      PsProtocolMessage requestMessage = messageBuilder.CreateCheckInRequest(challenge);
       await SendMessageAsync(requestMessage);
-      Message responseMessage = await ReceiveMessageAsync();
+      PsProtocolMessage responseMessage = await ReceiveMessageAsync();
 
       bool idOk = responseMessage.Id == requestMessage.Id;
       bool statusOk = responseMessage.Response.Status == Status.Ok;
@@ -570,9 +571,9 @@ namespace ProfileServerNetworkSimulator
     {
       log.Trace("()");
 
-      Message requestMessage = messageBuilder.CreateCancelHostingAgreementRequest(null);
+      PsProtocolMessage requestMessage = messageBuilder.CreateCancelHostingAgreementRequest(null);
       await SendMessageAsync(requestMessage);
-      Message responseMessage = await ReceiveMessageAsync();
+      PsProtocolMessage responseMessage = await ReceiveMessageAsync();
 
       bool idOk = responseMessage.Id == requestMessage.Id;
       bool statusOk = responseMessage.Response.Status == Status.Ok;
@@ -619,9 +620,9 @@ namespace ProfileServerNetworkSimulator
         {
           uint maxResults = (uint)(IncludeImages ? 1000 : 10000);
           uint maxResponseResults = (uint)(IncludeImages ? 100 : 1000);
-          Message requestMessage = messageBuilder.CreateProfileSearchRequest(TypeFilter, NameFilter, null, LocationFilter, (uint)Radius, maxResponseResults, maxResults, IncludeHostedOnly, IncludeImages);
+          PsProtocolMessage requestMessage = messageBuilder.CreateProfileSearchRequest(TypeFilter, NameFilter, null, LocationFilter, (uint)Radius, maxResponseResults, maxResults, IncludeHostedOnly, IncludeImages);
           await SendMessageAsync(requestMessage);
-          Message responseMessage = await ReceiveMessageAsync();
+          PsProtocolMessage responseMessage = await ReceiveMessageAsync();
 
           bool idOk = responseMessage.Id == requestMessage.Id;
           bool statusOk = responseMessage.Response.Status == Status.Ok;
@@ -817,12 +818,12 @@ namespace ProfileServerNetworkSimulator
     {
       IdentitySnapshot res = new IdentitySnapshot()
       {
-        Challenge = Crypto.ToHex(this.challenge),
-        ClientChallenge = Crypto.ToHex(this.clientChallenge),
+        Challenge = this.challenge.ToHex(),
+        ClientChallenge = this.clientChallenge.ToHex(),
         ExpandedPrivateKeyHex = this.keys.ExpandedPrivateKeyHex,
         ExtraData = this.extraData,
         HostingActive = this.hostingActive,
-        IdentityId = Crypto.ToHex(this.identityId),
+        IdentityId = this.identityId.ToHex(),
         ImageFileName = Path.GetFileName(imageFileName),
         LocationLatitude = this.location.Latitude,
         LocationLongitude = this.location.Longitude,
@@ -830,7 +831,7 @@ namespace ProfileServerNetworkSimulator
         PrivateKeyHex = this.keys.PrivateKeyHex,
         ProfileInitialized = this.profileInitialized,
         ProfileImageHash = null,
-        ProfileServerKey = Crypto.ToHex(this.profileServerKey),
+        ProfileServerKey = this.profileServerKey.ToHex(),
         ProfileServerName = this.profileServer.Name,
         PublicKeyHex = this.keys.PublicKeyHex,
         ThumbnailImageHash = null,
@@ -842,14 +843,14 @@ namespace ProfileServerNetworkSimulator
       if (this.profileImage != null)
       {
         byte[] profileImageHash = Crypto.Sha256(profileImage);
-        string profileImageHashHex = Crypto.ToHex(profileImageHash);
+        string profileImageHashHex = profileImageHash.ToHex();
         res.ProfileImageHash = profileImageHashHex;
       }
 
       if (this.thumbnailImage != null)
       {
         byte[] thumbnailImageHash = Crypto.Sha256(thumbnailImage);
-        string thumbnailImageHashHex = Crypto.ToHex(thumbnailImageHash);
+        string thumbnailImageHashHex = thumbnailImageHash.ToHex();
         res.ThumbnailImageHash = thumbnailImageHashHex;
       }
 
@@ -868,35 +869,35 @@ namespace ProfileServerNetworkSimulator
     {
       IdentityClient res = new IdentityClient();
 
-      res.challenge = Crypto.FromHex(Snapshot.Challenge);
-      res.clientChallenge = Crypto.FromHex(Snapshot.ClientChallenge);
+      res.challenge = Snapshot.Challenge.FromHex();
+      res.clientChallenge = Snapshot.ClientChallenge.FromHex();
 
       res.keys = new KeysEd25519();
       res.keys.ExpandedPrivateKeyHex = Snapshot.ExpandedPrivateKeyHex;
       res.keys.PublicKeyHex = Snapshot.PublicKeyHex;
       res.keys.PrivateKeyHex = Snapshot.PrivateKeyHex;
-      res.keys.ExpandedPrivateKey = Crypto.FromHex(res.keys.ExpandedPrivateKeyHex);
-      res.keys.PublicKey = Crypto.FromHex(res.keys.PublicKeyHex);
-      res.keys.PrivateKey = Crypto.FromHex(res.keys.PrivateKeyHex);
+      res.keys.ExpandedPrivateKey = res.keys.ExpandedPrivateKeyHex.FromHex();
+      res.keys.PublicKey = res.keys.PublicKeyHex.FromHex();
+      res.keys.PrivateKey = res.keys.PrivateKeyHex.FromHex();
 
       res.extraData = Snapshot.ExtraData;
       res.hostingActive = Snapshot.HostingActive;
-      res.identityId = Crypto.FromHex(Snapshot.IdentityId);
+      res.identityId = Snapshot.IdentityId.FromHex();
       res.imageFileName = Snapshot.ImageFileName != null ? Path.Combine(CommandProcessor.ImagesDirectory, Snapshot.ImageFileName) : null;
       res.location = new GpsLocation(Snapshot.LocationLatitude, Snapshot.LocationLongitude);
       res.name = Snapshot.Name;
       res.profileInitialized = Snapshot.ProfileInitialized;
 
-      res.profileImage = Snapshot.ProfileImageHash != null ? Crypto.FromHex(Images[Snapshot.ProfileImageHash]) : null;
-      res.thumbnailImage = Snapshot.ThumbnailImageHash != null ? Crypto.FromHex(Images[Snapshot.ThumbnailImageHash]) : null;
+      res.profileImage = Snapshot.ProfileImageHash != null ? Images[Snapshot.ProfileImageHash].FromHex() : null;
+      res.thumbnailImage = Snapshot.ThumbnailImageHash != null ? Images[Snapshot.ThumbnailImageHash].FromHex() : null;
 
-      res.profileServerKey = Crypto.FromHex(Snapshot.ProfileServerKey);
+      res.profileServerKey = Snapshot.ProfileServerKey.FromHex();
       res.type = Snapshot.Type;
       res.version = Snapshot.Version;
 
       res.profileServer = ProfileServer;
       res.log = new PrefixLogger("ProfileServerSimulator.IdentityClient", "[" + res.Name + "] ");
-      res.messageBuilder = new MessageBuilder(0, new List<SemVer>() { SemVer.V100 }, res.keys);
+      res.messageBuilder = new PsMessageBuilder(0, new List<SemVer>() { SemVer.V100 }, res.keys);
       res.InitializeTcpClient();
 
       return res;

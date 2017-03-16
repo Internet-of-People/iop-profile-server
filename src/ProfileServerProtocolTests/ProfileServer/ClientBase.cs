@@ -1,5 +1,7 @@
 ﻿using Iop.Profileserver;
-using ProfileServerProtocol;
+using IopCommon;
+using IopCrypto;
+using IopProtocol;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,7 +21,8 @@ namespace ProfileServerProtocolTests
   /// </summary>
   public abstract class ClientBase : IDisposable
   {
-    protected NLog.Logger log;
+    /// <summary>Instance logger.</summary>
+    protected Logger log;
 
     /// <summary>IP address and port of the other end point of the connection.</summary>
     private IPEndPoint remoteEndPoint;
@@ -37,9 +40,9 @@ namespace ProfileServerProtocolTests
     public Stream Stream { get { return stream; } }
 
     /// <summary>Protocol message builder.</summary>
-    private MessageBuilder messageBuilder;
+    private PsMessageBuilder messageBuilder;
     /// <summary>Protocol message builder.</summary>
-    public MessageBuilder MessageBuilder { get { return messageBuilder; } }
+    public PsMessageBuilder MessageBuilder { get { return messageBuilder; } }
 
 
     /// <summary>If set to true, the client should be disconnected as soon as possible.</summary>
@@ -63,7 +66,7 @@ namespace ProfileServerProtocolTests
     /// <param name="UseTls">true if TLS should be used, false otherwise.</param>
     /// <param name="IdBase">Number to start message identifier series with.</param>
     /// <param name="Keys">Cryptographic keys of the server.</param>
-    public ClientBase(TcpClient Client, bool UseTls, uint IdBase, ProfileServerCrypto.KeysEd25519 Keys)
+    public ClientBase(TcpClient Client, bool UseTls, uint IdBase, KeysEd25519 Keys)
     {
       tcpClient = Client;
       tcpClient.LingerState = new LingerOption(true, 0);
@@ -76,7 +79,7 @@ namespace ProfileServerProtocolTests
       if (useTls)
         stream = new SslStream(stream, false, PeerCertificateValidationCallback);
 
-      messageBuilder = new MessageBuilder(IdBase, new List<SemVer>() { SemVer.V100 }, Keys);
+      messageBuilder = new PsMessageBuilder(IdBase, new List<SemVer>() { SemVer.V100 }, Keys);
     }
 
 
@@ -119,14 +122,14 @@ namespace ProfileServerProtocolTests
     /// </summary>
     /// <param name="Data">Raw data to be decoded to the message.</param>
     /// <returns>ProtoBuf message or null if the data do not represent a valid message.</returns>
-    public Message CreateMessageFromRawData(byte[] Data)
+    public PsProtocolMessage CreateMessageFromRawData(byte[] Data)
     {
       log.Trace("()");
 
-      Message res = null;
+      PsProtocolMessage res = null;
       try
       {
-        res = MessageWithHeader.Parser.ParseFrom(Data).Body;
+        res = new PsProtocolMessage(MessageWithHeader.Parser.ParseFrom(Data).Body);
         string msgStr = res.ToString();
         log.Trace("Received message:\n{0}", msgStr);
       }
@@ -147,17 +150,11 @@ namespace ProfileServerProtocolTests
     /// </summary>
     /// <param name="Message">Message to send.</param>
     /// <returns>true if the connection to the client should remain open, false otherwise.</returns>
-    public async Task<bool> SendMessageAsync(Message Message)
+    public async Task<bool> SendMessageAsync(PsProtocolMessage Message)
     {
       log.Trace("()");
 
       bool res = await SendMessageInternalAsync(Message);
-      if (res)
-      {
-        // If the message was sent successfully to the target, we close the connection only in case of protocol violation error.
-        if (Message.MessageTypeCase == Message.MessageTypeOneofCase.Response)
-          res = Message.Response.Status != Status.ErrorProtocolViolation;
-      }
 
       log.Trace("(-):{0}", res);
       return res;
@@ -169,7 +166,7 @@ namespace ProfileServerProtocolTests
     /// </summary>
     /// <param name="Message">Message to send.</param>
     /// <returns>true if the message was sent successfully to the target recipient.</returns>
-    protected async Task<bool> SendMessageInternalAsync(Message Message)
+    protected async Task<bool> SendMessageInternalAsync(PsProtocolMessage Message)
     {
       log.Trace("()");
 
@@ -177,7 +174,7 @@ namespace ProfileServerProtocolTests
 
       string msgStr = Message.ToString();
       log.Trace("Sending message:\n{0}", msgStr);
-      byte[] messageBytes = ProtocolHelper.GetMessageBytes(Message);
+      byte[] messageBytes = PsMessageBuilder.MessageToByteArray(Message);
 
       await streamWriteLock.WaitAsync();
       try

@@ -1,6 +1,7 @@
-﻿using Google.Protobuf;
-using ProfileServerCrypto;
-using ProfileServerProtocol;
+﻿using IopCommon;
+using Google.Protobuf;
+using IopCrypto;
+using IopProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -21,7 +22,7 @@ namespace ProfileServerProtocolTests.Tests
   public class PS06001 : ProtocolTest
   {
     public const string TestName = "PS06001";
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocolTests.Tests." + TestName);
+    private static Logger log = new Logger("ProfileServerProtocolTests.Tests." + TestName);
 
     public override string Name { get { return TestName; } }
 
@@ -118,7 +119,7 @@ namespace ProfileServerProtocolTests.Tests
       ProtocolClient client = new ProtocolClient();
       try
       {
-        MessageBuilder mb = client.MessageBuilder;
+        PsMessageBuilder mb = client.MessageBuilder;
 
         // Step 1
         log.Trace("Step 1");
@@ -170,10 +171,10 @@ namespace ProfileServerProtocolTests.Tests
         await client.ConnectAsync(ServerIp, (int)rolePorts[ServerRoleType.ClNonCustomer], true);
         bool startConversationOk = await client.StartConversationAsync();
 
-        Message requestMessage = mb.CreateProfileSearchRequest(null, null, null, null, 0, 100, 100);
+        PsProtocolMessage requestMessage = mb.CreateProfileSearchRequest(null, null, null, null, 0, 100, 100);
         await client.SendMessageAsync(requestMessage);
 
-        Message responseMessage = await client.ReceiveMessageAsync();
+        PsProtocolMessage responseMessage = await client.ReceiveMessageAsync();
         bool idOk = responseMessage.Id == requestMessage.Id;
         bool statusOk = responseMessage.Response.Status == Status.Ok;
 
@@ -880,7 +881,7 @@ namespace ProfileServerProtocolTests.Tests
         }
         else
         {
-          log.Trace("Profile pub key {0} not recognized.", Crypto.ToHex(pubKey));
+          log.Trace("Profile pub key {0} not recognized.", pubKey.ToHex());
           error = true;
           break;
         }

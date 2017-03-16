@@ -1,4 +1,5 @@
-﻿using ProfileServerProtocol;
+﻿using IopCommon;
+using IopProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -19,7 +20,7 @@ namespace ProfileServerProtocolTests.Tests
   public class PS01008 : ProtocolTest
   {
     public const string TestName = "PS01008";
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocolTests.Tests." + TestName);
+    private static Logger log = new Logger("ProfileServerProtocolTests.Tests." + TestName);
 
     public override string Name { get { return TestName; } }
 
@@ -49,14 +50,14 @@ namespace ProfileServerProtocolTests.Tests
       ProtocolClient client = new ProtocolClient();
       try
       {
-        MessageBuilder mb = client.MessageBuilder;
+        PsMessageBuilder mb = client.MessageBuilder;
 
         // Step 1
         await client.ConnectAsync(ServerIp, PrimaryPort, false);
 
-        Message requestMessage = mb.CreateGetIdentityInformationRequest(client.GetIdentityId());
+        PsProtocolMessage requestMessage = mb.CreateGetIdentityInformationRequest(client.GetIdentityId());
         await client.SendMessageAsync(requestMessage);
-        Message responseMessage = await client.ReceiveMessageAsync();
+        PsProtocolMessage responseMessage = await client.ReceiveMessageAsync();
 
         bool idOk = responseMessage.Id == requestMessage.Id;
         bool statusOk = responseMessage.Response.Status == Status.ErrorBadRole;

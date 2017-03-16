@@ -1,4 +1,5 @@
-﻿using ProfileServerCrypto;
+﻿using IopCommon;
+using IopCrypto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +23,7 @@ namespace UnitTests
 
       byte[] signature = Ed25519.Sign(message, keys.ExpandedPrivateKey);
 
-      string signatureString = Crypto.ToHex(signature);
+      string signatureString = signature.ToHex();
 
       Assert.Equal("85F2D841785E01E1D7C87E6354E8FBF525227A1C3C10C5F58FEE1BDA6C126EE941FD84AE76188AD0FB2B5FBBDE839F9097E7D8AE79463F4B0A534E80C916C70D", signatureString);
       Assert.Equal(true, Ed25519.Verify(signature, message, keys.PublicKey));

@@ -1,6 +1,6 @@
 ﻿using Google.Protobuf;
-using ProfileServerCrypto;
-using ProfileServerProtocol;
+using IopCrypto;
+using IopProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -10,6 +10,8 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using IopCommon;
+using IopServerCore.Network;
 
 namespace ProfileServerProtocolTests
 {
@@ -45,9 +47,9 @@ namespace ProfileServerProtocolTests
     /// <param name="Client">TCP client who send the message.</param>
     /// <param name="IncomingMessage">Full ProtoBuf message to be processed.</param>
     /// <returns>true if the conversation with the client should continue, false if a protocol violation error occurred and the client should be disconnected.</returns>
-    public async Task<bool> ProcessMessageAsync(IncomingClient Client, Message IncomingMessage)
+    public async Task<bool> ProcessMessageAsync(IncomingClient Client, PsProtocolMessage IncomingMessage)
     {
-      MessageBuilder messageBuilder = Client.MessageBuilder;
+      PsMessageBuilder messageBuilder = Client.MessageBuilder;
 
       bool res = false;
       log.Debug("()");
@@ -59,7 +61,7 @@ namespace ProfileServerProtocolTests
         {
           case Message.MessageTypeOneofCase.Request:
             {
-              Message responseMessage = messageBuilder.CreateErrorProtocolViolationResponse(IncomingMessage);
+              PsProtocolMessage responseMessage = messageBuilder.CreateErrorProtocolViolationResponse(IncomingMessage);
               Request request = IncomingMessage.Request;
               log.Trace("Request conversation type is {0}.", request.ConversationTypeCase);
               switch (request.ConversationTypeCase)
@@ -98,7 +100,7 @@ namespace ProfileServerProtocolTests
                   {
                     ConversationRequest conversationRequest = request.ConversationRequest;
                     log.Trace("Conversation request type is {0}.", conversationRequest.RequestTypeCase);
-                    if (conversationRequest.Signature.Length > 0) log.Trace("Conversation signature is '{0}'.", Crypto.ToHex(conversationRequest.Signature.ToByteArray()));
+                    if (conversationRequest.Signature.Length > 0) log.Trace("Conversation signature is '{0}'.", conversationRequest.Signature.ToByteArray().ToHex());
                     else log.Trace("No signature provided.");
 
                     switch (conversationRequest.RequestTypeCase)
@@ -146,6 +148,12 @@ namespace ProfileServerProtocolTests
               {
                 // Send response to client.
                 res = await Client.SendMessageAsync(responseMessage);
+                if (res)
+                {
+                  // If the message was sent successfully to the target, we close the connection only in case of protocol violation error.
+                  if (responseMessage.MessageTypeCase == Message.MessageTypeOneofCase.Response)
+                    res = responseMessage.Response.Status != Status.ErrorProtocolViolation;
+                }
               }
               else
               {
@@ -168,7 +176,7 @@ namespace ProfileServerProtocolTests
               UnfinishedRequest unfinishedRequest = Client.GetAndRemoveUnfinishedRequest(IncomingMessage.Id);
               if ((unfinishedRequest != null) && (unfinishedRequest.RequestMessage != null))
               {
-                Message requestMessage = unfinishedRequest.RequestMessage;
+                PsProtocolMessage requestMessage = (PsProtocolMessage)unfinishedRequest.RequestMessage;
                 Request request = requestMessage.Request;
                 // We now check whether the response message type corresponds with the request type.
                 // This is only valid if the status is Ok. If the message types do not match, we disconnect 
@@ -284,8 +292,8 @@ namespace ProfileServerProtocolTests
     /// <param name="Client">Client to send the error to.</param>
     public async Task SendProtocolViolation(IncomingClient Client)
     {
-      MessageBuilder mb = new MessageBuilder(0, new List<SemVer>() { SemVer.V100 }, null);
-      Message response = mb.CreateErrorProtocolViolationResponse(new Message() { Id = 0x0BADC0DE });
+      PsMessageBuilder mb = new PsMessageBuilder(0, new List<SemVer>() { SemVer.V100 }, null);
+      PsProtocolMessage response = mb.CreateErrorProtocolViolationResponse(new PsProtocolMessage(new Message() { Id = 0x0BADC0DE }));
 
       await Client.SendMessageAsync(response);
     }
@@ -332,14 +340,14 @@ namespace ProfileServerProtocolTests
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public Message ProcessMessagePingRequest(IncomingClient Client, Message RequestMessage)
+    public PsProtocolMessage ProcessMessagePingRequest(IncomingClient Client, PsProtocolMessage RequestMessage)
     {
       log.Trace("()");
 
-      MessageBuilder messageBuilder = Client.MessageBuilder;
+      PsMessageBuilder messageBuilder = Client.MessageBuilder;
       PingRequest pingRequest = RequestMessage.Request.SingleRequest.Ping;
 
-      Message res = messageBuilder.CreatePingResponse(RequestMessage, pingRequest.Payload.ToByteArray(), ProtocolHelper.GetUnixTimestampMs());
+      PsProtocolMessage res = messageBuilder.CreatePingResponse(RequestMessage, pingRequest.Payload.ToByteArray(), ProtocolHelper.GetUnixTimestampMs());
 
       log.Trace("(-):*.Response.Status={0}", res.Response.Status);
       return res;
@@ -353,13 +361,13 @@ namespace ProfileServerProtocolTests
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public Message ProcessMessageListRolesRequest(IncomingClient Client, Message RequestMessage)
+    public PsProtocolMessage ProcessMessageListRolesRequest(IncomingClient Client, PsProtocolMessage RequestMessage)
     {
       log.Trace("()");
 
-      MessageBuilder messageBuilder = Client.MessageBuilder;
+      PsMessageBuilder messageBuilder = Client.MessageBuilder;
 
-      Message res = messageBuilder.CreateErrorBadRoleResponse(RequestMessage);
+      PsProtocolMessage res = messageBuilder.CreateErrorBadRoleResponse(RequestMessage);
       if (Client.ServerRole != ServerRole.Primary)
       {
         log.Trace("(-):*.Response.Status={0}", res.Response.Status);
@@ -446,19 +454,19 @@ namespace ProfileServerProtocolTests
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public Message ProcessMessageStartConversationRequest(IncomingClient Client, Message RequestMessage)
+    public PsProtocolMessage ProcessMessageStartConversationRequest(IncomingClient Client, PsProtocolMessage RequestMessage)
     {
       log.Trace("()");
 
-      Message res = null;
+      PsProtocolMessage res = null;
 
 
-      MessageBuilder messageBuilder = Client.MessageBuilder;
+      PsMessageBuilder messageBuilder = Client.MessageBuilder;
       StartConversationRequest startConversationRequest = RequestMessage.Request.ConversationRequest.Start;
       byte[] clientChallenge = startConversationRequest.ClientChallenge.ToByteArray();
       byte[] pubKey = startConversationRequest.PublicKey.ToByteArray();
 
-      if (clientChallenge.Length == ProtocolHelper.ChallengeDataSize)
+      if (clientChallenge.Length == PsMessageBuilder.ChallengeDataSize)
       {
         SemVer version;
         if (GetCommonSupportedVersion(startConversationRequest.SupportedVersions, out version))
@@ -468,13 +476,13 @@ namespace ProfileServerProtocolTests
 
           Client.MessageBuilder.SetProtocolVersion(version);
 
-          byte[] challenge = new byte[ProtocolHelper.ChallengeDataSize];
+          byte[] challenge = new byte[PsMessageBuilder.ChallengeDataSize];
           Crypto.Rng.GetBytes(challenge);
           Client.AuthenticationChallenge = challenge;
           Client.ConversationStatus = ClientConversationStatus.ConversationStarted;
 
           log.Debug("Client {0} conversation status updated to {1}, selected version is '{2}', client public key set to '{3}', client identity ID set to '{4}', challenge set to '{5}'.",
-            Client.RemoteEndPoint, Client.ConversationStatus, version, Crypto.ToHex(Client.PublicKey), Crypto.ToHex(Client.IdentityId), Crypto.ToHex(Client.AuthenticationChallenge));
+            Client.RemoteEndPoint, Client.ConversationStatus, version, Client.PublicKey.ToHex(), Client.IdentityId.ToHex(), Client.AuthenticationChallenge.ToHex());
 
           res = messageBuilder.CreateStartConversationResponse(RequestMessage, version, profileServer.Keys.PublicKey, Client.AuthenticationChallenge, clientChallenge);
         }
@@ -486,7 +494,7 @@ namespace ProfileServerProtocolTests
       }
       else
       {
-        log.Warn("Client send clientChallenge, which is {0} bytes long, but it should be {1} bytes long.", clientChallenge.Length, ProtocolHelper.ChallengeDataSize);
+        log.Warn("Client send clientChallenge, which is {0} bytes long, but it should be {1} bytes long.", clientChallenge.Length, PsMessageBuilder.ChallengeDataSize);
         res = messageBuilder.CreateErrorInvalidValueResponse(RequestMessage, "clientChallenge");
       }
 
@@ -503,12 +511,12 @@ namespace ProfileServerProtocolTests
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public Message ProcessMessageVerifyIdentityRequest(IncomingClient Client, Message RequestMessage)
+    public PsProtocolMessage ProcessMessageVerifyIdentityRequest(IncomingClient Client, PsProtocolMessage RequestMessage)
     {
       log.Trace("()");
 
-      MessageBuilder messageBuilder = Client.MessageBuilder;
-      Message res = messageBuilder.CreateErrorBadRoleResponse(RequestMessage);
+      PsMessageBuilder messageBuilder = Client.MessageBuilder;
+      PsProtocolMessage res = messageBuilder.CreateErrorBadRoleResponse(RequestMessage);
       if ((Client.ServerRole != ServerRole.ServerNeighbor) && (Client.ServerRole != ServerRole.ClientNonCustomer))
       {
         log.Trace("(-):*.Response.Status={0}", res.Response.Status);
@@ -518,7 +526,7 @@ namespace ProfileServerProtocolTests
       VerifyIdentityRequest verifyIdentityRequest = RequestMessage.Request.ConversationRequest.VerifyIdentity;
 
       byte[] challenge = verifyIdentityRequest.Challenge.ToByteArray();
-      log.Debug("Identity '{0}' successfully verified its public key.", Crypto.ToHex(Client.IdentityId));
+      log.Debug("Identity '{0}' successfully verified its public key.", Client.IdentityId.ToHex());
       Client.ConversationStatus = ClientConversationStatus.Verified;
       res = messageBuilder.CreateVerifyIdentityResponse(RequestMessage);
 
@@ -537,12 +545,12 @@ namespace ProfileServerProtocolTests
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client, or null if no response is to be sent by the calling function.</returns>
-    public Message ProcessMessageStartNeighborhoodInitializationRequest(IncomingClient Client, Message RequestMessage)
+    public PsProtocolMessage ProcessMessageStartNeighborhoodInitializationRequest(IncomingClient Client, PsProtocolMessage RequestMessage)
     {
       log.Trace("()");
 
-      MessageBuilder messageBuilder = Client.MessageBuilder;
-      Message res = messageBuilder.CreateErrorBadRoleResponse(RequestMessage);
+      PsMessageBuilder messageBuilder = Client.MessageBuilder;
+      PsProtocolMessage res = messageBuilder.CreateErrorBadRoleResponse(RequestMessage);
       if ((Client.ServerRole != ServerRole.ServerNeighbor) && (Client.ServerRole != ServerRole.ClientNonCustomer))
       {
         log.Trace("(-):*.Response.Status={0}", res.Response.Status);
@@ -563,12 +571,12 @@ namespace ProfileServerProtocolTests
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public Message ProcessMessageFinishNeighborhoodInitializationRequest(IncomingClient Client, Message RequestMessage)
+    public PsProtocolMessage ProcessMessageFinishNeighborhoodInitializationRequest(IncomingClient Client, PsProtocolMessage RequestMessage)
     {
       log.Trace("()");
 
-      Message res = null;
-      MessageBuilder messageBuilder = Client.MessageBuilder;
+      PsProtocolMessage res = null;
+      PsMessageBuilder messageBuilder = Client.MessageBuilder;
       res = messageBuilder.CreateErrorRejectedResponse(RequestMessage);
 
       log.Trace("(-):*.Response.Status={0}", res.Response.Status);
@@ -584,12 +592,12 @@ namespace ProfileServerProtocolTests
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public Message ProcessMessageNeighborhoodSharedProfileUpdateRequest(IncomingClient Client, Message RequestMessage)
+    public PsProtocolMessage ProcessMessageNeighborhoodSharedProfileUpdateRequest(IncomingClient Client, PsProtocolMessage RequestMessage)
     {
       log.Trace("()");
 
-      MessageBuilder messageBuilder = Client.MessageBuilder;
-      Message res = messageBuilder.CreateErrorBadRoleResponse(RequestMessage);
+      PsMessageBuilder messageBuilder = Client.MessageBuilder;
+      PsProtocolMessage res = messageBuilder.CreateErrorBadRoleResponse(RequestMessage);
       if (Client.ServerRole != ServerRole.ServerNeighbor)
       {
         log.Trace("(-):*.Response.Status={0}", res.Response.Status);
@@ -620,12 +628,12 @@ namespace ProfileServerProtocolTests
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public Message ProcessMessageStopNeighborhoodUpdatesRequest(IncomingClient Client, Message RequestMessage)
+    public PsProtocolMessage ProcessMessageStopNeighborhoodUpdatesRequest(IncomingClient Client, PsProtocolMessage RequestMessage)
     {
       log.Trace("()");
 
-      MessageBuilder messageBuilder = Client.MessageBuilder;
-      Message res = messageBuilder.CreateErrorBadRoleResponse(RequestMessage);
+      PsMessageBuilder messageBuilder = Client.MessageBuilder;
+      PsProtocolMessage res = messageBuilder.CreateErrorBadRoleResponse(RequestMessage);
       if (Client.ServerRole != ServerRole.ServerNeighbor)
       {
         log.Trace("(-):*.Response.Status={0}", res.Response.Status);
@@ -646,7 +654,7 @@ namespace ProfileServerProtocolTests
     /// <param name="ResponseMessage">Full response message.</param>
     /// <param name="Request">Unfinished request message that corresponds to the response message.</param>
     /// <returns>true if the connection to the client that sent the response should remain open, false if the client should be disconnected.</returns>
-    public bool ProcessMessageNeighborhoodSharedProfileUpdateResponse(IncomingClient Client, Message ResponseMessage, UnfinishedRequest Request)
+    public bool ProcessMessageNeighborhoodSharedProfileUpdateResponse(IncomingClient Client, PsProtocolMessage ResponseMessage, UnfinishedRequest Request)
     {
       log.Trace("()");
 
@@ -664,7 +672,7 @@ namespace ProfileServerProtocolTests
     /// <param name="ResponseMessage">Full response message.</param>
     /// <param name="Request">Unfinished request message that corresponds to the response message.</param>
     /// <returns>true if the connection to the client that sent the response should remain open, false if the client should be disconnected.</returns>
-    public bool ProcessMessageFinishNeighborhoodInitializationResponse(IncomingClient Client, Message ResponseMessage, UnfinishedRequest Request)
+    public bool ProcessMessageFinishNeighborhoodInitializationResponse(IncomingClient Client, PsProtocolMessage ResponseMessage, UnfinishedRequest Request)
     {
       log.Trace("()");
 

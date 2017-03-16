@@ -1,5 +1,5 @@
-﻿using ProfileServer.Utils;
-using ProfileServerProtocol;
+﻿using IopCommon;
+using IopProtocol;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -21,7 +21,7 @@ namespace ProfileServer.Data.Models
   /// </summary>
   public class Follower
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Data.Models.Follower");
+    private static Logger log = new Logger("ProfileServer.Data.Models.Follower");
 
     /// <summary>Unique primary key for the database.</summary>
     /// <remarks>This is primary key - see ProfileServer.Data.Context.OnModelCreating.</remarks>

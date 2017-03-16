@@ -1,6 +1,6 @@
 ﻿using Google.Protobuf;
-using ProfileServerCrypto;
-using ProfileServerProtocol;
+using IopCrypto;
+using IopProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -12,6 +12,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using Iop.Locnet;
+using IopCommon;
 
 namespace ProfileServerProtocolTests.Tests
 {
@@ -22,7 +23,7 @@ namespace ProfileServerProtocolTests.Tests
   public class PS08018 : ProtocolTest
   {
     public const string TestName = "PS08018";
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocolTests.Tests." + TestName);
+    private static Logger log = new Logger("ProfileServerProtocolTests.Tests." + TestName);
 
     public override string Name { get { return TestName; } }
 
@@ -65,12 +66,12 @@ namespace ProfileServerProtocolTests.Tests
       LocServer locServer = null;
       try
       {
-        MessageBuilder mb = client.MessageBuilder;
+        PsMessageBuilder mb = client.MessageBuilder;
 
         // Step 1
         log.Trace("Step 1");
 
-        profileServer = new ProfileServer("TestProfileServer", ServerIp, BasePort, client.GetIdentityKeys(), new ProfileServerProtocol.GpsLocation(1, 2));
+        profileServer = new ProfileServer("TestProfileServer", ServerIp, BasePort, client.GetIdentityKeys(), new IopProtocol.GpsLocation(1, 2));
         bool profileServerStartOk = profileServer.Start();
 
 
@@ -95,7 +96,7 @@ namespace ProfileServerProtocolTests.Tests
 
         IncomingServerMessage incomingServerMessage = await profileServer.WaitForConversationRequest(ServerRole.ServerNeighbor, ConversationRequest.RequestTypeOneofCase.StartNeighborhoodInitialization);
 
-        Iop.Profileserver.Message finishRequest = await profileServer.SendFinishNeighborhoodInitializationRequest(incomingServerMessage.Client);
+        PsProtocolMessage finishRequest = await profileServer.SendFinishNeighborhoodInitializationRequest(incomingServerMessage.Client);
 
         incomingServerMessage = await profileServer.WaitForResponse(ServerRole.ServerNeighbor, finishRequest);
         bool statusOk = incomingServerMessage.IncomingMessage.Response.Status == Iop.Profileserver.Status.Ok;

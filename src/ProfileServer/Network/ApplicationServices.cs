@@ -1,9 +1,9 @@
-﻿using ProfileServer.Utils;
-using ProfileServerCrypto;
+﻿using IopCrypto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using IopCommon;
 
 namespace ProfileServer.Network
 {
@@ -14,7 +14,8 @@ namespace ProfileServer.Network
   /// </summary>
   public class ApplicationServices
   {
-    private PrefixLogger log;
+    /// <summary>Instance logger.</summary>
+    private Logger log;
 
     /// <summary>Lock object for synchronized access to application services.</summary>
     private object lockObject = new object();
@@ -27,7 +28,7 @@ namespace ProfileServer.Network
     public ApplicationServices(string LogPrefix)
     {
       string logName = "ProfileServer.Network.ApplicationServices";
-      log = new PrefixLogger(logName, LogPrefix);
+      log = new Logger(logName, LogPrefix);
       log.Trace("()");
 
       log.Trace("(-)");

@@ -1,4 +1,4 @@
-﻿using ProfileServerProtocol;
+﻿using IopProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections.Generic;
@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using IopCommon;
 
 namespace ProfileServerProtocolTests.Tests
 {
@@ -18,7 +19,7 @@ namespace ProfileServerProtocolTests.Tests
   public class PS00003 : ProtocolTest
   {
     public const string TestName = "PS00003";
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocolTests.Tests." + TestName);
+    private static Logger log = new Logger("ProfileServerProtocolTests.Tests." + TestName);
 
     public override string Name { get { return TestName; } }
 
@@ -48,7 +49,7 @@ namespace ProfileServerProtocolTests.Tests
       ProtocolClient client = new ProtocolClient();
       try
       {
-        MessageBuilder mb = client.MessageBuilder;
+        PsMessageBuilder mb = client.MessageBuilder;
 
         // Step 1
         await client.ConnectAsync(ServerIp, PrimaryPort, false);
@@ -58,7 +59,7 @@ namespace ProfileServerProtocolTests.Tests
         log.Trace("Wait completed.");
 
         byte[] payload = Encoding.UTF8.GetBytes("test");
-        Message requestMessage = mb.CreatePingRequest(payload);
+        PsProtocolMessage requestMessage = mb.CreatePingRequest(payload);
 
         // We should be disconnected by now, so sending or receiving should throw.
         bool disconnectedOk = false;

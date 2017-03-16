@@ -1,6 +1,6 @@
 ﻿using Google.Protobuf;
-using ProfileServerCrypto;
-using ProfileServerProtocol;
+using IopCrypto;
+using IopProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -12,6 +12,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using IopCommon;
 
 namespace ProfileServerProtocolTests.Tests
 {
@@ -22,7 +23,7 @@ namespace ProfileServerProtocolTests.Tests
   public class PS05004 : ProtocolTest
   {
     public const string TestName = "PS05004";
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocolTests.Tests." + TestName);
+    private static Logger log = new Logger("ProfileServerProtocolTests.Tests." + TestName);
 
     public override string Name { get { return TestName; } }
 
@@ -126,11 +127,11 @@ namespace ProfileServerProtocolTests.Tests
       ProtocolClient clientCallerAppService = new ProtocolClient(0, SemVer.V100, clientCaller.GetIdentityKeys());
       try
       {
-        MessageBuilder mbCallee = clientCallee.MessageBuilder;
-        MessageBuilder mbCalleeAppService = clientCalleeAppService.MessageBuilder;
+        PsMessageBuilder mbCallee = clientCallee.MessageBuilder;
+        PsMessageBuilder mbCalleeAppService = clientCalleeAppService.MessageBuilder;
 
-        MessageBuilder mbCaller = clientCaller.MessageBuilder;
-        MessageBuilder mbCallerAppService = clientCallerAppService.MessageBuilder;
+        PsMessageBuilder mbCaller = clientCaller.MessageBuilder;
+        PsMessageBuilder mbCallerAppService = clientCallerAppService.MessageBuilder;
 
         byte[] pubKeyCallee = clientCallee.GetIdentityKeys().PublicKey;
         byte[] identityIdCallee = clientCallee.GetIdentityId();
@@ -192,7 +193,7 @@ namespace ProfileServerProtocolTests.Tests
         await clientCaller.ConnectAsync(ServerIp, (int)rolePorts[ServerRoleType.ClNonCustomer], true);
         bool verifyIdentityOk = await clientCaller.VerifyIdentityAsync();
 
-        Message requestMessage = mbCaller.CreateCallIdentityApplicationServiceRequest(identityIdCallee, serviceName);
+        PsProtocolMessage requestMessage = mbCaller.CreateCallIdentityApplicationServiceRequest(identityIdCallee, serviceName);
         await clientCaller.SendMessageAsync(requestMessage);
 
 
@@ -205,7 +206,7 @@ namespace ProfileServerProtocolTests.Tests
 
         // Step 3
         log.Trace("Step 3");
-        Message serverRequestMessage = await clientCallee.ReceiveMessageAsync();
+        PsProtocolMessage serverRequestMessage = await clientCallee.ReceiveMessageAsync();
 
         byte[] receivedPubKey = serverRequestMessage.Request.ConversationRequest.IncomingCallNotification.CallerPublicKey.ToByteArray();
         bool pubKeyOk = StructuralComparisons.StructuralComparer.Compare(receivedPubKey, pubKeyCaller) == 0;
@@ -215,14 +216,14 @@ namespace ProfileServerProtocolTests.Tests
 
         byte[] calleeToken = serverRequestMessage.Request.ConversationRequest.IncomingCallNotification.CalleeToken.ToByteArray();
 
-        Message serverResponseMessage = mbCallee.CreateIncomingCallNotificationResponse(serverRequestMessage);
+        PsProtocolMessage serverResponseMessage = mbCallee.CreateIncomingCallNotificationResponse(serverRequestMessage);
         await clientCallee.SendMessageAsync(serverResponseMessage);
 
 
         // Connect to clAppService and send initialization message.
         await clientCalleeAppService.ConnectAsync(ServerIp, (int)rolePorts[ServerRoleType.ClAppService], true);
 
-        Message requestMessageAppServiceCallee = mbCalleeAppService.CreateApplicationServiceSendMessageRequest(calleeToken, null);
+        PsProtocolMessage requestMessageAppServiceCallee = mbCalleeAppService.CreateApplicationServiceSendMessageRequest(calleeToken, null);
         await clientCalleeAppService.SendMessageAsync(requestMessageAppServiceCallee);
 
 
@@ -234,7 +235,7 @@ namespace ProfileServerProtocolTests.Tests
 
         // Step 4
         log.Trace("Step 4");
-        Message responseMessage = await clientCaller.ReceiveMessageAsync();
+        PsProtocolMessage responseMessage = await clientCaller.ReceiveMessageAsync();
         bool idOk = responseMessage.Id == requestMessage.Id;
         bool statusOk = responseMessage.Response.Status == Status.Ok;
         byte[] callerToken = responseMessage.Response.ConversationResponse.CallIdentityApplicationService.CallerToken.ToByteArray();
@@ -243,10 +244,10 @@ namespace ProfileServerProtocolTests.Tests
 
         // Connect to clAppService and send initialization message.
         await clientCallerAppService.ConnectAsync(ServerIp, (int)rolePorts[ServerRoleType.ClAppService], true);
-        Message requestMessageAppServiceCaller = mbCallerAppService.CreateApplicationServiceSendMessageRequest(callerToken, null);
+        PsProtocolMessage requestMessageAppServiceCaller = mbCallerAppService.CreateApplicationServiceSendMessageRequest(callerToken, null);
         await clientCallerAppService.SendMessageAsync(requestMessageAppServiceCaller);
 
-        Message responseMessageAppServiceCaller = await clientCallerAppService.ReceiveMessageAsync();
+        PsProtocolMessage responseMessageAppServiceCaller = await clientCallerAppService.ReceiveMessageAsync();
 
         idOk = responseMessageAppServiceCaller.Id == requestMessageAppServiceCaller.Id;
         statusOk = responseMessageAppServiceCaller.Response.Status == Status.Ok;
@@ -266,7 +267,7 @@ namespace ProfileServerProtocolTests.Tests
 
         // Step 5
         log.Trace("Step 5");
-        Message responseMessageAppServiceCallee = await clientCalleeAppService.ReceiveMessageAsync();
+        PsProtocolMessage responseMessageAppServiceCallee = await clientCalleeAppService.ReceiveMessageAsync();
         idOk = responseMessageAppServiceCallee.Id == requestMessageAppServiceCallee.Id;
         statusOk = responseMessageAppServiceCallee.Response.Status == Status.Ok;
 
@@ -345,7 +346,7 @@ namespace ProfileServerProtocolTests.Tests
     /// <param name="WriteLock">Lock object to protect write access to client's stream.</param>
     /// <param name="UnfinishedRequestCounter">Unfinished request counter object.</param>
     /// <returns></returns>
-    public static async Task<byte[]> MessageSendingLoop(ProtocolClient Client, MessageBuilder Builder, string Name, byte[] Token, SemaphoreSlim WriteLock, UnfinishedRequestCounter UnfinishedRequestCounter)
+    public static async Task<byte[]> MessageSendingLoop(ProtocolClient Client, PsMessageBuilder Builder, string Name, byte[] Token, SemaphoreSlim WriteLock, UnfinishedRequestCounter UnfinishedRequestCounter)
     {
       string prefix = string.Format("[{0}] ", Name);
       log.Trace(prefix + "()");
@@ -367,7 +368,7 @@ namespace ProfileServerProtocolTests.Tests
         await UnfinishedRequestCounter.WaitAndIncrement();
         await WriteLock.WaitAsync();
 
-        Message appServiceMessageRequest = Builder.CreateApplicationServiceSendMessageRequest(Token, msg);
+        PsProtocolMessage appServiceMessageRequest = Builder.CreateApplicationServiceSendMessageRequest(Token, msg);
         await Client.SendMessageAsync(appServiceMessageRequest);
 
         WriteLock.Release();
@@ -388,7 +389,7 @@ namespace ProfileServerProtocolTests.Tests
 
       byte[] finalHash = Crypto.Sha256(data);
 
-      log.Trace(prefix + "(-):{0}", Crypto.ToHex(finalHash));
+      log.Trace(prefix + "(-):{0}", finalHash.ToHex());
       return finalHash;
     }
 
@@ -403,7 +404,7 @@ namespace ProfileServerProtocolTests.Tests
     /// <param name="WriteLock">Lock object to protect write access to client's stream.</param>
     /// <param name="UnfinishedRequestCounter">Unfinished request counter object.</param>
     /// <returns></returns>
-    public static async Task<byte[]> MessageReceivingLoop(ProtocolClient Client, MessageBuilder Builder, string Name, SemaphoreSlim WriteLock, UnfinishedRequestCounter UnfinishedRequestCounter)
+    public static async Task<byte[]> MessageReceivingLoop(ProtocolClient Client, PsMessageBuilder Builder, string Name, SemaphoreSlim WriteLock, UnfinishedRequestCounter UnfinishedRequestCounter)
     {
       string prefix = string.Format("[{0}] ", Name);
       log.Trace(prefix + "()");
@@ -414,7 +415,7 @@ namespace ProfileServerProtocolTests.Tests
 
       while ((chunksReceived.Count < DataMessageCountPerClient) || (ackReceived < DataMessageCountPerClient))
       {
-        Message incomingMessage = await Client.ReceiveMessageAsync();
+        PsProtocolMessage incomingMessage = await Client.ReceiveMessageAsync();
 
         if (incomingMessage.MessageTypeCase == Message.MessageTypeOneofCase.Request)
         {
@@ -430,7 +431,7 @@ namespace ProfileServerProtocolTests.Tests
             // Sending ACK back to the profile server.
             await WriteLock.WaitAsync();
 
-            Message ackResponse = Builder.CreateApplicationServiceReceiveMessageNotificationResponse(incomingMessage);
+            PsProtocolMessage ackResponse = Builder.CreateApplicationServiceReceiveMessageNotificationResponse(incomingMessage);
             await Client.SendMessageAsync(ackResponse);
 
             WriteLock.Release();
@@ -471,7 +472,7 @@ namespace ProfileServerProtocolTests.Tests
 
       byte[] finalHash = Crypto.Sha256(data);
 
-      log.Trace(prefix + "(-):{0}", Crypto.ToHex(finalHash));
+      log.Trace(prefix + "(-):{0}", finalHash.ToHex());
       return finalHash;
     }
 

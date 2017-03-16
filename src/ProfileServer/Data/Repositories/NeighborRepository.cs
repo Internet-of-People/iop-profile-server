@@ -6,20 +6,23 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
-using ProfileServerProtocol;
+using IopProtocol;
 using ProfileServer.Network;
-using ProfileServer.Utils;
 using ProfileServer.Kernel;
 using Microsoft.EntityFrameworkCore.Storage;
+using IopCommon;
+using IopServerCore.Data;
+using IopServerCore.Kernel;
 
 namespace ProfileServer.Data.Repositories
 {
   /// <summary>
   /// Repository of profile server neighbors.
   /// </summary>
-  public class NeighborRepository : GenericRepository<Neighbor>
+  public class NeighborRepository : GenericRepository<Context, Neighbor>
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Data.Repositories.NeighborRepository");
+    /// <summary>Class logger.</summary>
+    private static Logger log = new Logger("ProfileServer.Data.Repositories.NeighborRepository");
 
 
     /// <summary>
@@ -152,7 +155,7 @@ namespace ProfileServer.Data.Repositories
 
       if (imagesToDelete.Count > 0)
       {
-        ImageManager imageManager = (ImageManager)Base.ComponentDictionary["Data.ImageManager"];
+        ImageManager imageManager = (ImageManager)Base.ComponentDictionary[ImageManager.ComponentName];
 
         foreach (byte[] hash in imagesToDelete)
           imageManager.RemoveImageReference(hash);

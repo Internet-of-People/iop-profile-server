@@ -1,6 +1,7 @@
-﻿using Google.Protobuf;
-using ProfileServerCrypto;
-using ProfileServerProtocol;
+﻿using IopCommon;
+using Google.Protobuf;
+using IopCrypto;
+using IopProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -22,7 +23,7 @@ namespace ProfileServerProtocolTests.Tests
   public class PS05025 : ProtocolTest
   {
     public const string TestName = "PS05025";
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocolTests.Tests." + TestName);
+    private static Logger log = new Logger("ProfileServerProtocolTests.Tests." + TestName);
 
     public override string Name { get { return TestName; } }
 
@@ -60,15 +61,15 @@ namespace ProfileServerProtocolTests.Tests
       ProtocolClient clientCaller2AppService = new ProtocolClient(0, SemVer.V100, clientCaller2.GetIdentityKeys());
       try
       {
-        MessageBuilder mbCallee = clientCallee.MessageBuilder;
-        MessageBuilder mbCallee1AppService = clientCallee1AppService.MessageBuilder;
-        MessageBuilder mbCallee2AppService = clientCallee2AppService.MessageBuilder;
+        PsMessageBuilder mbCallee = clientCallee.MessageBuilder;
+        PsMessageBuilder mbCallee1AppService = clientCallee1AppService.MessageBuilder;
+        PsMessageBuilder mbCallee2AppService = clientCallee2AppService.MessageBuilder;
 
-        MessageBuilder mbCaller1 = clientCaller1.MessageBuilder;
-        MessageBuilder mbCaller1AppService = clientCaller1AppService.MessageBuilder;
+        PsMessageBuilder mbCaller1 = clientCaller1.MessageBuilder;
+        PsMessageBuilder mbCaller1AppService = clientCaller1AppService.MessageBuilder;
 
-        MessageBuilder mbCaller2 = clientCaller2.MessageBuilder;
-        MessageBuilder mbCaller2AppService = clientCaller2AppService.MessageBuilder;
+        PsMessageBuilder mbCaller2 = clientCaller2.MessageBuilder;
+        PsMessageBuilder mbCaller2AppService = clientCaller2AppService.MessageBuilder;
 
 
         // Step 1
@@ -123,7 +124,7 @@ namespace ProfileServerProtocolTests.Tests
         await clientCaller1.ConnectAsync(ServerIp, (int)rolePorts[ServerRoleType.ClNonCustomer], true);
         bool verifyIdentityOk1 = await clientCaller1.VerifyIdentityAsync();
 
-        Message requestMessage = mbCaller1.CreateCallIdentityApplicationServiceRequest(identityIdCallee, serviceName);
+        PsProtocolMessage requestMessage = mbCaller1.CreateCallIdentityApplicationServiceRequest(identityIdCallee, serviceName);
         uint initMessageCaller1Id = requestMessage.Id;
         await clientCaller1.SendMessageAsync(requestMessage);
 
@@ -146,7 +147,7 @@ namespace ProfileServerProtocolTests.Tests
 
         // Step 3
         log.Trace("Step 3");
-        Message serverRequestMessage = await clientCallee.ReceiveMessageAsync();
+        PsProtocolMessage serverRequestMessage = await clientCallee.ReceiveMessageAsync();
 
         // What we received now can actually be either notification about caller1 or caller2, we do not know. 
         // So we have to check, which one is it before we proceed.
@@ -163,7 +164,7 @@ namespace ProfileServerProtocolTests.Tests
         if (isCaller1) calleeToken1 = serverRequestMessage.Request.ConversationRequest.IncomingCallNotification.CalleeToken.ToByteArray();
         else calleeToken2 = serverRequestMessage.Request.ConversationRequest.IncomingCallNotification.CalleeToken.ToByteArray();
 
-        Message serverResponseMessage = mbCallee.CreateIncomingCallNotificationResponse(serverRequestMessage);
+        PsProtocolMessage serverResponseMessage = mbCallee.CreateIncomingCallNotificationResponse(serverRequestMessage);
         await clientCallee.SendMessageAsync(serverResponseMessage);
 
 
@@ -189,7 +190,7 @@ namespace ProfileServerProtocolTests.Tests
         // Connect to clAppService and send initialization message (FIRST connection).
         await clientCallee1AppService.ConnectAsync(ServerIp, (int)rolePorts[ServerRoleType.ClAppService], true);
 
-        Message requestMessageAppServiceCallee = mbCallee1AppService.CreateApplicationServiceSendMessageRequest(calleeToken1, null);
+        PsProtocolMessage requestMessageAppServiceCallee = mbCallee1AppService.CreateApplicationServiceSendMessageRequest(calleeToken1, null);
         await clientCallee1AppService.SendMessageAsync(requestMessageAppServiceCallee);
 
 
@@ -209,7 +210,7 @@ namespace ProfileServerProtocolTests.Tests
 
         // Step 4
         log.Trace("Step 4");
-        Message responseMessage = await clientCaller1.ReceiveMessageAsync();
+        PsProtocolMessage responseMessage = await clientCaller1.ReceiveMessageAsync();
         bool idOk = responseMessage.Id == initMessageCaller1Id;
         bool statusOk = responseMessage.Response.Status == Status.Ok;
         byte[] callerToken1 = responseMessage.Response.ConversationResponse.CallIdentityApplicationService.CallerToken.ToByteArray();
@@ -218,10 +219,10 @@ namespace ProfileServerProtocolTests.Tests
 
         // Connect to clAppService and send initialization message.
         await clientCaller1AppService.ConnectAsync(ServerIp, (int)rolePorts[ServerRoleType.ClAppService], true);
-        Message requestMessageAppServiceCaller = mbCaller1AppService.CreateApplicationServiceSendMessageRequest(callerToken1, null);
+        PsProtocolMessage requestMessageAppServiceCaller = mbCaller1AppService.CreateApplicationServiceSendMessageRequest(callerToken1, null);
         await clientCaller1AppService.SendMessageAsync(requestMessageAppServiceCaller);
 
-        Message responseMessageAppServiceCaller = await clientCaller1AppService.ReceiveMessageAsync();
+        PsProtocolMessage responseMessageAppServiceCaller = await clientCaller1AppService.ReceiveMessageAsync();
 
         idOk = responseMessageAppServiceCaller.Id == requestMessageAppServiceCaller.Id;
         statusOk = responseMessageAppServiceCaller.Response.Status == Status.Ok;
@@ -260,7 +261,7 @@ namespace ProfileServerProtocolTests.Tests
 
         // Step 5
         log.Trace("Step 5");
-        Message responseMessageAppServiceCallee = await clientCallee1AppService.ReceiveMessageAsync();
+        PsProtocolMessage responseMessageAppServiceCallee = await clientCallee1AppService.ReceiveMessageAsync();
         idOk = responseMessageAppServiceCallee.Id == requestMessageAppServiceCallee.Id;
         statusOk = responseMessageAppServiceCallee.Response.Status == Status.Ok;
 
@@ -306,7 +307,7 @@ namespace ProfileServerProtocolTests.Tests
         // Step 7
         log.Trace("Step 7");
         // Receive message #1.
-        Message serverRequestAppServiceCallee = await clientCallee1AppService.ReceiveMessageAsync();
+        PsProtocolMessage serverRequestAppServiceCallee = await clientCallee1AppService.ReceiveMessageAsync();
         SemVer receivedVersion = new SemVer(serverRequestAppServiceCallee.Request.SingleRequest.Version);
         bool versionOk = receivedVersion.Equals(SemVer.V100);
 
@@ -321,7 +322,7 @@ namespace ProfileServerProtocolTests.Tests
 
 
         // ACK message #1.
-        Message serverResponseAppServiceCallee = mbCallee1AppService.CreateApplicationServiceReceiveMessageNotificationResponse(serverRequestAppServiceCallee);
+        PsProtocolMessage serverResponseAppServiceCallee = mbCallee1AppService.CreateApplicationServiceReceiveMessageNotificationResponse(serverRequestAppServiceCallee);
         await clientCallee1AppService.SendMessageAsync(serverResponseAppServiceCallee);
 
 
@@ -334,7 +335,7 @@ namespace ProfileServerProtocolTests.Tests
         requestMessageAppServiceCallee = mbCallee1AppService.CreateApplicationServiceSendMessageRequest(calleeToken2, messageBytes);
         await clientCallee1AppService.SendMessageAsync(requestMessageAppServiceCallee);
 
-        Message responseAppServiceCallee = await clientCallee1AppService.ReceiveMessageAsync();
+        PsProtocolMessage responseAppServiceCallee = await clientCallee1AppService.ReceiveMessageAsync();
         idOk = responseAppServiceCallee.Id == requestMessageAppServiceCallee.Id;
         statusOk = responseAppServiceCallee.Response.Status == Status.ErrorNotFound;
 

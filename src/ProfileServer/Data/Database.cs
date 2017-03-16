@@ -4,11 +4,13 @@ using ProfileServer.Kernel.Config;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading;
-using ProfileServer.Utils;
 using ProfileServer.Data.Models;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Storage;
+using IopCommon;
+using IopServerCore.Kernel;
+using IopServerCore.Data;
 
 namespace ProfileServer.Data
 {
@@ -17,7 +19,20 @@ namespace ProfileServer.Data
   /// </summary>
   public class Database : Component
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Data.Database");
+    /// <summary>Name of the component.</summary>
+    public const string ComponentName = "Data.Database";
+
+    /// <summary>Class logger.</summary>
+    private static Logger log = new Logger("ProfileServer." + ComponentName);
+
+
+    /// <summary>
+    /// Initializes the component.
+    /// </summary>
+    public Database():
+      base(ComponentName)
+    {
+    }
 
 
     public override bool Init()
@@ -32,6 +47,8 @@ namespace ProfileServer.Data
           && DeleteInvalidNeighborIdentities()
           && DeleteInvalidNeighborhoodActions())
         {
+          RegisterCronJobs();
+
           res = true;
           Initialized = true;
         }
@@ -60,6 +77,99 @@ namespace ProfileServer.Data
       log.Info("(-)");
     }
 
+
+
+    /// <summary>
+    /// Registers component's cron jobs.
+    /// </summary>
+    public void RegisterCronJobs()
+    {
+      log.Trace("()");
+
+      List<CronJob> cronJobDefinitions = new List<CronJob>()
+      {
+        // Checks if any of the followers need to be refreshed.
+        { new CronJob() { Name = "checkFollowersRefresh", StartDelay = 19 * 1000, Interval = 11 * 60 * 1000, HandlerAsync = CronJobHandlerCheckFollowersRefreshAsync } },
+      
+        // Checks if any of the hosted identities expired and if so, it deletes them.
+        { new CronJob() { Name = "checkExpiredHostedIdentities", StartDelay = 59 * 1000, Interval = 119 * 60 * 1000, HandlerAsync = CronJobHandlerCheckExpiredHostedIdentitiesAsync } },
+      
+        // Checks if any of the neighbors expired and if so, it deletes them.
+        // We want a certain delay here after the start of the server to allow getting fresh neighborhood information from the LOC server.
+        // But if LOC server is not initialized by then, it does not matter, cleanup will be postponed.
+        { new CronJob() { Name = "checkExpiredNeighbors", StartDelay = 5 * 60 * 1000, Interval = 31 * 60 * 1000, HandlerAsync = CronJobHandlerCheckExpiredNeighborsAsync } },
+      };
+
+      Cron cron = (Cron)Base.ComponentDictionary[Cron.ComponentName];
+      cron.AddJobs(cronJobDefinitions);
+
+      log.Trace("(-)");
+    }
+
+
+    /// <summary>
+    /// Handler for "checkFollowersRefresh" cron job.
+    /// </summary>
+    public async void CronJobHandlerCheckFollowersRefreshAsync()
+    {
+      log.Trace("()");
+
+      if (ShutdownSignaling.IsShutdown)
+      {
+        log.Trace("(-):[SHUTDOWN]");
+        return;
+      }
+
+      await CheckFollowersRefreshAsync();
+
+      log.Trace("(-)");
+    }
+
+
+    /// <summary>
+    /// Handler for "checkExpiredHostedIdentities" cron job.
+    /// </summary>
+    public async void CronJobHandlerCheckExpiredHostedIdentitiesAsync()
+    {
+      log.Trace("()");
+
+      if (ShutdownSignaling.IsShutdown)
+      {
+        log.Trace("(-):[SHUTDOWN]");
+        return;
+      }
+
+      await CheckExpiredHostedIdentitiesAsync();
+
+      log.Trace("(-)");
+    }
+
+
+    /// <summary>
+    /// Handler for "checkExpiredNeighbors" cron job.
+    /// </summary>
+    public async void CronJobHandlerCheckExpiredNeighborsAsync()
+    {
+      log.Trace("()");
+
+      if (ShutdownSignaling.IsShutdown)
+      {
+        log.Trace("(-):[SHUTDOWN]");
+        return;
+      }
+
+      Network.LOC.LocationBasedNetwork locationBasedNetwork = (Network.LOC.LocationBasedNetwork)Base.ComponentDictionary[Network.LOC.LocationBasedNetwork.ComponentName];
+      if (locationBasedNetwork.LocServerInitialized)
+      {
+        await CheckExpiredNeighborsAsync();
+      }
+      else log.Debug("LOC component is not in sync with the LOC server yet, checking expired neighbors will not be executed now.");
+
+      log.Trace("(-)");
+    }
+
+
+    
 
     /// <summary>
     /// Removes follower servers from database that failed to finish the neighborhood initialization process.
@@ -290,20 +400,20 @@ namespace ProfileServer.Data
     /// Checks if any of the follower servers need refresh.
     /// If so, a neighborhood action is created.
     /// </summary>
-    public void CheckFollowersRefresh()
+    public async Task CheckFollowersRefreshAsync()
     {
       log.Trace("()");
 
       // If a follower server's LastRefreshTime is lower than this limit, it should be refreshed.
-      DateTime limitLastRefreshTime = DateTime.UtcNow.AddSeconds(-Base.Configuration.FollowerRefreshTimeSeconds);
+      DateTime limitLastRefreshTime = DateTime.UtcNow.AddSeconds(-Config.Configuration.FollowerRefreshTimeSeconds);
 
       using (UnitOfWork unitOfWork = new UnitOfWork())
       {
         DatabaseLock[] lockObjects = new DatabaseLock[] { UnitOfWork.FollowerLock, UnitOfWork.NeighborhoodActionLock };
-        unitOfWork.AcquireLock(lockObjects);
+        await unitOfWork.AcquireLockAsync(lockObjects);
         try
         {
-          List<Follower> followersToRefresh = unitOfWork.FollowerRepository.Get(f => f.LastRefreshTime < limitLastRefreshTime, null, true).ToList();
+          List<Follower> followersToRefresh = (await unitOfWork.FollowerRepository.GetAsync(f => f.LastRefreshTime < limitLastRefreshTime, null, true)).ToList();
           if (followersToRefresh.Count > 0)
           {
             log.Debug("There are {0} followers that need refresh.", followersToRefresh.Count);
@@ -319,11 +429,11 @@ namespace ProfileServer.Data
                 AdditionalData = null
               };
 
-              unitOfWork.NeighborhoodActionRepository.Insert(action);
+              await unitOfWork.NeighborhoodActionRepository.InsertAsync(action);
               log.Debug("Refresh neighborhood action for follower ID '{0}' will be inserted to the database.", follower.FollowerId.ToHex());
             }
 
-            unitOfWork.SaveThrow();
+            await unitOfWork.SaveThrowAsync();
             log.Debug("{0} new neighborhood actions saved to the database.", followersToRefresh.Count);
           }
           else log.Debug("No followers need refresh now.");
@@ -344,7 +454,7 @@ namespace ProfileServer.Data
     /// Checks if any of the hosted identities expired.
     /// If so, it deletes them.
     /// </summary>
-    public void CheckExpiredHostedIdentities()
+    public async Task CheckExpiredHostedIdentitiesAsync()
     {
       log.Trace("()");
 
@@ -356,10 +466,10 @@ namespace ProfileServer.Data
         unitOfWork.Context.ChangeTracker.AutoDetectChangesEnabled = false;
 
         DatabaseLock lockObject = UnitOfWork.HostedIdentityLock;
-        unitOfWork.AcquireLock(lockObject);
+        await unitOfWork.AcquireLockAsync(lockObject);
         try
         {
-          List<HostedIdentity> expiredIdentities = unitOfWork.HostedIdentityRepository.Get(i => i.ExpirationDate < now, null, true).ToList();
+          List<HostedIdentity> expiredIdentities = (await unitOfWork.HostedIdentityRepository.GetAsync(i => i.ExpirationDate < now, null, true)).ToList();
           if (expiredIdentities.Count > 0)
           {
             log.Debug("There are {0} expired hosted identities.", expiredIdentities.Count);
@@ -372,7 +482,7 @@ namespace ProfileServer.Data
               log.Debug("Identity ID '{0}' expired and will be deleted.", identity.IdentityId.ToHex());
             }
 
-            unitOfWork.SaveThrow();
+            await unitOfWork.SaveThrowAsync();
             log.Debug("{0} expired hosted identities were deleted.", expiredIdentities.Count);
           }
           else log.Debug("No expired hosted identities found.");
@@ -388,7 +498,7 @@ namespace ProfileServer.Data
 
       if (imagesToDelete.Count > 0)
       {
-        ImageManager imageManager = (ImageManager)Base.ComponentDictionary["Data.ImageManager"];
+        ImageManager imageManager = (ImageManager)Base.ComponentDictionary[ImageManager.ComponentName];
 
         foreach (byte[] hash in imagesToDelete)
           imageManager.RemoveImageReference(hash);
@@ -404,22 +514,22 @@ namespace ProfileServer.Data
     /// Checks if any of the neighbors expired.
     /// If so, it starts the process of their removal.
     /// </summary>
-    public void CheckExpiredNeighbors()
+    public async Task CheckExpiredNeighborsAsync()
     {
       log.Trace("()");
 
       // If a neighbor server's LastRefreshTime is lower than this limit, it is expired.
-      DateTime limitLastRefreshTime = DateTime.UtcNow.AddSeconds(-Base.Configuration.NeighborProfilesExpirationTimeSeconds);
+      DateTime limitLastRefreshTime = DateTime.UtcNow.AddSeconds(-Config.Configuration.NeighborProfilesExpirationTimeSeconds);
 
       using (UnitOfWork unitOfWork = new UnitOfWork())
       {
         bool success = false;
         DatabaseLock[] lockObjects = new DatabaseLock[] { UnitOfWork.NeighborLock, UnitOfWork.NeighborhoodActionLock };
-        using (IDbContextTransaction transaction = unitOfWork.BeginTransactionWithLock(lockObjects))
+        using (IDbContextTransaction transaction = await unitOfWork.BeginTransactionWithLockAsync(lockObjects))
         {
           try
           {
-            List<Neighbor> expiredNeighbors = unitOfWork.NeighborRepository.Get(n => n.LastRefreshTime < limitLastRefreshTime, null, true).ToList();
+            List<Neighbor> expiredNeighbors = (await unitOfWork.NeighborRepository.GetAsync(n => n.LastRefreshTime < limitLastRefreshTime, null, true)).ToList();
             if (expiredNeighbors.Count > 0)
             {
               log.Debug("There are {0} expired neighbors.", expiredNeighbors.Count);
@@ -434,10 +544,10 @@ namespace ProfileServer.Data
                   TargetIdentityId = null,
                   AdditionalData = null
                 };
-                unitOfWork.NeighborhoodActionRepository.Insert(action);
+                await unitOfWork.NeighborhoodActionRepository.InsertAsync(action);
               }
 
-              unitOfWork.SaveThrow();
+              await unitOfWork.SaveThrowAsync();
               transaction.Commit();
             }
             else log.Debug("No expired neighbors found.");

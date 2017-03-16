@@ -1,6 +1,7 @@
-﻿using Google.Protobuf;
-using ProfileServerCrypto;
-using ProfileServerProtocol;
+﻿using IopCommon;
+using Google.Protobuf;
+using IopCrypto;
+using IopProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -21,7 +22,7 @@ namespace ProfileServerProtocolTests.Tests
   public class PS08010 : ProtocolTest
   {
     public const string TestName = "PS08010";
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocolTests.Tests." + TestName);
+    private static Logger log = new Logger("ProfileServerProtocolTests.Tests." + TestName);
 
     public override string Name { get { return TestName; } }
 
@@ -58,7 +59,7 @@ namespace ProfileServerProtocolTests.Tests
       ProtocolClient client = new ProtocolClient();
       try
       {
-        MessageBuilder mb = client.MessageBuilder;
+        PsMessageBuilder mb = client.MessageBuilder;
 
         // Step 1
         log.Trace("Step 1");
@@ -105,10 +106,10 @@ namespace ProfileServerProtocolTests.Tests
         bool verifyIdentityOk = await client.VerifyIdentityAsync();
 
         // Start neighborhood initialization process.
-        Message requestMessage = mb.CreateStartNeighborhoodInitializationRequest(1, 1);
+        PsProtocolMessage requestMessage = mb.CreateStartNeighborhoodInitializationRequest(1, 1);
         await client.SendMessageAsync(requestMessage);
 
-        Message responseMessage = await client.ReceiveMessageAsync();
+        PsProtocolMessage responseMessage = await client.ReceiveMessageAsync();
         bool idOk = responseMessage.Id == requestMessage.Id;
         bool statusOk = responseMessage.Response.Status == Status.Ok;
         bool startNeighborhoodInitializationOk = idOk && statusOk;
@@ -116,12 +117,12 @@ namespace ProfileServerProtocolTests.Tests
 
 
         // Wait for update request.
-        Message serverRequestMessage = await client.ReceiveMessageAsync();
+        PsProtocolMessage serverRequestMessage = await client.ReceiveMessageAsync();
         bool typeOk1 = serverRequestMessage.MessageTypeCase == Message.MessageTypeOneofCase.Request
           && serverRequestMessage.Request.ConversationTypeCase == Request.ConversationTypeOneofCase.ConversationRequest
           && serverRequestMessage.Request.ConversationRequest.RequestTypeCase == ConversationRequest.RequestTypeOneofCase.NeighborhoodSharedProfileUpdate;
 
-        Message clientResponseMessage = mb.CreateNeighborhoodSharedProfileUpdateResponse(serverRequestMessage);
+        PsProtocolMessage clientResponseMessage = mb.CreateNeighborhoodSharedProfileUpdateResponse(serverRequestMessage);
         await client.SendMessageAsync(clientResponseMessage);
 
         serverRequestMessage = await client.ReceiveMessageAsync();

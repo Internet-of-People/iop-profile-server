@@ -1,6 +1,6 @@
 ﻿using Google.Protobuf;
-using ProfileServerCrypto;
-using ProfileServerProtocol;
+using IopCrypto;
+using IopProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -12,6 +12,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Globalization;
+using IopCommon;
 
 namespace ProfileServerProtocolTests.Tests
 {
@@ -22,7 +23,7 @@ namespace ProfileServerProtocolTests.Tests
   public class PS09004 : ProtocolTest
   {
     public const string TestName = "PS09004";
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocolTests.Tests." + TestName);
+    private static Logger log = new Logger("ProfileServerProtocolTests.Tests." + TestName);
 
     public override string Name { get { return TestName; } }
 
@@ -52,7 +53,7 @@ namespace ProfileServerProtocolTests.Tests
       ProtocolClient client = new ProtocolClient();
       try
       {
-        MessageBuilder mb = client.MessageBuilder;
+        PsMessageBuilder mb = client.MessageBuilder;
 
         // Step 1
         log.Trace("Step 1");
@@ -88,10 +89,10 @@ namespace ProfileServerProtocolTests.Tests
         };
         ipnsRecord.Signature = ProtocolHelper.ByteArrayToByteString(client.CreateIpnsRecordSignature(ipnsRecord));
 
-        Message requestMessage = mb.CreateCanPublishIpnsRecordRequest(ipnsRecord);
+        PsProtocolMessage requestMessage = mb.CreateCanPublishIpnsRecordRequest(ipnsRecord);
         await client.SendMessageAsync(requestMessage);
 
-        Message responseMessage = await client.ReceiveMessageAsync();
+        PsProtocolMessage responseMessage = await client.ReceiveMessageAsync();
         bool idOk = responseMessage.Id == requestMessage.Id;
         bool statusOk = (responseMessage.Response.Status == Status.ErrorNotFound) || ((responseMessage.Response.Status == Status.ErrorInvalidValue) && (responseMessage.Response.Details == "record.value"));
         bool canPublishIpnsRecordOk = idOk && statusOk;

@@ -1,6 +1,7 @@
-﻿using Google.Protobuf;
-using ProfileServerCrypto;
-using ProfileServerProtocol;
+﻿using IopCommon;
+using Google.Protobuf;
+using IopCrypto;
+using IopProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -21,7 +22,7 @@ namespace ProfileServerProtocolTests.Tests
   public class PS04008 : ProtocolTest
   {
     public const string TestName = "PS04008";
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocolTests.Tests." + TestName);
+    private static Logger log = new Logger("ProfileServerProtocolTests.Tests." + TestName);
 
     public override string Name { get { return TestName; } }
 
@@ -51,7 +52,7 @@ namespace ProfileServerProtocolTests.Tests
       ProtocolClient client = new ProtocolClient();
       try
       {
-        MessageBuilder mb = client.MessageBuilder;
+        PsMessageBuilder mb = client.MessageBuilder;
 
         // Step 1
         await client.ConnectAsync(ServerIp, ClNonCustomerPort, true);
@@ -66,9 +67,9 @@ namespace ProfileServerProtocolTests.Tests
         await client.ConnectAsync(ServerIp, ClNonCustomerPort, true);
         bool verifyIdentityOk = await client.VerifyIdentityAsync();
 
-        Message requestMessage = mb.CreateUpdateProfileRequest(SemVer.V100, "Test Identity", null, new GpsLocation(0, 0), null);
+        PsProtocolMessage requestMessage = mb.CreateUpdateProfileRequest(SemVer.V100, "Test Identity", null, new GpsLocation(0, 0), null);
         await client.SendMessageAsync(requestMessage);
-        Message responseMessage = await client.ReceiveMessageAsync();
+        PsProtocolMessage responseMessage = await client.ReceiveMessageAsync();
 
         bool idOk = responseMessage.Id == requestMessage.Id;
         bool statusOk = responseMessage.Response.Status == Status.ErrorUnauthorized;

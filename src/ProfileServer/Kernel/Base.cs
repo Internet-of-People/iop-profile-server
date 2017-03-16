@@ -1,4 +1,6 @@
-﻿using System;
+﻿using IopCommon;
+using IopServerCore.Kernel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,26 +8,17 @@ using System.Threading.Tasks;
 namespace ProfileServer.Kernel
 {
   /// <summary>
-  /// Kernel.Base is the core of the application logic.
+  /// Kernel is the core of the application logic.
   /// It is responsible for the application startup, which includes initialization of all other components.
-  /// It also allows other components to access global variables, such as configuration.
   /// </summary>
-  public static class Base
+  public static class Kernel 
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServer.Kernel.Base");
-
-    /// <summary>Component manager instance that is used for initialization and shutdown of the components.</summary>
-    public static ComponentManager Components;
-
-    /// <summary>Mapping of component instances to their names.</summary>
-    public static Dictionary<string, Component> ComponentDictionary;
-
-    /// <summary>Global application configuration.</summary>
-    public static Config.Config Configuration;
+    /// <summary>Class logger.</summary>
+    private static Logger log = new Logger("ProfileServer.Kernel.Kernel");
 
 
     /// <summary>
-    /// Initialization of Base component. The application can not run if the initialization process fails.
+    /// Initialization of all system components. The application can not run if the initialization process fails.
     /// </summary>
     /// <returns>true if the function succeeds, false otherwise.</returns>
     public static bool Init()
@@ -34,37 +27,20 @@ namespace ProfileServer.Kernel
 
       bool res = false;
 
-      Components = new ComponentManager();
-
-      Configuration = new Config.Config();
-      ComponentDictionary = new Dictionary<string, Component>(StringComparer.Ordinal)
-      {
-        { "Kernel.Config.Config", Configuration },
-        { "Data.Database", new Data.Database() },
-        { "Data.ImageManager", new Data.ImageManager() },
-        { "Network.Server", new Network.Server() },
-        { "Network.ContentAddressNetwork.CanApi", new Network.CAN.CanApi() },
-        { "Network.ContentAddressNetwork", new Network.CAN.ContentAddressNetwork() },
-        { "Network.LocationBasedNetwork", new Network.LocationBasedNetwork() },
-        { "Network.NeighborhoodActionProcessor", new Network.NeighborhoodActionProcessor() },
-        { "Kernel.Cron", new Cron() },
-      };
-
-      // The component list specifies the order in which the components are going to be initialized.
       List<Component> componentList = new List<Component>()
       {
-        ComponentDictionary["Kernel.Config.Config"],
-        ComponentDictionary["Data.Database"],
-        ComponentDictionary["Data.ImageManager"],
-        ComponentDictionary["Network.Server"],
-        ComponentDictionary["Network.ContentAddressNetwork.CanApi"],
-        ComponentDictionary["Network.ContentAddressNetwork"],
-        ComponentDictionary["Network.LocationBasedNetwork"],
-        ComponentDictionary["Network.NeighborhoodActionProcessor"],
-        ComponentDictionary["Kernel.Cron"],
+        new Config.Config(),
+        new Cron(),
+        new Data.Database(),
+        new Data.ImageManager(),
+        new Network.Server(),
+        new Network.CAN.CanApi(),
+        new Network.CAN.ContentAddressNetwork(),
+        new Network.LOC.LocationBasedNetwork(),
+        new Network.NeighborhoodActionProcessor(),
       };
 
-      res = Components.Init(componentList);
+      res = Base.Init(componentList);
 
       log.Info("(-):{0}", res);
       return res;
@@ -78,7 +54,7 @@ namespace ProfileServer.Kernel
     {
       log.Info("()");
 
-      Components.Shutdown();
+      Base.Shutdown();
 
       log.Info("(-)");
     }

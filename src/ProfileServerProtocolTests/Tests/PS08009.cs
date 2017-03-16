@@ -1,7 +1,8 @@
-﻿
+﻿using IopCommon;
+
 using Google.Protobuf;
-using ProfileServerCrypto;
-using ProfileServerProtocol;
+using IopCrypto;
+using IopProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -22,7 +23,7 @@ namespace ProfileServerProtocolTests.Tests
   public class PS08009 : ProtocolTest
   {
     public const string TestName = "PS08009";
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocolTests.Tests." + TestName);
+    private static Logger log = new Logger("ProfileServerProtocolTests.Tests." + TestName);
 
     public override string Name { get { return TestName; } }
 
@@ -52,7 +53,7 @@ namespace ProfileServerProtocolTests.Tests
       ProtocolClient client = new ProtocolClient();
       try
       {
-        MessageBuilder mb = client.MessageBuilder;
+        PsMessageBuilder mb = client.MessageBuilder;
 
         // Step 1
         log.Trace("Step 1");
@@ -67,10 +68,10 @@ namespace ProfileServerProtocolTests.Tests
 
         bool verifyIdentityOk = await client.VerifyIdentityAsync();
 
-        Message requestMessage = mb.CreateStartNeighborhoodInitializationRequest(0, 1);
+        PsProtocolMessage requestMessage = mb.CreateStartNeighborhoodInitializationRequest(0, 1);
         await client.SendMessageAsync(requestMessage);
 
-        Message responseMessage = await client.ReceiveMessageAsync();
+        PsProtocolMessage responseMessage = await client.ReceiveMessageAsync();
         bool idOk = responseMessage.Id == requestMessage.Id;
         bool statusOk = responseMessage.Response.Status == Status.ErrorInvalidValue;
         bool detailsOk = responseMessage.Response.Details == "primaryPort";

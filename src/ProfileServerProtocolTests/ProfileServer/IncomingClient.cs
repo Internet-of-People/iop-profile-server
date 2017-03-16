@@ -4,15 +4,17 @@ using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Threading.Tasks;
-using ProfileServerProtocol;
+using IopProtocol;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using Iop.Profileserver;
-using ProfileServerCrypto;
+using IopCrypto;
 using System.Security.Authentication;
+using IopCommon;
+using IopServerCore.Network;
 
 namespace ProfileServerProtocolTests
 {
@@ -82,7 +84,7 @@ namespace ProfileServerProtocolTests
     public IncomingClient(ProfileServer Server, TcpClient TcpClient, bool UseTls, ServerRole Role) :
       base(TcpClient, UseTls, 0, Server.Keys)
     {
-      log = NLog.LogManager.GetLogger(string.Format("Test.ProfileServer.{0}.IncomingClient", Server.Name));
+      log = new Logger("ProfileServerProtocolTests.IncomingClient", Server.Name);
       log.Trace("(UseTls:{0})", UseTls);
 
       serverRole = Role;
@@ -118,7 +120,7 @@ namespace ProfileServerProtocolTests
           bool protocolViolation = rawMessage.ProtocolViolation;
           if (rawMessage.Data != null)
           {
-            Message message = CreateMessageFromRawData(rawMessage.Data);
+            PsProtocolMessage message = CreateMessageFromRawData(rawMessage.Data);
             if (message != null) disconnect = !await messageProcessor.ProcessMessageAsync(this, message);
             else protocolViolation = true;
           }
@@ -150,7 +152,7 @@ namespace ProfileServerProtocolTests
     /// <param name="Message">Message to send.</param>
     /// <param name="Context">Caller's defined context to store information required for later response processing.</param>
     /// <returns>true if the connection to the client should remain open, false otherwise.</returns>
-    public async Task<bool> SendMessageAndSaveUnfinishedRequestAsync(Message Message, object Context)
+    public async Task<bool> SendMessageAndSaveUnfinishedRequestAsync(PsProtocolMessage Message, object Context)
     {
       log.Trace("()");
       bool res = false;
@@ -159,13 +161,7 @@ namespace ProfileServerProtocolTests
       if (AddUnfinishedRequest(unfinishedRequest))
       {
         res = await SendMessageInternalAsync(Message);
-        if (res)
-        {
-          // If the message was sent successfully to the target, we close the connection only in case it was a protocol violation error response.
-          if (Message.MessageTypeCase == Message.MessageTypeOneofCase.Response)
-            res = Message.Response.Status != Status.ErrorProtocolViolation;
-        }
-        else RemoveUnfinishedRequest(unfinishedRequest.RequestMessage.Id);
+        if (!res) RemoveUnfinishedRequest(unfinishedRequest.RequestMessage.Id);
       }
 
       log.Trace("(-):{0}", res);

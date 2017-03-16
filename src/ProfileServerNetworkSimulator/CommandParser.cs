@@ -1,4 +1,5 @@
-﻿using ProfileServerProtocol;
+﻿using IopCommon;
+using IopProtocol;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -13,7 +14,7 @@ namespace ProfileServerNetworkSimulator
   /// </summary>
   public static class CommandParser
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerNetworkSimulator.CommandParser");
+    private static Logger log = new Logger("ProfileServerNetworkSimulator.CommandParser");
 
     /// <summary>Maximal radius in metres.</summary>
     public const int MaxRadius = 20000000;

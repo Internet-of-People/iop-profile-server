@@ -1,6 +1,7 @@
-﻿using Google.Protobuf;
-using ProfileServerCrypto;
-using ProfileServerProtocol;
+﻿using IopCommon;
+using Google.Protobuf;
+using IopCrypto;
+using IopProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -21,7 +22,7 @@ namespace ProfileServerProtocolTests.Tests
   public class PS08023 : ProtocolTest
   {
     public const string TestName = "PS08023";
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocolTests.Tests." + TestName);
+    private static Logger log = new Logger("ProfileServerProtocolTests.Tests." + TestName);
 
     public override string Name { get { return TestName; } }
 
@@ -124,7 +125,7 @@ namespace ProfileServerProtocolTests.Tests
       LocServer locServer = null;
       try
       {
-        MessageBuilder mb = client.MessageBuilder;
+        PsMessageBuilder mb = client.MessageBuilder;
 
         // Step 1
         log.Trace("Step 1");
@@ -473,7 +474,7 @@ namespace ProfileServerProtocolTests.Tests
       // Wait for start of neighborhood initialization process.
       IncomingServerMessage incomingServerMessage = await ProfileServer.WaitForConversationRequest(ServerRole.ServerNeighbor, ConversationRequest.RequestTypeOneofCase.StartNeighborhoodInitialization);
 
-      Message requestMessage = await ProfileServer.SendNeighborhoodSharedProfileUpdateRequest(incomingServerMessage.Client, UpdateItems);
+      PsProtocolMessage requestMessage = await ProfileServer.SendNeighborhoodSharedProfileUpdateRequest(incomingServerMessage.Client, UpdateItems);
       incomingServerMessage = await ProfileServer.WaitForResponse(ServerRole.ServerNeighbor, requestMessage);
 
       bool statusOk = incomingServerMessage.IncomingMessage.Response.Status == Status.ErrorInvalidValue;

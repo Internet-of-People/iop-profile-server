@@ -1,6 +1,7 @@
-﻿using Google.Protobuf;
-using ProfileServerCrypto;
-using ProfileServerProtocol;
+﻿using IopCommon;
+using Google.Protobuf;
+using IopCrypto;
+using IopProtocol;
 using Iop.Profileserver;
 using System;
 using System.Collections;
@@ -22,7 +23,7 @@ namespace ProfileServerProtocolTests.Tests
   public class PS05010 : ProtocolTest
   {
     public const string TestName = "PS05010";
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerProtocolTests.Tests." + TestName);
+    private static Logger log = new Logger("ProfileServerProtocolTests.Tests." + TestName);
 
     public override string Name { get { return TestName; } }
 
@@ -56,11 +57,11 @@ namespace ProfileServerProtocolTests.Tests
       ProtocolClient clientCallerAppService = new ProtocolClient(0, SemVer.V100, clientCaller.GetIdentityKeys());
       try
       {
-        MessageBuilder mbCallee = clientCallee.MessageBuilder;
-        MessageBuilder mbCalleeAppService = clientCalleeAppService.MessageBuilder;
+        PsMessageBuilder mbCallee = clientCallee.MessageBuilder;
+        PsMessageBuilder mbCalleeAppService = clientCalleeAppService.MessageBuilder;
 
-        MessageBuilder mbCaller = clientCaller.MessageBuilder;
-        MessageBuilder mbCallerAppService = clientCallerAppService.MessageBuilder;
+        PsMessageBuilder mbCaller = clientCaller.MessageBuilder;
+        PsMessageBuilder mbCallerAppService = clientCallerAppService.MessageBuilder;
 
         // Step 1
         log.Trace("Step 1");
@@ -110,7 +111,7 @@ namespace ProfileServerProtocolTests.Tests
         await clientCaller.ConnectAsync(ServerIp, (int)rolePorts[ServerRoleType.ClNonCustomer], true);
         bool verifyIdentityOk = await clientCaller.VerifyIdentityAsync();
 
-        Message requestMessage = mbCaller.CreateCallIdentityApplicationServiceRequest(identityIdCallee, serviceName);
+        PsProtocolMessage requestMessage = mbCaller.CreateCallIdentityApplicationServiceRequest(identityIdCallee, serviceName);
         await clientCaller.SendMessageAsync(requestMessage);
 
 
@@ -123,7 +124,7 @@ namespace ProfileServerProtocolTests.Tests
 
         // Step 3
         log.Trace("Step 3");
-        Message serverRequestMessage = await clientCallee.ReceiveMessageAsync();
+        PsProtocolMessage serverRequestMessage = await clientCallee.ReceiveMessageAsync();
 
         byte[] receivedPubKey = serverRequestMessage.Request.ConversationRequest.IncomingCallNotification.CallerPublicKey.ToByteArray();
         bool pubKeyOk = StructuralComparisons.StructuralComparer.Compare(receivedPubKey, pubKeyCaller) == 0;
@@ -131,7 +132,7 @@ namespace ProfileServerProtocolTests.Tests
 
         bool incomingCallNotificationOk = pubKeyOk && serviceNameOk;
 
-        Message serverResponseMessage = mbCallee.CreateErrorRejectedResponse(serverRequestMessage);
+        PsProtocolMessage serverResponseMessage = mbCallee.CreateErrorRejectedResponse(serverRequestMessage);
         await clientCallee.SendMessageAsync(serverResponseMessage);
 
 
@@ -143,7 +144,7 @@ namespace ProfileServerProtocolTests.Tests
 
         // Step 4
         log.Trace("Step 4");
-        Message responseMessage = await clientCaller.ReceiveMessageAsync();
+        PsProtocolMessage responseMessage = await clientCaller.ReceiveMessageAsync();
         bool idOk = responseMessage.Id == requestMessage.Id;
         bool statusOk = responseMessage.Response.Status == Status.ErrorRejected;
 

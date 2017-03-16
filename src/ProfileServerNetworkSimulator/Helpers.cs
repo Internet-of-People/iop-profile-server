@@ -1,4 +1,5 @@
-﻿using ProfileServerProtocol;
+﻿using IopCommon;
+using IopProtocol;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,7 +14,7 @@ namespace ProfileServerNetworkSimulator
   /// </summary>
   public static class Helpers
   {
-    private static NLog.Logger log = NLog.LogManager.GetLogger("ProfileServerNetworkSimulator.Helpers");
+    private static Logger log = new Logger("ProfileServerNetworkSimulator.Helpers");
 
 
     /// <summary>Random number generator.</summary>
