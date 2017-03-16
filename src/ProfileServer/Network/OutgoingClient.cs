@@ -16,7 +16,6 @@ using System.Threading.Tasks;
 using IopCommon;
 using IopServerCore.Network;
 using Google.Protobuf;
-using ProfileServer.Kernel.Config;
 
 namespace ProfileServer.Network
 {

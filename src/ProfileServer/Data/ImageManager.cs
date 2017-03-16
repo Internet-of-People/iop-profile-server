@@ -6,7 +6,6 @@ using IopServerCore.Data;
 using IopServerCore.Kernel;
 using ProfileServer.Data.Models;
 using ProfileServer.Kernel;
-using ProfileServer.Kernel.Config;
 using System;
 using System.Collections.Generic;
 using System.IO;

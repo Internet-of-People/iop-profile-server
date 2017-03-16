@@ -19,7 +19,6 @@ using System.Net.Http;
 using System.Linq;
 using IopCommon;
 using IopServerCore.Kernel;
-using ProfileServer.Kernel.Config;
 using IopServerCore.Data;
 
 namespace ProfileServer.Network.CAN

@@ -15,7 +15,6 @@ using System.Text;
 using System.Threading.Tasks;
 using IopCommon;
 using IopServerCore.Kernel;
-using ProfileServer.Kernel.Config;
 
 namespace ProfileServer.Network.CAN
 {

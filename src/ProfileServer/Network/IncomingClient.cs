@@ -9,7 +9,6 @@ using System.Net;
 using System.Runtime.InteropServices;
 using ProfileServer.Kernel;
 using System.Net.Security;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using ProfileServer.Data.Models;
 using Iop.Profileserver;
@@ -18,7 +17,6 @@ using System.Security.Authentication;
 using ProfileServer.Data;
 using Microsoft.EntityFrameworkCore.Storage;
 using IopCommon;
-using ProfileServer.Kernel.Config;
 using IopServerCore.Data;
 using IopServerCore.Network;
 

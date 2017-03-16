@@ -18,7 +18,6 @@ using System.Threading.Tasks;
 using ProfileServer.Network.CAN;
 using IopCommon;
 using IopServerCore.Kernel;
-using ProfileServer.Kernel.Config;
 using IopServerCore.Data;
 using IopServerCore.Network;
 
