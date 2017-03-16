@@ -8,7 +8,6 @@ using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using IopProtocol;
 using ProfileServer.Network;
-using ProfileServer.Utils;
 using ProfileServer.Kernel;
 using Microsoft.EntityFrameworkCore.Storage;
 using IopCommon;

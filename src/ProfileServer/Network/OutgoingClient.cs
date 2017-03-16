@@ -1,7 +1,6 @@
 ﻿using Iop.Profileserver;
 using ProfileServer.Data.Models;
 using ProfileServer.Kernel;
-using ProfileServer.Utils;
 using IopCrypto;
 using IopProtocol;
 using System;

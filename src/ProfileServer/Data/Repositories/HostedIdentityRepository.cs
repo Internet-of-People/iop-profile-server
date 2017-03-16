@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using IopProtocol;
-using ProfileServer.Utils;
 using Microsoft.EntityFrameworkCore.Storage;
 using IopCommon;
 using IopServerCore.Data;

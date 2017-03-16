@@ -17,7 +17,6 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ProfileServer.Network.CAN;
 using IopCommon;
-using ProfileServer.Utils;
 using IopServerCore.Kernel;
 using ProfileServer.Kernel.Config;
 using IopServerCore.Data;
