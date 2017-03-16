@@ -13,7 +13,7 @@ using IopCommon.Multiformats;
 using IopCommon;
 using IopServerCore.Kernel;
 
-namespace ProfileServer.Kernel.Config
+namespace ProfileServer.Kernel
 {
 
   /// <summary>

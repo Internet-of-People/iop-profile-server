@@ -29,7 +29,7 @@ namespace ProfileServer.Kernel
 
       List<Component> componentList = new List<Component>()
       {
-        new Config.Config(),
+        new Config(),
         new Cron(),
         new Data.Database(),
         new Data.ImageManager(),
