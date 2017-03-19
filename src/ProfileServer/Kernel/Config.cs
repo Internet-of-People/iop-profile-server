@@ -19,7 +19,8 @@ namespace ProfileServer.Kernel
 
   /// <summary>
   /// Provides access to the global configuration. The configuration is partly stored in the configuration file 
-  /// and partly in the database. The instance of the configuration class is accessible via <c>Kernel.Base.Configuration</c>.
+  /// and partly in the database. Other modules access the configuration via Kernel.Config.Configuration, which 
+  /// is a static instance of this class.
   /// </summary>
   /// <remarks>
   /// Loading configuration is essential for the profile server's startup. If any part of it fails, the profile server will refuse to start.
