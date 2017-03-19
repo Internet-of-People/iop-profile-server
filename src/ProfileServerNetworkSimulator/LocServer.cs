@@ -797,8 +797,8 @@ namespace ProfileServerNetworkSimulator
     /// Checks whether LOC node information contains a Profile Server service and if so, it returns its port and network ID.
     /// </summary>
     /// <param name="NodeInfo">Node information structure to scan.</param>
-    /// <param name="ProfileServerPort">If the node informatino contains Profile Server type of service, this is filled with the Profile Server port.</param>
-    /// <param name="ProfileServerId">If the node informatino contains Profile Server type of service, this is filled with the Profile Server network ID.</param>
+    /// <param name="ProfileServerPort">If the node information contains Profile Server type of service, this is filled with the Profile Server port.</param>
+    /// <param name="ProfileServerId">If the node information contains Profile Server type of service, this is filled with the Profile Server network ID.</param>
     /// <returns>true if the node information contains Profile Server type of service, false otherwise.</returns>
     public bool HasProfileServerService(NodeInfo NodeInfo, out int ProfileServerPort, out byte[] ProfileServerId)
     {
