@@ -19,6 +19,7 @@ using System.Collections.Specialized;
 using Newtonsoft.Json;
 using IopCommon;
 using IopCommon.Multiformats;
+using Iop.Can;
 
 namespace ProfileServerProtocolTests
 {
@@ -745,14 +746,14 @@ namespace ProfileServerProtocolTests
       {
         using (HttpClient client = new HttpClient())
         {
+          client.Timeout = TimeSpan.FromSeconds(15);
+
           bool done = false;
           int attempt = 1;
           while (!done)
           {
             try
             {
-              client.Timeout = TimeSpan.FromSeconds(15);
-
               using (HttpResponseMessage message = await client.PostAsync(url, null))
               {
                 res.Success = message.IsSuccessStatusCode;

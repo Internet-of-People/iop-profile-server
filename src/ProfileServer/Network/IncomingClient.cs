@@ -122,7 +122,7 @@ namespace ProfileServer.Network
     /// <param name="KeepAliveIntervalMs">Number of seconds for the connection to this client to be without any message until the profile server can close it for inactivity.</param>
     /// <param name="LogPrefix">Prefix for log entries created by the client.</param>
     public IncomingClient(TcpRoleServer<IncomingClient> Server, TcpClient TcpClient, ulong Id, bool UseTls, int KeepAliveIntervalMs, string LogPrefix) :
-      base(TcpClient, new MessageProcessor(Server, LogPrefix), Id, UseTls, KeepAliveIntervalMs, Server.IdBase, Server.ShutdownSignaling, LogPrefix)
+      base(TcpClient, new PsMessageProcessor(Server, LogPrefix), Id, UseTls, KeepAliveIntervalMs, Server.IdBase, Server.ShutdownSignaling, LogPrefix)
     {
       this.Id = Id;
       log = new Logger("ProfileServer.Network.IncomingClient", LogPrefix);

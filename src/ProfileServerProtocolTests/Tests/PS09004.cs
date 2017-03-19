@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Globalization;
 using IopCommon;
+using Iop.Can;
 
 namespace ProfileServerProtocolTests.Tests
 {

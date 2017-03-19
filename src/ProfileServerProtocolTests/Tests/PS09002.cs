@@ -13,6 +13,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Globalization;
+using Iop.Can;
 
 namespace ProfileServerProtocolTests.Tests
 {

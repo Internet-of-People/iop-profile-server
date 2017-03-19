@@ -15,18 +15,18 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using ProfileServer.Network.CAN;
 using IopCommon;
 using IopServerCore.Kernel;
 using IopServerCore.Data;
 using IopServerCore.Network;
+using IopServerCore.Network.CAN;
 
 namespace ProfileServer.Network
 {
   /// <summary>
   /// Implements the logic behind processing incoming messages to the profile server.
   /// </summary>
-  public class MessageProcessor: IMessageProcessor
+  public class PsMessageProcessor: IMessageProcessor
   {
     /// <summary>Instance logger.</summary>
     private Logger log;
@@ -51,11 +51,11 @@ namespace ProfileServer.Network
     /// </summary>
     /// <param name="RoleServer">Parent role server.</param>
     /// <param name="LogPrefix">Log prefix of the parent role server.</param>
-    public MessageProcessor(TcpRoleServer<IncomingClient> RoleServer, string LogPrefix = "")
+    public PsMessageProcessor(TcpRoleServer<IncomingClient> RoleServer, string LogPrefix = "")
     {
       roleServer = RoleServer;
       logPrefix = LogPrefix;
-      log = new Logger("ProfileServer.Network.MessageProcessor", logPrefix);
+      log = new Logger("ProfileServer.Network.PsMessageProcessor", logPrefix);
       serverComponent = (Server)Base.ComponentDictionary[Server.ComponentName];
       clientList = serverComponent.GetClientList();
       relayList = serverComponent.RelayList;
@@ -69,7 +69,7 @@ namespace ProfileServer.Network
     /// <param name="Client">TCP client who send the message.</param>
     /// <param name="IncomingMessage">Full ProtoBuf message to be processed.</param>
     /// <returns>true if the conversation with the client should continue, false if a protocol violation error occurred and the client should be disconnected.</returns>
-    public async Task<bool> ProcessMessageAsync(IncomingClientBase Client, IProtocolMessage IncomingMessage)
+    public async Task<bool> ProcessMessageAsync(ClientBase Client, IProtocolMessage IncomingMessage)
     {
       IncomingClient client = (IncomingClient)Client;
       PsProtocolMessage incomingMessage = (PsProtocolMessage)IncomingMessage;
@@ -392,7 +392,7 @@ namespace ProfileServer.Network
     /// Sends ERROR_PROTOCOL_VIOLATION to client with message ID set to 0x0BADC0DE.
     /// </summary>
     /// <param name="Client">Client to send the error to.</param>
-    public async Task SendProtocolViolation(IncomingClientBase Client)
+    public async Task SendProtocolViolation(ClientBase Client)
     {
       PsMessageBuilder mb = new PsMessageBuilder(0, new List<SemVer>() { SemVer.V100 }, null);
       PsProtocolMessage response = mb.CreateErrorProtocolViolationResponse(new PsProtocolMessage(new Message() { Id = 0x0BADC0DE }));
@@ -4208,7 +4208,8 @@ namespace ProfileServer.Network
 
       using (UnitOfWork unitOfWork = new UnitOfWork())
       {
-        CanApi canApi = (CanApi)Base.ComponentDictionary[CanApi.ComponentName];
+        ContentAddressNetwork can = (ContentAddressNetwork)Base.ComponentDictionary[ContentAddressNetwork.ComponentName];
+        CanApi canApi = can.Api;
         
         // Then delete old object if there is any.
         if (res == null)
@@ -4219,9 +4220,7 @@ namespace ProfileServer.Network
           bool deleteOldObjectFromDb = false;
           if (canOldObjectHash != null)
           {
-            string objectPath = CanApi.CreateIpfsPathFromHash(canOldObjectHash);
-
-            CanDeleteResult cres = await canApi.CanDeleteObject(objectPath);
+            CanDeleteResult cres = await canApi.CanDeleteObjectByHash(canOldObjectHash);
             if (cres.Success)
             {
               log.Debug("Old CAN object hash '{0}' of client identity ID '{1}' deleted.", canOldObjectHash.ToBase58(), Client.IdentityId.ToHex());
@@ -4267,8 +4266,8 @@ namespace ProfileServer.Network
               else
               {
                 // Unable to save the new can hash to DB, so delete the object from CAN as well.
-                string objectPath = CanApi.CreateIpfsPathFromHash(canHash);
-                CanDeleteResult delRes = await canApi.CanDeleteObject(objectPath);
+                CanDeleteResult delRes = await canApi.CanDeleteObjectByHash(canHash);
+
                 if (delRes.Success) log.Debug("CAN object hash '{0}' deleted.", canHash.ToBase58());
                 else log.Debug("Failed to delete CAN object hash '{0}'.", canHash.ToBase58());
               }
@@ -4360,8 +4359,8 @@ namespace ProfileServer.Network
 
       if (res == null)
       {
-        CanApi canApi = (CanApi)Base.ComponentDictionary[CanApi.ComponentName];
-        CanRefreshIpnsResult cres = await canApi.RefreshIpnsRecord(canPublishIpnsRecordRequest.Record, Client.PublicKey);
+        ContentAddressNetwork can = (ContentAddressNetwork)Base.ComponentDictionary[ContentAddressNetwork.ComponentName];
+        CanRefreshIpnsResult cres = await can.Api.RefreshIpnsRecord(canPublishIpnsRecordRequest.Record, Client.PublicKey);
         if (cres.Success) res = messageBuilder.CreateCanPublishIpnsRecordResponse(RequestMessage);
         else res = messageBuilder.CreateErrorRejectedResponse(RequestMessage, cres.Message);
       }

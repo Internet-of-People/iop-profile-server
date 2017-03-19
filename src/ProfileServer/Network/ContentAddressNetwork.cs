@@ -1,27 +1,20 @@
 ﻿using System;
 using ProfileServer.Kernel;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using System.IO;
 using IopProtocol;
 using Google.Protobuf;
 using ProfileServer.Data;
 using ProfileServer.Data.Models;
-using IopCrypto;
-using Iop.Profileserver;
-using System.Globalization;
-using System.Text;
-using IopCommon.Multiformats;
-using System.Net.Http;
-using System.Linq;
+using Iop.Can;
 using IopCommon;
 using IopServerCore.Kernel;
 using IopServerCore.Data;
+using IopServerCore.Network.CAN;
+using Iop.Profileserver;
 
-namespace ProfileServer.Network.CAN
+namespace ProfileServer.Network
 {
   /// <summary>
   /// Location based network (LOC) is a part of IoP that the profile server relies on.
@@ -41,9 +34,6 @@ namespace ProfileServer.Network.CAN
     /// <summary>Validity of profile server's IPNS record in seconds. </summary>
     private const int IpnsRecordExpirationTimeSeconds = 24 * 60 * 60;
 
-    /// <summary>Time format of IPNS record.</summary>
-    private const string Rfc3339DateTimeFormat = "yyyy-MM-dd'T'HH:mm:ss.fffK";
-
     /// <summary>Profile server's IPNS record.</summary>
     private CanIpnsEntry canIpnsRecord;
 
@@ -62,7 +52,9 @@ namespace ProfileServer.Network.CAN
     private Thread initThread;
 
     /// <summary>Access to CAN API.</summary>
-    private CanApi canApi;
+    private CanApi api;
+    /// <summary>Access to CAN API.</summary>
+    public CanApi Api { get { return api; } }
 
     /// <summary>Last sequence number used for IPNS record.</summary>
     private UInt64 canIpnsLastSequenceNumber;
@@ -87,7 +79,7 @@ namespace ProfileServer.Network.CAN
       try
       {
         canIpnsLastSequenceNumber = Config.Configuration.CanIpnsLastSequenceNumber;
-        canApi = (CanApi)Base.ComponentDictionary[CanApi.ComponentName];
+        api = new CanApi(Config.Configuration.CanEndPoint, ShutdownSignaling);
 
         // Construct profile server's contact information CAN object.
         canContactInformation = new CanProfileServerContact()
@@ -179,7 +171,7 @@ namespace ProfileServer.Network.CAN
 
 
     /// <summary>
-    /// Refreshes porofile server's IPNS record.
+    /// Refreshes profile server's IPNS record.
     /// </summary>
     public async Task IpnsRecordRefreshAsync()
     {
@@ -193,8 +185,8 @@ namespace ProfileServer.Network.CAN
       }
 
       canIpnsLastSequenceNumber++;
-      canIpnsRecord = CreateIpnsRecord(canContactInformationHash, canIpnsLastSequenceNumber);
-      CanRefreshIpnsResult cres = await canApi.RefreshIpnsRecord(canIpnsRecord, Config.Configuration.Keys.PublicKey);
+      canIpnsRecord = CanApi.CreateIpnsRecord(canContactInformationHash, canIpnsLastSequenceNumber, IpnsRecordExpirationTimeSeconds);
+      CanRefreshIpnsResult cres = await api.RefreshIpnsRecord(canIpnsRecord, Config.Configuration.Keys.PublicKey);
       if (cres.Success)
       {
         using (UnitOfWork unitOfWork = new UnitOfWork())
@@ -245,7 +237,7 @@ namespace ProfileServer.Network.CAN
         if (deleteOldObject)
         {
           string objectPath = CanApi.CreateIpfsPathFromHash(Config.Configuration.CanProfileServerContactInformationHash);
-          CanDeleteResult cres = await canApi.CanDeleteObject(objectPath);
+          CanDeleteResult cres = await api.CanDeleteObject(objectPath);
           if (cres.Success)
           {
             log.Info("Old CAN object hash '{0}' deleted.", Config.Configuration.CanProfileServerContactInformationHash.ToBase58());
@@ -264,7 +256,7 @@ namespace ProfileServer.Network.CAN
           if (Config.Configuration.CanProfileServerContactInformationChanged)
           {
             // Now upload the new object.
-            CanUploadResult cres = await canApi.CanUploadObject(canObject);
+            CanUploadResult cres = await api.CanUploadObject(canObject);
             if (cres.Success)
             {
               canContactInformationHash = cres.Hash;
@@ -355,64 +347,6 @@ namespace ProfileServer.Network.CAN
       }
 
       log.Trace("(-):{0}", res);
-      return res;
-    }
-
-    /// <summary>
-    /// Creates CAN IPNS record object to point to a CAN object of the given hash with the given sequence number.
-    /// </summary>
-    /// <param name="Hash">Hash of the CAN object to point IPNS record to.</param>
-    /// <param name="SequenceNumber">Sequence number of the IPNS record.</param>
-    public CanIpnsEntry CreateIpnsRecord(byte[] Hash, UInt64 SequenceNumber)
-    {
-      log.Trace("(Hash:'{0}',SequenceNumber:{1})", Hash.ToBase58(), SequenceNumber);
-
-      string validityString = DateTime.UtcNow.AddMonths(1).ToString(Rfc3339DateTimeFormat, DateTimeFormatInfo.InvariantInfo);
-      byte[] validityBytes = Encoding.UTF8.GetBytes(validityString);
-
-      UInt64 ttlNanoSec = (UInt64)(TimeSpan.FromSeconds(IpnsRecordExpirationTimeSeconds).TotalMilliseconds) * (UInt64)1000000;
-
-      string valueString = CanApi.CreateIpfsPathFromHash(Hash);
-      byte[] valueBytes = Encoding.UTF8.GetBytes(valueString);
-
-      CanIpnsEntry res = new CanIpnsEntry()
-      {
-        Sequence = SequenceNumber,
-        ValidityType = CanIpnsEntry.Types.ValidityType.Eol,
-        Ttl = ttlNanoSec,
-        Validity = ProtocolHelper.ByteArrayToByteString(validityBytes),
-        Value = ProtocolHelper.ByteArrayToByteString(valueBytes)
-      };
-
-      res.Signature = ProtocolHelper.ByteArrayToByteString(CreateIpnsRecordSignature(res));
-
-      log.Trace("(-):{0}", res);
-      return res;
-    }
-
-    /// <summary>
-    /// Calculates a signature of IPNS record.
-    /// </summary>
-    /// <param name="Record">IPNS record to calculate signature for.</param>
-    /// <returns>Signature of the IPNS record.</returns>
-    public byte[] CreateIpnsRecordSignature(CanIpnsEntry Record)
-    {
-      string validityTypeString = Record.ValidityType.ToString().ToUpperInvariant();
-      byte[] validityTypeBytes = Encoding.UTF8.GetBytes(validityTypeString);
-      byte[] dataToSign = new byte[Record.Value.Length + Record.Validity.Length + validityTypeBytes.Length];
-
-      int offset = 0;
-      Array.Copy(Record.Value.ToByteArray(), 0, dataToSign, offset, Record.Value.Length);
-      offset += Record.Value.Length;
-
-      Array.Copy(Record.Validity.ToByteArray(), 0, dataToSign, offset, Record.Validity.Length);
-      offset += Record.Validity.Length;
-
-      Array.Copy(validityTypeBytes, 0, dataToSign, offset, validityTypeBytes.Length);
-      offset += validityTypeBytes.Length;
-
-      byte[] res = Ed25519.Sign(dataToSign, Config.Configuration.Keys.ExpandedPrivateKey);
-      
       return res;
     }
   }

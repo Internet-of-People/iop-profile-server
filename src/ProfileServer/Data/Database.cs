@@ -157,7 +157,7 @@ namespace ProfileServer.Data
         return;
       }
 
-      Network.LOC.LocationBasedNetwork locationBasedNetwork = (Network.LOC.LocationBasedNetwork)Base.ComponentDictionary[Network.LOC.LocationBasedNetwork.ComponentName];
+      Network.LocationBasedNetwork locationBasedNetwork = (Network.LocationBasedNetwork)Base.ComponentDictionary[Network.LocationBasedNetwork.ComponentName];
       if (locationBasedNetwork.LocServerInitialized)
       {
         await CheckExpiredNeighborsAsync();

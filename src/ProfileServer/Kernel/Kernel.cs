@@ -34,9 +34,8 @@ namespace ProfileServer.Kernel
         new Data.Database(),
         new Data.ImageManager(),
         new Network.Server(),
-        new Network.CAN.CanApi(),
-        new Network.CAN.ContentAddressNetwork(),
-        new Network.LOC.LocationBasedNetwork(),
+        new Network.ContentAddressNetwork(),
+        new Network.LocationBasedNetwork(),
         new Network.NeighborhoodActionProcessor(),
       };
 

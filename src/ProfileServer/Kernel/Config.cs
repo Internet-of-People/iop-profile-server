@@ -12,6 +12,7 @@ using System.Globalization;
 using IopCommon.Multiformats;
 using IopCommon;
 using IopServerCore.Kernel;
+using IopServerCore.Network.CAN;
 
 namespace ProfileServer.Kernel
 {
@@ -34,6 +35,21 @@ namespace ProfileServer.Kernel
     /// <summary>Instance of the configuration component to be easily referenced by other components.</summary>
     public static Config Configuration;
 
+    /// <summary>Certificate to be used for TCP TLS server. </summary>
+    /// <remarks>This has to initialized by the derived class.</remarks>
+    public X509Certificate TcpServerTlsCertificate;
+
+    /// <summary>Description of role servers.</summary>
+    /// <remarks>This has to initialized by the derived class.</remarks>
+    public ConfigServerRoles ServerRoles;
+
+    /// <summary>Cryptographic keys of the server that can be used for signing messages and verifying signatures.</summary>
+    /// <remarks>This has to initialized by the derived class.</remarks>
+    public KeysEd25519 Keys;
+
+    /// <summary>Specification of a machine's network interface, on which the profile server will listen.</summary>
+    /// <remarks>This has to initialized by the derived class.</remarks>
+    public IPAddress BindToInterface;
 
     /// <summary>External IP address of the server from its network peers' point of view.</summary>
     public IPAddress ExternalServerAddress;
@@ -74,7 +90,6 @@ namespace ProfileServer.Kernel
 
     /// <summary>Maximum number of follower servers the profile server is willing to share its database with.</summary>
     public int MaxFollowerServersCount;
-
 
     /// <summary>Last sequence number used for IPNS record.</summary>
     public UInt64 CanIpnsLastSequenceNumber;
@@ -404,21 +419,53 @@ namespace ProfileServer.Kernel
         if (!error)
         {
           TestModeEnabled = testModeEnabled;
+          Settings["TestModeEnabled"] = TestModeEnabled;
+
           ExternalServerAddress = externalServerAddress;
+          Settings["ExternalServerAddress"] = ExternalServerAddress;
+
           BindToInterface = bindToInterface;
+          Settings["BindToInterface"] = BindToInterface;
+
           ServerRoles = serverRoles;
+          Settings["ServerRoles"] = ServerRoles;
+
           TcpServerTlsCertificate = tcpServerTlsCertificate;
+          Settings["TcpServerTlsCertificate"] = TcpServerTlsCertificate;
+
           ImageDataFolder = imageDataFolder;
+          Settings["ImageDataFolder"] = ImageDataFolder;
+
           TempDataFolder = tempDataFolder;
+          Settings["TempDataFolder"] = TempDataFolder;
+
           MaxHostedIdentities = maxHostedIdentities;
+          Settings["MaxHostedIdentities"] = MaxHostedIdentities;
+
           MaxIdenityRelations = maxIdentityRelations;
+          Settings["MaxIdenityRelations"] = MaxIdenityRelations;
+
           NeighborhoodInitializationParallelism = neighborhoodInitializationParallelism;
+          Settings["NeighborhoodInitializationParallelism"] = NeighborhoodInitializationParallelism;
+
           LocEndPoint = locEndPoint;
+          Settings["LocEndPoint"] = LocEndPoint;
+
           CanEndPoint = canEndPoint;
+          Settings["CanEndPoint"] = CanEndPoint;
+
           NeighborProfilesExpirationTimeSeconds = neighborProfilesExpirationTimeSeconds;
+          Settings["NeighborProfilesExpirationTimeSeconds"] = NeighborProfilesExpirationTimeSeconds;
+
           FollowerRefreshTimeSeconds = followerRefreshTimeSeconds;
+          Settings["FollowerRefreshTimeSeconds"] = FollowerRefreshTimeSeconds;
+
           MaxNeighborhoodSize = maxNeighborhoodSize;
+          Settings["MaxNeighborhoodSize"] = MaxNeighborhoodSize;
+
           MaxFollowerServersCount = maxFollowerServersCount;
+          Settings["MaxFollowerServersCount"] = MaxFollowerServersCount;
+
 
           log.Info("New configuration loaded successfully.");
         }
@@ -587,9 +634,14 @@ namespace ProfileServer.Kernel
 
       if (res)
       {
+        Settings["Keys"] = Keys;
+        Settings["CanIpnsLastSequenceNumber"] = CanIpnsLastSequenceNumber;
+        Settings["CanProfileServerContactInformationHash"] = CanProfileServerContactInformationHash;
+        Settings["CanProfileServerContactInformationChanged"] = CanProfileServerContactInformationChanged;        
+
         log.Debug("Server public key hex is '{0}'.", Keys.PublicKeyHex);
         log.Debug("Server network ID is '{0}'.", Crypto.Sha256(Keys.PublicKey).ToHex());
-        log.Debug("Server network ID in CAN encoding is '{0}'.", Network.CAN.CanApi.PublicKeyToId(Keys.PublicKey).ToBase58());
+        log.Debug("Server network ID in CAN encoding is '{0}'.", CanApi.PublicKeyToId(Keys.PublicKey).ToBase58());
         log.Debug("Server primary external contact is '{0}:{1}'.", ExternalServerAddress, ServerRoles.GetRolePort((uint)ServerRole.Primary));
       }
 
