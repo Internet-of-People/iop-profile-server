@@ -281,7 +281,10 @@ namespace ProfileServer.Network
         if (profileSearchResultCache == searchResults)
         {
           if (profileSearchResultCacheExpirationTimer != null)
+          {
             profileSearchResultCacheExpirationTimer.Dispose();
+            profileSearchResultCacheExpirationTimer = null;
+          }
 
           profileSearchResultCache = null;
 
