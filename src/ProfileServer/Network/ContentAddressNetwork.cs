@@ -17,11 +17,9 @@ using Iop.Profileserver;
 namespace ProfileServer.Network
 {
   /// <summary>
-  /// Location based network (LOC) is a part of IoP that the profile server relies on.
-  /// When the profile server starts, this component connects to LOC and obtains information about the profile 
-  /// server's neighborhood. Then it keeps receiving updates from LOC about changes in the neighborhood structure.
-  /// The profile server needs to share its database of hosted identities with its neighbors and it also accepts 
-  /// requests to share foreign profiles and consider them during its own search queries.
+  /// Content address network (CAN) is a part of IoP that the profile server relies on.
+  /// This component is responsible for submitting profile server's contact information to CAN 
+  /// and managing and refreshing its IPNS record.
   /// </summary>
   public class ContentAddressNetwork : Component
   {
