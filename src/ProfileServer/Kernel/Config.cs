@@ -96,7 +96,7 @@ namespace ProfileServer.Kernel
     public UInt64 CanIpnsLastSequenceNumber;
 
     /// <summary>
-    /// CAN hash of profile server's contact information object in CAN loaded from the database.
+    /// CAN hash of the profile server's contact information object in CAN loaded from the database.
     /// This information may not reflect the current contact information hash. That one is stored in ContentAddressNetwork.canContactInformationHash.
     /// This is used for initialization only.
     /// </summary>
