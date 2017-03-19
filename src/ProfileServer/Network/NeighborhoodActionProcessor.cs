@@ -44,7 +44,7 @@ namespace ProfileServer.Network
 
 
 
-    /// <summary>Profile serever's primary interface port.</summary>
+    /// <summary>Profile server's primary interface port.</summary>
     private uint primaryPort;
 
     /// <summary>Profile server neighbors interface port.</summary>
