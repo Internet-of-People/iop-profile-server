@@ -14,7 +14,7 @@ namespace ProfileServer.Network
     /// <summary>Snapshot of all hosted identities at the moment the client sent request to start the neighborhood initialization process.</summary>
     public List<HostedIdentity> HostedIdentities;
 
-    /// <summary>Number of items from NeighborhoodInitializationProcessIdentities that has been processed already.</summary>
+    /// <summary>Number of items from HostedIdentities that has been processed already.</summary>
     public int IdentitiesDone;
   }
 }
