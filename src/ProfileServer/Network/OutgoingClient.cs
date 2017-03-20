@@ -178,7 +178,7 @@ namespace ProfileServer.Network
 
     /// <summary>
     /// Checks whether the incoming response is a reponse to a specific request and if the reported status is OK.
-    /// <para>This function sets last error</para>
+    /// <para>This function sets the last error.</para>
     /// </summary>
     /// <param name="RequestMessage">Request message for which the response was received.</param>
     /// <param name="ResponseMessage">Response message received.</param>
