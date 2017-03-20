@@ -20,7 +20,7 @@ using Google.Protobuf;
 namespace ProfileServer.Network
 {
   /// <summary>
-  /// Outgoing client class represents a TCP client the profile server, in the role of a client, uses to connect to other profile servers.
+  /// Outgoing client class represents a TCP client the profile server, in the role of a client, used to connect to other profile servers.
   /// </summary>
   public class OutgoingClient : ClientBase, IDisposable
   {
