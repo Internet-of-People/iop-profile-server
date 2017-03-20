@@ -12,10 +12,10 @@ using IopCommon;
 namespace ProfileServer.Data.Models
 {
   /// <summary>
-  /// Database representation of profile server neighbor. A neighbor is another profile server within the profile server's neighborhood,
-  /// which was announced to the profile server from its LOC server. There are two directions of neighborhood relationship,
-  /// this represents only the servers that are this profile server's neighbors, but not necessarily vice versa. The profile server 
-  /// asks its neighbors to share their profile databases with it. This allows to the profile server to include profiles hosted 
+  /// Database representation of a profile server neighbor. A neighbor is another profile server within the profile server's neighborhood,
+  /// which was announced to the profile server by its LOC server. There are two directions of a neighborhood relationship,
+  /// this one represents only the servers that are neighbors to this profile server, but not necessarily vice versa. The profile server 
+  /// asks its neighbors to share their profile databases with it. This allows the profile server to include profiles hosted 
   /// on the neighbors in its own search queries.
   /// <para>
   /// The opposite direction relation is represented by <see cref="Follower"/> class.
