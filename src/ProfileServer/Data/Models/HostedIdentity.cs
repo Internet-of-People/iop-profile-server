@@ -15,6 +15,7 @@ namespace ProfileServer.Data.Models
   /// </summary>
   public class HostedIdentity : IdentityBase
   {
+    /// <summary>Class logger.</summary>
     private static Logger log = new Logger("ProfileServer.Data.Models.HostedIdentity");
 
     /// <summary>Maximum number of bytes that profile image can occupy.</summary>
