@@ -108,7 +108,7 @@ namespace ProfileServer.Data.Models
     /// <remarks>
     /// This is index - see ProfileServer.Data.Context.OnModelCreating.
     /// This property is optional - see ProfileServer.Data.Context.OnModelCreating.
-    /// </remarks>    /// 
+    /// </remarks>
     [MaxLength(ProtocolHelper.NetworkIdentifierLength)]
     public byte[] TargetIdentityId { get; set; }
 
