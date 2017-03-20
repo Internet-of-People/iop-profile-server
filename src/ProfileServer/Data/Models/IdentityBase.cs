@@ -93,10 +93,10 @@ namespace ProfileServer.Data.Models
     [Range(-180, 180)]
     public decimal InitialLocationLongitude { get; set; }
 
-    /// <summary>User defined extra data that serve for satisfying search queries in ProfileServer.</summary>
+    /// <summary>User defined extra data that serve for satisfying search queries in profile server network.</summary>
     /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
     [Required(AllowEmptyStrings = true)]
-    [MaxLength(200)]
+    [MaxLength(MaxProfileExtraDataLengthBytes)]
     public string ExtraData { get; set; }
 
 
