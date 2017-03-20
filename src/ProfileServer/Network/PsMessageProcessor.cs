@@ -642,7 +642,7 @@ namespace ProfileServer.Network
       GetIdentityInformationRequest getIdentityInformationRequest = RequestMessage.Request.SingleRequest.GetIdentityInformation;
 
       byte[] identityId = getIdentityInformationRequest.IdentityNetworkId.ToByteArray();
-      if (identityId.Length == IdentityBase.IdentifierLength)
+      if (identityId.Length == ProtocolHelper.NetworkIdentifierLength)
       {
         using (UnitOfWork unitOfWork = new UnitOfWork())
         {
@@ -1389,7 +1389,7 @@ namespace ProfileServer.Network
       PsMessageBuilder messageBuilder = Client.MessageBuilder;
       CancelHostingAgreementRequest cancelHostingAgreementRequest = RequestMessage.Request.ConversationRequest.CancelHostingAgreement;
 
-      if (!cancelHostingAgreementRequest.RedirectToNewProfileServer || (cancelHostingAgreementRequest.NewProfileServerNetworkId.Length == IdentityBase.IdentifierLength))
+      if (!cancelHostingAgreementRequest.RedirectToNewProfileServer || (cancelHostingAgreementRequest.NewProfileServerNetworkId.Length == ProtocolHelper.NetworkIdentifierLength))
       {
         byte[] profileImageToDelete = null;
         byte[] thumbnailImageToDelete = null;
@@ -3807,7 +3807,7 @@ namespace ProfileServer.Network
 
       byte[] identityId = ChangeItem.IdentityNetworkId.ToByteArray();
       // We do not verify identity existence here, that is being done in ProcessMessageNeighborhoodSharedProfileUpdateRequestAsync.
-      bool identityIdValid = identityId.Length == IdentityBase.IdentifierLength;
+      bool identityIdValid = identityId.Length == ProtocolHelper.NetworkIdentifierLength;
       if (identityIdValid)
       {
         if (!UsedProfileIdsInBatch.Contains(identityId))
@@ -3941,7 +3941,7 @@ namespace ProfileServer.Network
 
       byte[] identityId = DeleteItem.IdentityNetworkId.ToByteArray();
       // We do not verify identity existence here, that is being done in ProcessMessageNeighborhoodSharedProfileUpdateRequestAsync.
-      bool identityIdValid = identityId.Length == IdentityBase.IdentifierLength;
+      bool identityIdValid = identityId.Length == ProtocolHelper.NetworkIdentifierLength;
       if (identityIdValid)
       {
         if (!UsedProfileIdsInBatch.Contains(identityId))

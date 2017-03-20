@@ -31,7 +31,7 @@ namespace ProfileServer.Data.Models
     /// <summary>Network identifier of the profile server is SHA256 hash of identity's public key.</summary>
     /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
     [Required]
-    [MaxLength(IdentityBase.IdentifierLength)]
+    [MaxLength(ProtocolHelper.NetworkIdentifierLength)]
     public byte[] FollowerId { get; set; }
 
     /// <summary>IP address of the profile server.</summary>

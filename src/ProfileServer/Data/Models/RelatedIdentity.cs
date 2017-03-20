@@ -46,13 +46,13 @@ namespace ProfileServer.Data.Models
     /// <summary>Identifier of the hosted identity.</summary>
     /// <remarks>This is part of the key and index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
     [Required]
-    [MaxLength(IdentityBase.IdentifierLength)]
+    [MaxLength(ProtocolHelper.NetworkIdentifierLength)]
     public byte[] IdentityId { get; set; }
 
     /// <summary>Identifier of the related identity.</summary>
     /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
     [Required]
-    [MaxLength(IdentityBase.IdentifierLength)]
+    [MaxLength(ProtocolHelper.NetworkIdentifierLength)]
     public byte[] RelatedToIdentityId { get; set; }
 
     /// <summary>Identifier of the card application.</summary>

@@ -14,7 +14,7 @@ namespace ProfileServer.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
             modelBuilder
-                .HasAnnotation("ProductVersion", "1.1.0-rtm-22752");
+                .HasAnnotation("ProductVersion", "1.1.1");
 
             modelBuilder.Entity("ProfileServer.Data.Models.Follower", b =>
                 {

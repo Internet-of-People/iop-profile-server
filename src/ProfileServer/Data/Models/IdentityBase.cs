@@ -33,9 +33,6 @@ namespace ProfileServer.Data.Models
     /// <summary>Maximum number of bytes that profile extra data can occupy.</summary>
     public const int MaxProfileExtraDataLengthBytes = 200;
 
-    /// <summary>Length in bytes of profile server/identity identifiers.</summary>
-    public const int IdentifierLength = 32;
-
     /// <summary>Maximum number of bytes that public key can occupy.</summary>
     public const int MaxPublicKeyLengthBytes = 128;
 
@@ -48,12 +45,12 @@ namespace ProfileServer.Data.Models
     /// <summary>Identity identifier is SHA256 hash of identity's public key.</summary>
     /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
     [Required]
-    [MaxLength(IdentifierLength)]
+    [MaxLength(ProtocolHelper.NetworkIdentifierLength)]
     public byte[] IdentityId { get; set; }
 
     /// <summary>Identifier of the server that hosts the identity profile, or empty array if the identity is hosted by this profile server.</summary>
     /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
-    [MaxLength(IdentifierLength)]
+    [MaxLength(ProtocolHelper.NetworkIdentifierLength)]
     public byte[] HostingServerId { get; set; }
 
     /// <summary>Cryptographic public key that represents the identity.</summary>

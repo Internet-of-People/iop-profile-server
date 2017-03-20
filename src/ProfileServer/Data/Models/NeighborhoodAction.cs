@@ -59,7 +59,7 @@ namespace ProfileServer.Data.Models
     RemoveProfile = 13,
 
     /// <summary>
-    /// Purpose of this action is to block other profile actions that would be sending updates to followers 
+    /// Purpose of this action is to prevent other profile actions to be sent as updates to followers 
     /// before the neighborhood initialization process is finished.
     /// </summary>
     InitializationProcessInProgress = 14
@@ -87,7 +87,7 @@ namespace ProfileServer.Data.Models
     /// <summary>Network identifier of the neighbor/follower profile server.</summary>
     /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
     [Required]
-    [MaxLength(IdentityBase.IdentifierLength)]
+    [MaxLength(ProtocolHelper.NetworkIdentifierLength)]
     public byte[] ServerId { get; set; }
 
     /// <summary>When was the action created.</summary>
@@ -109,7 +109,7 @@ namespace ProfileServer.Data.Models
     /// This is index - see ProfileServer.Data.Context.OnModelCreating.
     /// This property is optional - see ProfileServer.Data.Context.OnModelCreating.
     /// </remarks>    /// 
-    [MaxLength(IdentityBase.IdentifierLength)]
+    [MaxLength(ProtocolHelper.NetworkIdentifierLength)]
     public byte[] TargetIdentityId { get; set; }
 
     /// <summary>Description of the action as a JSON encoded string.</summary>

@@ -9,13 +9,13 @@ using ProfileServer.Data.Models;
 namespace ProfileServer.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20170307120227_initial")]
+    [Migration("20170320134949_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
-                .HasAnnotation("ProductVersion", "1.1.0-rtm-22752");
+                .HasAnnotation("ProductVersion", "1.1.1");
 
             modelBuilder.Entity("ProfileServer.Data.Models.Follower", b =>
                 {

@@ -264,7 +264,7 @@ namespace ProfileServer.Network
             SemVer receivedVersion = new SemVer(responseMessage.Response.ConversationResponse.Start.Version);
             bool versionOk = receivedVersion.Equals(new SemVer(MessageBuilder.Version));
 
-            bool pubKeyLenOk = responseMessage.Response.ConversationResponse.Start.PublicKey.Length == IdentityBase.IdentifierLength;
+            bool pubKeyLenOk = responseMessage.Response.ConversationResponse.Start.PublicKey.Length == ProtocolHelper.NetworkIdentifierLength;
             bool challengeOk = responseMessage.Response.ConversationResponse.Start.Challenge.Length == PsMessageBuilder.ChallengeDataSize;
 
             serverKey = responseMessage.Response.ConversationResponse.Start.PublicKey.ToByteArray();
