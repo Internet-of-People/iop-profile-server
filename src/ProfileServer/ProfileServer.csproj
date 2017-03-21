@@ -14,6 +14,10 @@
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\..\IoP-Server-Library\src\IopCommon\IopCommon.csproj" />
     <ProjectReference Include="..\..\..\IoP-Server-Library\src\IopCrypto\IopCrypto.csproj" />
