@@ -269,7 +269,7 @@ namespace ProfileServer.Data
 
 
     /// <summary>
-    /// Finds neighbor identities for which there is no existing neighbor.
+    /// Finds and deletes neighbor identities for which there is no existing neighbor.
     /// </summary>
     /// <returns>true if the function succeeds, false otherwise.</returns>
     private bool DeleteInvalidNeighborIdentities()
