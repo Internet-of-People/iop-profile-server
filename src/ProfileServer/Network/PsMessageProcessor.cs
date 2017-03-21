@@ -734,7 +734,7 @@ namespace ProfileServer.Network
 
       if (clientChallenge.Length == PsMessageBuilder.ChallengeDataSize)
       {
-        if ((0 < pubKey.Length) && (pubKey.Length <= IdentityBase.MaxPublicKeyLengthBytes))
+        if ((0 < pubKey.Length) && (pubKey.Length <= ProtocolHelper.MaxPublicKeyLengthBytes))
         {
           SemVer version;
           if (GetCommonSupportedVersion(startConversationRequest.SupportedVersions, out version))
@@ -2479,7 +2479,7 @@ namespace ProfileServer.Network
       if (details == null)
       {
         byte[] issuerPublicKey = card.IssuerPublicKey.ToByteArray();
-        bool pubKeyValid = (0 < issuerPublicKey.Length) && (issuerPublicKey.Length <= IdentityBase.MaxPublicKeyLengthBytes);
+        bool pubKeyValid = (0 < issuerPublicKey.Length) && (issuerPublicKey.Length <= ProtocolHelper.MaxPublicKeyLengthBytes);
         if (!pubKeyValid)
         {
           log.Debug("Issuer public key has invalid length {0} bytes.", issuerPublicKey.Length);
@@ -3688,7 +3688,7 @@ namespace ProfileServer.Network
       {
         // We do not verify identity duplicity here, that is being done in ProcessMessageNeighborhoodSharedProfileUpdateRequestAsync.
         byte[] pubKey = AddItem.IdentityPublicKey.ToByteArray();
-        bool pubKeyValid = (0 < pubKey.Length) && (pubKey.Length <= IdentityBase.MaxPublicKeyLengthBytes);
+        bool pubKeyValid = (0 < pubKey.Length) && (pubKey.Length <= ProtocolHelper.MaxPublicKeyLengthBytes);
         if (pubKeyValid)
         {
           byte[] identityId = Crypto.Sha256(pubKey);

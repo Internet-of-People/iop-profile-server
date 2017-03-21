@@ -33,9 +33,6 @@ namespace ProfileServer.Data.Models
     /// <summary>Maximum number of bytes that profile extra data can occupy.</summary>
     public const int MaxProfileExtraDataLengthBytes = 200;
 
-    /// <summary>Maximum number of bytes that public key can occupy.</summary>
-    public const int MaxPublicKeyLengthBytes = 128;
-
 
     /// <summary>Unique primary key for the database.</summary>
     /// <remarks>This is primary key - see ProfileServer.Data.Context.OnModelCreating.</remarks>
@@ -55,7 +52,7 @@ namespace ProfileServer.Data.Models
 
     /// <summary>Cryptographic public key that represents the identity.</summary>
     [Required]
-    [MaxLength(MaxPublicKeyLengthBytes)]
+    [MaxLength(ProtocolHelper.MaxPublicKeyLengthBytes)]
     public byte[] PublicKey { get; set; }
 
     /// <summary>

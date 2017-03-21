@@ -90,12 +90,12 @@ namespace ProfileServer.Data.Models
 
     /// <summary>Public key of the issuer of the card.</summary>
     [Required]
-    [MaxLength(IdentityBase.MaxPublicKeyLengthBytes)]
+    [MaxLength(ProtocolHelper.MaxPublicKeyLengthBytes)]
     public byte[] IssuerPublicKey { get; set; }
 
     /// <summary>Public key of the recipient of the card.</summary>
     [Required]
-    [MaxLength(IdentityBase.MaxPublicKeyLengthBytes)]
+    [MaxLength(ProtocolHelper.MaxPublicKeyLengthBytes)]
     public byte[] RecipientPublicKey { get; set; }
 
     /// <summary>Signature of CardId value using private key of the issuer of the card.</summary>

@@ -1324,7 +1324,7 @@ namespace ProfileServer.Network
       if (details == null)
       {
         byte[] pubKey = AddItem.IdentityPublicKey.ToByteArray();
-        bool pubKeyValid = (0 < pubKey.Length) && (pubKey.Length <= IdentityBase.MaxPublicKeyLengthBytes);
+        bool pubKeyValid = (0 < pubKey.Length) && (pubKey.Length <= ProtocolHelper.MaxPublicKeyLengthBytes);
         if (pubKeyValid)
         {
           byte[] id = Crypto.Sha256(pubKey);
