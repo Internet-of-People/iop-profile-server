@@ -17,10 +17,10 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\IoP-Server-Library\src\IopCommon\IopCommon.csproj" />
-    <ProjectReference Include="..\..\..\IoP-Server-Library\src\IopCrypto\IopCrypto.csproj" />
-    <ProjectReference Include="..\..\..\IoP-Server-Library\src\IopProtocol\IopProtocol.csproj" />
-    <ProjectReference Include="..\..\..\IoP-Server-Library\src\IopServerCore\IopServerCore.csproj" />
+    <ProjectReference Include="..\..\..\iop-server-library\src\IopCommon\IopCommon.csproj" />
+    <ProjectReference Include="..\..\..\iop-server-library\src\IopCrypto\IopCrypto.csproj" />
+    <ProjectReference Include="..\..\..\iop-server-library\src\IopProtocol\IopProtocol.csproj" />
+    <ProjectReference Include="..\..\..\iop-server-library\src\IopServerCore\IopServerCore.csproj" />
   </ItemGroup>
 
   <ItemGroup>
