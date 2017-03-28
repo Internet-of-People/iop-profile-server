@@ -4,7 +4,7 @@ In order to install and run the Profile Server, you need to
 
  * Install .NET Core,
  * install OpenSSL (needed only for TLS certificate generation),
- * download the Profile Server source codes from GitHub,
+ * download the latest release Profile Server source codes from GitHub,
    * AND build the Profile Server binaries,
  * OR download the Profile Server binaries and install dependencies,
  * configure the Profile Server,
@@ -25,9 +25,9 @@ Please visit [OpenSSL website](https://www.openssl.org/) and follow the instruct
 
 ## Download Profile Server Source Codes
 
-If you are familiar with GIT and GitHub, you will probably know what to do.
-If you are not familiar with them, simply go to the [Main Page](https://github.com/Fermat-ORG/iop-profile-server/) of the repository and click the *Clone or download* green button 
-on the right side. Then click the *Download ZIP* link and save the file to your disk. Unzip the file to any folder of your choice. This folder will be called `$InstDir` in the text below.
+The goal here is to download the latest release branch of the source code. If you are familiar with GIT and GitHub, you will probably know what to do.
+If you are not familiar with them, simply go to the [Branches Page](https://github.com/Fermat-ORG/iop-profile-server/branches/) of the repository and find a branch that starts with `release/` and click on its name. 
+Then click the *Clone or download* green button on the right side. Then click the *Download ZIP* link and save the file to your disk. Unzip the file to any folder of your choice. This folder will be called `$InstDir` in the text below.
 
 
 ## Build Profile Server
