@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp1.1</TargetFramework>
@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\IoP-Server-Library\src\IopCommon\IopCommon.csproj" />
+    <ProjectReference Include="..\..\..\iop-server-library\src\IopCommon\IopCommon.csproj" />
   </ItemGroup>
 
 </Project>

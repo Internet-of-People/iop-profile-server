@@ -20,13 +20,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProfileServerProtocolTestsE
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProfileServerNetworkSimulator", "src\ProfileServerNetworkSimulator\ProfileServerNetworkSimulator.csproj", "{4E155391-DE1C-45D2-ABCE-B038B755C7A2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IopCommon", "..\IoP-Server-Library\src\IopCommon\IopCommon.csproj", "{71AAF7FD-DDEF-4431-A86E-41D93CE30307}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IopCommon", "..\iop-server-library\src\IopCommon\IopCommon.csproj", "{71AAF7FD-DDEF-4431-A86E-41D93CE30307}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IopCrypto", "..\IoP-Server-Library\src\IopCrypto\IopCrypto.csproj", "{FAA4A14E-6FF9-4CEC-BB44-9C46C0E3BCCE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IopCrypto", "..\iop-server-library\src\IopCrypto\IopCrypto.csproj", "{FAA4A14E-6FF9-4CEC-BB44-9C46C0E3BCCE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IopProtocol", "..\IoP-Server-Library\src\IopProtocol\IopProtocol.csproj", "{496D7F5A-B831-4E76-A829-ED7E39C18556}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IopProtocol", "..\iop-server-library\src\IopProtocol\IopProtocol.csproj", "{496D7F5A-B831-4E76-A829-ED7E39C18556}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IopServerCore", "..\IoP-Server-Library\src\IopServerCore\IopServerCore.csproj", "{85DE8195-B5C6-4AE2-AE62-7C94CEFD8821}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IopServerCore", "..\iop-server-library\src\IopServerCore\IopServerCore.csproj", "{85DE8195-B5C6-4AE2-AE62-7C94CEFD8821}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
