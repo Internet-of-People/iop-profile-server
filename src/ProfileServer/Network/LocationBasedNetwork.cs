@@ -182,9 +182,13 @@ namespace ProfileServer.Network
       }
       catch (Exception e)
       {
-        log.Error("Exception occurred (and rethrowing): {0}", e.ToString());
-        await Task.Delay(5000);
-        throw e;
+        if (!ShutdownSignaling.IsShutdown)
+        {
+          log.Error("Exception occurred (and rethrowing): {0}", e.ToString());
+          await Task.Delay(5000);
+          throw e;
+        }
+        else log.Debug("Shutdown invoked exception.");
       }
 
       if (client != null) client.Dispose();
