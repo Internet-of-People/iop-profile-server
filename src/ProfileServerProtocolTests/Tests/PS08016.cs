@@ -108,7 +108,7 @@ namespace ProfileServerProtocolTests.Tests
         // Step 2
         log.Trace("Step 2");
         await client.ConnectAsync(ServerIp, (int)rolePorts[ServerRoleType.SrNeighbor], true);
-        bool neighborhoodInitializationProcessOk = await client.NeighborhoodInitializationProcessAsync(profileServer.PrimaryPort, profileServer.ServerNeighborPort, TestProfiles);
+        bool neighborhoodInitializationProcessOk = await client.NeighborhoodInitializationProcessAsync(profileServer.PrimaryPort, profileServer.ServerNeighborPort, ServerIp, TestProfiles);
 
         client.CloseConnection();
 

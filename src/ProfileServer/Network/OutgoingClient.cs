@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using IopCommon;
 using IopServerCore.Network;
 using Google.Protobuf;
+using IopServerCore.Kernel;
 
 namespace ProfileServer.Network
 {
@@ -385,7 +386,8 @@ namespace ProfileServer.Network
       log.Trace("()");
 
       bool res = false;
-      PsProtocolMessage requestMessage = MessageBuilder.CreateStartNeighborhoodInitializationRequest(PrimaryPort, SrNeighborPort);
+      Config config = (Config)Base.ComponentDictionary[ConfigBase.ComponentName];
+      PsProtocolMessage requestMessage = MessageBuilder.CreateStartNeighborhoodInitializationRequest(PrimaryPort, SrNeighborPort, config.ExternalServerAddress);
       if (await SendMessageAsync(requestMessage))
       {
         PsProtocolMessage responseMessage = await ReceiveMessageAsync();

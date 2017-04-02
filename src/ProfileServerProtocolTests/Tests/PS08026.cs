@@ -107,7 +107,7 @@ namespace ProfileServerProtocolTests.Tests
         bool verifyIdentityOk = await client1.VerifyIdentityAsync();
 
         // Start neighborhood initialization process.
-        PsProtocolMessage requestMessage = mb1.CreateStartNeighborhoodInitializationRequest((uint)profileServer.PrimaryPort, (uint)profileServer.ServerNeighborPort);
+        PsProtocolMessage requestMessage = mb1.CreateStartNeighborhoodInitializationRequest((uint)profileServer.PrimaryPort, (uint)profileServer.ServerNeighborPort, ServerIp);
         await client1.SendMessageAsync(requestMessage);
 
         PsProtocolMessage responseMessage = await client1.ReceiveMessageAsync();
@@ -200,7 +200,7 @@ namespace ProfileServerProtocolTests.Tests
         verifyIdentityOk = await client2.VerifyIdentityAsync();
 
         // Start neighborhood initialization process.
-        requestMessage = mb1.CreateStartNeighborhoodInitializationRequest((uint)profileServer.PrimaryPort, (uint)profileServer.ServerNeighborPort);
+        requestMessage = mb1.CreateStartNeighborhoodInitializationRequest((uint)profileServer.PrimaryPort, (uint)profileServer.ServerNeighborPort, ServerIp);
         await client2.SendMessageAsync(requestMessage);
 
         responseMessage = await client2.ReceiveMessageAsync();

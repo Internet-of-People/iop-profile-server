@@ -72,7 +72,7 @@ namespace ProfileServerProtocolTests.Tests
 
         // Step 2
         log.Trace("Step 2");
-        PsProtocolMessage requestMessage = mb.CreateStartNeighborhoodInitializationRequest(1, 1);
+        PsProtocolMessage requestMessage = mb.CreateStartNeighborhoodInitializationRequest(1, 1, ServerIp);
         await client.SendMessageAsync(requestMessage);
 
         PsProtocolMessage responseMessage = await client.ReceiveMessageAsync();

@@ -20,6 +20,7 @@ using IopServerCore.Kernel;
 using IopServerCore.Data;
 using IopServerCore.Network;
 using IopServerCore.Network.CAN;
+using System.Net;
 
 namespace ProfileServer.Network
 {
@@ -2800,16 +2801,23 @@ namespace ProfileServer.Network
       StartNeighborhoodInitializationRequest startNeighborhoodInitializationRequest = RequestMessage.Request.ConversationRequest.StartNeighborhoodInitialization;
       int primaryPort = (int)startNeighborhoodInitializationRequest.PrimaryPort;
       int srNeighborPort = (int)startNeighborhoodInitializationRequest.SrNeighborPort;
+      byte[] ipAddressBytes = startNeighborhoodInitializationRequest.IpAddress.ToByteArray();
       byte[] followerId = Client.IdentityId;
+
+      IPAddress followerIpAddress = IPAddressExtensions.IpFromBytes(ipAddressBytes);
 
       res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
       bool success = false;
 
       NeighborhoodInitializationProcessContext nipContext = null;
 
+      Config config = (Config)Base.ComponentDictionary[ConfigBase.ComponentName];
       bool primaryPortValid = (0 < primaryPort) && (primaryPort <= 65535);
       bool srNeighborPortValid = (0 < srNeighborPort) && (srNeighborPort <= 65535);
-      if (primaryPortValid && srNeighborPortValid)
+      
+      bool ipAddressValid = (followerIpAddress != null) && (config.TestModeEnabled || !followerIpAddress.IsReservedOrLocal());
+
+      if (primaryPortValid && srNeighborPortValid && ipAddressValid)
       {
         using (UnitOfWork unitOfWork = new UnitOfWork())
         {
@@ -2838,7 +2846,7 @@ namespace ProfileServer.Network
                       Follower follower = new Follower()
                       {
                         FollowerId = followerId,
-                        IpAddress = Client.RemoteEndPoint.Address.ToString(),
+                        IpAddress = followerIpAddress.ToString(),
                         PrimaryPort = primaryPort,
                         SrNeighborPort = srNeighborPort,
                         LastRefreshTime = null
@@ -2902,8 +2910,9 @@ namespace ProfileServer.Network
       }
       else
       {
-        if (primaryPortValid) res = messageBuilder.CreateErrorInvalidValueResponse(RequestMessage, "srNeighborPort");
-        else res = messageBuilder.CreateErrorInvalidValueResponse(RequestMessage, "primaryPort");
+        if (!primaryPortValid) res = messageBuilder.CreateErrorInvalidValueResponse(RequestMessage, "primaryPort");
+        else if (!srNeighborPortValid) res = messageBuilder.CreateErrorInvalidValueResponse(RequestMessage, "srNeighborPort");
+        else res = messageBuilder.CreateErrorInvalidValueResponse(RequestMessage, "ipAddress");
       }
 
       if (success)

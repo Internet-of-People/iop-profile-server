@@ -166,7 +166,7 @@ namespace ProfileServerProtocolTests.Tests
         bool verifyIdentityOk = await client.VerifyIdentityAsync();
 
         // Start neighborhood initialization process.
-        PsProtocolMessage requestMessage = mb.CreateStartNeighborhoodInitializationRequest(1, 1);
+        PsProtocolMessage requestMessage = mb.CreateStartNeighborhoodInitializationRequest(1, 1, ServerIp);
         await client.SendMessageAsync(requestMessage);
 
         PsProtocolMessage responseMessage = await client.ReceiveMessageAsync();
