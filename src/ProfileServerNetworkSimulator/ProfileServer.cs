@@ -233,6 +233,7 @@ namespace ProfileServerNetworkSimulator
           + "tls_server_certificate = ProfileServer.pfx\n"
           + "image_data_folder = images\n"
           + "tmp_data_folder = tmp\n"
+          + "db_file_name = ProfileServer.db\n"
           + "max_hosted_identities = 10000\n"
           + "max_identity_relations = 100\n"
           + "neighborhood_initialization_parallelism = 10\n"

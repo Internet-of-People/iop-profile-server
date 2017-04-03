@@ -61,6 +61,9 @@ namespace ProfileServer.Kernel
     /// <summary>Path to the directory where temporary files are stored.</summary>
     public string TempDataFolder;
 
+    /// <summary>Name of the database file.</summary>
+    public string DatabaseFileName;
+
     /// <summary>Maximal total number of identities hosted by this profile server.</summary>
     public int MaxHostedIdentities;
 
@@ -167,6 +170,7 @@ namespace ProfileServer.Kernel
         IPAddress bindToInterface = null;
         string imageDataFolder = null;
         string tempDataFolder = null;
+        string databaseFileName = null;
         int maxHostedIdentities = 0;
         int maxIdentityRelations = 0;
         int neighborhoodInitializationParallelism = 0;
@@ -195,6 +199,7 @@ namespace ProfileServer.Kernel
           { "tls_server_certificate",                  ConfigValueType.StringNonEmpty },
           { "image_data_folder",                       ConfigValueType.StringNonEmpty },
           { "tmp_data_folder",                         ConfigValueType.StringNonEmpty },
+          { "db_file_name",                            ConfigValueType.StringNonEmpty },
           { "max_hosted_identities",                   ConfigValueType.Int            },
           { "max_identity_relations",                  ConfigValueType.Int            },
           { "neighborhood_initialization_parallelism", ConfigValueType.Int            },
@@ -221,6 +226,7 @@ namespace ProfileServer.Kernel
           tcpServerTlsCertificateFileName = (string)nameVal["tls_server_certificate"];
           imageDataFolder = (string)nameVal["image_data_folder"];
           tempDataFolder = (string)nameVal["tmp_data_folder"];
+          databaseFileName = (string)nameVal["db_file_name"];
           maxHostedIdentities = (int)nameVal["max_hosted_identities"];
           maxIdentityRelations = (int)nameVal["max_identity_relations"];
           neighborhoodInitializationParallelism = (int)nameVal["neighborhood_initialization_parallelism"];
@@ -313,6 +319,17 @@ namespace ProfileServer.Kernel
             error = true;
           }
         }
+
+
+        if (!error)
+        {
+          if (!File.Exists(databaseFileName))
+          {
+            log.Error("Database file '{0}' does not exist.", databaseFileName);
+            error = true;
+          }
+        }
+
 
         if (!error)
         {
@@ -439,6 +456,9 @@ namespace ProfileServer.Kernel
 
           TempDataFolder = tempDataFolder;
           Settings["TempDataFolder"] = TempDataFolder;
+
+          DatabaseFileName = databaseFileName;
+          Settings["DatabaseFileName"] = DatabaseFileName;
 
           MaxHostedIdentities = maxHostedIdentities;
           Settings["MaxHostedIdentities"] = MaxHostedIdentities;

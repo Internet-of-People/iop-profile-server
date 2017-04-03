@@ -19,6 +19,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProfileServerProtocolTestsExecutor", "src\ProfileServerProtocolTestsExecutor\ProfileServerProtocolTestsExecutor.csproj", "{B1683DD3-75F5-41F3-93B3-27C784557625}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProfileServerNetworkSimulator", "src\ProfileServerNetworkSimulator\ProfileServerNetworkSimulator.csproj", "{4E155391-DE1C-45D2-ABCE-B038B755C7A2}"
+	ProjectSection(ProjectDependencies) = postProject
+		{71AAF7FD-DDEF-4431-A86E-41D93CE30307} = {71AAF7FD-DDEF-4431-A86E-41D93CE30307}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IopCommon", "..\iop-server-library\src\IopCommon\IopCommon.csproj", "{71AAF7FD-DDEF-4431-A86E-41D93CE30307}"
 EndProject
