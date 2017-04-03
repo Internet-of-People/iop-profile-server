@@ -43,10 +43,11 @@ namespace ProfileServer
         while (!shutdown)
         {
           Thread.Sleep(1000);
-          if (Console.KeyAvailable)
+          int key = Console.In.Peek();
+          if (key != -1)
           {
-            ConsoleKeyInfo kinfo = Console.ReadKey();
-            shutdown = kinfo.KeyChar == '\r';
+            key = Console.In.Read();
+            shutdown = key == '\r';
           }
           else shutdown = CheckExternalShutdown();
         }
