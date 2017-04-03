@@ -253,67 +253,67 @@ namespace Iop.Profileserver {
             "b24YASABKAsyLS5pb3AucHJvZmlsZXNlcnZlci5DYXJkQXBwbGljYXRpb25J",
             "bmZvcm1hdGlvbhIgChhjYXJkQXBwbGljYXRpb25TaWduYXR1cmUYAiABKAwS",
             "NwoEY2FyZBgDIAEoCzIpLmlvcC5wcm9maWxlc2VydmVyLlNpZ25lZFJlbGF0",
-            "aW9uc2hpcENhcmQiVQomU3RhcnROZWlnaGJvcmhvb2RJbml0aWFsaXphdGlv",
+            "aW9uc2hpcENhcmQiaAomU3RhcnROZWlnaGJvcmhvb2RJbml0aWFsaXphdGlv",
             "blJlcXVlc3QSEwoLcHJpbWFyeVBvcnQYASABKA0SFgoOc3JOZWlnaGJvclBv",
-            "cnQYAiABKA0iKQonU3RhcnROZWlnaGJvcmhvb2RJbml0aWFsaXphdGlvblJl",
-            "c3BvbnNlIikKJ0ZpbmlzaE5laWdoYm9yaG9vZEluaXRpYWxpemF0aW9uUmVx",
-            "dWVzdCIqCihGaW5pc2hOZWlnaGJvcmhvb2RJbml0aWFsaXphdGlvblJlc3Bv",
-            "bnNlImMKJk5laWdoYm9yaG9vZFNoYXJlZFByb2ZpbGVVcGRhdGVSZXF1ZXN0",
-            "EjkKBWl0ZW1zGAEgAygLMiouaW9wLnByb2ZpbGVzZXJ2ZXIuU2hhcmVkUHJv",
-            "ZmlsZVVwZGF0ZUl0ZW0iKQonTmVpZ2hib3Job29kU2hhcmVkUHJvZmlsZVVw",
-            "ZGF0ZVJlc3BvbnNlIp4CChdTaGFyZWRQcm9maWxlVXBkYXRlSXRlbRI2CgNh",
-            "ZGQYASABKAsyJy5pb3AucHJvZmlsZXNlcnZlci5TaGFyZWRQcm9maWxlQWRk",
-            "SXRlbUgAEjwKBmNoYW5nZRgCIAEoCzIqLmlvcC5wcm9maWxlc2VydmVyLlNo",
-            "YXJlZFByb2ZpbGVDaGFuZ2VJdGVtSAASPAoGZGVsZXRlGAMgASgLMiouaW9w",
-            "LnByb2ZpbGVzZXJ2ZXIuU2hhcmVkUHJvZmlsZURlbGV0ZUl0ZW1IABJBCgdy",
-            "ZWZyZXNoGAQgASgLMi4uaW9wLnByb2ZpbGVzZXJ2ZXIuU2hhcmVkUHJvZmls",
-            "ZVJlZnJlc2hBbGxJdGVtSABCDAoKQWN0aW9uVHlwZSLJAQoUU2hhcmVkUHJv",
-            "ZmlsZUFkZEl0ZW0SDwoHdmVyc2lvbhgBIAEoDBIZChFpZGVudGl0eVB1Ymxp",
-            "Y0tleRgCIAEoDBIMCgRuYW1lGAMgASgJEgwKBHR5cGUYBCABKAkSGQoRc2V0",
-            "VGh1bWJuYWlsSW1hZ2UYBSABKAgSFgoOdGh1bWJuYWlsSW1hZ2UYBiABKAwS",
-            "EAoIbGF0aXR1ZGUYByABKA8SEQoJbG9uZ2l0dWRlGAggASgPEhEKCWV4dHJh",
-            "RGF0YRgJIAEoCSKOAgoXU2hhcmVkUHJvZmlsZUNoYW5nZUl0ZW0SGQoRaWRl",
-            "bnRpdHlOZXR3b3JrSWQYASABKAwSEgoKc2V0VmVyc2lvbhgCIAEoCBIPCgdz",
-            "ZXROYW1lGAMgASgIEhkKEXNldFRodW1ibmFpbEltYWdlGAQgASgIEhMKC3Nl",
-            "dExvY2F0aW9uGAUgASgIEhQKDHNldEV4dHJhRGF0YRgGIAEoCBIPCgd2ZXJz",
-            "aW9uGAcgASgMEgwKBG5hbWUYCCABKAkSFgoOdGh1bWJuYWlsSW1hZ2UYCSAB",
-            "KAwSEAoIbGF0aXR1ZGUYCiABKA8SEQoJbG9uZ2l0dWRlGAsgASgPEhEKCWV4",
-            "dHJhRGF0YRgMIAEoCSI0ChdTaGFyZWRQcm9maWxlRGVsZXRlSXRlbRIZChFp",
-            "ZGVudGl0eU5ldHdvcmtJZBgBIAEoDCIdChtTaGFyZWRQcm9maWxlUmVmcmVz",
-            "aEFsbEl0ZW0iIAoeU3RvcE5laWdoYm9yaG9vZFVwZGF0ZXNSZXF1ZXN0IiEK",
-            "H1N0b3BOZWlnaGJvcmhvb2RVcGRhdGVzUmVzcG9uc2UiVAoXQ2FuUHJvZmls",
-            "ZVNlcnZlckNvbnRhY3QSEQoJcHVibGljS2V5GAEgASgMEhEKCWlwQWRkcmVz",
-            "cxgCIAEoDBITCgtwcmltYXJ5UG9ydBgDIAEoDSJgCg9DYW5JZGVudGl0eURh",
-            "dGESFwoPaG9zdGluZ1NlcnZlcklkGAEgASgMEjQKDGtleVZhbHVlTGlzdBgC",
-            "IAMoCzIeLmlvcC5wcm9maWxlc2VydmVyLkNhbktleVZhbHVlIq8BCgtDYW5L",
-            "ZXlWYWx1ZRILCgNrZXkYASABKAkSFQoLYmluYXJ5VmFsdWUYAiABKAxIABIV",
-            "Cgt1aW50MzJWYWx1ZRgDIAEoBUgAEhUKC3VpbnQ2NFZhbHVlGAQgASgDSAAS",
-            "FQoLZG91YmxlVmFsdWUYBSABKAFIABITCglib29sVmFsdWUYBiABKAhIABIV",
-            "CgtzdHJpbmdWYWx1ZRgHIAEoCUgAQgsKCVZhbHVlVHlwZSJHChNDYW5TdG9y",
-            "ZURhdGFSZXF1ZXN0EjAKBGRhdGEYASABKAsyIi5pb3AucHJvZmlsZXNlcnZl",
-            "ci5DYW5JZGVudGl0eURhdGEiJAoUQ2FuU3RvcmVEYXRhUmVzcG9uc2USDAoE",
-            "aGFzaBgBIAEoDCJOChtDYW5QdWJsaXNoSXBuc1JlY29yZFJlcXVlc3QSLwoG",
-            "cmVjb3JkGAEgASgLMh8uaW9wLnByb2ZpbGVzZXJ2ZXIuQ2FuSXBuc0VudHJ5",
-            "Ih4KHENhblB1Ymxpc2hJcG5zUmVjb3JkUmVzcG9uc2UivgEKDENhbklwbnNF",
-            "bnRyeRINCgV2YWx1ZRgBIAEoDBIRCglzaWduYXR1cmUYAiABKAwSQgoMdmFs",
-            "aWRpdHlUeXBlGAMgASgOMiwuaW9wLnByb2ZpbGVzZXJ2ZXIuQ2FuSXBuc0Vu",
-            "dHJ5LlZhbGlkaXR5VHlwZRIQCgh2YWxpZGl0eRgEIAEoDBIQCghzZXF1ZW5j",
-            "ZRgFIAEoBBILCgN0dGwYBiABKAQiFwoMVmFsaWRpdHlUeXBlEgcKA0VPTBAA",
-            "InQKDENhbkNyeXB0b0tleRI1CgR0eXBlGAEgASgOMicuaW9wLnByb2ZpbGVz",
-            "ZXJ2ZXIuQ2FuQ3J5cHRvS2V5LktleVR5cGUSDAoEZGF0YRgCIAEoDCIfCgdL",
-            "ZXlUeXBlEgcKA1JTQRAAEgsKB0VkMjU1MTkQASqWAwoGU3RhdHVzEg0KCVNU",
-            "QVRVU19PSxAAEhwKGEVSUk9SX1BST1RPQ09MX1ZJT0xBVElPThABEhUKEUVS",
-            "Uk9SX1VOU1VQUE9SVEVEEAISEAoMRVJST1JfQkFOTkVEEAMSDgoKRVJST1Jf",
-            "QlVTWRAEEhYKEkVSUk9SX1VOQVVUSE9SSVpFRBAFEhIKDkVSUk9SX0JBRF9S",
-            "T0xFEAYSIQodRVJST1JfQkFEX0NPTlZFUlNBVElPTl9TVEFUVVMQBxISCg5F",
-            "UlJPUl9JTlRFUk5BTBAIEhgKFEVSUk9SX1FVT1RBX0VYQ0VFREVEEDMSGwoX",
-            "RVJST1JfSU5WQUxJRF9TSUdOQVRVUkUQNBITCg9FUlJPUl9OT1RfRk9VTkQQ",
-            "NRIXChNFUlJPUl9JTlZBTElEX1ZBTFVFEDYSGAoURVJST1JfQUxSRUFEWV9F",
-            "WElTVFMQNxIXChNFUlJPUl9OT1RfQVZBSUxBQkxFEDgSEgoORVJST1JfUkVK",
-            "RUNURUQQORIXChNFUlJPUl9VTklOSVRJQUxJWkVEEDoqaAoOU2VydmVyUm9s",
-            "ZVR5cGUSCwoHUFJJTUFSWRAAEg8KC1NSX05FSUdIQk9SEAISEwoPQ0xfTk9O",
-            "X0NVU1RPTUVSEAYSDwoLQ0xfQ1VTVE9NRVIQBxISCg5DTF9BUFBfU0VSVklD",
-            "RRAJYgZwcm90bzM="));
+            "cnQYAiABKA0SEQoJaXBBZGRyZXNzGAMgASgMIikKJ1N0YXJ0TmVpZ2hib3Jo",
+            "b29kSW5pdGlhbGl6YXRpb25SZXNwb25zZSIpCidGaW5pc2hOZWlnaGJvcmhv",
+            "b2RJbml0aWFsaXphdGlvblJlcXVlc3QiKgooRmluaXNoTmVpZ2hib3Job29k",
+            "SW5pdGlhbGl6YXRpb25SZXNwb25zZSJjCiZOZWlnaGJvcmhvb2RTaGFyZWRQ",
+            "cm9maWxlVXBkYXRlUmVxdWVzdBI5CgVpdGVtcxgBIAMoCzIqLmlvcC5wcm9m",
+            "aWxlc2VydmVyLlNoYXJlZFByb2ZpbGVVcGRhdGVJdGVtIikKJ05laWdoYm9y",
+            "aG9vZFNoYXJlZFByb2ZpbGVVcGRhdGVSZXNwb25zZSKeAgoXU2hhcmVkUHJv",
+            "ZmlsZVVwZGF0ZUl0ZW0SNgoDYWRkGAEgASgLMicuaW9wLnByb2ZpbGVzZXJ2",
+            "ZXIuU2hhcmVkUHJvZmlsZUFkZEl0ZW1IABI8CgZjaGFuZ2UYAiABKAsyKi5p",
+            "b3AucHJvZmlsZXNlcnZlci5TaGFyZWRQcm9maWxlQ2hhbmdlSXRlbUgAEjwK",
+            "BmRlbGV0ZRgDIAEoCzIqLmlvcC5wcm9maWxlc2VydmVyLlNoYXJlZFByb2Zp",
+            "bGVEZWxldGVJdGVtSAASQQoHcmVmcmVzaBgEIAEoCzIuLmlvcC5wcm9maWxl",
+            "c2VydmVyLlNoYXJlZFByb2ZpbGVSZWZyZXNoQWxsSXRlbUgAQgwKCkFjdGlv",
+            "blR5cGUiyQEKFFNoYXJlZFByb2ZpbGVBZGRJdGVtEg8KB3ZlcnNpb24YASAB",
+            "KAwSGQoRaWRlbnRpdHlQdWJsaWNLZXkYAiABKAwSDAoEbmFtZRgDIAEoCRIM",
+            "CgR0eXBlGAQgASgJEhkKEXNldFRodW1ibmFpbEltYWdlGAUgASgIEhYKDnRo",
+            "dW1ibmFpbEltYWdlGAYgASgMEhAKCGxhdGl0dWRlGAcgASgPEhEKCWxvbmdp",
+            "dHVkZRgIIAEoDxIRCglleHRyYURhdGEYCSABKAkijgIKF1NoYXJlZFByb2Zp",
+            "bGVDaGFuZ2VJdGVtEhkKEWlkZW50aXR5TmV0d29ya0lkGAEgASgMEhIKCnNl",
+            "dFZlcnNpb24YAiABKAgSDwoHc2V0TmFtZRgDIAEoCBIZChFzZXRUaHVtYm5h",
+            "aWxJbWFnZRgEIAEoCBITCgtzZXRMb2NhdGlvbhgFIAEoCBIUCgxzZXRFeHRy",
+            "YURhdGEYBiABKAgSDwoHdmVyc2lvbhgHIAEoDBIMCgRuYW1lGAggASgJEhYK",
+            "DnRodW1ibmFpbEltYWdlGAkgASgMEhAKCGxhdGl0dWRlGAogASgPEhEKCWxv",
+            "bmdpdHVkZRgLIAEoDxIRCglleHRyYURhdGEYDCABKAkiNAoXU2hhcmVkUHJv",
+            "ZmlsZURlbGV0ZUl0ZW0SGQoRaWRlbnRpdHlOZXR3b3JrSWQYASABKAwiHQob",
+            "U2hhcmVkUHJvZmlsZVJlZnJlc2hBbGxJdGVtIiAKHlN0b3BOZWlnaGJvcmhv",
+            "b2RVcGRhdGVzUmVxdWVzdCIhCh9TdG9wTmVpZ2hib3Job29kVXBkYXRlc1Jl",
+            "c3BvbnNlIlQKF0NhblByb2ZpbGVTZXJ2ZXJDb250YWN0EhEKCXB1YmxpY0tl",
+            "eRgBIAEoDBIRCglpcEFkZHJlc3MYAiABKAwSEwoLcHJpbWFyeVBvcnQYAyAB",
+            "KA0iYAoPQ2FuSWRlbnRpdHlEYXRhEhcKD2hvc3RpbmdTZXJ2ZXJJZBgBIAEo",
+            "DBI0CgxrZXlWYWx1ZUxpc3QYAiADKAsyHi5pb3AucHJvZmlsZXNlcnZlci5D",
+            "YW5LZXlWYWx1ZSKvAQoLQ2FuS2V5VmFsdWUSCwoDa2V5GAEgASgJEhUKC2Jp",
+            "bmFyeVZhbHVlGAIgASgMSAASFQoLdWludDMyVmFsdWUYAyABKAVIABIVCgt1",
+            "aW50NjRWYWx1ZRgEIAEoA0gAEhUKC2RvdWJsZVZhbHVlGAUgASgBSAASEwoJ",
+            "Ym9vbFZhbHVlGAYgASgISAASFQoLc3RyaW5nVmFsdWUYByABKAlIAEILCglW",
+            "YWx1ZVR5cGUiRwoTQ2FuU3RvcmVEYXRhUmVxdWVzdBIwCgRkYXRhGAEgASgL",
+            "MiIuaW9wLnByb2ZpbGVzZXJ2ZXIuQ2FuSWRlbnRpdHlEYXRhIiQKFENhblN0",
+            "b3JlRGF0YVJlc3BvbnNlEgwKBGhhc2gYASABKAwiTgobQ2FuUHVibGlzaElw",
+            "bnNSZWNvcmRSZXF1ZXN0Ei8KBnJlY29yZBgBIAEoCzIfLmlvcC5wcm9maWxl",
+            "c2VydmVyLkNhbklwbnNFbnRyeSIeChxDYW5QdWJsaXNoSXBuc1JlY29yZFJl",
+            "c3BvbnNlIr4BCgxDYW5JcG5zRW50cnkSDQoFdmFsdWUYASABKAwSEQoJc2ln",
+            "bmF0dXJlGAIgASgMEkIKDHZhbGlkaXR5VHlwZRgDIAEoDjIsLmlvcC5wcm9m",
+            "aWxlc2VydmVyLkNhbklwbnNFbnRyeS5WYWxpZGl0eVR5cGUSEAoIdmFsaWRp",
+            "dHkYBCABKAwSEAoIc2VxdWVuY2UYBSABKAQSCwoDdHRsGAYgASgEIhcKDFZh",
+            "bGlkaXR5VHlwZRIHCgNFT0wQACJ0CgxDYW5DcnlwdG9LZXkSNQoEdHlwZRgB",
+            "IAEoDjInLmlvcC5wcm9maWxlc2VydmVyLkNhbkNyeXB0b0tleS5LZXlUeXBl",
+            "EgwKBGRhdGEYAiABKAwiHwoHS2V5VHlwZRIHCgNSU0EQABILCgdFZDI1NTE5",
+            "EAEqlgMKBlN0YXR1cxINCglTVEFUVVNfT0sQABIcChhFUlJPUl9QUk9UT0NP",
+            "TF9WSU9MQVRJT04QARIVChFFUlJPUl9VTlNVUFBPUlRFRBACEhAKDEVSUk9S",
+            "X0JBTk5FRBADEg4KCkVSUk9SX0JVU1kQBBIWChJFUlJPUl9VTkFVVEhPUkla",
+            "RUQQBRISCg5FUlJPUl9CQURfUk9MRRAGEiEKHUVSUk9SX0JBRF9DT05WRVJT",
+            "QVRJT05fU1RBVFVTEAcSEgoORVJST1JfSU5URVJOQUwQCBIYChRFUlJPUl9R",
+            "VU9UQV9FWENFRURFRBAzEhsKF0VSUk9SX0lOVkFMSURfU0lHTkFUVVJFEDQS",
+            "EwoPRVJST1JfTk9UX0ZPVU5EEDUSFwoTRVJST1JfSU5WQUxJRF9WQUxVRRA2",
+            "EhgKFEVSUk9SX0FMUkVBRFlfRVhJU1RTEDcSFwoTRVJST1JfTk9UX0FWQUlM",
+            "QUJMRRA4EhIKDkVSUk9SX1JFSkVDVEVEEDkSFwoTRVJST1JfVU5JTklUSUFM",
+            "SVpFRBA6KmgKDlNlcnZlclJvbGVUeXBlEgsKB1BSSU1BUlkQABIPCgtTUl9O",
+            "RUlHSEJPUhACEhMKD0NMX05PTl9DVVNUT01FUhAGEg8KC0NMX0NVU1RPTUVS",
+            "EAcSEgoOQ0xfQVBQX1NFUlZJQ0UQCWIGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Iop.Profileserver.Status), typeof(global::Iop.Profileserver.ServerRoleType), }, new pbr::GeneratedClrTypeInfo[] {
@@ -379,7 +379,7 @@ namespace Iop.Profileserver {
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Profileserver.GetIdentityRelationshipsInformationRequest), global::Iop.Profileserver.GetIdentityRelationshipsInformationRequest.Parser, new[]{ "IdentityNetworkId", "IncludeInvalid", "Type", "SpecificIssuer", "IssuerNetworkId" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Profileserver.GetIdentityRelationshipsInformationResponse), global::Iop.Profileserver.GetIdentityRelationshipsInformationResponse.Parser, new[]{ "Relationships" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Profileserver.IdentityRelationship), global::Iop.Profileserver.IdentityRelationship.Parser, new[]{ "CardApplication", "CardApplicationSignature", "Card" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Profileserver.StartNeighborhoodInitializationRequest), global::Iop.Profileserver.StartNeighborhoodInitializationRequest.Parser, new[]{ "PrimaryPort", "SrNeighborPort" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Profileserver.StartNeighborhoodInitializationRequest), global::Iop.Profileserver.StartNeighborhoodInitializationRequest.Parser, new[]{ "PrimaryPort", "SrNeighborPort", "IpAddress" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Profileserver.StartNeighborhoodInitializationResponse), global::Iop.Profileserver.StartNeighborhoodInitializationResponse.Parser, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Profileserver.FinishNeighborhoodInitializationRequest), global::Iop.Profileserver.FinishNeighborhoodInitializationRequest.Parser, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Profileserver.FinishNeighborhoodInitializationResponse), global::Iop.Profileserver.FinishNeighborhoodInitializationResponse.Parser, null, null, null, null),
@@ -5583,7 +5583,6 @@ namespace Iop.Profileserver {
   ///  After StartConversationResponse is sent, the conversation context includes version and keys of both peers.
   ///
   ///  Specific Error Responses:
-  ///    * ERROR_UNSUPPORTED - If the requestee does not support any of the requestor's versions, it replies with this error code.
   ///    * ERROR_INVALID_VALUE
   ///      * Response.details == "publicKey" - 'StartConversationRequest.publicKey' is not a valid public key value. 
   ///      * Response.details == "clientChallenge" - 'StartConversationRequest.clientChallenge' is not 32 byte long. 
@@ -13437,6 +13436,7 @@ namespace Iop.Profileserver {
     public StartNeighborhoodInitializationRequest(StartNeighborhoodInitializationRequest other) : this() {
       primaryPort_ = other.primaryPort_;
       srNeighborPort_ = other.srNeighborPort_;
+      ipAddress_ = other.ipAddress_;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -13472,6 +13472,20 @@ namespace Iop.Profileserver {
       }
     }
 
+    /// <summary>Field number for the "ipAddress" field.</summary>
+    public const int IpAddressFieldNumber = 3;
+    private pb::ByteString ipAddress_ = pb::ByteString.Empty;
+    /// <summary>
+    ///  IPv4 or IPv6 public address of the network interface on which profile server operates.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString IpAddress {
+      get { return ipAddress_; }
+      set {
+        ipAddress_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as StartNeighborhoodInitializationRequest);
@@ -13487,6 +13501,7 @@ namespace Iop.Profileserver {
       }
       if (PrimaryPort != other.PrimaryPort) return false;
       if (SrNeighborPort != other.SrNeighborPort) return false;
+      if (IpAddress != other.IpAddress) return false;
       return true;
     }
 
@@ -13495,6 +13510,7 @@ namespace Iop.Profileserver {
       int hash = 1;
       if (PrimaryPort != 0) hash ^= PrimaryPort.GetHashCode();
       if (SrNeighborPort != 0) hash ^= SrNeighborPort.GetHashCode();
+      if (IpAddress.Length != 0) hash ^= IpAddress.GetHashCode();
       return hash;
     }
 
@@ -13513,6 +13529,10 @@ namespace Iop.Profileserver {
         output.WriteRawTag(16);
         output.WriteUInt32(SrNeighborPort);
       }
+      if (IpAddress.Length != 0) {
+        output.WriteRawTag(26);
+        output.WriteBytes(IpAddress);
+      }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -13523,6 +13543,9 @@ namespace Iop.Profileserver {
       }
       if (SrNeighborPort != 0) {
         size += 1 + pb::CodedOutputStream.ComputeUInt32Size(SrNeighborPort);
+      }
+      if (IpAddress.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(IpAddress);
       }
       return size;
     }
@@ -13537,6 +13560,9 @@ namespace Iop.Profileserver {
       }
       if (other.SrNeighborPort != 0) {
         SrNeighborPort = other.SrNeighborPort;
+      }
+      if (other.IpAddress.Length != 0) {
+        IpAddress = other.IpAddress;
       }
     }
 
@@ -13554,6 +13580,10 @@ namespace Iop.Profileserver {
           }
           case 16: {
             SrNeighborPort = input.ReadUInt32();
+            break;
+          }
+          case 26: {
+            IpAddress = input.ReadBytes();
             break;
           }
         }
@@ -13574,6 +13604,7 @@ namespace Iop.Profileserver {
   ///    * ERROR_INVALID_VALUE
   ///      * Response.details == "primaryPort" - 'StartNeighborhoodInitializationRequest.primaryPort' must be an integer between 1 and 65535.
   ///      * Response.details == "srNeighborPort" - 'StartNeighborhoodInitializationRequest.srNeighborPort' must be an integer between 1 and 65535.
+  ///      * Response.details == "ipAddress" - 'StartNeighborhoodInitializationRequest.ipAddress' is not a valid IPv4 or IPv6 address or it is a local network IP address.
   /// </summary>
   public sealed partial class StartNeighborhoodInitializationResponse : pb::IMessage<StartNeighborhoodInitializationResponse> {
     private static readonly pb::MessageParser<StartNeighborhoodInitializationResponse> _parser = new pb::MessageParser<StartNeighborhoodInitializationResponse>(() => new StartNeighborhoodInitializationResponse());
