@@ -2,6 +2,7 @@
 using ProfileServer.Kernel;
 using System.Threading;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace ProfileServer
 {
@@ -39,17 +40,12 @@ namespace ProfileServer
         Console.WriteLine("Profile server is running now.");
         Console.WriteLine("Press ENTER to exit.");
 
+        Task<string> readEnterTask = Task.Run(() => Console.In.ReadLineAsync());
         bool shutdown = false;
         while (!shutdown)
         {
+          shutdown = (readEnterTask.Status != TaskStatus.WaitingForActivation) || CheckExternalShutdown();
           Thread.Sleep(1000);
-          int key = Console.In.Peek();
-          if (key != -1)
-          {
-            key = Console.In.Read();
-            shutdown = key == '\r';
-          }
-          else shutdown = CheckExternalShutdown();
         }
 
         Base.Shutdown();
@@ -80,6 +76,7 @@ namespace ProfileServer
           if (text.Trim() == "1")
           {
             File.WriteAllText(ExternalShutdownSignalFileName, "0");
+            log.Info("External shutdown signal detected.");
             res = true;
           }
         }
