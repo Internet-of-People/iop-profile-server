@@ -14,7 +14,7 @@ In order to install and run the Profile Server, you need to
 
 ## Install .NET Core
 
-Simply go to [Microsoft .NET Core website](https://www.microsoft.com/net/core) and follow the instructions on how to install .NET Core to your system.
+Note that this is not needed if you are going to use any of the binary releases. Simply go to [Microsoft .NET Core website](https://www.microsoft.com/net/core) and follow the instructions on how to install .NET Core to your system.
 
 
 ## Install OpenSSL
@@ -75,7 +75,7 @@ Make sure your system is fully updated using Windows Update. Then you need to in
 
 ### Dependencies for Linux
 
-You need to have `libunwind8`, `libcurl4-openssl-dev` and `libicu52` installed. If you do not have then, install then with the following command:
+You need to have `libunwind8`, `libcurl4-openssl-dev` installed and on some systems (like Ubuntu 14.04) also `libicu52` is needed. If you do not have then, install then with the following command:
 
 ```
 apt-get install libunwind8
