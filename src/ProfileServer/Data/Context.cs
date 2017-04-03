@@ -14,8 +14,8 @@ namespace ProfileServer.Data
   /// </summary>
   public class Context : DbContext
   {
-    /// <summary>Name of the database file.</summary>
-    public const string DatabaseFileName = "ProfileServer.db";
+    /// <summary>Default name of the database file.</summary>
+    public const string DefaultDatabaseFileName = "ProfileServer.db";
 
     /// <summary>Access to profile server's settings in the database.</summary>
     public DbSet<Setting> Settings { get; set; }
@@ -44,7 +44,10 @@ namespace ProfileServer.Data
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
       string currentDirectory = Directory.GetCurrentDirectory();
-      optionsBuilder.UseSqlite(string.Format("Filename={0}", Path.Combine(currentDirectory, DatabaseFileName)));
+      string path = Path.Combine(currentDirectory, DefaultDatabaseFileName);
+
+      string dbFileName = Base.Configuration != null ? Base.Configuration.DatabaseFileName : path;
+      optionsBuilder.UseSqlite(string.Format("Filename={0}", dbFileName));
 
       Microsoft.Extensions.Logging.LoggerFactory loggerFactory = new Microsoft.Extensions.Logging.LoggerFactory();
       loggerFactory.AddProvider(new DbLoggerProvider());

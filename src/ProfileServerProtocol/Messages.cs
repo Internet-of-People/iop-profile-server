@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ProfileServerCrypto;
 using System.Collections;
+using System.Net;
 
 namespace ProfileServerProtocol
 {
@@ -1306,12 +1307,14 @@ namespace ProfileServerProtocol
     /// </summary>
     /// <param name="PrimaryPort">Primary interface port of the requesting profile server.</param>
     /// <param name="SrNeighborPort">Neighbors interface port of the requesting profile server.</param>
+    /// <param name="IpAddress">External IP address of the requesting profile server.</param>
     /// <returns>StartNeighborhoodInitializationRequest message that is ready to be sent.</returns>
-    public Message CreateStartNeighborhoodInitializationRequest(uint PrimaryPort, uint SrNeighborPort)
+    public Message CreateStartNeighborhoodInitializationRequest(uint PrimaryPort, uint SrNeighborPort, IPAddress IpAddress)
     {
       StartNeighborhoodInitializationRequest startNeighborhoodInitializationRequest = new StartNeighborhoodInitializationRequest();
       startNeighborhoodInitializationRequest.PrimaryPort = PrimaryPort;
       startNeighborhoodInitializationRequest.SrNeighborPort = SrNeighborPort;
+      startNeighborhoodInitializationRequest.IpAddress = ProtocolHelper.ByteArrayToByteString(IpAddress.GetAddressBytes());
 
       Message res = CreateConversationRequest();
       res.Request.ConversationRequest.StartNeighborhoodInitialization = startNeighborhoodInitializationRequest;

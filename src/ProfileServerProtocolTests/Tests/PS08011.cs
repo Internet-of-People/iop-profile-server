@@ -107,7 +107,7 @@ namespace ProfileServerProtocolTests.Tests
         bool verifyIdentityOk = await client.VerifyIdentityAsync();
 
         // Start neighborhood initialization process.
-        Message requestMessage = mb.CreateStartNeighborhoodInitializationRequest((uint)profileServer.PrimaryPort, (uint)profileServer.ServerNeighborPort);
+        Message requestMessage = mb.CreateStartNeighborhoodInitializationRequest((uint)profileServer.PrimaryPort, (uint)profileServer.ServerNeighborPort, ServerIp);
         await client.SendMessageAsync(requestMessage);
 
         Message responseMessage = await client.ReceiveMessageAsync();

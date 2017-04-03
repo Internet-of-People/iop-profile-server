@@ -106,7 +106,7 @@ namespace ProfileServerProtocolTests.Tests
         bool verifyIdentityOk = await client1.VerifyIdentityAsync();
 
         // Start neighborhood initialization process with the first client.
-        Message requestMessage = mb1.CreateStartNeighborhoodInitializationRequest(1, 1);
+        Message requestMessage = mb1.CreateStartNeighborhoodInitializationRequest(1, 1, ServerIp);
         await client1.SendMessageAsync(requestMessage);
 
         Message responseMessage = await client1.ReceiveMessageAsync();
@@ -127,7 +127,7 @@ namespace ProfileServerProtocolTests.Tests
         verifyIdentityOk = await client2.VerifyIdentityAsync();
 
         // Start neighborhood initialization process with the second client.
-        requestMessage = mb2.CreateStartNeighborhoodInitializationRequest(1, 1);
+        requestMessage = mb2.CreateStartNeighborhoodInitializationRequest(1, 1, ServerIp);
         await client2.SendMessageAsync(requestMessage);
 
         responseMessage = await client2.ReceiveMessageAsync();
@@ -191,7 +191,7 @@ namespace ProfileServerProtocolTests.Tests
         verifyIdentityOk = await client3.VerifyIdentityAsync();
 
         // Start neighborhood initialization process with the third client.
-        requestMessage = mb3.CreateStartNeighborhoodInitializationRequest(1, 1);
+        requestMessage = mb3.CreateStartNeighborhoodInitializationRequest(1, 1, ServerIp);
         await client3.SendMessageAsync(requestMessage);
 
         responseMessage = await client3.ReceiveMessageAsync();

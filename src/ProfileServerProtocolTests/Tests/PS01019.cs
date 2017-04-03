@@ -55,7 +55,7 @@ namespace ProfileServerProtocolTests.Tests
         // Step 1
         await client.ConnectAsync(ServerIp, PrimaryPort, false);
 
-        Message requestMessage = mb.CreateStartNeighborhoodInitializationRequest(1, 1);
+        Message requestMessage = mb.CreateStartNeighborhoodInitializationRequest(1, 1, ServerIp);
         await client.SendMessageAsync(requestMessage);
         Message responseMessage = await client.ReceiveMessageAsync();
 

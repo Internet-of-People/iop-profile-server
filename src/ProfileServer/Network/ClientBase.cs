@@ -313,11 +313,15 @@ namespace ProfileServer.Network
     {
       log.Trace("()");
 
-      CloseConnection();
+      streamWriteLock.Wait();
+
+      CloseConnectionLocked();
       remoteEndPoint = EndPoint;
       tcpClient = new TcpClient();
       tcpClient.LingerState = new LingerOption(true, 0);
       tcpClient.NoDelay = true;
+
+      streamWriteLock.Release();
 
       log.Trace("(-)");
     }

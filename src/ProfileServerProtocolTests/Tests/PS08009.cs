@@ -16,8 +16,8 @@ using System.Threading.Tasks;
 namespace ProfileServerProtocolTests.Tests
 {
   /// <summary>
-  /// PS08009 - Neighborhood Initialization Process - Invalid Ports
-  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS08.md#ps08009---neighborhood-initialization-process---invalid-ports
+  /// PS08009 - Neighborhood Initialization Process - Invalid Values
+  /// https://github.com/Internet-of-People/message-protocol/blob/master/tests/PS08.md#ps08009---neighborhood-initialization-process---invalid-values
   /// </summary>
   public class PS08009 : ProtocolTest
   {
@@ -67,7 +67,7 @@ namespace ProfileServerProtocolTests.Tests
 
         bool verifyIdentityOk = await client.VerifyIdentityAsync();
 
-        Message requestMessage = mb.CreateStartNeighborhoodInitializationRequest(0, 1);
+        Message requestMessage = mb.CreateStartNeighborhoodInitializationRequest(0, 1, ServerIp);
         await client.SendMessageAsync(requestMessage);
 
         Message responseMessage = await client.ReceiveMessageAsync();
@@ -77,7 +77,7 @@ namespace ProfileServerProtocolTests.Tests
         bool startNeighborhoodInitializationOk1 = idOk && statusOk && detailsOk;
 
 
-        requestMessage = mb.CreateStartNeighborhoodInitializationRequest(1, 0);
+        requestMessage = mb.CreateStartNeighborhoodInitializationRequest(1, 0, ServerIp);
         await client.SendMessageAsync(requestMessage);
 
         responseMessage = await client.ReceiveMessageAsync();
@@ -87,7 +87,7 @@ namespace ProfileServerProtocolTests.Tests
         bool startNeighborhoodInitializationOk2 = idOk && statusOk && detailsOk;
 
 
-        requestMessage = mb.CreateStartNeighborhoodInitializationRequest(100000, 1);
+        requestMessage = mb.CreateStartNeighborhoodInitializationRequest(100000, 1, ServerIp);
         await client.SendMessageAsync(requestMessage);
 
         responseMessage = await client.ReceiveMessageAsync();
@@ -97,7 +97,7 @@ namespace ProfileServerProtocolTests.Tests
         bool startNeighborhoodInitializationOk3 = idOk && statusOk && detailsOk;
 
 
-        requestMessage = mb.CreateStartNeighborhoodInitializationRequest(1, 100000);
+        requestMessage = mb.CreateStartNeighborhoodInitializationRequest(1, 100000, ServerIp);
         await client.SendMessageAsync(requestMessage);
 
         responseMessage = await client.ReceiveMessageAsync();
@@ -107,7 +107,53 @@ namespace ProfileServerProtocolTests.Tests
         bool startNeighborhoodInitializationOk4 = idOk && statusOk && detailsOk;
 
 
-        bool step1Ok = listPortsOk && startNeighborhoodInitializationOk1 && startNeighborhoodInitializationOk2 && startNeighborhoodInitializationOk3 && startNeighborhoodInitializationOk4;
+        byte[] ipBytes = new byte[] { 1, 2, 3 };
+        requestMessage = mb.CreateStartNeighborhoodInitializationRequest(1, 1, ServerIp);
+        requestMessage.Request.ConversationRequest.StartNeighborhoodInitialization.IpAddress = ProtocolHelper.ByteArrayToByteString(ipBytes);
+        await client.SendMessageAsync(requestMessage);
+
+        responseMessage = await client.ReceiveMessageAsync();
+        idOk = responseMessage.Id == requestMessage.Id;
+        statusOk = responseMessage.Response.Status == Status.ErrorInvalidValue;
+        detailsOk = responseMessage.Response.Details == "ipAddress";
+        bool startNeighborhoodInitializationOk5 = idOk && statusOk && detailsOk;
+
+        ipBytes = new byte[] { };
+        requestMessage = mb.CreateStartNeighborhoodInitializationRequest(1, 1, ServerIp);
+        requestMessage.Request.ConversationRequest.StartNeighborhoodInitialization.IpAddress = ProtocolHelper.ByteArrayToByteString(ipBytes);
+        await client.SendMessageAsync(requestMessage);
+
+        responseMessage = await client.ReceiveMessageAsync();
+        idOk = responseMessage.Id == requestMessage.Id;
+        statusOk = responseMessage.Response.Status == Status.ErrorInvalidValue;
+        detailsOk = responseMessage.Response.Details == "ipAddress";
+        bool startNeighborhoodInitializationOk6 = idOk && statusOk && detailsOk;
+
+        ipBytes = new byte[] { 1, 2, 3, 4, 5 };
+        requestMessage = mb.CreateStartNeighborhoodInitializationRequest(1, 1, ServerIp);
+        requestMessage.Request.ConversationRequest.StartNeighborhoodInitialization.IpAddress = ProtocolHelper.ByteArrayToByteString(ipBytes);
+        await client.SendMessageAsync(requestMessage);
+
+        responseMessage = await client.ReceiveMessageAsync();
+        idOk = responseMessage.Id == requestMessage.Id;
+        statusOk = responseMessage.Response.Status == Status.ErrorInvalidValue;
+        detailsOk = responseMessage.Response.Details == "ipAddress";
+        bool startNeighborhoodInitializationOk7 = idOk && statusOk && detailsOk;
+
+        ipBytes = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 };
+        requestMessage = mb.CreateStartNeighborhoodInitializationRequest(1, 1, ServerIp);
+        requestMessage.Request.ConversationRequest.StartNeighborhoodInitialization.IpAddress = ProtocolHelper.ByteArrayToByteString(ipBytes);
+        await client.SendMessageAsync(requestMessage);
+
+        responseMessage = await client.ReceiveMessageAsync();
+        idOk = responseMessage.Id == requestMessage.Id;
+        statusOk = responseMessage.Response.Status == Status.ErrorInvalidValue;
+        detailsOk = responseMessage.Response.Details == "ipAddress";
+        bool startNeighborhoodInitializationOk8 = idOk && statusOk && detailsOk;
+
+
+        bool step1Ok = listPortsOk && startNeighborhoodInitializationOk1 && startNeighborhoodInitializationOk2 && startNeighborhoodInitializationOk3 && startNeighborhoodInitializationOk4
+         && startNeighborhoodInitializationOk5 && startNeighborhoodInitializationOk6 && startNeighborhoodInitializationOk7 && startNeighborhoodInitializationOk8;
         log.Trace("Step 1: {0}", step1Ok ? "PASSED" : "FAILED");
 
         Passed = step1Ok;

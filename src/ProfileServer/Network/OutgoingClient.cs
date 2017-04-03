@@ -353,7 +353,7 @@ namespace ProfileServer.Network
       log.Trace("()");
 
       bool res = false;
-      Message requestMessage = MessageBuilder.CreateStartNeighborhoodInitializationRequest(PrimaryPort, SrNeighborPort);
+      Message requestMessage = MessageBuilder.CreateStartNeighborhoodInitializationRequest(PrimaryPort, SrNeighborPort, Base.Configuration.ExternalServerAddress);
       if (await SendMessageAsync(requestMessage))
       {
         Message responseMessage = await ReceiveMessageAsync();

@@ -89,6 +89,9 @@ namespace ProfileServer.Kernel.Config
     /// <summary>Path to the directory where temporary files are stored.</summary>
     public string TempDataFolder;
 
+    /// <summary>Name of the database file.</summary>
+    public string DatabaseFileName;
+
     /// <summary>Maximal total number of identities hosted by this profile server.</summary>
     public int MaxHostedIdentities;
 
@@ -122,7 +125,6 @@ namespace ProfileServer.Kernel.Config
 
     /// <summary>Maximum number of follower servers the profile server is willing to share its database with.</summary>
     public int MaxFollowerServersCount;
-
 
     /// <summary>Last sequence number used for IPNS record.</summary>
     public UInt64 CanIpnsLastSequenceNumber;
@@ -224,6 +226,7 @@ namespace ProfileServer.Kernel.Config
         IPAddress bindToInterface = null;
         string imageDataFolder = null;
         string tempDataFolder = null;
+        string databaseFileName = null;
         int maxHostedIdentities = 0;
         int maxIdentityRelations = 0;
         int neighborhoodInitializationParallelism = 0;
@@ -252,6 +255,7 @@ namespace ProfileServer.Kernel.Config
           { "tls_server_certificate",                  ConfigValueType.StringNonEmpty },
           { "image_data_folder",                       ConfigValueType.StringNonEmpty },
           { "tmp_data_folder",                         ConfigValueType.StringNonEmpty },
+          { "db_file_name",                            ConfigValueType.StringNonEmpty },
           { "max_hosted_identities",                   ConfigValueType.Int            },
           { "max_identity_relations",                  ConfigValueType.Int            },
           { "neighborhood_initialization_parallelism", ConfigValueType.Int            },
@@ -278,6 +282,7 @@ namespace ProfileServer.Kernel.Config
           tcpServerTlsCertificateFileName = (string)nameVal["tls_server_certificate"];
           imageDataFolder = (string)nameVal["image_data_folder"];
           tempDataFolder = (string)nameVal["tmp_data_folder"];
+          databaseFileName = (string)nameVal["db_file_name"];
           maxHostedIdentities = (int)nameVal["max_hosted_identities"];
           maxIdentityRelations = (int)nameVal["max_identity_relations"];
           neighborhoodInitializationParallelism = (int)nameVal["neighborhood_initialization_parallelism"];
@@ -367,6 +372,15 @@ namespace ProfileServer.Kernel.Config
           catch (Exception e)
           {
             log.Error("Exception occurred while initializing image data folder '{0}': {1}", imageDataFolder, e.ToString());
+            error = true;
+          }
+        }
+
+        if (!error)
+        {
+          if (!File.Exists(databaseFileName))
+          {
+            log.Error("Database file '{0}' does not exist.", databaseFileName);
             error = true;
           }
         }
@@ -483,6 +497,7 @@ namespace ProfileServer.Kernel.Config
           TcpServerTlsCertificate = tcpServerTlsCertificate;
           ImageDataFolder = imageDataFolder;
           TempDataFolder = tempDataFolder;
+          DatabaseFileName = databaseFileName;
           MaxHostedIdentities = maxHostedIdentities;
           MaxIdenityRelations = maxIdentityRelations;
           NeighborhoodInitializationParallelism = neighborhoodInitializationParallelism;

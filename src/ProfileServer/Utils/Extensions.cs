@@ -264,5 +264,26 @@ namespace ProfileServer.Utils
 
       return res;
     }
+
+
+    /// <summary>
+    /// Safely constructs IPv4 or IPv6 address from byte array.
+    /// </summary>
+    /// <param name="AddressBytes">Byte array that represent IP address.</param>
+    /// <returns>IP address constructed from byte array or null if the byte array does not represent a valid IPv4 or IPv6 address.</returns>
+    public static IPAddress IpFromBytes(byte[] AddressBytes)
+    {
+      IPAddress res = null;
+      try
+      {
+        IPAddress addr = new IPAddress(AddressBytes);
+        if ((addr.AddressFamily == AddressFamily.InterNetwork) || (addr.AddressFamily == AddressFamily.InterNetworkV6))
+          res = addr;
+      }
+      catch
+      {
+      }
+      return res;
+    }
   }
 }

@@ -1248,16 +1248,17 @@ namespace ProfileServerProtocolTests
     /// </summary>
     /// <param name="PrimaryPort">Primary port of the client's simulated profile server.</param>
     /// <param name="SrNeighborPort">Server neighbor port of the client's simulated profile server.</param>
+    /// <param name="ServerIp">Server's IP address.</param>
     /// <param name="ClientList">List of clients with initialized profiles that the client is expected to receive from the server duting the neighborhood initialization process.</param>
     /// <returns>true if the function succeeds, false otherwise.</returns>
-    public async Task<bool> NeighborhoodInitializationProcessAsync(int PrimaryPort, int SrNeighborPort, Dictionary<string, ProtocolClient> ClientList)
+    public async Task<bool> NeighborhoodInitializationProcessAsync(int PrimaryPort, int SrNeighborPort, IPAddress ServerIp, Dictionary<string, ProtocolClient> ClientList)
     {
       log.Trace("(PrimaryPort:{0},SrNeighborPort:{1},ClientList.Count:{2})", PrimaryPort, SrNeighborPort, ClientList.Count);
 
       bool verifyIdentityOk = await VerifyIdentityAsync();
 
       // Start neighborhood initialization process.
-      Message requestMessage = MessageBuilder.CreateStartNeighborhoodInitializationRequest((uint)PrimaryPort, (uint)SrNeighborPort);
+      Message requestMessage = MessageBuilder.CreateStartNeighborhoodInitializationRequest((uint)PrimaryPort, (uint)SrNeighborPort, ServerIp);
       await SendMessageAsync(requestMessage);
 
       Message responseMessage = await ReceiveMessageAsync();

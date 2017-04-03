@@ -108,7 +108,7 @@ namespace ProfileServerProtocolTests.Tests
         // Step 2
         log.Trace("Step 2");
         await client.ConnectAsync(ServerIp, (int)rolePorts[ServerRoleType.SrNeighbor], true);
-        bool neighborhoodInitializationProcessOk = await client.NeighborhoodInitializationProcessAsync(profileServer.PrimaryPort, profileServer.ServerNeighborPort, TestProfiles);
+        bool neighborhoodInitializationProcessOk = await client.NeighborhoodInitializationProcessAsync(profileServer.PrimaryPort, profileServer.ServerNeighborPort, ServerIp, TestProfiles);
 
         client.CloseConnection();
 
@@ -546,7 +546,7 @@ namespace ProfileServerProtocolTests.Tests
 
         await client.ConnectAsync(ServerIp, (int)rolePorts[ServerRoleType.SrNeighbor], true);
         verifyIdentityOk = await client.VerifyIdentityAsync();
-        request = mb.CreateStartNeighborhoodInitializationRequest((uint)profileServer.PrimaryPort, (uint)profileServer.ServerNeighborPort);
+        request = mb.CreateStartNeighborhoodInitializationRequest((uint)profileServer.PrimaryPort, (uint)profileServer.ServerNeighborPort, ServerIp);
         await client.SendMessageAsync(request);
         response = await client.ReceiveMessageAsync();
 
