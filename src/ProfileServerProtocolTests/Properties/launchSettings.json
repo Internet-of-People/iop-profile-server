@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "ProfileServerProtocolTests": {
-      "commandName": "Project",
-      "commandLineArgs": "PS08013 127.0.0.1 16987 17000"
-    }
-  }
-}
