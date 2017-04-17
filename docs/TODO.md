@@ -99,6 +99,14 @@ To mitigate this issue, we would need to introduce IP based limits on hosting re
 
 
 
+### User Data Integrity Protection
+
+Currently, there is nothing to prevent the profile server to modify its customer client's data and propagate such forged information to its neighborhood. 
+This could be improved by including a signature of the customer client's identity so that it can be verified by all network users that the data 
+they receive about each identity really comes from this identity.
+
+
+
 ## Optimizations
 
 ### Updates Between Neighbors
