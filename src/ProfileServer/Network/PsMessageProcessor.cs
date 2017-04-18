@@ -1345,10 +1345,11 @@ namespace ProfileServer.Network
           string extraData = UpdateProfileRequest.ExtraData;
           if (extraData == null) extraData = "";
 
-          // Extra data is semicolon separated 'key=value' list, max Identity.MaxProfileExtraDataLengthBytes bytes long.
-          if (Encoding.UTF8.GetByteCount(extraData) > IdentityBase.MaxProfileExtraDataLengthBytes)
+          // Extra data is semicolon separated 'key=value' list, max IdentityBase.MaxProfileExtraDataLengthBytes bytes long.
+          int byteLen = Encoding.UTF8.GetByteCount(extraData);
+          if (byteLen > IdentityBase.MaxProfileExtraDataLengthBytes)
           {
-            log.Debug("Extra data too large ({0} bytes, limit is {1}).", Encoding.UTF8.GetByteCount(extraData), IdentityBase.MaxProfileExtraDataLengthBytes);
+            log.Debug("Extra data too large ({0} bytes, limit is {1}).", byteLen, IdentityBase.MaxProfileExtraDataLengthBytes);
             details = "extraData";
           }
         }
@@ -2348,8 +2349,8 @@ namespace ProfileServer.Network
         byte[] cardVersion = card.Version.ToByteArray();
         byte[] applicationId = application.ApplicationId.ToByteArray();
         string cardType = card.Type;
-        DateTime validFrom = ProtocolHelper.UnixTimestampMsToDateTime(card.ValidFrom);
-        DateTime validTo = ProtocolHelper.UnixTimestampMsToDateTime(card.ValidTo);
+        DateTime? validFrom = ProtocolHelper.UnixTimestampMsToDateTime(card.ValidFrom);
+        DateTime? validTo = ProtocolHelper.UnixTimestampMsToDateTime(card.ValidTo);
         byte[] issuerPublicKey = card.IssuerPublicKey.ToByteArray();
         byte[] recipientPublicKey = Client.PublicKey;
         byte[] issuerIdentityId = Crypto.Sha256(issuerPublicKey);
@@ -2366,8 +2367,8 @@ namespace ProfileServer.Network
           RecipientSignature = recipientSignature,
           RelatedToIdentityId = issuerIdentityId,
           Type = cardType,
-          ValidFrom = validFrom,
-          ValidTo = validTo
+          ValidFrom = validFrom.Value,
+          ValidTo = validTo.Value
         };
 
         res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
@@ -2474,6 +2475,21 @@ namespace ProfileServer.Network
         {
           log.Debug("Card validFrom field is greater than validTo field.");
           details = "signedCard.card.validFrom";
+        }
+        else
+        {
+          DateTime? cardValidFrom = ProtocolHelper.UnixTimestampMsToDateTime(card.ValidFrom);
+          DateTime? cardValidTo = ProtocolHelper.UnixTimestampMsToDateTime(card.ValidTo);
+          if (cardValidFrom == null)
+          {
+            log.Debug("Card validFrom value '{0}' is not a valid timestamp.", card.ValidFrom);
+            details = "signedCard.card.validFrom";
+          }
+          else if (cardValidTo == null)
+          {
+            log.Debug("Card validTo value '{0}' is not a valid timestamp.", card.ValidTo);
+            details = "signedCard.card.validTo";
+          }
         }
       }
 
