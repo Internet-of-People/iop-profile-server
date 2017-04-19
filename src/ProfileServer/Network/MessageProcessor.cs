@@ -1154,6 +1154,10 @@ namespace ProfileServer.Network
                       };
                       extraInfo = changeItem.ToString();
                     }
+                    else
+                    {
+                      extraInfo = identity.PublicKey.ToHex();
+                    }
                     signalNeighborhoodAction = await AddIdentityProfileFollowerActions(unitOfWork, actionType, identity.IdentityId, extraInfo);
 
                     await unitOfWork.SaveThrowAsync();

@@ -26,7 +26,7 @@ namespace ProfileServer
 
       if ((args.Length == 1) && (args[0] == "--version"))
       {
-        Console.WriteLine("v1.0.1-alpha2");
+        Console.WriteLine("v1.0.2-alpha3");
         log.Info("(-)");
         NLog.LogManager.Flush();
         NLog.LogManager.Shutdown();
