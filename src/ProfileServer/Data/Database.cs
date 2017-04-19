@@ -89,7 +89,7 @@ namespace ProfileServer.Data
       {
         // Checks if any of the followers need to be refreshed.
         { new CronJob() { Name = "checkFollowersRefresh", StartDelay = 19 * 1000, Interval = 11 * 60 * 1000, HandlerAsync = CronJobHandlerCheckFollowersRefreshAsync } },
-      
+
         // Checks if any of the hosted identities expired and if so, it deletes them.
         { new CronJob() { Name = "checkExpiredHostedIdentities", StartDelay = 59 * 1000, Interval = 119 * 60 * 1000, HandlerAsync = CronJobHandlerCheckExpiredHostedIdentitiesAsync } },
       

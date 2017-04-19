@@ -1008,7 +1008,46 @@ namespace ProfileServer.Network
                     updateItem = new SharedProfileUpdateItem();
                     updateItem.Add = item;
                   }
-                  else log.Error("Unable to find hosted identity ID '{0}'.", IdentityId.ToHex());
+                  else
+                  {
+                    log.Warn("Unable to find hosted identity ID '{0}'.", IdentityId.ToHex());
+                    //
+                    // This happens when the profile's hosting has been cancelled and the cron task deleted 
+                    // the profile from the database before we managed to send the update to the follower. 
+                    // 
+                    // We have to remove this action from the queue because otherwise it would block all actions 
+                    // to this follower forever. However, the problem is that the follower is not aware of this 
+                    // identity and we may have change or remove updates in the action queue. Thus if we just 
+                    // returned true here, the subsequent actions could fail because of this inconsistency.
+                    //
+                    // We solve this problem using a hack, which is creating an artifical profile for this 
+                    // (no longer hosted) identity. We propagate that artifical profile to the follower 
+                    // and so the subsequent profile removal update action can happen flawlessly.
+                    //
+                    // We also skip all change profile update actions if there are any.
+                    //
+                    // Alternatively, we could process the action queue, either here or during cancelling 
+                    // the hosting or during deleting inactive profiles from the database. However, such 
+                    // a solution is complex and error prone. This is by far the easiest way to deal 
+                    // with this somewhat rare case.
+                    //
+
+                    byte[] identityPublicKey = AdditionalData.FromHex();
+                    SharedProfileAddItem item = new SharedProfileAddItem()
+                    {
+                      Version =  SemVer.V100.ToByteString(),
+                      IdentityPublicKey = ProtocolHelper.ByteArrayToByteString(identityPublicKey),
+                      Name = AdditionalData,
+                      Type = "Invalid",
+                      SetThumbnailImage = false,
+                      Latitude = 0,
+                      Longitude = 0,
+                      ExtraData = ""
+                    };
+
+                    updateItem = new SharedProfileUpdateItem();
+                    updateItem.Add = item;
+                  }
 
                   break;
                 }
@@ -1048,12 +1087,26 @@ namespace ProfileServer.Network
                     updateItem = new SharedProfileUpdateItem();
                     updateItem.Change = item;
                   }
-                  else log.Error("Unable to find hosted identity ID '{0}'.", IdentityId.ToHex());
+                  else
+                  {
+                    log.Warn("Unable to find hosted identity ID '{0}'.", IdentityId.ToHex());
+                    //
+                    // This happens when the profile's hosting has been cancelled and the cron task deleted 
+                    // the profile from the database before we managed to send the update to the follower. 
+                    // See the analysis in AddProfile case for more information.
+                    //
+                    // We simply return true here to erase this action from the queue.
+                    //
+                    res = true;
+                  }
                   break;
                 }
 
               case NeighborhoodActionType.RemoveProfile:
                 {
+                  // Because of using the artifical profile, we can be sure here that the follower is aware of 
+                  // this profile even if it was deleted from our database before add profile update action 
+                  // was taken from the queue. See the analysis in AddProfile case for more information.
                   SharedProfileDeleteItem item = new SharedProfileDeleteItem()
                   {
                     IdentityNetworkId = ProtocolHelper.ByteArrayToByteString(IdentityId)
@@ -1077,12 +1130,21 @@ namespace ProfileServer.Network
 
               default:
                 log.Error("Invalid action type '{0}'.", ActionType);
+                
+                // Should never happen. Same resolution as in case of exception below.
                 break;
             }
           }
           catch (Exception e)
           {
             log.Error("Exception occurred: {0}", e.ToString());
+            //
+            // We should never be here, there probably is a bug and this action will probably cause 
+            // this bug again if we don't remove it. However, removing the action is even worse because 
+            // it would cause silent inconsistency of the follower's database, which may even be occasionally 
+            // fixed by future updates, but we would rather want to know about bugs of this severity,
+            // so we leave the action in the queue and hopefully someone will notice sooner or later.
+            //
           }
         }
 
@@ -1144,7 +1206,7 @@ namespace ProfileServer.Network
                     // in time and the follower will contact us again to reestablish the relationship.
                     // 
                     // The second case is a very rare case that can happen if the server sent NeighborhoodSharedProfileUpdateRequest to its follower 
-                    // in the past and the follower did accept and process the update and saved it into its database, but it failed to deliver 
+                    // in the past and the follower did accept and did process the update and saved it into its database, but it failed to deliver 
                     // NeighborhoodSharedProfileUpdateResponse to this server (e.g. due to a power failure on either side, or a network failure).
                     // We could handle this special case differently but it is not easy to detect it. This is why we delete the follower as well in this case 
                     // although it might not be necessary, but it is definitely the easiest thing to do.
@@ -1152,7 +1214,18 @@ namespace ProfileServer.Network
                     log.Warn("Sending update to follower ID '{0}' failed, error status {1}, deleting follower!", FollowerId.ToHex(), client.LastResponseStatus);
                     deleteFollower = true;
                   }
-                  else log.Warn("Sending update to follower ID '{0}' failed, error status {1}, will retry later.", FollowerId.ToHex(), client.LastResponseStatus);
+                  else if (client.LastResponseStatus != Status.Ok)
+                  {
+                    // In this case we have received unexpected error from the follower, we do not know how to recover from this, 
+                    // so we just delete it and hope it will get better next time.
+                    log.Warn("Sending update to follower ID '{0}' failed, unexpected error status {1}, deleting follower!", FollowerId.ToHex(), client.LastResponseStatus);
+                    deleteFollower = true;
+                  }
+                  else
+                  {
+                    // This means that there was a problem with connection, we can try later and should be able to recover.
+                    log.Warn("Sending update to follower ID '{0}' failed, will retry later.", FollowerId.ToHex());
+                  }
                 }
               }
               else
@@ -1161,7 +1234,13 @@ namespace ProfileServer.Network
                 deleteFollower = true;
               }
             }
-            else log.Info("Unable to initiate conversation with follower ID '{0}' on address {1}, will retry later.", FollowerId.ToHex(), endPoint);
+            else
+            {
+              log.Info("Unable to initiate conversation with follower ID '{0}' on address {1}, will retry later.", FollowerId.ToHex(), endPoint);
+
+              // We have failed to connect to the follower's srNeighborPort as well as to get the current srNeighborPort from its primaryPort.
+              // The follower is probably offline and we will try to process this action later.
+            }
           }
 
           if (deleteFollower)
@@ -1171,7 +1250,7 @@ namespace ProfileServer.Network
               Status status = await unitOfWork.FollowerRepository.DeleteFollower(unitOfWork, FollowerId, ActionId);
               if ((status == Status.Ok) || (status == Status.ErrorNotFound))
               {
-                // Follower was deleted from the database, all its actions should be deleted 
+                // Follower was deleted from the database, all its actions should be deleted by now 
                 // except for this one that is currently being executed.
                 // Nothing more to do here.
                 log.Info("Follower ID '{0}' has been deleted.", FollowerId.ToHex());
@@ -1190,8 +1269,27 @@ namespace ProfileServer.Network
             }
           }
         }
+        else
+        {
+          // Only change profile update action can cause this when the profile was deleted from our database already.
+          // In that case result is set to true, so the action will be removed from the queue.
+          if (!res) log.Error("No update item was created but the action remains in the queue.");
+        }
       }
-      else log.Warn("Unable to find follower ID '{0}' IP and port information, will retry later.", FollowerId.ToHex());
+      else
+      {
+        //
+        // If we are here it means that srNeighborPort of this follower was reset before because we failed to connect to the old srNeighborPort value.
+        // This could happen if the follower server was offline for whatever reason or if it changed its srNeighborPort recently.
+        // Then we attempted to connect to its PrimaryPort to get new value for its srNeighborPort and this failed as well,
+        // which means that the server was offline.
+        //
+        // The solution here is to wait. All actions to this follower will be blocked and this particular action will be retried later again.
+        // If the follower gets online and we succeed, actions for it will be unblocked again. Otherwise we rely on LOC server to eventually
+        // inform us about the server leaving the network, which will cause all its actions to be removed.
+        //
+        log.Warn("Unable to find follower ID '{0}' IP and port information, will retry later.", FollowerId.ToHex());
+      }
 
       log.Trace("(-):{0}", res);
       return res;

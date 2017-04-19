@@ -15,7 +15,7 @@ namespace ProfileServer
     private static Logger log = new Logger("ProfileServer.Program");
 
     /// <summary>Profile server version.</summary>
-    private const string Version = "v1.0.1-alpha2";
+    private const string Version = "v1.1.0-beta1";
 
     /// <summary>File that is being periodically checked to signal shutdown.</summary>
     private const string ExternalShutdownSignalFileName = "shutdown.signal";
