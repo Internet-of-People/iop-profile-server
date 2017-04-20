@@ -21,6 +21,7 @@ using IopServerCore.Data;
 using IopServerCore.Network;
 using IopServerCore.Network.CAN;
 using System.Net;
+using Iop.Shared;
 
 namespace ProfileServer.Network
 {
@@ -4027,7 +4028,7 @@ namespace ProfileServer.Network
 
       using (UnitOfWork unitOfWork = new UnitOfWork())
       {
-        Status status = await unitOfWork.FollowerRepository.DeleteFollower(unitOfWork, followerId);
+        Status status = await unitOfWork.FollowerRepository.DeleteFollowerAsync(unitOfWork, followerId);
 
         if (status == Status.Ok) res = messageBuilder.CreateStopNeighborhoodUpdatesResponse(RequestMessage);
         else if (status == Status.ErrorNotFound) res = messageBuilder.CreateErrorNotFoundResponse(RequestMessage);

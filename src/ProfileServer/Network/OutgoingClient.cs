@@ -17,6 +17,7 @@ using IopCommon;
 using IopServerCore.Network;
 using Google.Protobuf;
 using IopServerCore.Kernel;
+using Iop.Shared;
 
 namespace ProfileServer.Network
 {

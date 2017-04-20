@@ -12,6 +12,7 @@ using IopCommon;
 using IopServerCore.Kernel;
 using IopServerCore.Network;
 using Google.Protobuf;
+using Iop.Shared;
 
 namespace ProfileServer.Network
 {

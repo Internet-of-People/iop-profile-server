@@ -11,6 +11,7 @@ using ProfileServer.Network;
 using Microsoft.EntityFrameworkCore.Storage;
 using IopCommon;
 using IopServerCore.Data;
+using Iop.Shared;
 
 namespace ProfileServer.Data.Repositories
 {
@@ -41,7 +42,7 @@ namespace ProfileServer.Data.Repositories
     /// <param name="ActionId">If there is a neighborhood action that should NOT be deleted, this is its ID, otherwise it is -1.</param>
     /// <returns>Status.Ok if the function succeeds, Status.ErrorNotFound if the function fails because a follower of the given ID was not found, 
     /// Status.ErrorInternal if the function fails for any other reason.</returns>
-    public async Task<Status> DeleteFollower(UnitOfWork UnitOfWork, byte[] FollowerId, int ActionId = -1)
+    public async Task<Status> DeleteFollowerAsync(UnitOfWork UnitOfWork, byte[] FollowerId, int ActionId = -1)
     {
       log.Trace("(FollowerId:'{0}',ActionId:{1})", FollowerId.ToHex(), ActionId);
 
