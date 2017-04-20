@@ -10,7 +10,7 @@
     "Microsoft.NETCore.App": {
       "version": "1.1.0"
     },
-    "NLog": "5.0.0-beta03",
+    "NLog": "5.0.0-beta06",
     "System.Collections.Specialized": "4.3.0",
     "Newtonsoft.Json": "9.0.1"
   },
