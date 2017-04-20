@@ -287,8 +287,9 @@ namespace ProfileServer.Data
 
 
     /// <summary>
-    /// Checks if any of the follower servers need refresh.
-    /// If so, a neighborhood action is created.
+    /// Checks if any of the follower servers need refresh. If so, a neighborhood action is created.
+    /// <para>This function also checks if there are unprocessed refresh neighborhood actions 
+    /// and if there are 3 such requests already, the follower is deleted as it is considered as unresponsive for too long.</para>
     /// </summary>
     public void CheckFollowersRefresh()
     {
@@ -296,6 +297,8 @@ namespace ProfileServer.Data
 
       // If a follower server's LastRefreshTime is lower than this limit, it should be refreshed.
       DateTime limitLastRefreshTime = DateTime.UtcNow.AddSeconds(-Base.Configuration.FollowerRefreshTimeSeconds);
+
+      List<byte[]> followersToDeleteIds = new List<byte[]>();
 
       using (UnitOfWork unitOfWork = new UnitOfWork())
       {
@@ -306,25 +309,42 @@ namespace ProfileServer.Data
           List<Follower> followersToRefresh = unitOfWork.FollowerRepository.Get(f => f.LastRefreshTime < limitLastRefreshTime, null, true).ToList();
           if (followersToRefresh.Count > 0)
           {
+            bool saveDb = false;
+            int actionsInserted = 0;
+
             log.Debug("There are {0} followers that need refresh.", followersToRefresh.Count);
             foreach (Follower follower in followersToRefresh)
             {
-              NeighborhoodAction action = new NeighborhoodAction()
+              int unprocessedRefreshProfileActions = unitOfWork.NeighborhoodActionRepository.Count(a => (a.ServerId == follower.FollowerId) && (a.Type == NeighborhoodActionType.RefreshProfiles));
+              if (unprocessedRefreshProfileActions < 3)
               {
-                ServerId = follower.FollowerId,
-                Type = NeighborhoodActionType.RefreshProfiles,
-                Timestamp = DateTime.UtcNow,
-                ExecuteAfter = DateTime.UtcNow,
-                TargetIdentityId = null,
-                AdditionalData = null
-              };
+                NeighborhoodAction action = new NeighborhoodAction()
+                {
+                  ServerId = follower.FollowerId,
+                  Type = NeighborhoodActionType.RefreshProfiles,
+                  Timestamp = DateTime.UtcNow,
+                  ExecuteAfter = DateTime.UtcNow,
+                  TargetIdentityId = null,
+                  AdditionalData = null
+                };
 
-              unitOfWork.NeighborhoodActionRepository.Insert(action);
-              log.Debug("Refresh neighborhood action for follower ID '{0}' will be inserted to the database.", follower.FollowerId.ToHex());
+                unitOfWork.NeighborhoodActionRepository.Insert(action);
+                log.Debug("Refresh neighborhood action for follower ID '{0}' will be inserted to the database.", follower.FollowerId.ToHex());
+                saveDb = true;
+                actionsInserted++;
+              }
+              else
+              {
+                log.Debug("There are {0} unprocessed RefreshProfiles neighborhood actions for follower ID '{1}'. Follower will be deleted.", unprocessedRefreshProfileActions, follower.FollowerId.ToHex());
+                followersToDeleteIds.Add(follower.FollowerId);
+              }
             }
 
-            unitOfWork.SaveThrow();
-            log.Debug("{0} new neighborhood actions saved to the database.", followersToRefresh.Count);
+            if (saveDb)
+            {
+              unitOfWork.SaveThrow();
+              log.Debug("{0} new neighborhood actions saved to the database.", actionsInserted);
+            }
           }
           else log.Debug("No followers need refresh now.");
         }
@@ -334,7 +354,21 @@ namespace ProfileServer.Data
         }
 
         unitOfWork.ReleaseLock(lockObjects);
+
+
+        if (followersToDeleteIds.Count > 0)
+        {
+          log.Debug("There are {0} followers to be deleted.", followersToDeleteIds.Count);
+          foreach (byte[] followerToDeleteId in followersToDeleteIds)
+          {
+            Iop.Profileserver.Status status = unitOfWork.FollowerRepository.DeleteFollower(unitOfWork, followerToDeleteId).Result;
+            if (status == Iop.Profileserver.Status.Ok) log.Debug("Follower ID '{0}' deleted.", followerToDeleteId.ToHex());
+            else log.Warn("Unable to delete follower ID '{0}', error code {1}.", followerToDeleteId.ToHex(), status);
+          }
+        }
+        else log.Debug("No followers to delete now.");
       }
+
 
       log.Trace("(-)");
     }

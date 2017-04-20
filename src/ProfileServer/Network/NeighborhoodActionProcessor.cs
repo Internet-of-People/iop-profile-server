@@ -569,7 +569,20 @@ namespace ProfileServer.Network
           else log.Warn("Unable to initiate conversation with neighbor ID '{0}' on address {1}, will retry later.", NeighborId.ToHex(), endPoint);
         }
       }
-      else log.Warn("Unable to find neighbor ID '{0}' IP and port information, will retry later.", NeighborId.ToHex());
+      else
+      {
+        log.Warn("Unable to find neighbor ID '{0}' IP and port information, will retry later.", NeighborId.ToHex());
+        //
+        // If we are here it means that srNeighborPort of this neighbor was reset before because we received ERROR_BAD_ROLE from the old srNeighborPort port.
+        // This could happen if the neighbor server changed its ports and the port we know is not used as srNeighborPort anymore.
+        // Then we attempted to connect to its primaryPort to get new value for its srNeighborPort and this failed as well,
+        // which means that the server was offline.
+        //
+        // The solution here is to wait. All actions to this neighbor will be blocked and this particular action will be retried later again.
+        // If the neighbor gets online and we succeed, actions for it will be unblocked again. Otherwise it will be eventually deleted 
+        // when it is unresponsive for long, either we will get notified from LOC server, or we find out on ourselves in Database.CheckExpiredNeighbors().
+        //
+      }
 
       if (deleteNeighbor)
       {
@@ -887,13 +900,13 @@ namespace ProfileServer.Network
             else log.Warn("Server identity differs from expected ID '{0}'.", NeighborId.ToHex());
           }
           else log.Info("Unable to initiate conversation with neighbor ID '{0}' on address '{1}'.", NeighborId.ToHex(), endPoint);
-
-          // In case of failure, we will not try again. The neighbor is deleted from our database 
-          // and hopefully will not send us any more updates. If it does, we will reject them.
-          res = true;
         }
       }
-      else log.Warn("Unable to find neighbor ID '{0}' IP and port information, will retry later.", NeighborId.ToHex());
+      else log.Warn("Unable to find neighbor ID '{0}' IP and port information.", NeighborId.ToHex());
+
+      // In case of failure, we will not try again. The neighbor is deleted from our database 
+      // and hopefully will not send us any more updates. If it does, we will reject them.
+      res = true;
 
       log.Trace("(-):{0}", res);
       return res;
@@ -1216,14 +1229,14 @@ namespace ProfileServer.Network
       else
       {
         //
-        // If we are here it means that srNeighborPort of this follower was reset before because we failed to connect to the old srNeighborPort value.
-        // This could happen if the follower server was offline for whatever reason or if it changed its srNeighborPort recently.
-        // Then we attempted to connect to its PrimaryPort to get new value for its srNeighborPort and this failed as well,
+        // If we are here it means that srNeighborPort of this follower was reset before because we received ERROR_BAD_ROLE from the old srNeighborPort port.
+        // This could happen if the follower server changed its ports and the port we know is not used as srNeighborPort anymore.
+        // Then we attempted to connect to its primaryPort to get new value for its srNeighborPort and this failed as well,
         // which means that the server was offline.
         //
         // The solution here is to wait. All actions to this follower will be blocked and this particular action will be retried later again.
-        // If the follower gets online and we succeed, actions for it will be unblocked again. Otherwise we rely on LOC server to eventually
-        // inform us about the server leaving the network, which will cause all its actions to be removed.
+        // If the follower gets online and we succeed, actions for it will be unblocked again. Otherwise it will be eventually deleted 
+        // when it is unresponsive for long time in Database.CheckFollowersRefresh().
         //
         log.Warn("Unable to find follower ID '{0}' IP and port information, will retry later.", FollowerId.ToHex());
       }
