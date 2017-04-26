@@ -14,7 +14,7 @@ namespace ProfileServer.Data.Repositories
   /// <summary>
   /// Repository of relations between hosted identities and other identities.
   /// </summary>
-  public class RelatedIdentityRepository : GenericRepository<Context, RelatedIdentity>
+  public class RelatedIdentityRepository : GenericRepository<RelatedIdentity>
   {
     /// <summary>Class logger.</summary>
     private static Logger log = new Logger("ProfileServer.Data.Repositories.RelatedIdentityRepository");
@@ -23,9 +23,10 @@ namespace ProfileServer.Data.Repositories
     /// <summary>
     /// Creates instance of the repository.
     /// </summary>
-    /// <param name="context">Database context.</param>
-    public RelatedIdentityRepository(Context context)
-      : base(context)
+    /// <param name="Context">Database context.</param>
+    /// <param name="UnitOfWork">Instance of unit of work that owns the repository.</param>
+    public RelatedIdentityRepository(Context Context, UnitOfWork UnitOfWork)
+      : base(Context, UnitOfWork)
     {
     }
 

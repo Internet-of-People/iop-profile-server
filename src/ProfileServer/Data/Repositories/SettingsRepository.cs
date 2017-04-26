@@ -10,14 +10,15 @@ namespace ProfileServer.Data.Repositories
   /// <summary>
   /// Database key-value repository for profile server settings.
   /// </summary>
-  public class SettingsRepository : GenericRepository<Context, Setting>
+  public class SettingsRepository : GenericRepository<Setting>
   {
     /// <summary>
     /// Creates instance of the setting repository.
     /// </summary>
-    /// <param name="context">Database context.</param>
-    public SettingsRepository(Context context)
-      : base(context)
+    /// <param name="Context">Database context.</param>
+    /// <param name="UnitOfWork">Instance of unit of work that owns the repository.</param>
+    public SettingsRepository(Context Context, UnitOfWork UnitOfWork)
+      : base(Context, UnitOfWork)
     {
     }
 
@@ -71,9 +72,9 @@ namespace ProfileServer.Data.Repositories
       if (existingSetting != null)
       {
         existingSetting.Value = Record.Value;
-        this.Update(existingSetting);
+        Update(existingSetting);
       }
-      else await this.InsertAsync(Record);
+      else await InsertAsync(Record);
     }
   }
 }

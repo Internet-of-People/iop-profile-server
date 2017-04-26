@@ -22,6 +22,7 @@ using IopServerCore.Network;
 using IopServerCore.Network.CAN;
 using System.Net;
 using Iop.Shared;
+using System.Runtime.CompilerServices;
 
 namespace ProfileServer.Network
 {
@@ -1070,7 +1071,6 @@ namespace ProfileServer.Network
       PsMessageBuilder messageBuilder = Client.MessageBuilder;
       UpdateProfileRequest updateProfileRequest = RequestMessage.Request.ConversationRequest.UpdateProfile;
 
-      bool success = false;
       res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
       using (UnitOfWork unitOfWork = new UnitOfWork())
       {
@@ -1086,8 +1086,7 @@ namespace ProfileServer.Network
               // If we are replacing those images, we have to create new files and delete the old files.
               // First, we create the new files and then in DB transaction, we get information about 
               // whether to delete existing files and which ones.
-              byte[] profileImageToDelete = null;
-              byte[] thumbnailImageToDelete = null;
+              List<byte[]> imagesToDelete = new List<byte[]>();
 
               if (updateProfileRequest.SetImage)
               {
@@ -1111,111 +1110,21 @@ namespace ProfileServer.Network
                 }
               }
 
-              bool signalNeighborhoodAction = false;
-
-              // Update database record.
-              DatabaseLock[] lockObjects = new DatabaseLock[] { UnitOfWork.HostedIdentityLock, UnitOfWork.FollowerLock, UnitOfWork.NeighborhoodActionLock };
-              using (IDbContextTransaction transaction = await unitOfWork.BeginTransactionWithLockAsync(lockObjects))
-              {
-                try
-                {
-                  HostedIdentity identity = (await unitOfWork.HostedIdentityRepository.GetAsync(i => (i.IdentityId == Client.IdentityId) && (i.ExpirationDate == null))).FirstOrDefault();
-
-                  if (identity != null)
-                  {
-                    bool isProfileInitialization = !identity.IsProfileInitialized();
-
-                    if (updateProfileRequest.SetVersion)
-                      identity.Version = updateProfileRequest.Version.ToByteArray();
-
-                    if (updateProfileRequest.SetName)
-                      identity.Name = updateProfileRequest.Name;
-
-                    if (updateProfileRequest.SetImage)
-                    {
-                      // Here we replace existing images with new ones
-                      // and we save the old images hashes so we can delete them later.
-                      profileImageToDelete = identity.ProfileImage;
-                      thumbnailImageToDelete = identity.ThumbnailImage;
-
-                      identity.ProfileImage = identityForValidation.ProfileImage;
-                      identity.ThumbnailImage = identityForValidation.ThumbnailImage;
-                    }
-
-                    if (updateProfileRequest.SetLocation)
-                    {
-                      GpsLocation gpsLocation = new GpsLocation(updateProfileRequest.Latitude, updateProfileRequest.Longitude);
-                      identity.SetInitialLocation(gpsLocation);
-                    }
-
-                    if (updateProfileRequest.SetExtraData)
-                      identity.ExtraData = updateProfileRequest.ExtraData;
-
-                    unitOfWork.HostedIdentityRepository.Update(identity);
-
-
-                    // The profile change has to be propagated to all our followers
-                    // we create database actions that will be processed by dedicated thread.
-                    NeighborhoodActionType actionType = isProfileInitialization ? NeighborhoodActionType.AddProfile : NeighborhoodActionType.ChangeProfile;
-                    string extraInfo = null;
-                    if (actionType == NeighborhoodActionType.ChangeProfile)
-                    {
-                      SharedProfileChangeItem changeItem = new SharedProfileChangeItem()
-                      {
-                        SetVersion = updateProfileRequest.SetVersion,
-                        SetName = updateProfileRequest.SetName,
-                        SetThumbnailImage = updateProfileRequest.SetImage,
-                        SetLocation = updateProfileRequest.SetLocation,
-                        SetExtraData = updateProfileRequest.SetExtraData
-                      };
-                      extraInfo = changeItem.ToString();
-                    }
-                    else
-                    {
-                      extraInfo = identity.PublicKey.ToHex();
-                    }
-                    signalNeighborhoodAction = await AddIdentityProfileFollowerActions(unitOfWork, actionType, identity.IdentityId, extraInfo);
-
-                    await unitOfWork.SaveThrowAsync();
-                    transaction.Commit();
-                    success = true;
-                  }
-                  else
-                  {
-                    log.Debug("Identity '{0}' is not a client of this profile server.", Client.IdentityId.ToHex());
-                    res = messageBuilder.CreateErrorNotFoundResponse(RequestMessage);
-                  }
-                }
-                catch (Exception e)
-                {
-                  log.Error("Exception occurred: {0}", e.ToString());
-                }
-
-                if (!success)
-                {
-                  log.Warn("Rolling back transaction.");
-                  unitOfWork.SafeTransactionRollback(transaction);
-                }
-
-                unitOfWork.ReleaseLock(lockObjects);
-              }
-
-              if (success)
+              StrongBox<bool> notFound = new StrongBox<bool>(false);
+              if (await unitOfWork.HostedIdentityRepository.UpdateProfileAsync(Client.IdentityId, updateProfileRequest, identityForValidation.ProfileImage, identityForValidation.ThumbnailImage, notFound, imagesToDelete))
               {
                 log.Debug("Identity '{0}' updated its profile in the database.", Client.IdentityId.ToHex());
                 res = messageBuilder.CreateUpdateProfileResponse(RequestMessage);
 
-                // Send signal to neighborhood action processor to process the new series of actions.
-                if (signalNeighborhoodAction)
-                {
-                  NeighborhoodActionProcessor neighborhoodActionProcessor = (NeighborhoodActionProcessor)Base.ComponentDictionary[NeighborhoodActionProcessor.ComponentName];
-                  neighborhoodActionProcessor.Signal();
-                }
-
                 // Delete old files, if there are any.
                 ImageManager imageManager = (ImageManager)Base.ComponentDictionary[ImageManager.ComponentName];
-                if (profileImageToDelete != null) imageManager.RemoveImageReference(profileImageToDelete);
-                if (thumbnailImageToDelete != null) imageManager.RemoveImageReference(thumbnailImageToDelete);
+                foreach (byte[] imageHash in imagesToDelete)
+                  imageManager.RemoveImageReference(imageHash);
+              }
+              else if (notFound.Value == true)
+              {
+                log.Debug("Identity '{0}' is not a client of this profile server.", Client.IdentityId.ToHex());
+                res = messageBuilder.CreateErrorNotFoundResponse(RequestMessage);
               }
             }
             else res = errorResponse;
@@ -1442,7 +1351,7 @@ namespace ProfileServer.Network
 
                 // The profile change has to be propagated to all our followers
                 // we create database actions that will be processed by dedicated thread.
-                signalNeighborhoodAction = await AddIdentityProfileFollowerActions(unitOfWork, NeighborhoodActionType.RemoveProfile, identity.IdentityId);
+                signalNeighborhoodAction = await unitOfWork.NeighborhoodActionRepository.AddIdentityProfileFollowerActionsAsync(NeighborhoodActionType.RemoveProfile, identity.IdentityId);
 
                 await unitOfWork.SaveThrowAsync();
                 transaction.Commit();
@@ -2747,58 +2656,6 @@ namespace ProfileServer.Network
 
 
     /// <summary>
-    /// Adds neighborhood actions that will announce a change in a specific identity profile to all followers of the profile server.
-    /// </summary>
-    /// <param name="UnitOfWork">Unit of work instance.</param>
-    /// <param name="ActionType">Type of action on the identity profile.</param>
-    /// <param name="IdentityId">Identifier of the identity which caused the action.</param>
-    /// <param name="AdditionalData">Additional data to store with the action.</param>
-    /// <returns>
-    /// true if at least one new action was added to the database, false otherwise.
-    /// <para>
-    /// This function can throw database exception and the caller is expected to call it within try/catch block.
-    /// </para>
-    /// </returns>
-    /// <remarks>The caller of this function is responsible starting a database transaction with FollowerLock and NeighborhoodActionLock locks.</remarks>
-    public async Task<bool> AddIdentityProfileFollowerActions(UnitOfWork UnitOfWork, NeighborhoodActionType ActionType, byte[] IdentityId, string AdditionalData = null)
-    {
-      log.Trace("(IdentityId:'{0}')", IdentityId.ToHex());
-
-      bool res = false;
-      List<Follower> followers = (await UnitOfWork.FollowerRepository.GetAsync()).ToList();
-      if (followers.Count > 0)
-      {
-        // Disable change tracking for faster multiple inserts.
-        UnitOfWork.Context.ChangeTracker.AutoDetectChangesEnabled = false;
-
-        DateTime now = DateTime.UtcNow;
-        foreach (Follower follower in followers)
-        {
-          NeighborhoodAction neighborhoodAction = new NeighborhoodAction()
-          {
-            ServerId = follower.FollowerId,
-            ExecuteAfter = null,
-            TargetIdentityId = IdentityId,
-            Timestamp = now,
-            Type = ActionType,
-            AdditionalData = AdditionalData
-          };
-          await UnitOfWork.NeighborhoodActionRepository.InsertAsync(neighborhoodAction);
-
-          res = true;
-          log.Trace("Add profile action with identity ID '{0}' added for follower ID '{1}'.", IdentityId.ToHex(), follower.FollowerId.ToHex());
-        }
-      }
-      else log.Trace("No followers found to propagate identity profile change to.");
-
-      log.Trace("(-):{0}", res);
-      return res;
-    }
-
-
-
-
-    /// <summary>
     /// Processes StartNeighborhoodInitializationRequest message from client.
     /// <para>If the server is not overloaded it accepts the neighborhood initialization request, 
     /// adds the client to the list of server for which the profile server acts as a neighbor,
@@ -4028,7 +3885,7 @@ namespace ProfileServer.Network
 
       using (UnitOfWork unitOfWork = new UnitOfWork())
       {
-        Status status = await unitOfWork.FollowerRepository.DeleteFollowerAsync(unitOfWork, followerId);
+        Status status = await unitOfWork.FollowerRepository.DeleteFollowerAsync(followerId);
 
         if (status == Status.Ok) res = messageBuilder.CreateStopNeighborhoodUpdatesResponse(RequestMessage);
         else if (status == Status.ErrorNotFound) res = messageBuilder.CreateErrorNotFoundResponse(RequestMessage);
@@ -4267,7 +4124,7 @@ namespace ProfileServer.Network
           if (deleteOldObjectFromDb)
           {
             // Object was successfully deleted from CAN, remove it from DB.
-            if (await unitOfWork.HostedIdentityRepository.SetCanObjectHashAsync(unitOfWork, Client.IdentityId, null))
+            if (await unitOfWork.HostedIdentityRepository.SetCanObjectHashAsync(Client.IdentityId, null))
             {
               log.Debug("Old CAN object of client identity ID '{0}' has been deleted from database.", Client.IdentityId.ToHex());
               res = null;
@@ -4289,7 +4146,7 @@ namespace ProfileServer.Network
               byte[] canHash = cres.Hash;
               log.Info("New CAN object hash '{0}' added for client identity ID '{1}'.", canHash.ToBase58(), Client.IdentityId.ToHex());
 
-              if (await unitOfWork.HostedIdentityRepository.SetCanObjectHashAsync(unitOfWork, Client.IdentityId, canHash))
+              if (await unitOfWork.HostedIdentityRepository.SetCanObjectHashAsync(Client.IdentityId, canHash))
               {
                 res = messageBuilder.CreateCanStoreDataResponse(RequestMessage, canHash);
               }

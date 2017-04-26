@@ -17,7 +17,7 @@ namespace ProfileServer.Data.Repositories
   /// Generic repository for identities, which is the base for HomeIdentityReposity for identities hosted on this profile server
   /// and NeighborIdentityRepository for identities hosted in this profile server's neighborhood.
   /// </summary>
-  public class IdentityRepository<T> : GenericRepository<Context, T> where T:IdentityBase
+  public class IdentityRepository<T> : GenericRepository<T> where T:IdentityBase
   {
     /// <summary>Class logger.</summary>
     private static Logger log = new Logger("ProfileServer.Data.Repositories.IdentityRepository");
@@ -26,9 +26,10 @@ namespace ProfileServer.Data.Repositories
     /// <summary>
     /// Creates instance of the repository.
     /// </summary>
-    /// <param name="context">Database context.</param>
-    public IdentityRepository(Context context)
-      : base(context)
+    /// <param name="Context">Database context.</param>
+    /// <param name="UnitOfWork">Instance of unit of work that owns the repository.</param>
+    public IdentityRepository(Context Context, UnitOfWork UnitOfWork)
+      : base(Context, UnitOfWork)
     {
     }
 

@@ -10,6 +10,8 @@ using IopProtocol;
 using Microsoft.EntityFrameworkCore.Storage;
 using IopCommon;
 using IopServerCore.Data;
+using System.Runtime.CompilerServices;
+using IopServerCore.Kernel;
 
 namespace ProfileServer.Data.Repositories
 {
@@ -24,9 +26,10 @@ namespace ProfileServer.Data.Repositories
     /// <summary>
     /// Creates instance of the repository.
     /// </summary>
-    /// <param name="context">Database context.</param>
-    public HostedIdentityRepository(Context context)
-      : base(context)
+    /// <param name="Context">Database context.</param>
+    /// <param name="UnitOfWork">Instance of unit of work that owns the repository.</param>
+    public HostedIdentityRepository(Context Context, UnitOfWork UnitOfWork)
+      : base(Context, UnitOfWork)
     {
     }
 
@@ -95,18 +98,17 @@ namespace ProfileServer.Data.Repositories
     /// <summary>
     /// Sets a new value to CanObjectHash of an identity's profile.
     /// </summary>
-    /// <param name="UunitOfWork">Unit of work instance.</param>
     /// <param name="IdentityId">Network identifier of the identity to set the value to.</param>
     /// <param name="NewValue">Value to set identity's CanObjectHash to.</param>
     /// <returns>true if the function succeeds, false otherwise.</returns>
-    public async Task<bool> SetCanObjectHashAsync(UnitOfWork UnitOfWork, byte[] IdentityId, byte[] NewValue)
+    public async Task<bool> SetCanObjectHashAsync(byte[] IdentityId, byte[] NewValue)
     {
       log.Trace("(IdentityId:'{0}',NewValue:'{1}')", IdentityId.ToHex(), NewValue != null ? NewValue.ToBase58() : "");
 
       bool res = false;
 
       DatabaseLock lockObject = UnitOfWork.HostedIdentityLock;
-      using (IDbContextTransaction transaction = await UnitOfWork.BeginTransactionWithLockAsync(lockObject))
+      using (IDbContextTransaction transaction = await unitOfWork.BeginTransactionWithLockAsync(lockObject))
       {
         try
         {
@@ -115,7 +117,7 @@ namespace ProfileServer.Data.Repositories
           {
             identity.CanObjectHash = NewValue;
             Update(identity);
-            await UnitOfWork.SaveThrowAsync();
+            await unitOfWork.SaveThrowAsync();
             transaction.Commit();
             res = true;
           }
@@ -129,11 +131,128 @@ namespace ProfileServer.Data.Repositories
         if (!res)
         {
           log.Warn("Rolling back transaction.");
-          UnitOfWork.SafeTransactionRollback(transaction);
+          unitOfWork.SafeTransactionRollback(transaction);
         }
       }
 
-      UnitOfWork.ReleaseLock(lockObject);
+      unitOfWork.ReleaseLock(lockObject);
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+
+    /// <summary>
+    /// Updates identity profile using update profile request.
+    /// </summary>
+    /// <param name="IdentityId">Network identifier of the identity to update.</param>
+    /// <param name="UpdateProfileRequest">Update profile request.</param>
+    /// <param name="NewProfileImage">New profile image hash in case it is being updated.</param>
+    /// <param name="NewThumbnailImage">New thumbnail image hash in case it is being updated.</param>
+    /// <param name="IdentityNotFound">If the function fails because the identity is not found, this referenced value is set to true.</param>
+    /// <param name="ImagesToDelete">If the profile images are altered, old image files has to be deleted, in which case their hashes are returned in this list, which has to be initialized by the caller.</param>
+    /// <returns>true if the function succeeds, false otherwise.</returns>
+    public async Task<bool> UpdateProfileAsync(byte[] IdentityId, UpdateProfileRequest UpdateProfileRequest, byte[] NewProfileImage, byte[] NewThumbnailImage, StrongBox<bool> IdentityNotFound, List<byte[]> ImagesToDelete)
+    {
+      log.Trace("()");
+      bool res = false;
+
+      bool signalNeighborhoodAction = false;
+      bool success = false;
+
+      DatabaseLock[] lockObjects = new DatabaseLock[] { UnitOfWork.HostedIdentityLock, UnitOfWork.FollowerLock, UnitOfWork.NeighborhoodActionLock };
+      using (IDbContextTransaction transaction = await unitOfWork.BeginTransactionWithLockAsync(lockObjects))
+      {
+        try
+        {
+          HostedIdentity identity = (await GetAsync(i => (i.IdentityId == IdentityId) && (i.ExpirationDate == null))).FirstOrDefault();
+          if (identity != null)
+          {
+            bool isProfileInitialization = !identity.IsProfileInitialized();
+
+            if (UpdateProfileRequest.SetVersion)
+              identity.Version = UpdateProfileRequest.Version.ToByteArray();
+
+            if (UpdateProfileRequest.SetName)
+              identity.Name = UpdateProfileRequest.Name;
+
+            if (UpdateProfileRequest.SetImage)
+            {
+              // Here we replace existing images with new ones
+              // and we save the old images hashes so we can delete them later.
+              if (identity.ProfileImage != null) ImagesToDelete.Add(identity.ProfileImage);
+              if (identity.ThumbnailImage != null) ImagesToDelete.Add(identity.ThumbnailImage);
+
+              identity.ProfileImage = NewProfileImage;
+              identity.ThumbnailImage = NewThumbnailImage;
+            }
+
+            if (UpdateProfileRequest.SetLocation)
+            {
+              GpsLocation gpsLocation = new GpsLocation(UpdateProfileRequest.Latitude, UpdateProfileRequest.Longitude);
+              identity.SetInitialLocation(gpsLocation);
+            }
+
+            if (UpdateProfileRequest.SetExtraData)
+              identity.ExtraData = UpdateProfileRequest.ExtraData;
+
+            unitOfWork.HostedIdentityRepository.Update(identity);
+
+
+            // The profile change has to be propagated to all our followers
+            // we create database actions that will be processed by dedicated thread.
+            NeighborhoodActionType actionType = isProfileInitialization ? NeighborhoodActionType.AddProfile : NeighborhoodActionType.ChangeProfile;
+            string extraInfo = null;
+            if (actionType == NeighborhoodActionType.ChangeProfile)
+            {
+              SharedProfileChangeItem changeItem = new SharedProfileChangeItem()
+              {
+                SetVersion = UpdateProfileRequest.SetVersion,
+                SetName = UpdateProfileRequest.SetName,
+                SetThumbnailImage = UpdateProfileRequest.SetImage,
+                SetLocation = UpdateProfileRequest.SetLocation,
+                SetExtraData = UpdateProfileRequest.SetExtraData
+              };
+              extraInfo = changeItem.ToString();
+            }
+            else
+            {
+              extraInfo = identity.PublicKey.ToHex();
+            }
+            signalNeighborhoodAction = await unitOfWork.NeighborhoodActionRepository.AddIdentityProfileFollowerActionsAsync(actionType, identity.IdentityId, extraInfo);
+
+            await unitOfWork.SaveThrowAsync();
+            transaction.Commit();
+            success = true;
+          }
+          else IdentityNotFound.Value = true;
+        }
+        catch (Exception e)
+        {
+          log.Error("Exception occurred: {0}", e.ToString());
+        }
+
+        if (!success)
+        {
+          log.Warn("Rolling back transaction.");
+          unitOfWork.SafeTransactionRollback(transaction);
+        }
+
+        unitOfWork.ReleaseLock(lockObjects);
+      }
+
+      if (success)
+      {
+        // Send signal to neighborhood action processor to process the new series of actions.
+        if (signalNeighborhoodAction)
+        {
+          Network.NeighborhoodActionProcessor neighborhoodActionProcessor = (Network.NeighborhoodActionProcessor)Base.ComponentDictionary[Network.NeighborhoodActionProcessor.ComponentName];
+          neighborhoodActionProcessor.Signal();
+        }
+
+        res = true;
+      }
+
 
       log.Trace("(-):{0}", res);
       return res;

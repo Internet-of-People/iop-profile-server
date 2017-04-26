@@ -517,7 +517,7 @@ namespace ProfileServer.Network
 
                       // Delete neighbor completely.
                       // This will cause our profile server to erase all profiles of the neighbor that has been removed.
-                      bool deleted = await unitOfWork.NeighborRepository.DeleteNeighbor(unitOfWork, serverId, -1, true);
+                      bool deleted = await unitOfWork.NeighborRepository.DeleteNeighborAsync(serverId, -1, true);
                       if (deleted)
                       {
                         // Add action that will contact the neighbor and ask it to stop sending updates.

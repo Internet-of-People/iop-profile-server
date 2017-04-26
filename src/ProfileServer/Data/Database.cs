@@ -245,7 +245,7 @@ namespace ProfileServer.Data
           log.Debug("Removing {0} uninitialized neighbors.", neighborsToDelete.Count);
           foreach (Neighbor neighbor in neighborsToDelete)
           {
-            Task<bool> task = unitOfWork.NeighborRepository.DeleteNeighbor(unitOfWork, neighbor.NeighborId);
+            Task<bool> task = unitOfWork.NeighborRepository.DeleteNeighborAsync(neighbor.NeighborId);
             if (!task.Result)
             {
               log.Error("Unable to delete neighbor ID '{0}' from the database.", neighbor.NeighborId.ToHex());
@@ -470,7 +470,7 @@ namespace ProfileServer.Data
           log.Debug("There are {0} followers to be deleted.", followersToDeleteIds.Count);
           foreach (byte[] followerToDeleteId in followersToDeleteIds)
           {
-            Iop.Shared.Status status = unitOfWork.FollowerRepository.DeleteFollowerAsync(unitOfWork, followerToDeleteId).Result;
+            Iop.Shared.Status status = unitOfWork.FollowerRepository.DeleteFollowerAsync(followerToDeleteId).Result;
             if (status == Iop.Shared.Status.Ok) log.Debug("Follower ID '{0}' deleted.", followerToDeleteId.ToHex());
             else log.Warn("Unable to delete follower ID '{0}', error code {1}.", followerToDeleteId.ToHex(), status);
           }

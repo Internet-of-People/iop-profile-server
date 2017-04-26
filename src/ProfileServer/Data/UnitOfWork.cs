@@ -41,7 +41,7 @@ namespace ProfileServer.Data
       get
       {
         if (settingsRepository == null)
-          settingsRepository = new SettingsRepository(Context);
+          settingsRepository = new SettingsRepository(Context, this);
 
         return settingsRepository;
       }
@@ -56,7 +56,7 @@ namespace ProfileServer.Data
       get
       {
         if (hostedIdentityRepository == null)
-          hostedIdentityRepository = new HostedIdentityRepository(Context);
+          hostedIdentityRepository = new HostedIdentityRepository(Context, this);
 
         return hostedIdentityRepository;
       }
@@ -70,7 +70,7 @@ namespace ProfileServer.Data
       get
       {
         if (neighborIdentityRepository == null)
-          neighborIdentityRepository = new NeighborIdentityRepository(Context);
+          neighborIdentityRepository = new NeighborIdentityRepository(Context, this);
 
         return neighborIdentityRepository;
       }
@@ -84,7 +84,7 @@ namespace ProfileServer.Data
       get
       {
         if (relatedIdentityRepository == null)
-          relatedIdentityRepository = new RelatedIdentityRepository(Context);
+          relatedIdentityRepository = new RelatedIdentityRepository(Context, this);
 
         return relatedIdentityRepository;
       }
@@ -99,21 +99,21 @@ namespace ProfileServer.Data
       get
       {
         if (neighborRepository == null)
-          neighborRepository = new NeighborRepository(Context);
+          neighborRepository = new NeighborRepository(Context, this);
 
         return neighborRepository;
       }
     }
 
     /// <summary>Repository of planned actions in the neighborhood.</summary>
-    private GenericRepository<Context, NeighborhoodAction> neighborhoodActionRepository;
+    private NeighborhoodActionRepository neighborhoodActionRepository;
     /// <summary>Repository of planned actions in the neighborhood.</summary>
-    public GenericRepository<Context, NeighborhoodAction> NeighborhoodActionRepository
+    public NeighborhoodActionRepository NeighborhoodActionRepository
     {
       get
       {
         if (neighborhoodActionRepository == null)
-          neighborhoodActionRepository = new GenericRepository<Context, NeighborhoodAction>(Context);
+          neighborhoodActionRepository = new NeighborhoodActionRepository(Context, this);
 
         return neighborhoodActionRepository;
       }
@@ -128,7 +128,7 @@ namespace ProfileServer.Data
       get
       {
         if (followerRepository == null)
-          followerRepository = new FollowerRepository(Context);
+          followerRepository = new FollowerRepository(Context, this);
 
         return followerRepository;
       }

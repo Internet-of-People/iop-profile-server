@@ -18,7 +18,7 @@ namespace ProfileServer.Data.Repositories
   /// <summary>
   /// Repository of profile server followers.
   /// </summary>
-  public class FollowerRepository : GenericRepository<Context, Follower>
+  public class FollowerRepository : GenericRepository<Follower>
   {
     /// <summary>Class logger.</summary>
     private static Logger log = new Logger("ProfileServer.Data.Repositories.FollowerRepository");
@@ -27,9 +27,10 @@ namespace ProfileServer.Data.Repositories
     /// <summary>
     /// Creates instance of the repository.
     /// </summary>
-    /// <param name="context">Database context.</param>
-    public FollowerRepository(Context context)
-      : base(context)
+    /// <param name="Context">Database context.</param>
+    /// <param name="UnitOfWork">Instance of unit of work that owns the repository.</param>
+    public FollowerRepository(Context Context, UnitOfWork UnitOfWork)
+      : base(Context, UnitOfWork)
     {
     }
 
@@ -37,28 +38,27 @@ namespace ProfileServer.Data.Repositories
     /// <summary>
     /// Deletes follower server and all neighborhood actions for it from the database.
     /// </summary>
-    /// <param name="UnitOfWork">Unit of work instance.</param>
     /// <param name="FollowerId">Identifier of the follower server to delete.</param>
     /// <param name="ActionId">If there is a neighborhood action that should NOT be deleted, this is its ID, otherwise it is -1.</param>
     /// <returns>Status.Ok if the function succeeds, Status.ErrorNotFound if the function fails because a follower of the given ID was not found, 
     /// Status.ErrorInternal if the function fails for any other reason.</returns>
-    public async Task<Status> DeleteFollowerAsync(UnitOfWork UnitOfWork, byte[] FollowerId, int ActionId = -1)
+    public async Task<Status> DeleteFollowerAsync(byte[] FollowerId, int ActionId = -1)
     {
       log.Trace("(FollowerId:'{0}',ActionId:{1})", FollowerId.ToHex(), ActionId);
 
       Status res = Status.ErrorInternal;
       bool dbSuccess = false;
       DatabaseLock[] lockObjects = new DatabaseLock[] { UnitOfWork.FollowerLock, UnitOfWork.NeighborhoodActionLock };
-      using (IDbContextTransaction transaction = await UnitOfWork.BeginTransactionWithLockAsync(lockObjects))
+      using (IDbContextTransaction transaction = await unitOfWork.BeginTransactionWithLockAsync(lockObjects))
       {
         try
         {
-          Follower existingFollower = (await UnitOfWork.FollowerRepository.GetAsync(f => f.FollowerId == FollowerId)).FirstOrDefault();
+          Follower existingFollower = (await unitOfWork.FollowerRepository.GetAsync(f => f.FollowerId == FollowerId)).FirstOrDefault();
           if (existingFollower != null)
           {
-            UnitOfWork.FollowerRepository.Delete(existingFollower);
+            Delete(existingFollower);
 
-            List<NeighborhoodAction> actions = (await UnitOfWork.NeighborhoodActionRepository.GetAsync(a => (a.ServerId == FollowerId) && (a.Id != ActionId))).ToList();
+            List<NeighborhoodAction> actions = (await unitOfWork.NeighborhoodActionRepository.GetAsync(a => (a.ServerId == FollowerId) && (a.Id != ActionId))).ToList();
             if (actions.Count > 0)
             {
               foreach (NeighborhoodAction action in actions)
@@ -66,13 +66,13 @@ namespace ProfileServer.Data.Repositories
                 if (action.IsProfileAction())
                 {
                   log.Debug("Action ID {0}, type {1}, serverId '{2}' will be removed from the database.", action.Id, action.Type, FollowerId.ToHex());
-                  UnitOfWork.NeighborhoodActionRepository.Delete(action);
+                  unitOfWork.NeighborhoodActionRepository.Delete(action);
                 }
               }
             }
             else log.Debug("No neighborhood actions for follower ID '{0}' found.", FollowerId.ToHex());
 
-            await UnitOfWork.SaveThrowAsync();
+            await unitOfWork.SaveThrowAsync();
             transaction.Commit();
             res = Status.Ok;
           }
@@ -93,10 +93,10 @@ namespace ProfileServer.Data.Repositories
         if (!dbSuccess)
         {
           log.Warn("Rolling back transaction.");
-          UnitOfWork.SafeTransactionRollback(transaction);
+          unitOfWork.SafeTransactionRollback(transaction);
         }
 
-        UnitOfWork.ReleaseLock(lockObjects);
+        unitOfWork.ReleaseLock(lockObjects);
       }
 
       log.Trace("(-):{0}", res);
@@ -108,17 +108,16 @@ namespace ProfileServer.Data.Repositories
     /// <summary>
     /// Sets srNeighborPort of a follower to null.
     /// </summary>
-    /// <param name="UnitOfWork">Unit of work instance.</param>
     /// <param name="FollowerId">Identifier of the follower server.</param>
     /// <returns>true if the function succeeds, false otherwise.</returns>
-    public async Task<bool> ResetSrNeighborPort(UnitOfWork UnitOfWork, byte[] FollowerId)
+    public async Task<bool> ResetSrNeighborPortAsync(byte[] FollowerId)
     {
       log.Trace("(FollowerId:'{0}')", FollowerId.ToHex());
 
       bool res = false;
       bool dbSuccess = false;
       DatabaseLock lockObject = UnitOfWork.FollowerLock;
-      using (IDbContextTransaction transaction = await UnitOfWork.BeginTransactionWithLockAsync(lockObject))
+      using (IDbContextTransaction transaction = await unitOfWork.BeginTransactionWithLockAsync(lockObject))
       {
         try
         {
@@ -128,7 +127,7 @@ namespace ProfileServer.Data.Repositories
             follower.SrNeighborPort = null;
             Update(follower);
 
-            await UnitOfWork.SaveThrowAsync();
+            await unitOfWork.SaveThrowAsync();
             transaction.Commit();
             res = true;
           }
@@ -144,10 +143,10 @@ namespace ProfileServer.Data.Repositories
         if (!dbSuccess)
         {
           log.Warn("Rolling back transaction.");
-          UnitOfWork.SafeTransactionRollback(transaction);
+          unitOfWork.SafeTransactionRollback(transaction);
         }
 
-        UnitOfWork.ReleaseLock(lockObject);
+        unitOfWork.ReleaseLock(lockObject);
       }
 
       log.Trace("(-):{0}", res);

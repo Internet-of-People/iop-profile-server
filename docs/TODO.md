@@ -106,6 +106,17 @@ This could be improved by including a signature of the customer client's identit
 they receive about each identity really comes from this identity.
 
 
+### Report Based Reputation System
+
+As mentioned above, the network is currently open to join for all kinds of malicious actors who can greatly disrupt the network just by not doing 
+their job while pretending to do so. 
+
+We suggest each node to create reports of its state and its view of the network every week or so, and upload this report to CAN network while putting 
+the CAN hash into the blockchain. These reports can later be analyzed to form a sort of reputation of each node depending on how consistent 
+is its view with the view of other nodes in its neighborhood. This could greatly help preventing malicious attacks in combination with above-mentioned 
+IP based limits.
+
+
 
 ## Optimizations
 

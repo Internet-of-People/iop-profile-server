@@ -646,7 +646,7 @@ namespace ProfileServer.Network
       {
         using (UnitOfWork unitOfWork = new UnitOfWork())
         {
-          if (await unitOfWork.NeighborRepository.DeleteNeighbor(unitOfWork, NeighborId, CurrentActionId))
+          if (await unitOfWork.NeighborRepository.DeleteNeighborAsync(NeighborId, CurrentActionId))
           {
             // Neighbor was deleted from the database, all its actions should be deleted 
             // except for this one that is currently being executed.
@@ -662,7 +662,7 @@ namespace ProfileServer.Network
       {
         using (UnitOfWork unitOfWork = new UnitOfWork())
         {
-          if (await unitOfWork.NeighborRepository.ResetSrNeighborPort(unitOfWork, NeighborId)) log.Info("srNeighbor port of neighbor ID '{0}' has been reset.", NeighborId.ToHex());
+          if (await unitOfWork.NeighborRepository.ResetSrNeighborPortAsync(NeighborId)) log.Info("srNeighbor port of neighbor ID '{0}' has been reset.", NeighborId.ToHex());
           else log.Error("Unable to reset srNeighbor port of neighbor ID '{0}'.", NeighborId.ToHex());
         }
       }
@@ -849,7 +849,7 @@ namespace ProfileServer.Network
         string neighborInfo = JsonConvert.SerializeObject(neighbor);
 
         // Delete neighbor completely.
-        res = await unitOfWork.NeighborRepository.DeleteNeighbor(unitOfWork, NeighborId, CurrentActionId);
+        res = await unitOfWork.NeighborRepository.DeleteNeighborAsync(NeighborId, CurrentActionId);
 
         // Add action that will contact the neighbor and ask it to stop sending updates.
         // Note that the neighbor information will be deleted by the time this action 
@@ -1261,7 +1261,7 @@ namespace ProfileServer.Network
           {
             using (UnitOfWork unitOfWork = new UnitOfWork())
             {
-              Status status = await unitOfWork.FollowerRepository.DeleteFollowerAsync(unitOfWork, FollowerId, ActionId);
+              Status status = await unitOfWork.FollowerRepository.DeleteFollowerAsync(FollowerId, ActionId);
               if ((status == Status.Ok) || (status == Status.ErrorNotFound))
               {
                 // Follower was deleted from the database, all its actions should be deleted by now 
@@ -1278,7 +1278,7 @@ namespace ProfileServer.Network
           {
             using (UnitOfWork unitOfWork = new UnitOfWork())
             {
-              if (await unitOfWork.FollowerRepository.ResetSrNeighborPort(unitOfWork, FollowerId)) log.Info("srNeighbor port of follower ID '{0}' has been reset.", FollowerId.ToHex());
+              if (await unitOfWork.FollowerRepository.ResetSrNeighborPortAsync(FollowerId)) log.Info("srNeighbor port of follower ID '{0}' has been reset.", FollowerId.ToHex());
               else log.Error("Unable to reset srNeighbor port of follower ID '{0}'.", FollowerId.ToHex());
             }
           }
