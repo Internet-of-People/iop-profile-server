@@ -188,7 +188,7 @@ namespace ProfileServer.Data.Repositories
     /// <returns>Filter expression for the database query.</returns>
     public static Expression<Func<Q, bool>> GetLocationFilterExpression<Q>(GpsLocation LocationFilter, uint Radius) where Q : IdentityBase
     {
-      log.Trace("(LocationFilter:'{0:US}',Radius:{1})", LocationFilter, Radius);
+      log.Trace("(LocationFilter:'{0}',Radius:{1})", LocationFilter, Radius);
       Expression<Func<Q, bool>> res = null;
 
       // There are several separated cases:
@@ -249,7 +249,7 @@ namespace ProfileServer.Data.Repositories
         // and left-bottom and right-bottom corners define the min latitude.
         decimal maxLatitude = square.MidTop.Latitude;
         decimal minLatitude = square.MidBottom.Latitude;
-        log.Trace("GPS square is {0:US}, min latitude is {1}, max latitude is {2}.", square, minLatitude, maxLatitude);
+        log.Trace("GPS square is {0}, min latitude is {1}, max latitude is {2}.", square, minLatitude, maxLatitude);
 
         // Get longitude range - we have to examine all four corners here as it depends on which hemisphere they are
         // and there are several different cases due to possibility of crossing longitude 180.
