@@ -628,7 +628,7 @@ namespace ProfileServer.Data
             else log.Warn("Unable to delete neighbor ID '{0}'.", neighborToDeleteId.ToHex());
           }
         }
-        else log.Debug("No followers to delete now.");
+        else log.Debug("No neighbors to delete now.");
       }
 
       log.Trace("(-)");
