@@ -10,7 +10,7 @@ and the further text is related to this implementation only and it may not be ac
 ## IoP Server Library
 
 Profile server depends on [IoP Server Library](https://github.com/Fermat-ORG/iop-server-library), which is a set of reusable modules that can be used 
-to create IoP network servers as well as clients that connect to them. The following are some examples of what IoP Server Library offers:
+to create IoP network servers as well as clients that connect to them. The following are some examples of what IoP Server Library offers to profile server:
 
 
 ### Cryptography 

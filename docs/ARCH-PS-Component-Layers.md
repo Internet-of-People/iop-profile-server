@@ -1,16 +1,29 @@
 # Profile Server Component Layers
 
-Each of the profile server's components belong to one of the four layers - kernel layer, data layer, network layer, and utility layer.
+Each of the profile server's module belong to one of the three layers - kernel layer, data layer, and network layer.
 In the profile server's design a *component* is a special module that is controlled by the component manager and has a controlled life cycle. 
+
+## IoP Server Library
+
+Besides the layers in the profile server itself, there is a special layer in form of IoP Server Library.
+This libary contains modules across all layers that can be reused in different projects. This includes:
+
+ * Modules related to logging, regular expression evaluation, file handling, and extension classes module.
+ * Module providing cryptography functions.
+ * Set of modules implementing the IoP network protocol and providing support for easy work with the protocol on higher levels.
+ * Set of modules collectively known as Server Core, which provide base classes and support for building IoP network servers, including 
+   * modules that define component structure and implement component life cycle management;
+   * cron component that is responsible for running repeated tasks;
+   * TCP role server module that represents a single open port which offers services of one or more server's interfaces;
+   * base classes for implementation of network clients.
 
 
 ## Kernel Layer
 
 Kernel layer contains the following:
 
- * Modules that define component structure and implement component life cycle management.
+ * Kernel module that cares about correct initialization of all other components.
  * Configuration component that loads and stores the profile server configuration from the configuration file.
- * Cron component that is responsible for running repeated tasks.
 
 
 ## Data Layer
@@ -27,21 +40,13 @@ Data layer contains:
 
 The largest layer in profile server is the network layer, it consists of the following components and modules:
 
- * Network server component that manages all running TCP role servers.
- * TCP role server module that represents a single open port which offers services of one or more profile server's interfaces.
+ * Network server component that creates and manages all running TCP role servers from IoP Server Library.
  * Incoming client module that represents an incoming TCP connection to the TCP role server.
  * Message processor module that processes messages from incoming clients.
  * Location based network component that implements communication with Location Based Network server.
  * Content address network component that implements communication with Content Address Network server.
  * Neighborhood action processor component which is responsible for handling events related to profile server neighborhood interactions.
  * Other network related modules, such as modules representing outgoing network clients, modules related to application service calls functionality etc.
-
-
-## Utility Layer
-
-Utility layer consists of a bunch of helper modules that are used by different components across the layers.
-Any module that does not fit into the first three layers goes here. Examples of components in the utility layer 
-are modules related to logging, regular expression evaluation module, helper file handling module, extension classes module etc.
 
 
 ---
