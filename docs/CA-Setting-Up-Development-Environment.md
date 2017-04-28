@@ -4,6 +4,7 @@
 
 To setup a local development environment, you are going to follow most of the steps of the standard [profile server installation procedure](INSTALLATION.md).
 
+
 What is different for the development environment is the configuration of the profile server.
 In order to use a localhost interface, you will have to set the following settings in the configuration file:
 

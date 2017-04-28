@@ -5,6 +5,7 @@ In order to install and run the Profile Server, you need to
  * Install .NET Core,
  * install OpenSSL (needed only for TLS certificate generation),
  * download the latest release Profile Server source codes from GitHub,
+   * AND download IoP Server Library sources,
    * AND build the Profile Server binaries,
  * OR download the Profile Server binaries and install dependencies,
  * configure the Profile Server,
@@ -14,7 +15,7 @@ In order to install and run the Profile Server, you need to
 
 ## Install .NET Core
 
-Note that this is not needed if you are going to use any of the binary releases. Simply go to [Microsoft .NET Core website](https://www.microsoft.com/net/core) and follow the instructions on how to install .NET Core to your system.
+Note that this is not needed if you are going to use any of the binary releases. Simply go to [Microsoft .NET Core website](https://www.microsoft.com/net/core) and follow the instructions on how to install .NET Core SDK to your system.
 
 
 ## Install OpenSSL
@@ -27,40 +28,51 @@ Please visit [OpenSSL website](https://www.openssl.org/) and follow the instruct
 
 The goal here is to download the latest release branch of the source code. If you are familiar with GIT and GitHub, you will probably know what to do.
 If you are not familiar with them, simply go to the [Branches Page](https://github.com/Fermat-ORG/iop-profile-server/branches/) of the repository and find a branch that starts with `release/` and click on its name. 
-Then click the *Clone or download* green button on the right side. Then click the *Download ZIP* link and save the file to your disk. Unzip the file to any folder of your choice. This folder will be called `$InstDir` in the text below.
+Then click the *Clone or download* green button on the right side. Then click the *Download ZIP* link and save the file to your disk. Unzip the file to any folder of your choice. This folder will be called `$InstDir` in the text below. 
+
+## Download IoP Server Library Source Codes
+
+Profile Server project has a dependency on [IoP Server Library](https://github.com/Fermat-ORG/iop-server-library) project. In order to compile Profile Server, you will need to download the source code 
+of IoP Server Library and have it in the right directory. Just as in case of Profile Server, you need to find the latest release branch on the [Branches Page](https://github.com/Fermat-ORG/iop-server-library/branches/) 
+of IoP Server Library repository and download it or clone it. You need to put the source code of IoP Server Library into a directory called `iop-server-library` on the same level as your `$InstDir`. 
 
 
 ## Build Profile Server
-
-Go to `$InstDir\src\ProfileServerCrypto` and execute 
-
-```
-dotnet restore
-```
-
-Go to `$InstDir\src\ProfileServerProtocol` and execute 
-
-```
-dotnet restore
-```
 
 Go to `$InstDir\src\ProfileServer` and execute 
 
 ```
 dotnet restore --configfile NuGet.Config
-dotnet build --configuration Release
 ```
 
-The last command will create `$InstDir\src\ProfileServer\bin` a folder with a subfolder that contains the compiled Profile Server binaries. The actual name of the final binary folder 
+Then depending on which operating system you are running, execute one of these lines (you can execute all of them if you want to create executables for all the supported platforms):
+
+```
+dotnet publish --configuration Release --runtime win7-x64
+dotnet publish --configuration Release --runtime win81-x64
+dotnet publish --configuration Release --runtime win10-x64
+dotnet publish --configuration Release --runtime ubuntu.14.04-x64
+dotnet publish --configuration Release --runtime ubuntu.16.04-x64
+```
+
+If you are using Windows Server software, please check list of [.NET Core Runtime Identifiers](https://github.com/dotnet/docs/blob/master/docs/core/rid-catalog.md) to see which runtime ID to use with which Windows Server version.
+
+The publish command will create `$InstDir\src\ProfileServer\bin` folder with a subfolder structure that contains the compiled Profile Server binaries. The actual name of the final binary folder 
 differs with each operating system. The final folder with the binaries will be called `$BinDir` in the text below. 
 
-Finally, go to `$InstDir\src\ProfileServer` and execute 
+Finally, in `$InstDir\src\ProfileServer` execute 
 
 ```
 dotnet ef --configuration Release database update
 ```
 
-to initialize the Profile Server's database file `ProfileServer.db`, which should be created in `$BinDir`.
+to initialize the Profile Server's database file `ProfileServer.db`, which should be created in `$BinDir`. If that does not work, execute 
+
+```
+dotnet ef database update
+```
+
+instead, which will create `ProfileServer.db` inside `Debug` directory structure. In this case, you need to copy the database file to `$BinDir`.
 
 
 ## Download Profile Server Binaries
@@ -87,6 +99,7 @@ apt-get install libicu52
 ## Configure Profile Server
 
 ### Generate TLS Certificate
+
 You will need to generate a TLS certificate in PFX format and then modify the configuration file.
 
 To generate a PFX certificate, you can use OpenSSL as follows. Make sure that the final certificate is NOT password protected.
@@ -100,18 +113,13 @@ The new file `ProfileServer.pfx` is your TLS certificate that you need to put it
 
 ### Modify Configuration File
 
-Next step is to find the configuration file `$InstDir\src\ProfileServer\ProfileServer.conf` and copy it to the `$BinDir`. Then you have to modify it.
-If you want to use the Profile Server in its default configuration, there is only one setting that you need to modify - `external_server_address`. 
+Next step is to find the configuration file `$BinDir\ProfileServer.conf` and modify it. If you want to use the Profile Server in its default configuration, 
+there is only one setting that you need to modify - `external_server_address`. 
 You have to set its value to the static public IP address of your server. For example, if your server's IP address is `198.51.100.53`, change the relevant line of the configuration file as follows:
 
 ```
 external_server_address = 198.51.100.53
 ```
-
-
-### Add Logging Configuration
-
-Copy logging configuration file `$InstDir\src\ProfileServer\Nlog.conf` to your `$BinDir`.
 
 
 ## Open Firewall Ports 
@@ -130,26 +138,17 @@ settings in the configuration file.
 
 ## Run Profile Server
 
-There are two ways how to run the Profile Server. If your system is one of the supported system, on which the build process generated executable files, or you were able to download Profile Server binaries, 
-you simply go to your `$BinDir` and execute:
+Simply go to your `$BinDir` and execute:
 
 ```
 ProfileServer
 ```
 
-Otherwise, you can go to `$InstDir\src\ProfileServer` and execute
-
-```
-dotnet run
-```
-
-but in this case your execution directory is going to be `$InstDir\src\ProfileServer`, which means you will have to copy the TLS certificate PFX file and the configuration files to this directory and also you 
-will have to copy the database file `ProfileServer.db` to this directory. 
 
 
 ## Troubleshooting
 
-If you added the logging configuration file to your `$BinDir` as described above, every time you run the Profile Server, logs are going to be created in `$BinDir\Logs` folder. If there are any problems 
+If you use the default configuration, every time you run the Profile Server, logs are going to be created in `$BinDir\Logs` folder. If there are any problems 
 with your Profile Server, the log file will contain detailed information about it and may help you solve the problems.
 
 

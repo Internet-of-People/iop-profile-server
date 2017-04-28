@@ -10,13 +10,13 @@ of the returned error in the logs. Always check the server logs and then check t
 
 ## Check Tests Source Codes
 
-There is an extensive set of tests implemented in the `ProfileServerProtocolTests` project that is part of the profile server solution.
-Every feature that profile server offers through its interfaces has one or more tests implemented to verify the profile server implementation 
+There is an extensive set of tests implemented in the [IoP Message Protocol Tests](https://github.com/Fermat-ORG/iop-message-protocol-tests) project.
+Every feature that profile server offers through its interfaces has one or more tests implemented to verify the profile server's implementation 
 behaves as expected. You could learn from the source codes of the tests on how to correctly make requests to profile server. 
 Each test is implemented according to its specification, which is linked from the test's source code, and which can be found in 
 the IoP Message Protocol repository under [Profile Server Tests](https://github.com/Internet-of-People/message-protocol/blob/master/TESTS.md#profile-server-tests).
 
-Note that the implementation of the tests does not come in the production code quality. Especially the error handling, is mostly missing 
+Note that the implementation of the tests does not come in the production code quality. Especially the error handling is mostly missing 
 in the code of the tests. You can get inspired on how to build your requests, but you should not reuse the code of the tests in your project 
 if it is intended for production.
 
