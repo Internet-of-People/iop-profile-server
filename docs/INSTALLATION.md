@@ -144,6 +144,13 @@ Simply go to your `$BinDir` and execute:
 ProfileServer
 ```
 
+or 
+
+```
+./ProfileServer
+```
+
+depending on which operating system you use.
 
 
 ## Troubleshooting
