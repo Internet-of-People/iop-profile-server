@@ -13,7 +13,7 @@ as a *follower* of *profile server A*. It is common that two profile servers are
 
 ## Connections to Location Based Network
 
-Profile servers do not manage their neighborhood relationships by themselves. Each profile server relies on a [Location Based Network node](https://github.com/Fermat-ORG/iop-location-based-network) (LOC NODE)
+Profile servers do not manage their neighborhood relationships by themselves. Each profile server relies on a [Location Based Network node](https://github.com/Fermat-ORG/iop-location-based-network) (LOC)
 that runs locally with it, to provide information about the profile server's neighborhood. The profile server thus only has some information about its own neighborhood, but it has no information about 
 the other parts of the network.
 
