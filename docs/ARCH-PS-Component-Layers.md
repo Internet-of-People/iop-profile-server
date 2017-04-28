@@ -11,7 +11,7 @@ This libary contains modules across all layers that can be reused in different p
  * Modules related to logging, regular expression evaluation, file handling, and extension classes module.
  * Module providing cryptography functions.
  * Set of modules implementing the IoP network protocol and providing support for easy work with the protocol on higher levels.
- * Set of modules collectively known as Server Core, which provide base classes and support for building IoP network servers, including 
+ * Set of modules collectively known as *Server Core*, which provide base classes and support for building IoP network servers, including 
    * modules that define component structure and implement component life cycle management;
    * cron component that is responsible for running repeated tasks;
    * TCP role server module that represents a single open port which offers services of one or more server's interfaces;
