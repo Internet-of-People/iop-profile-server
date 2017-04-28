@@ -15,8 +15,9 @@ over a long period of time have to actively keep their connections alive.
 
 ### TCP Role Server
 
-Profile server runs multiple roles (also called an interface of a profile server) where each serve different purposes and types of clients. Each TCP role server represents a single open TCP port
-on which one or more roles can be served. Currently, the following interfaces are present:
+Profile server runs multiple roles (also called an interface of a profile server) where each serve different purposes and types of clients. 
+Each TCP role server represents a single open TCP port on which one or more roles can be served. TCP role server module is implemented 
+in IoP Server Library. Currently, the following interfaces are present:
 
  * Primary Interface is the primary contact point of the profile server. When we publish a profile server contact information anywhere in the IoP network 
 it points to this interface. It is an unencrypted interface on which other peers can get information about where to find other profile server's interfaces.
@@ -130,4 +131,4 @@ have to contact their profile servers and ask them to refresh their IPNS records
 
 
 ---
-[Profile Server Data Layer](ARCH-PS-Data-Layer.md) « [Index](ARCHITECTURE.md) » [Profile Server Utility Layer](ARCH-PS-Utility-Layer.md)
+[Profile Server Data Layer](ARCH-PS-Data-Layer.md) « [Index](ARCHITECTURE.md)

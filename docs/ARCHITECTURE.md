@@ -9,7 +9,6 @@
 4. [Kernel Layer](ARCH-PS-Kernel-Layer.md)
 5. [Data Layer](ARCH-PS-Data-Layer.md)
 6. [Network Layer](ARCH-PS-Network-Layer.md)
-7. [Utility Layer](ARCH-PS-Utility-Layer.md)
 
 ---
 » [Profile Server in IoP Network](ARCH-PS-in-IoP.md)

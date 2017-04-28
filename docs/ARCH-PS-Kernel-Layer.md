@@ -1,19 +1,12 @@
 # Profile Server Kernel Layer
 
 Kernel layer is where the execution of the profile server starts. The very first step is creating all the profile server's components, 
-which are then passed to the component manager module. 
+which are then passed to the component manager module, which is provided by IoP Server Library and does most of the work. 
 
 
-## Component Manager
+## Kernel Module
 
-The role of the component manager is to manage the life cycle of other components. This is a very simple task that consists 
-of calling the two methods that each component has to implement:
-
- * The initialization method that starts up everything the component needs for doing its work. It is called during the profile server startup.
- * The shutdown method that terminates the execution of all parts of the component and frees resources used by the component. It is called during the termination of the profile server.
-
-The component manager also manages the global shutdown signalling mechanism, which helps proper termination of each component during the shutdown.
-
+The role of the kernel module is to create all components of the profile server and provide their correcly ordered list to the component manager.
 
 
 ## Configuration Component
@@ -25,13 +18,6 @@ Then it loads the configuration from the database or initializes the configurati
 includes the profile server's identity (i.e. its cryptographic keys). First time the profile server is started, its identity is generated.
 
 The loaded configuration from both the configuration file and the database is then available to all other components.
-
-
-
-## Cron Component
-
-This component is the last component that is initialized after all other components in the system are ready and running. 
-Its only function is to periodically execute various tasks in other components.
 
 
 ---
