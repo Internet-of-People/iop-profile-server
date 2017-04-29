@@ -33,6 +33,9 @@ namespace ProfileServer.Data.Models
     /// <summary>Maximum number of bytes that profile extra data can occupy.</summary>
     public const int MaxProfileExtraDataLengthBytes = 200;
 
+    /// <summary>Special type of profile that is used internally and should not be displayed to users.</summary>
+    public const string InternalInvalidProfileType = "<INVALID_INTERNAL>";
+
 
     /// <summary>Unique primary key for the database.</summary>
     /// <remarks>This is primary key - see ProfileServer.Data.Context.OnModelCreating.</remarks>
