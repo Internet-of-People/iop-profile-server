@@ -17,6 +17,7 @@ using IopServerCore.Data;
 using IopServerCore.Network;
 using Iop.Profileserver;
 using Iop.Shared;
+using System.Runtime.CompilerServices;
 
 namespace ProfileServer.Network
 {
@@ -378,7 +379,7 @@ namespace ProfileServer.Network
     /// <summary>
     /// Removes an action from the database.
     /// </summary>
-    /// <param name="ActionToUpdate">Identifier of the action to remove.</param>
+    /// <param name="ActionId">Identifier of the action to remove.</param>
     /// <returns>true if the function succeeds, false otherwise.</returns>
     private async Task<bool> RemoveActionAsync(int ActionId)
     {
@@ -388,27 +389,7 @@ namespace ProfileServer.Network
 
       using (UnitOfWork unitOfWork = new UnitOfWork())
       {
-        DatabaseLock lockObject = UnitOfWork.NeighborhoodActionLock;
-        await unitOfWork.AcquireLockAsync(lockObject);
-        try
-        {
-          NeighborhoodAction action = (await unitOfWork.NeighborhoodActionRepository.GetAsync(a => a.Id == ActionId)).FirstOrDefault();
-          if (action != null)
-          {
-            unitOfWork.NeighborhoodActionRepository.Delete(action);
-            log.Trace("Action ID {0} will be removed from database.", ActionId);
-
-            if (await unitOfWork.SaveAsync())
-              res = true;
-          }
-          else log.Info("Unable to find action ID {0} in the database, it has probably been removed already.", ActionId);
-        }
-        catch (Exception e)
-        {
-          log.Error("Exception occurred: {0}", e.ToString());
-        }
-
-        unitOfWork.ReleaseLock(lockObject);
+        res = await unitOfWork.NeighborhoodActionRepository.DeleteAsync(ActionId);
       }
 
       log.Trace("(-):{0}", res);
@@ -488,7 +469,8 @@ namespace ProfileServer.Network
       bool deleteNeighbor = false;
       bool resetSrNeighborPort = false;
 
-      IPEndPoint endPoint = await GetNeighborServerContact(NeighborId);
+      StrongBox<bool> notFound = new StrongBox<bool>(false);
+      IPEndPoint endPoint = await GetNeighborServerContactAsync(NeighborId, notFound);
       if (endPoint != null)
       {
         using (OutgoingClient client = new OutgoingClient(endPoint, true, ShutdownSignaling.ShutdownCancellationTokenSource.Token))
@@ -500,7 +482,7 @@ namespace ProfileServer.Network
           if (!connected)
           {
             log.Debug("Failed to connect to neighbor ID '{0}' on address '{1}'. Trying to get new value of its srNeighbor port from its primaryPort.", NeighborId.ToHex(), endPoint);
-            IPEndPoint newEndPoint = await GetNeighborServerContact(NeighborId, true);
+            IPEndPoint newEndPoint = await GetNeighborServerContactAsync(NeighborId, notFound, true);
             if (newEndPoint != null)
             {
               endPoint = newEndPoint;
@@ -629,17 +611,25 @@ namespace ProfileServer.Network
       }
       else
       {
-        log.Warn("Unable to find neighbor ID '{0}' IP and port information, will retry later.", NeighborId.ToHex());
-        //
-        // If we are here it means that srNeighborPort of this neighbor was reset before because we received ERROR_BAD_ROLE from the old srNeighborPort port.
-        // This could happen if the neighbor server changed its ports and the port we know is not used as srNeighborPort anymore.
-        // Then we attempted to connect to its primaryPort to get new value for its srNeighborPort and this failed as well,
-        // which means that the server was offline.
-        //
-        // The solution here is to wait. All actions to this neighbor will be blocked and this particular action will be retried later again.
-        // If the neighbor gets online and we succeed, actions for it will be unblocked again. Otherwise it will be eventually deleted 
-        // when it is unresponsive for long, either we will get notified from LOC server, or we find out on ourselves in Database.CheckExpiredNeighborsAsync().
-        //
+        if (notFound.Value == true)
+        {
+          // This means that the neighbor does not exists, hence we return true to delete this action from the queue.
+          res = true;
+        }
+        else
+        {
+          log.Warn("Unable to find neighbor ID '{0}' IP and port information, will retry later.", NeighborId.ToHex());
+          //
+          // If we are here it means that srNeighborPort of this neighbor was reset before because we received ERROR_BAD_ROLE from the old srNeighborPort port.
+          // This could happen if the neighbor server changed its ports and the port we know is not used as srNeighborPort anymore.
+          // Then we attempted to connect to its primaryPort to get new value for its srNeighborPort and this failed as well,
+          // which means that the server was offline.
+          //
+          // The solution here is to wait. All actions to this neighbor will be blocked and this particular action will be retried later again.
+          // If the neighbor gets online and we succeed, actions for it will be unblocked again. Otherwise it will be eventually deleted 
+          // when it is unresponsive for long, either we will get notified from LOC server, or we find out on ourselves in Database.CheckExpiredNeighborsAsync().
+          //
+        }
       }
 
       if (deleteNeighbor)
@@ -677,10 +667,11 @@ namespace ProfileServer.Network
     /// Obtains IP address and srNeighbor port from neighbor server's network identifier.
     /// </summary>
     /// <param name="NeighborId">Network identifer of the neighbor server.</param>
+    /// <param name="NotFound">If the function fails, this is set to true if the reason for failure was that the neighbor was not found.</param>
     /// <param name="IgnoreDbPortValue">If set to true, the function will ignore SrNeighborPort value of the neighbor even if it is set in the database 
     /// and will contact the neighbor on its primary port and then update SrNeighborPort in the database, if it successfully gets its value.</param>
     /// <returns>End point description or null if the function fails.</returns>
-    private async Task<IPEndPoint> GetNeighborServerContact(byte[] NeighborId, bool IgnoreDbPortValue = false)
+    private async Task<IPEndPoint> GetNeighborServerContactAsync(byte[] NeighborId, StrongBox<bool> NotFound, bool IgnoreDbPortValue = false)
     {
       log.Trace("(NeighborId:'{0}',IgnoreDbPortValue:{1})", NeighborId.ToHex(), IgnoreDbPortValue);
 
@@ -718,7 +709,11 @@ namespace ProfileServer.Network
               else log.Debug("Unable to obtain srNeighbor port from primary port of neighbor ID '{0}'.", NeighborId.ToHex());
             }
           }
-          else log.Error("Unable to find neighbor ID '{0}' in the database.", NeighborId.ToHex());
+          else
+          {
+            log.Error("Unable to find neighbor ID '{0}' in the database.", NeighborId.ToHex());
+            NotFound.Value = true;
+          }
         }
         catch (Exception e)
         {
@@ -737,10 +732,11 @@ namespace ProfileServer.Network
     /// Obtains IP address and srNeighbor port from follower server's network identifier.
     /// </summary>
     /// <param name="FollowerId">Network identifer of the follower server.</param>
+    /// <param name="NotFound">If the function fails, this is set to true if the reason for failure was that the follower was not found.</param>
     /// <param name="IgnoreDbPortValue">If set to true, the function will ignore SrNeighborPort value of the follower even if it is set in the database 
     /// and will contact the follower on its primary port and then update SrNeighborPort in the database, if it successfully gets its value.</param>
     /// <returns>End point description or null if the function fails.</returns>
-    private async Task<IPEndPoint> GetFollowerServerContact(byte[] FollowerId, bool IgnoreDbPortValue = false)
+    private async Task<IPEndPoint> GetFollowerServerContactAsync(byte[] FollowerId, StrongBox<bool> NotFound, bool IgnoreDbPortValue = false)
     {
       log.Trace("(FollowerId:'{0}',IgnoreDbPortValue:{1})", FollowerId.ToHex(), IgnoreDbPortValue);
 
@@ -778,7 +774,11 @@ namespace ProfileServer.Network
               else log.Debug("Unable to obtain srNeighbor port from primary port of follower ID '{0}'.", FollowerId.ToHex());
             }
           }
-          else log.Error("Unable to find follower ID '{0}' in the database.", FollowerId.ToHex());
+          else
+          {
+            log.Error("Unable to find follower ID '{0}' in the database.", FollowerId.ToHex());
+            NotFound.Value = true;
+          }
         }
         catch (Exception e)
         {
@@ -987,7 +987,8 @@ namespace ProfileServer.Network
       bool res = false;
 
       // First, we find the target server, to which we want to send the update.
-      IPEndPoint endPoint = await GetFollowerServerContact(FollowerId);
+      StrongBox<bool> notFound = new StrongBox<bool>(false);
+      IPEndPoint endPoint = await GetFollowerServerContactAsync(FollowerId, notFound);
       if (endPoint != null)
       {
         // Then we construct the update message.
@@ -1042,17 +1043,18 @@ namespace ProfileServer.Network
                     //
                     // Alternatively, we could process the action queue, either here or during cancelling 
                     // the hosting or during deleting inactive profiles from the database. However, such 
-                    // a solution is complex and error prone. This is by far the easiest way to deal 
+                    // a solution is complex and error prone. This seems to be by far the easiest way to deal 
                     // with this somewhat rare case.
                     //
 
+#warning TODO: If we are implement data signing and verification, we have to make sure that Type "<INVALID_INTERNAL>" is accepted without verification.
                     byte[] identityPublicKey = AdditionalData.FromHex();
                     SharedProfileAddItem item = new SharedProfileAddItem()
                     {
                       Version =  SemVer.V100.ToByteString(),
                       IdentityPublicKey = ProtocolHelper.ByteArrayToByteString(identityPublicKey),
                       Name = AdditionalData,
-                      Type = "Invalid",
+                      Type = IdentityBase.InternalInvalidProfileType,
                       SetThumbnailImage = false,
                       Latitude = 0,
                       Longitude = 0,
@@ -1118,7 +1120,7 @@ namespace ProfileServer.Network
 
               case NeighborhoodActionType.RemoveProfile:
                 {
-                  // Because of using the artifical profile, we can be sure here that the follower is aware of 
+                  // Because of using the artifical profile trick, we can be sure here that the follower is aware of 
                   // this profile even if it was deleted from our database before add profile update action 
                   // was taken from the queue. See the analysis in AddProfile case for more information.
                   SharedProfileDeleteItem item = new SharedProfileDeleteItem()
@@ -1174,7 +1176,7 @@ namespace ProfileServer.Network
             if (!connected)
             {
               log.Debug("Failed to connect to follower ID '{0}' on address '{1}'. Trying to get new value of its srNeighbor port from its primaryPort.", FollowerId.ToHex(), endPoint);
-              IPEndPoint newEndPoint = await GetFollowerServerContact(FollowerId, true);
+              IPEndPoint newEndPoint = await GetFollowerServerContactAsync(FollowerId, notFound, true);
               if (newEndPoint != null)
               {
                 endPoint = newEndPoint;
@@ -1190,7 +1192,7 @@ namespace ProfileServer.Network
               {
                 List<SharedProfileUpdateItem> updateList = new List<SharedProfileUpdateItem>() { updateItem };
                 PsProtocolMessage updateMessage = client.MessageBuilder.CreateNeighborhoodSharedProfileUpdateRequest(updateList);
-                if (await client.SendNeighborhoodSharedProfileUpdate(updateMessage))
+                if (await client.SendNeighborhoodSharedProfileUpdateAsync(updateMessage))
                 {
                   if (updateItem.ActionTypeCase == SharedProfileUpdateItem.ActionTypeOneofCase.Refresh)
                   {
@@ -1292,17 +1294,25 @@ namespace ProfileServer.Network
       }
       else
       {
-        //
-        // If we are here it means that srNeighborPort of this follower was reset before because we received ERROR_BAD_ROLE from the old srNeighborPort port.
-        // This could happen if the follower server changed its ports and the port we know is not used as srNeighborPort anymore.
-        // Then we attempted to connect to its primaryPort to get new value for its srNeighborPort and this failed as well,
-        // which means that the server was offline.
-        //
-        // The solution here is to wait. All actions to this follower will be blocked and this particular action will be retried later again.
-        // If the follower gets online and we succeed, actions for it will be unblocked again. Otherwise it will be eventually deleted 
-        // when it is unresponsive for long time in Database.CheckFollowersRefreshAsync().
-        //
-        log.Warn("Unable to find follower ID '{0}' IP and port information, will retry later.", FollowerId.ToHex());
+        if (notFound.Value == true)
+        {
+          // This means that the follower does not exists, hence we return true to delete this action from the queue.
+          res = true;
+        }
+        else
+        {
+          //
+          // If we are here it means that srNeighborPort of this follower was reset before because we received ERROR_BAD_ROLE from the old srNeighborPort port.
+          // This could happen if the follower server changed its ports and the port we know is not used as srNeighborPort anymore.
+          // Then we attempted to connect to its primaryPort to get new value for its srNeighborPort and this failed as well,
+          // which means that the server was offline.
+          //
+          // The solution here is to wait. All actions to this follower will be blocked and this particular action will be retried later again.
+          // If the follower gets online and we succeed, actions for it will be unblocked again. Otherwise it will be eventually deleted 
+          // when it is unresponsive for long time in Database.CheckFollowersRefreshAsync().
+          //
+          log.Warn("Unable to find follower ID '{0}' IP and port information, will retry later.", FollowerId.ToHex());
+        }
       }
 
       log.Trace("(-):{0}", res);
