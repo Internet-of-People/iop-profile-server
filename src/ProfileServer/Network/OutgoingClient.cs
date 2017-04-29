@@ -415,7 +415,7 @@ namespace ProfileServer.Network
     /// </summary>
     /// <param name="RequestMessage">Request message to send.</param>
     /// <returns>true if the function succeeds, false otherwise.</returns>
-    public async Task<bool> SendNeighborhoodSharedProfileUpdate(PsProtocolMessage RequestMessage)
+    public async Task<bool> SendNeighborhoodSharedProfileUpdateAsync(PsProtocolMessage RequestMessage)
     {
       log.Trace("()");
 

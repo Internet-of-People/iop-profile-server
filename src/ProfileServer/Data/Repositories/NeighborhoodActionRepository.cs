@@ -83,5 +83,41 @@ namespace ProfileServer.Data.Repositories
       log.Trace("(-):{0}", res);
       return res;
     }
+
+    /// <summary>
+    /// Safely deletes action from the database.
+    /// </summary>
+    /// <param name="ActionId">Database ID of the action to delete.</param>
+    /// <returns>true if the action was deleted, false otherwise.</returns>
+    public async Task<bool> DeleteAsync(int ActionId)
+    {
+      log.Trace("(ActionId:{0})", ActionId);
+
+      bool res = false;
+      DatabaseLock lockObject = UnitOfWork.NeighborhoodActionLock;
+      await unitOfWork.AcquireLockAsync(lockObject);
+      try
+      {
+        NeighborhoodAction action = (await GetAsync(a => a.Id == ActionId)).FirstOrDefault();
+        if (action != null)
+        {
+          Delete(action);
+          log.Trace("Action ID {0} will be removed from database.", ActionId);
+
+          if (await unitOfWork.SaveAsync())
+            res = true;
+        }
+        else log.Info("Unable to find action ID {0} in the database, it has probably been removed already.", ActionId);
+      }
+      catch (Exception e)
+      {
+        log.Error("Exception occurred: {0}", e.ToString());
+      }
+
+      unitOfWork.ReleaseLock(lockObject);
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
   }
 }

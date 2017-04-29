@@ -196,7 +196,7 @@ namespace ProfileServer.Data.Repositories
             if (UpdateProfileRequest.SetExtraData)
               identity.ExtraData = UpdateProfileRequest.ExtraData;
 
-            unitOfWork.HostedIdentityRepository.Update(identity);
+            Update(identity);
 
 
             // The profile change has to be propagated to all our followers
