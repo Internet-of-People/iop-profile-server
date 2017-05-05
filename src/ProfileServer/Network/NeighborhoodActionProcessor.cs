@@ -410,22 +410,22 @@ namespace ProfileServer.Network
       switch (Action.Type)
       {
         case NeighborhoodActionType.AddNeighbor:
-          res = await NeighborhoodInitializationProcess(Action.ServerId, Action.ExecuteAfter.Value, Action.Id);
+          res = await NeighborhoodInitializationProcessAsync(Action.ServerId, Action.ExecuteAfter.Value, Action.Id);
           break;
 
         case NeighborhoodActionType.RemoveNeighbor:
-          res = await NeighborhoodRemoveNeighbor(Action.ServerId, Action.Id);
+          res = await NeighborhoodRemoveNeighborAsync(Action.ServerId, Action.Id);
           break;
 
         case NeighborhoodActionType.StopNeighborhoodUpdates:
-          res = await NeighborhoodRequestStopUpdates(Action.ServerId, Action.AdditionalData);
+          res = await NeighborhoodRequestStopUpdatesAsync(Action.ServerId, Action.AdditionalData);
           break;
 
         case NeighborhoodActionType.AddProfile:
         case NeighborhoodActionType.ChangeProfile:
         case NeighborhoodActionType.RemoveProfile:
         case NeighborhoodActionType.RefreshProfiles:
-          res = await NeighborhoodProfileUpdate(Action.ServerId, Action.TargetIdentityId, Action.Type, Action.AdditionalData, Action.Id);
+          res = await NeighborhoodProfileUpdateAsync(Action.ServerId, Action.TargetIdentityId, Action.Type, Action.AdditionalData, Action.Id);
           break;
 
         case NeighborhoodActionType.InitializationProcessInProgress:
@@ -453,7 +453,7 @@ namespace ProfileServer.Network
     /// <param name="NeighborId">Network identifer of the neighbor server.</param>
     /// <param name="MustFinishBefore">Time before which the initialization process must be completed.</param>
     /// <returns>true if the neighborhood action responsible for executing this method should be removed, false otherwise.</returns>
-    private async Task<bool> NeighborhoodInitializationProcess(byte[] NeighborId, DateTime MustFinishBefore, int CurrentActionId)
+    private async Task<bool> NeighborhoodInitializationProcessAsync(byte[] NeighborId, DateTime MustFinishBefore, int CurrentActionId)
     {
       log.Trace("(NeighborId:'{0}',MustFinishBefore:{1},CurrentActionId:{2})", NeighborId.ToHex(), MustFinishBefore.ToString("yyyy-MM-dd HH:mm:ss"), CurrentActionId);
 
@@ -838,7 +838,7 @@ namespace ProfileServer.Network
     /// <param name="NeighborId">Network identifier of the former neighbor server.</param>
     /// <param name="CurrentActionId">Identifier of the action being executed.</param>
     /// <returns>true if the neighborhood action responsible for executing this method should be removed, false otherwise.</returns>
-    private async Task<bool> NeighborhoodRemoveNeighbor(byte[] NeighborId, int CurrentActionId)
+    private async Task<bool> NeighborhoodRemoveNeighborAsync(byte[] NeighborId, int CurrentActionId)
     {
       log.Trace("(NeighborId:'{0}',CurrentActionId:{1})", NeighborId.ToHex(), CurrentActionId);
 
@@ -892,7 +892,7 @@ namespace ProfileServer.Network
     /// <param name="NeighborId">Network identifier of the former neighbor server.</param>
     /// <param name="NeighborInfo">Serialized neighbor information.</param>
     /// <returns>true if the neighborhood action responsible for executing this method should be removed, false otherwise.</returns>
-    private async Task<bool> NeighborhoodRequestStopUpdates(byte[] NeighborId, string NeighborInfo)
+    private async Task<bool> NeighborhoodRequestStopUpdatesAsync(byte[] NeighborId, string NeighborInfo)
     {
       log.Trace("(NeighborId:'{0}',NeighborInfo:'{1}')", NeighborId.ToHex(), NeighborInfo);
 
@@ -980,7 +980,7 @@ namespace ProfileServer.Network
     /// <param name="AdditionalData">Additional action data or null if action has no additional data.</param>
     /// <param name="ActionId">Identifier of the neighborhood action currently being executed.</param>
     /// <returns>true if the neighborhood action responsible for executing this method should be removed, false otherwise.</returns>
-    private async Task<bool> NeighborhoodProfileUpdate(byte[] FollowerId, byte[] IdentityId, NeighborhoodActionType ActionType, string AdditionalData, int ActionId)
+    private async Task<bool> NeighborhoodProfileUpdateAsync(byte[] FollowerId, byte[] IdentityId, NeighborhoodActionType ActionType, string AdditionalData, int ActionId)
     {
       log.Trace("(FollowerId:'{0}',IdentityId:'{1}',ActionType:{2},AdditionalData:'{3}',ActionId:{4})", FollowerId.ToHex(), IdentityId.ToHex(), ActionType, AdditionalData, ActionId);
 

@@ -2703,7 +2703,7 @@ namespace ProfileServer.Network
       {
         using (UnitOfWork unitOfWork = new UnitOfWork())
         {
-          int blockActionId = await InstallInitializationProcessInProgress(unitOfWork, followerId);
+          int blockActionId = await unitOfWork.NeighborhoodActionRepository.InstallInitializationProcessInProgressAsync(followerId);
           if (blockActionId != -1)
           {
             DatabaseLock[] lockObjects = new DatabaseLock[] { UnitOfWork.HostedIdentityLock, UnitOfWork.FollowerLock };
@@ -2783,7 +2783,7 @@ namespace ProfileServer.Network
             {
               // It may happen that due to power failure, this will not get executed but when the server runs next time, 
               // Data.Database.DeleteInvalidNeighborhoodActions will be executed during the startup and will delete the blocking action.
-              if (!await UninstallInitializationProcessInProgress(unitOfWork, blockActionId))
+              if (!await unitOfWork.NeighborhoodActionRepository.UninstallInitializationProcessInProgressAsync(blockActionId))
                 log.Error("Unable to uninstall blocking neighborhood action ID {0} for follower ID '{1}'.", blockActionId, followerId.ToHex());
             }
           }
@@ -2807,7 +2807,7 @@ namespace ProfileServer.Network
           if (nipContext.HostedIdentities.Count > 0)
           {
             log.Trace("Sending first batch of our {0} hosted identities.", nipContext.HostedIdentities.Count);
-            PsProtocolMessage updateMessage = await BuildNeighborhoodSharedProfileUpdateRequest(Client, nipContext);
+            PsProtocolMessage updateMessage = await BuildNeighborhoodSharedProfileUpdateRequestAsync(Client, nipContext);
             if (!await Client.SendMessageAndSaveUnfinishedRequestAsync(updateMessage, nipContext))
             {
               log.Warn("Unable to send first update message to the client.");
@@ -2842,90 +2842,6 @@ namespace ProfileServer.Network
     }
 
 
-    /// <summary>
-    /// Installs InitializationProcessInProgress neighborhood action that will prevent 
-    /// the profile server to sending updates to a new follower.
-    /// </summary>
-    /// <param name="UnitOfWork">Unit of work instance.</param>
-    /// <param name="FollowerId">Identifier of the follower to block updates to.</param>
-    /// <returns>Action ID of the newly installed action, or -1 if the function fails.</returns>
-    public async Task<int> InstallInitializationProcessInProgress(UnitOfWork UnitOfWork, byte[] FollowerId)
-    {
-      log.Trace("(FollowerId:'{0}')", FollowerId.ToHex());
-
-      int res = -1;
-
-      DatabaseLock lockObject = UnitOfWork.NeighborhoodActionLock;
-      await UnitOfWork.AcquireLockAsync(lockObject);
-
-      try
-      {
-        // This action will make sure the profile server will not send updates to the new follower
-        // until the neighborhood initialization process is complete.
-        NeighborhoodAction action = new NeighborhoodAction()
-        {
-          ServerId = FollowerId,
-          Type = NeighborhoodActionType.InitializationProcessInProgress,
-          TargetIdentityId = null,
-          Timestamp = DateTime.UtcNow,
-          AdditionalData = null,
-
-          // This will cause other actions to this follower to be postponed for 20 minutes from now.
-          ExecuteAfter = DateTime.UtcNow.AddMinutes(20)
-        };
-        await UnitOfWork.NeighborhoodActionRepository.InsertAsync(action);
-        await UnitOfWork.SaveThrowAsync();
-        res = action.Id;
-      }
-      catch (Exception e)
-      {
-        log.Error("Exception occurred: {0}", e.ToString());
-      }
-
-      UnitOfWork.ReleaseLock(lockObject);
-
-      log.Trace("(-):{0}", res);
-      return res;
-    }
-
-
-    /// <summary>
-    /// Uninstalls InitializationProcessInProgress neighborhood action that was installed by InstallInitializationProcessInProgress.
-    /// </summary>
-    /// <param name="UnitOfWork">Unit of work instance.</param>
-    /// <param name="FollowerId">Identifier of the follower.</param>
-    /// <returns>true if the function suceeds, false otherwise.</returns>
-    public async Task<bool> UninstallInitializationProcessInProgress(UnitOfWork UnitOfWork, int ActionId)
-    {
-      log.Trace("(ActionId:{0})", ActionId);
-
-      bool res = false;
-
-      DatabaseLock lockObject = UnitOfWork.NeighborhoodActionLock;
-      await UnitOfWork.AcquireLockAsync(lockObject);
-
-      try
-      {
-        NeighborhoodAction action = (await UnitOfWork.NeighborhoodActionRepository.GetAsync(a => a.Id == ActionId)).FirstOrDefault();
-        if (action != null)
-        {
-          UnitOfWork.NeighborhoodActionRepository.Delete(action);
-          await UnitOfWork.SaveThrowAsync();
-          res = true;
-        }
-        else log.Error("Action ID {0} not found.", ActionId);
-      }
-      catch (Exception e)
-      {
-        log.Error("Exception occurred: {0}", e.ToString());
-      }
-
-      UnitOfWork.ReleaseLock(lockObject);
-
-      log.Trace("(-):{0}", res);
-      return res;
-    }
-
 
 
     /// <summary>
@@ -2936,7 +2852,7 @@ namespace ProfileServer.Network
     /// <param name="Client">Client for which the message is to be prepared.</param>
     /// <param name="Context">Context describing the status of the initialization process.</param>
     /// <returns>Upadate request message that is ready to be sent to the client.</returns>
-    public async Task<PsProtocolMessage> BuildNeighborhoodSharedProfileUpdateRequest(IncomingClient Client, NeighborhoodInitializationProcessContext Context)
+    public async Task<PsProtocolMessage> BuildNeighborhoodSharedProfileUpdateRequestAsync(IncomingClient Client, NeighborhoodInitializationProcessContext Context)
     {
       log.Trace("()");
 
@@ -3068,7 +2984,7 @@ namespace ProfileServer.Network
         } else
         {
           sharedProfilesCount = neighbor.SharedProfiles;
-          log.Trace("Neighbor ID {0} currently shares {1} profiles with the profile server.", sharedProfilesCount, neighborId.ToHex());
+          log.Trace("Neighbor ID '{0}' currently shares {1} profiles with the profile server.", neighborId.ToHex(), sharedProfilesCount);
         }
       }
 
@@ -3141,10 +3057,6 @@ namespace ProfileServer.Network
       log.Debug("{0}/{1} update items passed validation, doRefresh is {2}.", itemIndex, neighborhoodSharedProfileUpdateRequest.Items.Count, doRefresh);
 
 
-      // If there was a refresh request, we process it first as it does no harm and we do not need to care about it later.
-      if (doRefresh)
-        await UpdateNeighborLastRefreshTime(neighborId);
-
 
       // Now we save all valid items up to the first invalid (or all if all are valid).
       // But if we detect duplicity of identity with Add operation, or we can not find identity 
@@ -3160,6 +3072,11 @@ namespace ProfileServer.Network
 
       using (UnitOfWork unitOfWork = new UnitOfWork())
       {
+        // If there was a refresh request, we process it first as it does no harm and we do not need to care about it later.
+        if (doRefresh)
+          await unitOfWork.NeighborRepository.UpdateNeighborLastRefreshTimeAsync(neighborId);
+
+
         // Batch number just for logging purposes.
         int batchNumber = 1;
         while (index < itemIndex)
@@ -3193,7 +3110,7 @@ namespace ProfileServer.Network
                   if (!itemsImageHashes.TryGetValue(index, out itemImageHash))
                     itemImageHash = null;
 
-                  StoreSharedProfileUpdateResult storeResult = await StoreSharedProfileUpdateToDatabase(unitOfWork, updateItem, index, neighbor, itemImageHash, messageBuilder, RequestMessage);
+                  StoreSharedProfileUpdateResult storeResult = await StoreSharedProfileUpdateToDatabaseAsync(unitOfWork, updateItem, index, neighbor, itemImageHash, messageBuilder, RequestMessage);
                   if (storeResult.SaveDb) saveDb = true;
                   if (storeResult.Error) error = true;
                   if (storeResult.ErrorResponse != null) res = storeResult.ErrorResponse;
@@ -3201,7 +3118,7 @@ namespace ProfileServer.Network
                   if (storeResult.ItemImageUsed) batchUsedImageItemIndexes.Add(index);
 
                   // Error here means that we want to save all already processed items to the database
-                  // and quite the loop right after that, the response is filled with error response already.
+                  // and quit the loop right after that, the response is filled with error response already.
                   if (error) break;
 
                   index++;
@@ -3313,7 +3230,7 @@ namespace ProfileServer.Network
     /// <param name="RequestMessage">Original request message sent by the neighbor.</param>
     /// <returns>Result described by StoreSharedProfileUpdateResult class.</returns>
     /// <remarks>The caller of this function is responsible to call this function within a database transaction with acquired NeighborIdentityLock.</remarks>
-    private async Task<StoreSharedProfileUpdateResult> StoreSharedProfileUpdateToDatabase(UnitOfWork UnitOfWork, SharedProfileUpdateItem UpdateItem, int UpdateItemIndex, Neighbor Neighbor, byte[] ItemImageHash, PsMessageBuilder MessageBuilder, PsProtocolMessage RequestMessage)
+    private async Task<StoreSharedProfileUpdateResult> StoreSharedProfileUpdateToDatabaseAsync(UnitOfWork UnitOfWork, SharedProfileUpdateItem UpdateItem, int UpdateItemIndex, Neighbor Neighbor, byte[] ItemImageHash, PsMessageBuilder MessageBuilder, PsProtocolMessage RequestMessage)
     {
       log.Trace("(UpdateItemIndex:{0},Neighbor.SharedProfiles:{1})", UpdateItemIndex, Neighbor.SharedProfiles);
 
@@ -3386,6 +3303,8 @@ namespace ProfileServer.Network
             NeighborIdentity existingIdentity = (await UnitOfWork.NeighborIdentityRepository.GetAsync(i => (i.IdentityId == identityId) && (i.HostingServerId == Neighbor.NeighborId))).FirstOrDefault();
             if (existingIdentity != null)
             {
+              GpsLocation location = new GpsLocation(changeItem.Latitude, changeItem.Longitude);
+
               if (changeItem.SetVersion) existingIdentity.Version = changeItem.Version.ToByteArray();
               if (changeItem.SetName) existingIdentity.Name = changeItem.Name;
 
@@ -3399,8 +3318,8 @@ namespace ProfileServer.Network
 
               if (changeItem.SetLocation)
               {
-                existingIdentity.InitialLocationLatitude = changeItem.Latitude;
-                existingIdentity.InitialLocationLongitude = changeItem.Longitude;
+                existingIdentity.InitialLocationLatitude = location.Latitude;
+                existingIdentity.InitialLocationLongitude = location.Longitude;
               }
 
               if (changeItem.SetExtraData) existingIdentity.ExtraData = changeItem.ExtraData;
@@ -3449,47 +3368,7 @@ namespace ProfileServer.Network
 
 
 
-    /// <summary>
-    /// Updates LastRefreshTime of a neighbor server.
-    /// </summary>
-    /// <param name="NeighborId">Identifier of the neighbor server to update.</param>
-    /// <returns>true if the function succeeds, false otherwise.</returns>
-    private async Task<bool> UpdateNeighborLastRefreshTime(byte[] NeighborId)
-    {
-      log.Trace("(NeighborId:'{0}')", NeighborId.ToHex());
 
-      bool res = false;
-      using (UnitOfWork unitOfWork = new UnitOfWork())
-      {
-        DatabaseLock lockObject = UnitOfWork.NeighborLock;
-        await unitOfWork.AcquireLockAsync(lockObject);
-        try
-        {
-          Neighbor neighbor = (await unitOfWork.NeighborRepository.GetAsync(n => n.NeighborId == NeighborId)).FirstOrDefault();
-          if (neighbor != null)
-          {
-            neighbor.LastRefreshTime = DateTime.UtcNow;
-            unitOfWork.NeighborRepository.Update(neighbor);
-            await unitOfWork.SaveThrowAsync();
-          }
-          else
-          {
-            // Between the check couple of lines above and here, the requesting server stop being our neighbor
-            // we can ignore it now and proceed as this does no harm and the requesting server will be informed later.
-            log.Error("Client ID '{0}' is no longer our neighbor.", NeighborId.ToHex());
-          }
-        }
-        catch (Exception e)
-        {
-          log.Error("Exception occurred while trying to update LastRefreshTime of neighbor ID '{0}': {1}", NeighborId.ToHex(), e.ToString());
-        }
-
-        unitOfWork.ReleaseLock(lockObject);
-      }
-
-      log.Trace("(-):{0}", res);
-      return res;
-    }
 
     /// <summary>
     /// Validates incoming SharedProfileUpdateItem update item.
@@ -3924,7 +3803,7 @@ namespace ProfileServer.Network
           NeighborhoodInitializationProcessContext nipContext = (NeighborhoodInitializationProcessContext)Request.Context;
           if (nipContext.IdentitiesDone < nipContext.HostedIdentities.Count)
           {
-            PsProtocolMessage updateMessage = await BuildNeighborhoodSharedProfileUpdateRequest(Client, nipContext);
+            PsProtocolMessage updateMessage = await BuildNeighborhoodSharedProfileUpdateRequestAsync(Client, nipContext);
             if (await Client.SendMessageAndSaveUnfinishedRequestAsync(updateMessage, nipContext))
             {
               res = true;

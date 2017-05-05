@@ -219,7 +219,7 @@ namespace ProfileServer.Network
                 int latitude = nodeInfo.Location.Latitude;
                 int longitude = nodeInfo.Location.Longitude;
 
-                AddOrChangeNeighborResult addChangeRes = await AddOrChangeNeighbor(unitOfWork, profileServerId, ipAddress, profileServerPort, latitude, longitude, neighborhoodSize);
+                AddOrChangeNeighborResult addChangeRes = await AddOrChangeNeighborAsync(unitOfWork, profileServerId, ipAddress, profileServerPort, latitude, longitude, neighborhoodSize);
 
                 neighborhoodSize = addChangeRes.NeighborhoodSize;
 
@@ -306,7 +306,7 @@ namespace ProfileServer.Network
     /// <param name="NeighborhoodSize">Size of the profile server's neighborhood at the moment the function is called.</param>
     /// <returns>Information related to how should the caller proceed further, described in AddOrChangeNeighborResult structure.</returns>
     /// <remarks>The caller is responsible for calling this function within a database transaction with NeighborLock and NeighborhoodActionLock locks.</remarks>
-    public async Task<AddOrChangeNeighborResult> AddOrChangeNeighbor(UnitOfWork UnitOfWork, byte[] ServerId, IPAddress IpAddress, int Port, int Latitude, int Longitude, int NeighborhoodSize)
+    public async Task<AddOrChangeNeighborResult> AddOrChangeNeighborAsync(UnitOfWork UnitOfWork, byte[] ServerId, IPAddress IpAddress, int Port, int Latitude, int Longitude, int NeighborhoodSize)
     {
       log.Trace("(ServerId:'{0}',IpAddress:{1},Port:{2},Latitude:{3},Longitude:{4},NeighborhoodSize:{5})", ServerId.ToHex(), IpAddress, Port, Latitude, Longitude, NeighborhoodSize);
 
@@ -434,7 +434,7 @@ namespace ProfileServer.Network
 
     /// <summary>
     /// Processes NeighbourhoodChangedNotificationRequest message from LOC server.
-    /// <para>Adds corresponding neighborhood action to the database.</para>
+    /// <para>Adds, changes, or deletes neighbor and possibly adds new neighborhood action to the database.</para>
     /// </summary>
     /// <param name="Client">TCP client who received the message.</param>
     /// <param name="RequestMessage">Full request message.</param>
@@ -461,7 +461,7 @@ namespace ProfileServer.Network
 
             foreach (NeighbourhoodChange change in neighbourhoodChangedNotificationRequest.Changes)
             {
-              // We do ignore errors here for each individual change and just continue processing a next item from the list.
+              // We do ignore errors here for each individual change and just continue processing the next item from the list.
               log.Trace("Neighborhood change type is {0}.", change.ChangeTypeCase);
               switch (change.ChangeTypeCase)
               {
@@ -483,7 +483,7 @@ namespace ProfileServer.Network
                     int latitude = location.Latitude;
                     int longitude = location.Longitude;
 
-                    AddOrChangeNeighborResult addChangeRes = await AddOrChangeNeighbor(unitOfWork, profileServerId, ipAddress, profileServerPort, latitude, longitude, neighborhoodSize);
+                    AddOrChangeNeighborResult addChangeRes = await AddOrChangeNeighborAsync(unitOfWork, profileServerId, ipAddress, profileServerPort, latitude, longitude, neighborhoodSize);
 
                     neighborhoodSize = addChangeRes.NeighborhoodSize;
 
@@ -545,10 +545,10 @@ namespace ProfileServer.Network
                         NeighborhoodAction action = new NeighborhoodAction()
                         {
                           ServerId = serverId,
-                          Timestamp = DateTime.UtcNow,
                           Type = NeighborhoodActionType.RemoveNeighbor,
                           TargetIdentityId = null,
-                          AdditionalData = null
+                          AdditionalData = null,
+                          Timestamp = DateTime.UtcNow
                         };
                         await unitOfWork.NeighborhoodActionRepository.InsertAsync(action);
 
@@ -611,8 +611,8 @@ namespace ProfileServer.Network
     /// Checks whether LOC node information contains a Profile Server service and if so, it returns its port and network ID.
     /// </summary>
     /// <param name="NodeInfo">Node information structure to scan.</param>
-    /// <param name="ProfileServerPort">If the node information contains Profile Server type of service, this is filled with the Profile Server port.</param>
-    /// <param name="ProfileServerId">If the node information contains Profile Server type of service, this is filled with the Profile Server network ID.</param>
+    /// <param name="ProfileServerPort">If the node information contains Profile Server type of service, this is filled with the profile server primary port.</param>
+    /// <param name="ProfileServerId">If the node information contains Profile Server type of service, this is filled with the profile server network ID.</param>
     /// <returns>true if the node information contains Profile Server type of service, false otherwise.</returns>
     public bool HasProfileServerService(NodeInfo NodeInfo, out int ProfileServerPort, out byte[] ProfileServerId)
     {
@@ -646,6 +646,5 @@ namespace ProfileServer.Network
       log.Trace("(-):{0}", res);
       return res;
     }
-
   }
 }

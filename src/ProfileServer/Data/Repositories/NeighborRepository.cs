@@ -214,5 +214,46 @@ namespace ProfileServer.Data.Repositories
       log.Trace("(-):{0}", res);
       return res;
     }
+
+
+    /// <summary>
+    /// Updates LastRefreshTime of a neighbor server.
+    /// </summary>
+    /// <param name="NeighborId">Identifier of the neighbor server to update.</param>
+    /// <returns>true if the function succeeds, false otherwise.</returns>
+    public async Task<bool> UpdateNeighborLastRefreshTimeAsync(byte[] NeighborId)
+    {
+      log.Trace("(NeighborId:'{0}')", NeighborId.ToHex());
+
+      bool res = false;
+
+      DatabaseLock lockObject = UnitOfWork.NeighborLock;
+      await unitOfWork.AcquireLockAsync(lockObject);
+      try
+      {
+        Neighbor neighbor = (await GetAsync(n => n.NeighborId == NeighborId)).FirstOrDefault();
+        if (neighbor != null)
+        {
+          neighbor.LastRefreshTime = DateTime.UtcNow;
+          Update(neighbor);
+          await unitOfWork.SaveThrowAsync();
+        }
+        else
+        {
+          // Between the check couple of lines above and here, the requesting server stop being our neighbor
+          // we can ignore it now and proceed as this does no harm and the requesting server will be informed later.
+          log.Error("Client ID '{0}' is no longer our neighbor.", NeighborId.ToHex());
+        }
+      }
+      catch (Exception e)
+      {
+        log.Error("Exception occurred while trying to update LastRefreshTime of neighbor ID '{0}': {1}", NeighborId.ToHex(), e.ToString());
+      }
+
+      unitOfWork.ReleaseLock(lockObject);
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
   }
 }

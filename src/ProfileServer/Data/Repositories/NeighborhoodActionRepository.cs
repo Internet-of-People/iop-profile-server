@@ -119,5 +119,90 @@ namespace ProfileServer.Data.Repositories
       log.Trace("(-):{0}", res);
       return res;
     }
+
+
+    /// <summary>
+    /// Installs InitializationProcessInProgress neighborhood action that will prevent 
+    /// the profile server from sending updates to a new follower.
+    /// </summary>
+    /// <param name="FollowerId">Identifier of the follower to block updates to.</param>
+    /// <returns>Action ID of the newly installed action, or -1 if the function fails.</returns>
+    public async Task<int> InstallInitializationProcessInProgressAsync(byte[] FollowerId)
+    {
+      log.Trace("(FollowerId:'{0}')", FollowerId.ToHex());
+
+      int res = -1;
+
+      DatabaseLock lockObject = UnitOfWork.NeighborhoodActionLock;
+      await unitOfWork.AcquireLockAsync(lockObject);
+
+      try
+      {
+        // This action will make sure the profile server will not send updates to the new follower
+        // until the neighborhood initialization process is complete.
+        NeighborhoodAction action = new NeighborhoodAction()
+        {
+          ServerId = FollowerId,
+          Type = NeighborhoodActionType.InitializationProcessInProgress,
+          TargetIdentityId = null,
+          Timestamp = DateTime.UtcNow,
+          AdditionalData = null,
+
+          // This will cause other actions to this follower to be postponed for 20 minutes from now.
+          ExecuteAfter = DateTime.UtcNow.AddMinutes(20)
+        };
+        await InsertAsync(action);
+        await unitOfWork.SaveThrowAsync();
+        res = action.Id;
+      }
+      catch (Exception e)
+      {
+        log.Error("Exception occurred: {0}", e.ToString());
+      }
+
+      unitOfWork.ReleaseLock(lockObject);
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+
+    /// <summary>
+    /// Uninstalls InitializationProcessInProgress neighborhood action that was installed by InstallInitializationProcessInProgress.
+    /// </summary>
+    /// <param name="FollowerId">Identifier of the follower.</param>
+    /// <returns>true if the function suceeds, false otherwise.</returns>
+    public async Task<bool> UninstallInitializationProcessInProgressAsync(int ActionId)
+    {
+      log.Trace("(ActionId:{0})", ActionId);
+
+      bool res = false;
+
+      DatabaseLock lockObject = UnitOfWork.NeighborhoodActionLock;
+      await unitOfWork.AcquireLockAsync(lockObject);
+
+      try
+      {
+        NeighborhoodAction action = (await GetAsync(a => a.Id == ActionId)).FirstOrDefault();
+        if (action != null)
+        {
+          Delete(action);
+          await unitOfWork.SaveThrowAsync();
+          res = true;
+        }
+        else log.Error("Action ID {0} not found.", ActionId);
+      }
+      catch (Exception e)
+      {
+        log.Error("Exception occurred: {0}", e.ToString());
+      }
+
+      unitOfWork.ReleaseLock(lockObject);
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+
   }
 }
