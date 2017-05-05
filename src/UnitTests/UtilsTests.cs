@@ -16,10 +16,10 @@ namespace UnitTests
   public class UtilsTests
   {
     /// <summary>
-    /// Tests ValidateProfileSearchRegex method with regular expressions that should pass the validation.
+    /// Tests ValidateRegex method with regular expressions that should pass the validation.
     /// </summary>
     [Fact]
-    public void RegexValidator_ValidateProfileSearchRegex_ValidTest()
+    public void RegexValidator_ValidateRegex_ValidTest()
     {
       List<string> inputs = new List<string>()
       {
@@ -35,14 +35,14 @@ namespace UnitTests
       };
 
       foreach (string input in inputs)
-        Assert.True(RegexTypeValidator.ValidateProfileSearchRegex(input));
+        Assert.True(RegexTypeValidator.ValidateRegex(input));
     }
 
     /// <summary>
-    /// Tests ValidateProfileSearchRegex method with regular expressions that should fail the validation.
+    /// Tests ValidateRegex method with regular expressions that should fail the validation.
     /// </summary>
     [Fact]
-    public void RegexValidator_ValidateProfileSearchRegex_InvalidTest()
+    public void RegexValidator_ValidateRegex_InvalidTest()
     {
       List<string> inputs = new List<string>()
       {
@@ -105,7 +105,7 @@ namespace UnitTests
       {
         bool validLength = (Encoding.UTF8.GetByteCount(input) <= PsMessageBuilder.MaxProfileSearchExtraDataLengthBytes);
         if (validLength)
-          Assert.False(RegexTypeValidator.ValidateProfileSearchRegex(input));
+          Assert.False(RegexTypeValidator.ValidateRegex(input));
       }
     }
 

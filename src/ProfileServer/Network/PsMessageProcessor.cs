@@ -1787,6 +1787,12 @@ namespace ProfileServer.Network
     /// <summary>Maximum number of results the profile server can send in the response if images are not included.</summary>
     public const int ProfileSearchMaxResponseRecordsWithoutImage = 1000;
 
+    /// <summary>Maximum number of results the profile server can store in total for a single client if images are included.</summary>
+    public const int ProfileSearchMaxTotalRecordsWithImage = 1000;
+
+    /// <summary>Maximum number of results the profile server can store in total for a single client if images are not included.</summary>
+    public const int ProfileSearchMaxTotalRecordsWithoutImage = 10000;
+
 
     /// <summary>
     /// Processes ProfileSearchRequest message from client.
@@ -1823,10 +1829,8 @@ namespace ProfileServer.Network
             uint maxResponseResults = profileSearchRequest.MaxResponseRecordCount;
             string typeFilter = profileSearchRequest.Type;
             string nameFilter = profileSearchRequest.Name;
-            GpsLocation locationFilter = null;
-            if (profileSearchRequest.Latitude != GpsLocation.NoLocationLocationType)
-              locationFilter = new GpsLocation(profileSearchRequest.Latitude, profileSearchRequest.Longitude);
-            uint radius = profileSearchRequest.Radius;
+            GpsLocation locationFilter = profileSearchRequest.Latitude != GpsLocation.NoLocationLocationType ? new GpsLocation(profileSearchRequest.Latitude, profileSearchRequest.Longitude) : null;
+            uint radiusFilter = profileSearchRequest.Radius;
             string extraDataFilter = profileSearchRequest.ExtraData;
             bool includeImages = profileSearchRequest.IncludeThumbnailImages;
 
@@ -1834,7 +1838,7 @@ namespace ProfileServer.Network
 
             // First, we try to find enough results among identities hosted on this profile server.
             List<IdentityNetworkProfileInformation> searchResultsNeighborhood = new List<IdentityNetworkProfileInformation>();
-            List<IdentityNetworkProfileInformation> searchResultsLocal = await ProfileSearch(unitOfWork.HostedIdentityRepository, maxResults, typeFilter, nameFilter, locationFilter, radius, extraDataFilter, includeImages, watch);
+            List<IdentityNetworkProfileInformation> searchResultsLocal = await ProfileSearchAsync(unitOfWork.HostedIdentityRepository, maxResults, typeFilter, nameFilter, locationFilter, radiusFilter, extraDataFilter, includeImages, watch);
             if (searchResultsLocal != null)
             {
               bool localServerOnly = true;
@@ -1844,7 +1848,7 @@ namespace ProfileServer.Network
               {
                 localServerOnly = false;
                 maxResults -= (uint)searchResultsLocal.Count;
-                searchResultsNeighborhood = await ProfileSearch(unitOfWork.NeighborIdentityRepository, maxResults, typeFilter, nameFilter, locationFilter, radius, extraDataFilter, includeImages, watch);
+                searchResultsNeighborhood = await ProfileSearchAsync(unitOfWork.NeighborIdentityRepository, maxResults, typeFilter, nameFilter, locationFilter, radiusFilter, extraDataFilter, includeImages, watch);
                 if (searchResultsNeighborhood == null)
                 {
                   log.Error("Profile search among neighborhood identities failed.");
@@ -1872,7 +1876,7 @@ namespace ProfileServer.Network
                   responseResults.AddRange(allResults.GetRange(0, (int)maxResponseResults));
                 }
 
-                List<byte[]> coveredServers = await ProfileSearchGetCoveredServers(unitOfWork, localServerOnly);
+                List<byte[]> coveredServers = await ProfileSearchGetCoveredServersAsync(unitOfWork, localServerOnly);
                 res = messageBuilder.CreateProfileSearchResponse(RequestMessage, (uint)allResults.Count, maxResponseResults, coveredServers, responseResults);
               }
             }
@@ -1903,7 +1907,7 @@ namespace ProfileServer.Network
     /// <returns>List of network IDs of profile servers whose database could be used to create the result.</returns>
     /// <remarks>Note that the covered profile server list is not guaranteed to be accurate. The search query processing is not atomic 
     /// and during the process it may happen that a neighbor server can be added or removed from the list of neighbors.</remarks>
-    private async Task<List<byte[]>> ProfileSearchGetCoveredServers(UnitOfWork UnitOfWork, bool LocalServerOnly)
+    private async Task<List<byte[]>> ProfileSearchGetCoveredServersAsync(UnitOfWork UnitOfWork, bool LocalServerOnly)
     {
       log.Trace("()");
 
@@ -1920,13 +1924,13 @@ namespace ProfileServer.Network
     }
 
     /// <summary>
-    /// Checks whether the search profile request is valid.
+    /// Checks whether the profile search request is valid.
     /// </summary>
     /// <param name="ProfileSearchRequest">Profile search request part of the client's request message.</param>
     /// <param name="MessageBuilder">Client's network message builder.</param>
     /// <param name="RequestMessage">Full request message from client.</param>
     /// <param name="ErrorResponse">If the function fails, this is filled with error response message that is ready to be sent to the client.</param>
-    /// <returns>true if the profile update request can be applied, false otherwise.</returns>
+    /// <returns>true if the profile search request is valid, false otherwise.</returns>
     private bool ValidateProfileSearchRequest(ProfileSearchRequest ProfileSearchRequest, PsMessageBuilder MessageBuilder, PsProtocolMessage RequestMessage, out PsProtocolMessage ErrorResponse)
     {
       log.Trace("()");
@@ -1936,8 +1940,8 @@ namespace ProfileServer.Network
       string details = null;
 
       bool includeImages = ProfileSearchRequest.IncludeThumbnailImages;
-      int responseResultLimit = includeImages ? 100 : 1000;
-      int totalResultLimit = includeImages ? 1000 : 10000;
+      int responseResultLimit = includeImages ? ProfileSearchMaxResponseRecordsWithImage : ProfileSearchMaxResponseRecordsWithoutImage;
+      int totalResultLimit = includeImages ? ProfileSearchMaxTotalRecordsWithImage : ProfileSearchMaxTotalRecordsWithoutImage;
 
       bool maxResponseRecordCountValid = (1 <= ProfileSearchRequest.MaxResponseRecordCount)
         && (ProfileSearchRequest.MaxResponseRecordCount <= responseResultLimit)
@@ -2007,7 +2011,7 @@ namespace ProfileServer.Network
       if ((details == null) && (ProfileSearchRequest.ExtraData != null))
       {
         bool validLength = (Encoding.UTF8.GetByteCount(ProfileSearchRequest.ExtraData) <= PsMessageBuilder.MaxProfileSearchExtraDataLengthBytes);
-        bool extraDataValid = RegexTypeValidator.ValidateProfileSearchRegex(ProfileSearchRequest.ExtraData);
+        bool extraDataValid = RegexTypeValidator.ValidateRegex(ProfileSearchRequest.ExtraData);
         if (!validLength || !extraDataValid)
         {
           log.Debug("Invalid extraData regular expression filter.");
@@ -2028,14 +2032,14 @@ namespace ProfileServer.Network
 
 
     /// <summary>
-    /// Performs a search request on a repository to retrieve the list of profiles that match match specific criteria.
+    /// Performs a search request on a repository to retrieve the list of profiles that match specific criteria.
     /// </summary>
     /// <param name="Repository">Home or neighborhood identity repository, which is queried.</param>
     /// <param name="MaxResults">Maximum number of results to retrieve.</param>
     /// <param name="TypeFilter">Wildcard filter for identity type, or empty string if identity type filtering is not required.</param>
     /// <param name="NameFilter">Wildcard filter for profile name, or empty string if profile name filtering is not required.</param>
-    /// <param name="LocationFilter">If not null, this value together with <paramref name="Radius"/> provide specification of target area, in which the identities has to have their location set. If null, GPS location filtering is not required.</param>
-    /// <param name="Radius">If <paramref name="LocationFilter"/> is not null, this is the target area radius with the centre in <paramref name="LocationFilter"/>.</param>
+    /// <param name="LocationFilter">If not null, this value together with <paramref name="RadiusFilter"/> provide specification of target area, in which the identities has to have their location set. If null, GPS location filtering is not required.</param>
+    /// <param name="RadiusFilter">If <paramref name="LocationFilter"/> is not null, this is the target area radius with the centre in <paramref name="LocationFilter"/>.</param>
     /// <param name="ExtraDataFilter">Regular expression filter for identity's extraData information, or empty string if extraData filtering is not required.</param>
     /// <param name="IncludeImages">If true, the results will include profiles' thumbnail images.</param>
     /// <param name="TimeoutWatch">Stopwatch instance that is used to terminate the search query in case the execution takes too long. The stopwatch has to be started by the caller before calling this method.</param>
@@ -2043,10 +2047,10 @@ namespace ProfileServer.Network
     /// <remarks>In order to prevent DoS attacks, we require the search to complete within small period of time. 
     /// One the allowed time is up, the search is terminated even if we do not have enough results yet and there 
     /// is still a possibility to get more.</remarks>
-    private async Task<List<IdentityNetworkProfileInformation>> ProfileSearch<T>(IdentityRepository<T> Repository, uint MaxResults, string TypeFilter, string NameFilter, GpsLocation LocationFilter, uint Radius, string ExtraDataFilter, bool IncludeImages, Stopwatch TimeoutWatch) where T : IdentityBase
+    private async Task<List<IdentityNetworkProfileInformation>> ProfileSearchAsync<T>(IdentityRepository<T> Repository, uint MaxResults, string TypeFilter, string NameFilter, GpsLocation LocationFilter, uint RadiusFilter, string ExtraDataFilter, bool IncludeImages, Stopwatch TimeoutWatch) where T : IdentityBase
     {
-      log.Trace("(Repository:{0},MaxResults:{1},TypeFilter:'{2}',NameFilter:'{3}',LocationFilter:'{4}',Radius:{5},ExtraDataFilter:'{6}',IncludeImages:{7})",
-        Repository, MaxResults, TypeFilter, NameFilter, LocationFilter, Radius, ExtraDataFilter, IncludeImages);
+      log.Trace("(Repository:{0},MaxResults:{1},TypeFilter:'{2}',NameFilter:'{3}',LocationFilter:[{4}],RadiusFilter:{5},ExtraDataFilter:'{6}',IncludeImages:{7})",
+        Repository, MaxResults, TypeFilter, NameFilter, LocationFilter, RadiusFilter, ExtraDataFilter, IncludeImages);
 
       List<IdentityNetworkProfileInformation> res = new List<IdentityNetworkProfileInformation>();
 
@@ -2065,7 +2069,7 @@ namespace ProfileServer.Network
         List<T> identities = null;
         try
         {
-          identities = await Repository.ProfileSearch(offset, batchSize, TypeFilter, NameFilter, LocationFilter, Radius);
+          identities = await Repository.ProfileSearchAsync(offset, batchSize, TypeFilter, NameFilter, LocationFilter, RadiusFilter);
           noMoreResults = (identities == null) || (identities.Count < batchSize);
           if (noMoreResults)
             log.Debug("Received {0}/{1} results from repository, no more results available.", identities != null ? identities.Count : 0, batchSize);
@@ -2093,12 +2097,12 @@ namespace ProfileServer.Network
                 break;
               }
 
-              // Filter out profiles that do not match exact location filter and extraData filter
+              // Filter out profiles that do not match exact location filter and extraData filter.
               GpsLocation identityLocation = new GpsLocation(identity.InitialLocationLatitude, identity.InitialLocationLongitude);
               if (LocationFilter != null)
               {
                 double distance = GpsLocation.DistanceBetween(LocationFilter, identityLocation);
-                bool withinArea = distance <= (double)Radius;
+                bool withinArea = distance <= (double)RadiusFilter;
                 if (!withinArea)
                 {
                   filteredOutLocation++;
@@ -2137,7 +2141,7 @@ namespace ProfileServer.Network
               inpi.Name = identity.Name != null ? identity.Name : "";
               inpi.Latitude = identityLocation.GetLocationTypeLatitude();
               inpi.Longitude = identityLocation.GetLocationTypeLongitude();
-              inpi.ExtraData = identity.ExtraData;
+              inpi.ExtraData = identity.ExtraData != null ? identity.ExtraData : "";
               if (IncludeImages)
               {
                 byte[] image = await identity.GetThumbnailImageDataAsync();

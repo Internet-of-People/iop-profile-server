@@ -269,7 +269,7 @@ namespace ProfileServer.Network
     /// <summary>
     /// Callback routine that is called once the profileSearchResultCacheExpirationTimer expires to delete cached search results.
     /// </summary>
-    /// <param name="state">Search results object that was set during the timer initialization.
+    /// <param name="State">Search results object that was set during the timer initialization.
     /// this has to match the current search results, otherwise it means the results have been replaced already.</param>
     private void ProfileSearchResultCacheTimerCallback(object State)
     {

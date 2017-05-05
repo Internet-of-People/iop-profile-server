@@ -36,18 +36,19 @@ namespace ProfileServer.Data.Repositories
     /// <summary>
     /// Retrieves list of identities from database whose profiles match specific criteria.
     /// </summary>
+    /// <param name="ResultOffset">Zero-based index of the first result to retrieve.</param>
     /// <param name="MaxResults">Maximum number of results to retrieve.</param>
     /// <param name="TypeFilter">Wildcard filter for identity type, or empty string if identity type filtering is not required.</param>
     /// <param name="NameFilter">Wildcard filter for profile name, or empty string if profile name filtering is not required.</param>
-    /// <param name="LocationFilter">If not null, this value together with <paramref name="Radius"/> provide specification of target area, in which the identities has to have their location set. If null, GPS location filtering is not required.</param>
-    /// <param name="Radius">If <paramref name="LocationFilter"/> is not null, this is the target area radius with the centre in <paramref name="LocationFilter"/>.</param>
+    /// <param name="LocationFilter">If not null, this value together with <paramref name="RadiusFilter"/> provide specification of target area, in which the identities has to have their location set. If null, GPS location filtering is not required.</param>
+    /// <param name="RadiusFilter">If <paramref name="LocationFilter"/> is not null, this is the target area radius with the centre in <paramref name="LocationFilter"/>.</param>
     /// <returns>List of identities that match the specific criteria.</returns>
     /// <remarks>On this level we query the database with an unprecise set of filters. The location filter uses GPS square instead of cirle target area 
     /// and there is no extraData filter. This means the output of this function is a superset of what we are looking for and the caller is responsible 
     /// to filter the output to get the exact set.</remarks>
-    public async Task<List<T>> ProfileSearch(uint ResultOffset, uint MaxResults, string TypeFilter, string NameFilter, GpsLocation LocationFilter, uint Radius)
+    public async Task<List<T>> ProfileSearchAsync(uint ResultOffset, uint MaxResults, string TypeFilter, string NameFilter, GpsLocation LocationFilter, uint RadiusFilter)
     {
-      log.Trace("(ResultOffset:{0},MaxResults:{1},TypeFilter:'{2}',NameFilter:'{3}',LocationFilter:'{4}',Radius:{5})", ResultOffset, MaxResults, TypeFilter, NameFilter, LocationFilter, Radius);
+      log.Trace("(ResultOffset:{0},MaxResults:{1},TypeFilter:'{2}',NameFilter:'{3}',LocationFilter:'{4}',Radius:{5})", ResultOffset, MaxResults, TypeFilter, NameFilter, LocationFilter, RadiusFilter);
 
       // First we obtain result candidates from the database. These candidates may later be filtered out by more precise use of location filter 
       // and application of the extraData filter. As we want to achieve a certain number of results, we will be working in a loop,
@@ -81,11 +82,11 @@ namespace ProfileServer.Data.Repositories
 
       // Apply basic location filter if any.
       // We do not make a precise computation of whether the identity is within the target area in DB query.
-      // We only present certain make limits within latitude and longitude values must be and from the results we get 
+      // We only present certain limits within latitude and longitude values must be and from the results we get 
       // we then filter those that are out of the target area.
       if (LocationFilter != null)
       {
-        Expression<Func<T, bool>> locationFilterExpression = GetLocationFilterExpression<T>(LocationFilter, Radius);
+        Expression<Func<T, bool>> locationFilterExpression = GetLocationFilterExpression<T>(LocationFilter, RadiusFilter);
         if (locationFilterExpression != null)
           query = query.Where(locationFilterExpression);
       }
@@ -314,7 +315,5 @@ namespace ProfileServer.Data.Repositories
       log.Trace("(-)");
       return res;
     }
-
-
   }
 }
