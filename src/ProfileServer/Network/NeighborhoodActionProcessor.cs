@@ -621,6 +621,7 @@ namespace ProfileServer.Network
           log.Warn("Unable to find neighbor ID '{0}' IP and port information, will retry later.", NeighborId.ToHex());
           //
           // If we are here it means that srNeighborPort of this neighbor was reset before because we received ERROR_BAD_ROLE from the old srNeighborPort port.
+          // Alternatively, we could have receive update from LOC server changing the primary port of the neighbor, in which case we expect neighbor port to change as well.
           // This could happen if the neighbor server changed its ports and the port we know is not used as srNeighborPort anymore.
           // Then we attempted to connect to its primaryPort to get new value for its srNeighborPort and this failed as well,
           // which means that the server was offline.
@@ -845,39 +846,49 @@ namespace ProfileServer.Network
       bool res = false;
       using (UnitOfWork unitOfWork = new UnitOfWork())
       {
-        Neighbor neighbor = (await unitOfWork.NeighborRepository.GetAsync(n => n.NeighborId == NeighborId, null, false)).FirstOrDefault();
-        string neighborInfo = JsonConvert.SerializeObject(neighbor);
-
-        // Delete neighbor completely.
-        res = await unitOfWork.NeighborRepository.DeleteNeighborAsync(NeighborId, CurrentActionId);
-
-        // Add action that will contact the neighbor and ask it to stop sending updates.
-        // Note that the neighbor information will be deleted by the time this action 
-        // is executed and this is why we have to fill in AdditionalData.
-        NeighborhoodAction stopUpdatesAction = new NeighborhoodAction()
-        {
-          ServerId = NeighborId,
-          Type = NeighborhoodActionType.StopNeighborhoodUpdates,
-          TargetIdentityId = null,
-          ExecuteAfter = DateTime.UtcNow,
-          Timestamp = DateTime.UtcNow,
-          AdditionalData = neighborInfo
-        };
-
+        bool unlock = false;
         DatabaseLock lockObject = UnitOfWork.NeighborhoodActionLock;
-        await unitOfWork.AcquireLockAsync(lockObject);
         try
         {
-          await unitOfWork.NeighborhoodActionRepository.InsertAsync(stopUpdatesAction);
+          Neighbor neighbor = (await unitOfWork.NeighborRepository.GetAsync(n => n.NeighborId == NeighborId, null, true)).FirstOrDefault();
+          if (neighbor != null)
+          {
+            string neighborInfo = JsonConvert.SerializeObject(neighbor);
 
-          await unitOfWork.SaveThrowAsync();
+            // Delete neighbor completely.
+            res = await unitOfWork.NeighborRepository.DeleteNeighborAsync(NeighborId, CurrentActionId);
+
+            // Add action that will contact the neighbor and ask it to stop sending updates.
+            // Note that the neighbor information will be deleted by the time this action 
+            // is executed and this is why we have to fill in AdditionalData.
+            NeighborhoodAction stopUpdatesAction = new NeighborhoodAction()
+            {
+              ServerId = NeighborId,
+              Type = NeighborhoodActionType.StopNeighborhoodUpdates,
+              TargetIdentityId = null,
+              ExecuteAfter = DateTime.UtcNow,
+              Timestamp = DateTime.UtcNow,
+              AdditionalData = neighborInfo
+            };
+
+            await unitOfWork.AcquireLockAsync(lockObject);
+            unlock = true;
+
+            await unitOfWork.NeighborhoodActionRepository.InsertAsync(stopUpdatesAction);
+            await unitOfWork.SaveThrowAsync();
+          }
+          else
+          {
+            log.Warn("Neighbor ID '{0}' not found, probably it was deleted already.", NeighborId.ToHex());
+            res = true;
+          }
         }
         catch (Exception e)
         {
           log.Error("Exception occurred: {0}", e.ToString());
         }
 
-        unitOfWork.ReleaseLock(lockObject);
+        if (unlock) unitOfWork.ReleaseLock(lockObject);
       }
 
       log.Trace("(-):{0}", res);
@@ -1047,7 +1058,7 @@ namespace ProfileServer.Network
                     // with this somewhat rare case.
                     //
 
-#warning TODO: If we are implement data signing and verification, we have to make sure that Type "<INVALID_INTERNAL>" is accepted without verification.
+#warning TODO: If we implement data signing and verification, we have to make sure that Type "<INVALID_INTERNAL>" is accepted without verification.
                     byte[] identityPublicKey = AdditionalData.FromHex();
                     SharedProfileAddItem item = new SharedProfileAddItem()
                     {
@@ -1541,7 +1552,7 @@ namespace ProfileServer.Network
 
 
     /// <summary>
-    /// Processes FinishNeighborhoodInitializationRequest message from client sent during neighborhood initialization process.
+    /// Processes FinishNeighborhoodInitializationRequest message from neighbor server sent during neighborhood initialization process.
     /// <para>Saves the temporary in-memory database of profiles to the database and moves the relevant images from the temporary directory to the images directory.</para>
     /// </summary>
     /// <param name="Client">Client that received the request.</param>
@@ -1556,56 +1567,19 @@ namespace ProfileServer.Network
 
       FinishNeighborhoodInitializationRequest finishNeighborhoodInitializationRequest = RequestMessage.Request.ConversationRequest.FinishNeighborhoodInitialization;
 
-      bool error = false;
+      bool success = false;
       Dictionary<byte[], NeighborIdentity> identityDatabase = (Dictionary<byte[], NeighborIdentity>)Client.Context;
 
       // Save new identities to the database.
       using (UnitOfWork unitOfWork = new UnitOfWork())
       {
-        bool success = false;
-        DatabaseLock[] lockObjects = new DatabaseLock[] { UnitOfWork.NeighborIdentityLock, UnitOfWork.NeighborLock };
-        using (IDbContextTransaction transaction = await unitOfWork.BeginTransactionWithLockAsync(lockObjects))
-        {
-          try
-          {
-            Neighbor neighbor = (await unitOfWork.NeighborRepository.GetAsync(n => n.NeighborId == Client.ServerId)).FirstOrDefault();
-            if (neighbor != null)
-            {
-              // The neighbor is now initialized and is allowed to send us updates.
-              neighbor.LastRefreshTime = DateTime.UtcNow;
-              neighbor.SharedProfiles = identityDatabase.Count;
-              unitOfWork.NeighborRepository.Update(neighbor);
-
-              // Insert all its identities.
-              foreach (NeighborIdentity identity in identityDatabase.Values)
-                await unitOfWork.NeighborIdentityRepository.InsertAsync(identity);
-
-              await unitOfWork.SaveThrowAsync();
-              transaction.Commit();
-              success = true;
-            }
-            else log.Error("Unable to find neighbor ID '{0}'.", Client.ServerId.ToHex());
-          }
-          catch (Exception e)
-          {
-            log.Error("Exception occurred: {0}", e.ToString());
-          }
-
-          if (!success)
-          {
-            log.Warn("Rolling back transaction.");
-            unitOfWork.SafeTransactionRollback(transaction);
-            error = true;
-          }
-
-          unitOfWork.ReleaseLock(lockObjects);
-        }
+        success = await unitOfWork.NeighborRepository.SaveNeighborhoodInitializationProfilesAsync(identityDatabase, Client.ServerId);
       }
 
 
-      // If there was an error, we delete all relevant image files, this is done in NeighborhoodInitializationProcess
+      // If there was an error, we delete all relevant image files, this is done in NeighborhoodInitializationProcessAsync
       // when Client.ForceDisconnect is true or any other error occurs.
-      if (!error) res = messageBuilder.CreateFinishNeighborhoodInitializationResponse(RequestMessage);
+      if (success) res = messageBuilder.CreateFinishNeighborhoodInitializationResponse(RequestMessage);
       else Client.ForceDisconnect = true;
 
       log.Trace("(-):*.Response.Status={0}", res.Response.Status);

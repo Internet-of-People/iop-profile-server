@@ -255,5 +255,64 @@ namespace ProfileServer.Data.Repositories
       log.Trace("(-):{0}", res);
       return res;
     }
+
+
+    /// <summary>
+    /// Saves profiles of a neighbor from the memory to the database. This is done when the neighborhood initialization process is finished.
+    /// </summary>
+    /// <param name="IdentityDatabase">List of identities received from the neighbor.</param>
+    /// <param name="NeighborId">Network ID of the neighbor.</param>
+    /// <returns>true if the function succeeds, false otherwise.</returns>
+    public async Task<bool> SaveNeighborhoodInitializationProfilesAsync(Dictionary<byte[], NeighborIdentity> IdentityDatabase, byte[] NeighborId)
+    {
+      log.Trace("(IdentityDatabase.Count:{0},NeighborId:'{1}')", IdentityDatabase.Count, NeighborId.ToHex());
+
+      bool error = false;
+      bool success = false;
+      DatabaseLock[] lockObjects = new DatabaseLock[] { UnitOfWork.NeighborIdentityLock, UnitOfWork.NeighborLock };
+      using (IDbContextTransaction transaction = await unitOfWork.BeginTransactionWithLockAsync(lockObjects))
+      {
+        try
+        {
+          Neighbor neighbor = (await GetAsync(n => n.NeighborId == NeighborId)).FirstOrDefault();
+          if (neighbor != null)
+          {
+            // The neighbor is now initialized and is allowed to send us updates.
+            neighbor.LastRefreshTime = DateTime.UtcNow;
+            neighbor.SharedProfiles = IdentityDatabase.Count;
+            Update(neighbor);
+
+            // Insert all its activities.
+            foreach (NeighborIdentity identity in IdentityDatabase.Values)
+              await unitOfWork.NeighborIdentityRepository.InsertAsync(identity);
+
+            await unitOfWork.SaveThrowAsync();
+            transaction.Commit();
+            success = true;
+          }
+          else log.Error("Unable to find neighbor ID '{0}'.", NeighborId.ToHex());
+        }
+        catch (Exception e)
+        {
+          log.Error("Exception occurred: {0}", e.ToString());
+        }
+
+        if (!success)
+        {
+          log.Warn("Rolling back transaction.");
+          unitOfWork.SafeTransactionRollback(transaction);
+          error = true;
+        }
+
+        unitOfWork.ReleaseLock(lockObjects);
+      }
+
+
+      bool res = !error;
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
   }
 }
