@@ -19,6 +19,166 @@ namespace ProfileServer.Network
     /// <summary>Class logger.</summary>
     private static Logger log = new Logger("ProfileServer.Network.InputValidators");
 
+
+    /// <summary>
+    /// Checks whether a profile information is valid.
+    /// </summary>
+    /// <param name="Profile">Profile information to check.</param>
+    /// <param name="IdentityPublicKey">Public key of the profile's identity.</param>
+    /// <param name="MessageBuilder">Client's network message builder.</param>
+    /// <param name="RequestMessage">Full request message from client.</param>
+    /// <param name="ErrorPrefix">Prefix to add to the validation error details.</param>
+    /// <param name="ErrorResponse">If the function fails, this is filled with error response message that is ready to be sent to the client.</param>
+    /// <returns>true if the signed profile information is valid, false otherwise.</returns>
+    public static bool ValidateProfileInformation(ProfileInformation Profile, byte[] IdentityPublicKey, PsMessageBuilder MessageBuilder, PsProtocolMessage RequestMessage, string ErrorPrefix, out PsProtocolMessage ErrorResponse)
+    {
+      log.Trace("()");
+
+      bool res = false;
+      ErrorResponse = null;
+      string details = null;
+
+
+      SemVer version = new SemVer(Profile.Version);
+      // Currently only supported version is 1.0.0.
+      if (!version.Equals(SemVer.V100))
+      {
+        log.Debug("Unsupported version '{0}'.", version);
+        details = "version";
+      }
+      
+
+      if (details == null)
+      {
+        byte[] pubKey = Profile.PublicKey.ToByteArray();
+        bool pubKeyValid = (0 < pubKey.Length) && (pubKey.Length <= ProtocolHelper.MaxPublicKeyLengthBytes) && ByteArrayComparer.Equals(IdentityPublicKey, pubKey);
+        if (!pubKeyValid)
+        {
+          log.Debug("Invalid public key '{0}' does not match identity public key '{1}'.", pubKey.ToHex(), IdentityPublicKey.ToHex());
+          details = "publicKey";
+        }
+      }
+
+      if (details == null)
+      {
+        int typeSize = Encoding.UTF8.GetByteCount(Profile.Type);
+        bool typeValid = (0 < typeSize) && (typeSize <= IdentityBase.MaxProfileTypeLengthBytes);
+        if (!typeValid)
+        {
+          log.Debug("Invalid type size in bytes {0}.", typeSize);
+          details = "type";
+        }
+      }
+
+      if (details == null)
+      {
+        int nameSize = Encoding.UTF8.GetByteCount(Profile.Name);
+        bool nameValid = (0 < nameSize) && (nameSize <= IdentityBase.MaxProfileNameLengthBytes);
+        if (!nameValid)
+        {
+          log.Debug("Invalid name size in bytes {0}.", nameSize);
+          details = "name";
+        }
+      }
+
+      if (details == null)
+      {
+        GpsLocation locLat = new GpsLocation(Profile.Latitude, 0);
+        if (!locLat.IsValid())
+        {
+          log.Debug("Invalid latitude {0}.", Profile.Latitude);
+          details = "latitude";
+        }
+      }
+
+      if (details == null)
+      {
+        GpsLocation locLon = new GpsLocation(0, Profile.Longitude);
+        if (!locLon.IsValid())
+        {
+          log.Debug("Invalid longitude {0}.", Profile.Longitude);
+          details = "longitude";
+        }
+      }
+
+      if (details == null)
+      {
+        int extraDataSize = Encoding.UTF8.GetByteCount(Profile.ExtraData);
+        bool extraDataValid = extraDataSize <= IdentityBase.MaxProfileExtraDataLengthBytes;
+        if (!extraDataValid)
+        {
+          log.Debug("Invalid extraData size in bytes {0}.", extraDataSize);
+          details = "extraData";
+        }
+      }
+
+      if (details == null)
+      {
+        bool profileImageHashValid = (Profile.ProfileImageHash.Length == 0) || (Profile.ProfileImageHash.Length == ProtocolHelper.HashLengthBytes);
+        if (!profileImageHashValid)
+        {
+          log.Debug("Invalid profile image hash size {0} bytes.", Profile.ProfileImageHash.Length);
+          details = "profileImageHash";
+        }
+      }
+
+      if (details == null)
+      {
+        bool thumbnailImageHashValid = (Profile.ThumbnailImageHash.Length == 0) || (Profile.ThumbnailImageHash.Length == ProtocolHelper.HashLengthBytes);
+        if (!thumbnailImageHashValid)
+        {
+          log.Debug("Invalid thumbnail image hash size {0} bytes.", Profile.ThumbnailImageHash.Length);
+          details = "thumbnailImageHash";
+        }
+      }
+
+
+      if (details == null) res = true;
+      else ErrorResponse = MessageBuilder.CreateErrorInvalidValueResponse(RequestMessage, ErrorPrefix + details);
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+
+    /// <summary>
+    /// Checks whether a signed profile information is valid.
+    /// </summary>
+    /// <param name="SignedProfile">Signed profile information to chec.</param>
+    /// <param name="IdentityPublicKey">Public key of the profile's identity.</param>
+    /// <param name="MessageBuilder">Client's network message builder.</param>
+    /// <param name="RequestMessage">Full request message from client.</param>
+    /// <param name="ErrorPrefix">Prefix to add to the validation error details.</param>
+    /// <param name="InvalidSignatureToDetails">If set to true, invalid signature error will be reported as invalid value in signature field.</param>
+    /// <param name="ErrorResponse">If the function fails, this is filled with error response message that is ready to be sent to the client.</param>
+    /// <returns>true if the signed profile information is valid and signed correctly by the given identity, false otherwise.</returns>
+    public static bool ValidateSignedProfileInformation(SignedProfileInformation SignedProfile, byte[] IdentityPublicKey, PsMessageBuilder MessageBuilder, PsProtocolMessage RequestMessage, string ErrorPrefix, bool InvalidSignatureToDetails, out PsProtocolMessage ErrorResponse)
+    {
+      log.Trace("()");
+      ErrorResponse = null;
+
+      bool res = false;
+      if (ValidateProfileInformation(SignedProfile.Profile, IdentityPublicKey, MessageBuilder, RequestMessage, ErrorPrefix + "profile.", out ErrorResponse))
+      {
+        // IdentityBase.InternalInvalidProfileType is a special internal type of profile that we use to prevent problems in the network.
+        // This is not an elegant solution.
+        // See NeighborhoodActionProcessor.NeighborhoodProfileUpdateAsync case NeighborhoodActionType.AddProfile for more information.
+        if (SignedProfile.Profile.Type != IdentityBase.InternalInvalidProfileType)
+        {
+          byte[] signature = SignedProfile.Signature.ToByteArray();
+          byte[] data = SignedProfile.Profile.ToByteArray();
+
+          if (Ed25519.Verify(signature, data, IdentityPublicKey)) res = true;
+          else ErrorResponse = InvalidSignatureToDetails ? MessageBuilder.CreateErrorInvalidValueResponse(RequestMessage, ErrorPrefix + "signature") : MessageBuilder.CreateErrorInvalidSignatureResponse(RequestMessage);
+        }
+      }
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+
+
     /// <summary>
     /// Checks whether the update profile request is valid.
     /// </summary>
@@ -35,116 +195,68 @@ namespace ProfileServer.Network
       bool res = false;
       ErrorResponse = null;
 
-      // Check if the update is a valid profile initialization.
-      // If the profile is updated for the first time (aka is being initialized),
-      // SetVersion, SetName and SetLocation must be true.
-      if (!Identity.IsProfileInitialized())
+      SignedProfileInformation signedProfile = new SignedProfileInformation()
       {
-        log.Debug("Profile initialization detected.");
+        Profile = UpdateProfileRequest.Profile,
+        Signature = RequestMessage.Request.ConversationRequest.Signature
+      };
 
-        if (!UpdateProfileRequest.SetVersion || !UpdateProfileRequest.SetName || !UpdateProfileRequest.SetLocation)
-        {
-          string details = null;
-          if (!UpdateProfileRequest.SetVersion) details = "setVersion";
-          else if (!UpdateProfileRequest.SetName) details = "setName";
-          else if (!UpdateProfileRequest.SetLocation) details = "setLocation";
-
-          log.Debug("Attempt to initialize profile without '{0}' being set.", details);
-          ErrorResponse = MessageBuilder.CreateErrorInvalidValueResponse(RequestMessage, details);
-        }
-      }
-      else
-      {
-        // Nothing to update?
-        if (!UpdateProfileRequest.SetVersion
-          && !UpdateProfileRequest.SetName
-          && !UpdateProfileRequest.SetImage
-          && !UpdateProfileRequest.SetLocation
-          && !UpdateProfileRequest.SetExtraData)
-        {
-          log.Debug("Update request updates nothing.");
-          ErrorResponse = MessageBuilder.CreateErrorInvalidValueResponse(RequestMessage, "set*");
-        }
-      }
-
-      if (ErrorResponse == null)
+      if (ValidateSignedProfileInformation(signedProfile, Identity.PublicKey, MessageBuilder, RequestMessage, "", false, out ErrorResponse))
       {
         string details = null;
 
-        // Now check if the values we received are valid.
-        if (UpdateProfileRequest.SetVersion)
+        // Check if the update is a valid profile initialization.
+        // If the profile is updated for the first time (aka is being initialized),
+        // NoPropagation must be false.
+        if (!Identity.IsProfileInitialized() && UpdateProfileRequest.NoPropagation)
         {
-          SemVer version = new SemVer(UpdateProfileRequest.Version);
-
-          // Currently only supported version is 1.0.0.
-          if (!version.Equals(SemVer.V100))
-          {
-            log.Debug("Unsupported version '{0}'.", version);
-            details = "version";
-          }
+          log.Debug("Attempt to initialize profile with NoPropagation set to false.");
+          details = "noPropagation";
         }
 
-        if ((details == null) && UpdateProfileRequest.SetName)
+        if (details == null)
         {
-          string name = UpdateProfileRequest.Name;
-
-          // Name is non-empty string, max Identity.MaxProfileNameLengthBytes bytes long.
-          if (string.IsNullOrEmpty(name) || (Encoding.UTF8.GetByteCount(name) > IdentityBase.MaxProfileNameLengthBytes))
+          // Profile type is unchangable after registration, unless it is special internal type.
+          bool identityTypeValid = (Identity.Type == UpdateProfileRequest.Profile.Type) || (Identity.Type == IdentityBase.InternalInvalidProfileType);
+          if (!identityTypeValid)
           {
-            log.Debug("Invalid name '{0}'.", name);
-            details = "name";
-          }
-        }
-
-        if ((details == null) && UpdateProfileRequest.SetImage)
-        {
-          byte[] image = UpdateProfileRequest.Image.ToByteArray();
-
-          // Profile image must be PNG or JPEG image, no bigger than Identity.MaxProfileImageLengthBytes.
-          bool eraseImage = image.Length == 0;
-          bool imageValid = (image.Length <= HostedIdentity.MaxProfileImageLengthBytes) && (eraseImage || ImageManager.ValidateImageFormat(image));
-          if (!imageValid)
-          {
-            log.Debug("Invalid image.");
-            details = "image";
-          }
-        }
-
-
-        if ((details == null) && UpdateProfileRequest.SetLocation)
-        {
-          GpsLocation locLat = new GpsLocation(UpdateProfileRequest.Latitude, 0);
-          GpsLocation locLong = new GpsLocation(0, UpdateProfileRequest.Longitude);
-          if (!locLat.IsValid())
-          {
-            log.Debug("Latitude '{0}' is not a valid GPS latitude value.", UpdateProfileRequest.Latitude);
-            details = "latitude";
-          }
-          else if (!locLong.IsValid())
-          {
-            log.Debug("Longitude '{0}' is not a valid GPS longitude value.", UpdateProfileRequest.Longitude);
-            details = "longitude";
-          }
-        }
-
-        if ((details == null) && UpdateProfileRequest.SetExtraData)
-        {
-          string extraData = UpdateProfileRequest.ExtraData;
-          if (extraData == null) extraData = "";
-
-          // Extra data is semicolon separated 'key=value' list, max IdentityBase.MaxProfileExtraDataLengthBytes bytes long.
-          int byteLen = Encoding.UTF8.GetByteCount(extraData);
-          if (byteLen > IdentityBase.MaxProfileExtraDataLengthBytes)
-          {
-            log.Debug("Extra data too large ({0} bytes, limit is {1}).", byteLen, IdentityBase.MaxProfileExtraDataLengthBytes);
-            details = "extraData";
+            log.Debug("Attempt to change profile type.");
+            details = "profile.type";
           }
         }
 
         if (details == null)
         {
-          res = true;
+          byte[] profileImage = UpdateProfileRequest.ProfileImage.ToByteArray();
+          byte[] profileImageHash = UpdateProfileRequest.Profile.ProfileImageHash.ToByteArray();
+
+          // Profile image must be PNG or JPEG image, no bigger than Identity.MaxProfileImageLengthBytes.
+          bool eraseImage = profileImageHash.Length == 0;
+          bool profileImageValid = (profileImage.Length <= HostedIdentity.MaxProfileImageLengthBytes) && (eraseImage || ImageManager.ValidateImageWithHash(profileImage, profileImageHash));
+          if (!profileImageValid)
+          {
+            log.Debug("Invalid profile image.");
+            details = "profileImage";
+          }
         }
+
+        if (details == null)
+        {
+          byte[] thumbnailImage = UpdateProfileRequest.ThumbnailImage.ToByteArray();
+          byte[] thumbnailImageHash = UpdateProfileRequest.Profile.ThumbnailImageHash.ToByteArray();
+
+          // Profile image must be PNG or JPEG image, no bigger than Identity.MaxThumbnailImageLengthBytes.
+          bool eraseImage = thumbnailImageHash.Length == 0;
+          bool thumbnailImageValid = (thumbnailImage.Length <= IdentityBase.MaxThumbnailImageLengthBytes) && (eraseImage || ImageManager.ValidateImageWithHash(thumbnailImage, thumbnailImageHash));
+          if (!thumbnailImageValid)
+          {
+            log.Debug("Invalid thumbnail image.");
+            details = "thumbnailImage";
+          }
+        }
+
+
+        if (details == null) res = true;
         else ErrorResponse = MessageBuilder.CreateErrorInvalidValueResponse(RequestMessage, details);
       }
 
@@ -293,7 +405,7 @@ namespace ProfileServer.Network
       if (details == null)
       {
         byte[] appCardId = cardApplication.CardId.ToByteArray();
-        if (!StructuralEqualityComparer<byte[]>.Default.Equals(cardId, appCardId))
+        if (!ByteArrayComparer.Equals(cardId, appCardId))
         {
           log.Debug("Card IDs in application card and relationship card do not match.");
           details = "cardApplication.cardId";
@@ -338,7 +450,7 @@ namespace ProfileServer.Network
       if (details == null)
       {
         byte[] recipientPublicKey = card.RecipientPublicKey.ToByteArray();
-        if (!StructuralEqualityComparer<byte[]>.Default.Equals(recipientPublicKey, Client.PublicKey))
+        if (!ByteArrayComparer.Equals(recipientPublicKey, Client.PublicKey))
         {
           log.Debug("Caller is not recipient of the card.");
           details = "signedCard.card.recipientPublicKey";
@@ -388,7 +500,7 @@ namespace ProfileServer.Network
         };
 
         byte[] hash = Crypto.Sha256(emptyIdCard.ToByteArray());
-        if (!StructuralEqualityComparer<byte[]>.Default.Equals(hash, cardId))
+        if (!ByteArrayComparer.Equals(hash, cardId))
         {
           log.Debug("Card ID '{0}' does not match its hash '{1}'.", cardId.ToHex(64), hash.ToHex());
           details = "signedCard.card.cardId";
@@ -486,121 +598,51 @@ namespace ProfileServer.Network
       bool res = false;
       ErrorResponse = null;
 
-      string details = null;
-
-      if (SharedProfilesCount >= IdentityBase.MaxHostedIdentities)
+      byte[] identityPubKey = AddItem.SignedProfile.Profile.PublicKey.ToByteArray();
+      if (ValidateSignedProfileInformation(AddItem.SignedProfile, identityPubKey, MessageBuilder, RequestMessage, Index.ToString() + ".add.signedProfile.", true, out ErrorResponse))
       {
-        log.Debug("Target server already sent too many profiles.");
-        details = "add";
-      }
+        string details = null;
 
-      if (details == null)
-      {
-        SemVer version = new SemVer(AddItem.Version);
-        // Currently only supported version is 1.0.0.
-        if (!version.Equals(SemVer.V100))
+        if (SharedProfilesCount >= IdentityBase.MaxHostedIdentities)
         {
-          log.Debug("Unsupported version '{0}'.", version);
-          details = "add.version";
+          log.Debug("Target server already sent too many profiles.");
+          details = "add";
         }
-      }
 
-      if (details == null)
-      {
-        // We do not verify identity duplicity here, that is being done in ProcessMessageNeighborhoodSharedProfileUpdateRequestAsync.
-        byte[] pubKey = AddItem.IdentityPublicKey.ToByteArray();
-        bool pubKeyValid = (0 < pubKey.Length) && (pubKey.Length <= ProtocolHelper.MaxPublicKeyLengthBytes);
-        if (pubKeyValid)
+        if (details == null)
         {
-          byte[] identityId = Crypto.Sha256(pubKey);
+          // We do not verify identity duplicity here, that is being done in PsMessageProcessor.ProcessMessageNeighborhoodSharedProfileUpdateRequestAsync.
+          byte[] identityId = Crypto.Sha256(identityPubKey);
           if (!UsedProfileIdsInBatch.Contains(identityId))
           {
             UsedProfileIdsInBatch.Add(identityId);
           }
           else
           {
-            log.Debug("ID '{0}' (public key '{1}') already processed in this request.", identityId.ToHex(), pubKey.ToHex());
-            details = "add.identityPublicKey";
+            log.Debug("ID '{0}' (public key '{1}') already processed in this request.", identityId.ToHex(), identityPubKey.ToHex());
+            details = "add.signedProfile.profile.publicKey";
           }
         }
-        else
+
+        if (details == null)
         {
-          log.Debug("Invalid public key length '{0}'.", pubKey.Length);
-          details = "add.identityPublicKey";
+          byte[] thumbnailImage = AddItem.ThumbnailImage.ToByteArray();
+          byte[] thumbnailImageHash = AddItem.SignedProfile.Profile.ThumbnailImageHash.ToByteArray();
+
+          // Profile image must be PNG or JPEG image, no bigger than Identity.MaxThumbnailImageLengthBytes.
+          bool noImage = thumbnailImageHash.Length == 0;
+          bool thumbnailImageValid = (thumbnailImage.Length <= IdentityBase.MaxThumbnailImageLengthBytes) && (noImage || ImageManager.ValidateImageWithHash(thumbnailImage, thumbnailImageHash));
+          if (!thumbnailImageValid)
+          {
+            log.Debug("Invalid thumbnail image.");
+            details = "add.thumbnailImage";
+          }
         }
+
+
+        if (details == null) res = true; 
+        else ErrorResponse = MessageBuilder.CreateErrorInvalidValueResponse(RequestMessage, Index.ToString() + "." + details);
       }
-
-      if (details == null)
-      {
-        int nameSize = Encoding.UTF8.GetByteCount(AddItem.Name);
-        bool nameValid = !string.IsNullOrEmpty(AddItem.Name) && (nameSize <= IdentityBase.MaxProfileNameLengthBytes);
-        if (!nameValid)
-        {
-          log.Debug("Invalid name size in bytes {0}.", nameSize);
-          details = "add.name";
-        }
-      }
-
-      if (details == null)
-      {
-        int typeSize = Encoding.UTF8.GetByteCount(AddItem.Type);
-        bool typeValid = (0 < typeSize) && (typeSize <= IdentityBase.MaxProfileTypeLengthBytes);
-        if (!typeValid)
-        {
-          log.Debug("Invalid type size in bytes {0}.", typeSize);
-          details = "add.type";
-        }
-      }
-
-      if ((details == null) && AddItem.SetThumbnailImage)
-      {
-        byte[] thumbnailImage = AddItem.ThumbnailImage.ToByteArray();
-
-        bool imageValid = (thumbnailImage.Length <= IdentityBase.MaxThumbnailImageLengthBytes) && ImageManager.ValidateImageFormat(thumbnailImage);
-        if (!imageValid)
-        {
-          log.Debug("Invalid thumbnail image.");
-          details = "add.thumbnailImage";
-        }
-      }
-
-      if (details == null)
-      {
-        GpsLocation locLat = new GpsLocation(AddItem.Latitude, 0);
-        if (!locLat.IsValid())
-        {
-          log.Debug("Invalid latitude {0}.", AddItem.Latitude);
-          details = "add.latitude";
-        }
-      }
-
-      if (details == null)
-      {
-        GpsLocation locLon = new GpsLocation(0, AddItem.Longitude);
-        if (!locLon.IsValid())
-        {
-          log.Debug("Invalid longitude {0}.", AddItem.Longitude);
-          details = "add.longitude";
-        }
-      }
-
-      if (details == null)
-      {
-        int extraDataSize = Encoding.UTF8.GetByteCount(AddItem.ExtraData);
-        bool extraDataValid = extraDataSize <= IdentityBase.MaxProfileExtraDataLengthBytes;
-        if (!extraDataValid)
-        {
-          log.Debug("Invalid extraData size in bytes {0}.", extraDataSize);
-          details = "add.extraData";
-        }
-      }
-
-
-      if (details == null)
-      {
-        res = true;
-      }
-      else ErrorResponse = MessageBuilder.CreateErrorInvalidValueResponse(RequestMessage, Index.ToString() + "." + details);
 
       log.Trace("(-):{0}", res);
       return res;
@@ -624,116 +666,42 @@ namespace ProfileServer.Network
       bool res = false;
       ErrorResponse = null;
 
-      string details = null;
-
-      byte[] identityId = ChangeItem.IdentityNetworkId.ToByteArray();
-      // We do not verify identity existence here, that is being done in ProcessMessageNeighborhoodSharedProfileUpdateRequestAsync.
-      bool identityIdValid = identityId.Length == ProtocolHelper.NetworkIdentifierLength;
-      if (identityIdValid)
+      byte[] identityPubKey = ChangeItem.SignedProfile.Profile.PublicKey.ToByteArray();
+      if (ValidateSignedProfileInformation(ChangeItem.SignedProfile, identityPubKey, MessageBuilder, RequestMessage, Index.ToString() + ".change.signedProfile.", true, out ErrorResponse))
       {
+        string details = null;
+
+        // We do not verify identity duplicity here, that is being done in PsMessageProcessor.ProcessMessageNeighborhoodSharedProfileUpdateRequestAsync.
+        byte[] identityId = Crypto.Sha256(identityPubKey);
         if (!UsedProfileIdsInBatch.Contains(identityId))
         {
           UsedProfileIdsInBatch.Add(identityId);
         }
         else
         {
-          log.Debug("ID '{0}' already processed in this request.", identityId.ToHex());
-          details = "change.identityNetworkId";
+          log.Debug("ID '{0}' (public key '{1}') already processed in this request.", identityId.ToHex(), identityPubKey.ToHex());
+          details = "change.signedProfile.profile.publicKey";
         }
-      }
-      else
-      {
-        log.Debug("Invalid identity ID length '{0}'.", identityId.Length);
-        details = "change.identityNetworkId";
-      }
 
-      if (details == null)
-      {
-        if (!ChangeItem.SetVersion
-          && !ChangeItem.SetName
-          && !ChangeItem.SetThumbnailImage
-          && !ChangeItem.SetLocation
-          && !ChangeItem.SetExtraData)
+        if (details == null)
         {
-          log.Debug("Nothing is going to change.");
-          details = "change.set*";
+          byte[] thumbnailImage = ChangeItem.ThumbnailImage.ToByteArray();
+          byte[] thumbnailImageHash = ChangeItem.SignedProfile.Profile.ThumbnailImageHash.ToByteArray();
+
+          // Profile image must be PNG or JPEG image, no bigger than Identity.MaxThumbnailImageLengthBytes.
+          bool noImage = thumbnailImageHash.Length == 0;
+          bool thumbnailImageValid = (thumbnailImage.Length <= IdentityBase.MaxThumbnailImageLengthBytes) && (noImage || ImageManager.ValidateImageWithHash(thumbnailImage, thumbnailImageHash));
+          if (!thumbnailImageValid)
+          {
+            log.Debug("Invalid thumbnail image.");
+            details = "change.thumbnailImage";
+          }
         }
+
+
+        if (details == null) res = true;
+        else ErrorResponse = MessageBuilder.CreateErrorInvalidValueResponse(RequestMessage, Index.ToString() + "." + details);
       }
-
-      if ((details == null) && ChangeItem.SetVersion)
-      {
-        SemVer version = new SemVer(ChangeItem.Version);
-        // Currently only supported version is 1.0.0.
-        if (!version.Equals(SemVer.V100))
-        {
-          log.Debug("Unsupported version '{0}'.", version);
-          details = "change.version";
-        }
-      }
-
-
-      if ((details == null) && ChangeItem.SetName)
-      {
-        int nameSize = Encoding.UTF8.GetByteCount(ChangeItem.Name);
-        bool nameValid = !string.IsNullOrEmpty(ChangeItem.Name) && (nameSize <= IdentityBase.MaxProfileNameLengthBytes);
-        if (!nameValid)
-        {
-          log.Debug("Invalid name size in bytes {0}.", nameSize);
-          details = "change.name";
-        }
-      }
-
-      if ((details == null) && ChangeItem.SetThumbnailImage)
-      {
-        byte[] thumbnailImage = ChangeItem.ThumbnailImage.ToByteArray();
-
-        bool deleteImage = thumbnailImage.Length == 0;
-        bool imageValid = (thumbnailImage.Length <= IdentityBase.MaxThumbnailImageLengthBytes)
-          && (deleteImage || ImageManager.ValidateImageFormat(thumbnailImage));
-        if (!imageValid)
-        {
-          log.Debug("Invalid thumbnail image.");
-          details = "change.thumbnailImage";
-        }
-      }
-
-      if ((details == null) && ChangeItem.SetLocation)
-      {
-        GpsLocation locLat = new GpsLocation(ChangeItem.Latitude, 0);
-        if (!locLat.IsValid())
-        {
-          log.Debug("Invalid latitude {0}.", ChangeItem.Latitude);
-          details = "change.latitude";
-        }
-      }
-
-      if ((details == null) && ChangeItem.SetLocation)
-      {
-        GpsLocation locLon = new GpsLocation(0, ChangeItem.Longitude);
-        if (!locLon.IsValid())
-        {
-          log.Debug("Invalid longitude {0}.", ChangeItem.Longitude);
-          details = "change.longitude";
-        }
-      }
-
-      if ((details == null) && ChangeItem.SetExtraData)
-      {
-        int extraDataSize = Encoding.UTF8.GetByteCount(ChangeItem.ExtraData);
-        bool extraDataValid = extraDataSize <= IdentityBase.MaxProfileExtraDataLengthBytes;
-        if (!extraDataValid)
-        {
-          log.Debug("Invalid extraData size in bytes {0}.", extraDataSize);
-          details = "change.extraData";
-        }
-      }
-
-
-      if (details == null)
-      {
-        res = true;
-      }
-      else ErrorResponse = MessageBuilder.CreateErrorInvalidValueResponse(RequestMessage, Index.ToString() + "." + details);
 
       log.Trace("(-):{0}", res);
       return res;
@@ -777,23 +745,21 @@ namespace ProfileServer.Network
       }
       else
       {
-        log.Debug("Invalid identity ID length '{0}'.", identityId.Length);
+        log.Debug("Invalid identity ID length {0}.", identityId.Length);
         details = "delete.identityNetworkId";
       }
 
 
-      if (details == null)
-      {
-        res = true;
-      }
+      if (details == null) res = true;
       else ErrorResponse = MessageBuilder.CreateErrorInvalidValueResponse(RequestMessage, Index.ToString() + "." + details);
 
       log.Trace("(-):{0}", res);
       return res;
     }
 
+
     /// <summary>
-    /// Validates incoming SharedProfileAddItem update item.
+    /// Validates incoming SharedProfileAddItem update received as a part of neighborhood initialization process.
     /// </summary>
     /// <param name="AddItem">Update item to validate.</param>
     /// <param name="Index">Index of the update item in the message.</param>
@@ -809,122 +775,126 @@ namespace ProfileServer.Network
       bool res = false;
       ErrorResponse = null;
 
-      string details = null;
-      if (IdentityDatabase.Count >= IdentityBase.MaxHostedIdentities)
+      byte[] identityPubKey = AddItem.SignedProfile.Profile.PublicKey.ToByteArray();
+      if (ValidateSignedProfileInformation(AddItem.SignedProfile, identityPubKey, MessageBuilder, RequestMessage, Index.ToString() + ".add.signedProfile.", true, out ErrorResponse))
       {
-        log.Debug("Target server already sent too many profiles.");
-        details = "add";
-      }
-
-      if (details == null)
-      {
-        SemVer version = new SemVer(AddItem.Version);
-
-        // Currently only supported version is 1.0.0.
-        if (!version.Equals(SemVer.V100))
+        string details = null;
+        if (IdentityDatabase.Count >= IdentityBase.MaxHostedIdentities)
         {
-          log.Debug("Unsupported version '{0}'.", version);
-          details = "add.version";
+          log.Debug("Target server already sent too many profiles.");
+          details = "add";
         }
-      }
 
-      if (details == null)
-      {
-        byte[] pubKey = AddItem.IdentityPublicKey.ToByteArray();
-        bool pubKeyValid = (0 < pubKey.Length) && (pubKey.Length <= ProtocolHelper.MaxPublicKeyLengthBytes);
-        if (pubKeyValid)
+        if (details == null)
         {
-          byte[] id = Crypto.Sha256(pubKey);
-          if (IdentityDatabase.ContainsKey(id))
+          // We do not verify identity duplicity here, that is being done in PsMessageProcessor.ProcessMessageNeighborhoodSharedProfileUpdateRequestAsync.
+          byte[] identityId = Crypto.Sha256(identityPubKey);
+          if (IdentityDatabase.ContainsKey(identityId))
           {
-            log.Debug("Identity with public key '{0}' (ID '{1}') already exists.", pubKey.ToHex(), id.ToHex());
-            details = "add.identityPublicKey";
+            log.Debug("Identity with public key '{0}' (ID '{1}') already exists.", identityPubKey.ToHex(), identityId.ToHex());
+            details = "add.signedProfile.profile.publicKey";
           }
         }
-        else
+
+        if (details == null)
         {
-          log.Debug("Invalid public key length '{0}'.", pubKey.Length);
-          details = "add.identityPublicKey";
+          byte[] thumbnailImage = AddItem.ThumbnailImage.ToByteArray();
+          byte[] thumbnailImageHash = AddItem.SignedProfile.Profile.ThumbnailImageHash.ToByteArray();
+
+          // Profile image must be PNG or JPEG image, no bigger than Identity.MaxThumbnailImageLengthBytes.
+          bool noImage = thumbnailImageHash.Length == 0;
+          bool thumbnailImageValid = (thumbnailImage.Length <= IdentityBase.MaxThumbnailImageLengthBytes) && (noImage || ImageManager.ValidateImageWithHash(thumbnailImage, thumbnailImageHash));
+          if (!thumbnailImageValid)
+          {
+            log.Debug("Invalid thumbnail image.");
+            details = "add.thumbnailImage";
+          }
         }
+
+
+        if (details == null) res = true;
+        else ErrorResponse = MessageBuilder.CreateErrorInvalidValueResponse(RequestMessage, Index.ToString() + "." + details);
       }
-
-      if (details == null)
-      {
-        int nameSize = Encoding.UTF8.GetByteCount(AddItem.Name);
-        bool nameValid = !string.IsNullOrEmpty(AddItem.Name) && (nameSize <= IdentityBase.MaxProfileNameLengthBytes);
-        if (!nameValid)
-        {
-          log.Debug("Invalid name size in bytes {0}.", nameSize);
-          details = "add.name";
-        }
-      }
-
-      if (details == null)
-      {
-        int typeSize = Encoding.UTF8.GetByteCount(AddItem.Type);
-        bool typeValid = (0 < typeSize) && (typeSize <= IdentityBase.MaxProfileTypeLengthBytes);
-        if (!typeValid)
-        {
-          log.Debug("Invalid type size in bytes {0}.", typeSize);
-          details = "add.type";
-        }
-      }
-
-      if ((details == null) && AddItem.SetThumbnailImage)
-      {
-        byte[] thumbnailImage = AddItem.ThumbnailImage.ToByteArray();
-
-        bool imageValid = (thumbnailImage.Length <= IdentityBase.MaxThumbnailImageLengthBytes) && ImageManager.ValidateImageFormat(thumbnailImage);
-        if (!imageValid)
-        {
-          log.Debug("Invalid thumbnail image.");
-          details = "add.thumbnailImage";
-        }
-      }
-
-      if (details == null)
-      {
-        GpsLocation locLat = new GpsLocation(AddItem.Latitude, 0);
-        if (!locLat.IsValid())
-        {
-          log.Debug("Invalid latitude {0}.", AddItem.Latitude);
-          details = "add.latitude";
-        }
-      }
-
-      if (details == null)
-      {
-        GpsLocation locLon = new GpsLocation(0, AddItem.Longitude);
-        if (!locLon.IsValid())
-        {
-          log.Debug("Invalid longitude {0}.", AddItem.Longitude);
-          details = "add.longitude";
-        }
-      }
-
-      if (details == null)
-      {
-        int extraDataSize = Encoding.UTF8.GetByteCount(AddItem.ExtraData);
-        bool extraDataValid = extraDataSize <= IdentityBase.MaxProfileExtraDataLengthBytes;
-        if (!extraDataValid)
-        {
-          log.Debug("Invalid extraData size in bytes {0}.", extraDataSize);
-          details = "add.extraData";
-        }
-      }
-
-
-      if (details == null)
-      {
-        res = true;
-      }
-      else ErrorResponse = MessageBuilder.CreateErrorInvalidValueResponse(RequestMessage, Index.ToString() + "." + details);
 
       log.Trace("(-):{0}", res);
       return res;
     }
 
 
+    /// <summary>
+    /// Checks whether the contract received from user with hosting registration request is valid.
+    /// <para>This function does not verify that the hosting plan exists.</para>
+    /// </summary>
+    /// <param name="IdentityPublicKey">Public key of the identity that wants to register hosting.</param>
+    /// <param name="Contract">Description of the contract.</param>
+    /// <param name="MessageBuilder">Client's network message builder.</param>
+    /// <param name="RequestMessage">Full request message from client.</param>
+    /// <param name="ErrorResponse">If the function fails, this is filled with error response message that is ready to be sent to the client.</param>
+    /// <returns>true if the profile update request can be applied, false otherwise.</returns>
+    public static bool ValidateRegisterHostingRequest(byte[] IdentityPublicKey, HostingPlanContract Contract, PsMessageBuilder MessageBuilder, PsProtocolMessage RequestMessage, out PsProtocolMessage ErrorResponse)
+    {
+      log.Trace("(IdentityPublicKey:'{0}')", IdentityPublicKey.ToHex());
 
+      bool res = false;
+      ErrorResponse = null;
+
+      string details = null;
+
+      if (!MessageBuilder.VerifySignedConversationRequestBodyPart(RequestMessage, Contract.ToByteArray(), IdentityPublicKey))
+      {
+        log.Debug("Contract signature is invalid.");
+        ErrorResponse = MessageBuilder.CreateErrorInvalidSignatureResponse(RequestMessage);
+        details = "";
+      }
+
+
+      if (details == null)
+      {
+        byte[] contractPubKey = Contract.IdentityPublicKey.ToByteArray();
+        bool publicKeyValid = ByteArrayComparer.Equals(contractPubKey, IdentityPublicKey);
+        if (!publicKeyValid)
+        {
+          log.Debug("Contract public key '{0}' does not match client's public key '{1}'.", contractPubKey.ToHex(), IdentityPublicKey.ToHex());
+          details = "contract.identityPublicKey";
+        }
+      }
+
+      if (details == null)
+      {
+        DateTime? startTime = ProtocolHelper.UnixTimestampMsToDateTime(Contract.StartTime);
+        bool startTimeValid = (startTime != null) && ((startTime.Value - DateTime.UtcNow).TotalMinutes >= -60);
+
+        if (!startTimeValid)
+        {
+          if (startTime == null) log.Debug("Invalid contract start time timestamp {0}.", Contract.StartTime);
+          else log.Debug("Contract start time {0} is more than 1 hour in the past.", startTime.Value.ToString("yyyy-MM-dd HH:mm:ss"));
+          details = "contract.startTime";
+        }
+      }
+
+      if (details == null)
+      {
+        int typeSize = Encoding.UTF8.GetByteCount(Contract.IdentityType);
+        bool typeValid = (0 < typeSize) && (typeSize <= IdentityBase.MaxProfileTypeLengthBytes);
+        if (!typeValid)
+        {
+          log.Debug("Invalid contract identity type size in bytes {0}.", typeSize);
+          details = "contract.identityType";
+        }
+      }
+
+      if (details == null)
+      {
+        res = true;
+      }
+      else
+      {
+        if (ErrorResponse == null)
+          ErrorResponse = MessageBuilder.CreateErrorInvalidValueResponse(RequestMessage, details);
+      }
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
   }
 }

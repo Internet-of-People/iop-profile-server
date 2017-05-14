@@ -143,16 +143,18 @@ namespace ProfileServer.Data.Repositories
 
 
     /// <summary>
-    /// Updates identity profile using update profile request.
+    /// Updates identity profile and creates neighborhood action to propagate the change unless the client did not want the propagation.
     /// </summary>
     /// <param name="IdentityId">Network identifier of the identity to update.</param>
-    /// <param name="UpdateProfileRequest">Update profile request.</param>
-    /// <param name="NewProfileImage">New profile image hash in case it is being updated.</param>
-    /// <param name="NewThumbnailImage">New thumbnail image hash in case it is being updated.</param>
+    /// <param name="SignedProfile">Signed profile information with updated values.</param>
+    /// <param name="ProfileImageChanged">True if profile image is about to change.</param>
+    /// <param name="ThumbnailImageChanged">True if thumbnail image is about to change.</param>
+    /// <param name="NoPropagation">True if the client does not want this change of profile to be propagated to the neighborhood.</param>
     /// <param name="IdentityNotFound">If the function fails because the identity is not found, this referenced value is set to true.</param>
-    /// <param name="ImagesToDelete">If the profile images are altered, old image files has to be deleted, in which case their hashes are returned in this list, which has to be initialized by the caller.</param>
+    /// <param name="ImagesToDelete">If the function succeeds and the profile images are altered, old image files has to be deleted, in which case their hashes 
+    /// are returned in this list, which has to be initialized by the caller.</param>
     /// <returns>true if the function succeeds, false otherwise.</returns>
-    public async Task<bool> UpdateProfileAsync(byte[] IdentityId, UpdateProfileRequest UpdateProfileRequest, byte[] NewProfileImage, byte[] NewThumbnailImage, StrongBox<bool> IdentityNotFound, List<byte[]> ImagesToDelete)
+    public async Task<bool> UpdateProfileAndPropagateAsync(byte[] IdentityId, SignedProfileInformation SignedProfile, bool ProfileImageChanged, bool ThumbnailImageChanged, bool NoPropagation, StrongBox<bool> IdentityNotFound, List<byte[]> ImagesToDelete)
     {
       log.Trace("()");
       bool res = false;
@@ -160,6 +162,9 @@ namespace ProfileServer.Data.Repositories
       bool signalNeighborhoodAction = false;
       bool success = false;
 
+      List<byte[]> imagesToDelete = new List<byte[]>();
+
+      ProfileInformation profile = SignedProfile.Profile;
       DatabaseLock[] lockObjects = new DatabaseLock[] { UnitOfWork.HostedIdentityLock, UnitOfWork.FollowerLock, UnitOfWork.NeighborhoodActionLock };
       using (IDbContextTransaction transaction = await unitOfWork.BeginTransactionWithLockAsync(lockObjects))
       {
@@ -170,60 +175,43 @@ namespace ProfileServer.Data.Repositories
           {
             bool isProfileInitialization = !identity.IsProfileInitialized();
 
-            if (UpdateProfileRequest.SetVersion)
-              identity.Version = UpdateProfileRequest.Version.ToByteArray();
+            identity.Version = profile.Version.ToByteArray();
+            identity.Name = profile.Name;
 
-            if (UpdateProfileRequest.SetName)
-              identity.Name = UpdateProfileRequest.Name;
+            GpsLocation location = new GpsLocation(profile.Latitude, profile.Longitude);
+            identity.SetInitialLocation(location);
+            identity.ExtraData = profile.ExtraData;
+            identity.Signature = SignedProfile.Signature.ToByteArray();
 
-            if (UpdateProfileRequest.SetImage)
+            if (ProfileImageChanged)
             {
-              // Here we replace existing images with new ones
-              // and we save the old images hashes so we can delete them later.
-              if (identity.ProfileImage != null) ImagesToDelete.Add(identity.ProfileImage);
-              if (identity.ThumbnailImage != null) ImagesToDelete.Add(identity.ThumbnailImage);
-
-              identity.ProfileImage = NewProfileImage;
-              identity.ThumbnailImage = NewThumbnailImage;
+              if (identity.ProfileImage != null) imagesToDelete.Add(identity.ProfileImage);
+              identity.ProfileImage = profile.ProfileImageHash.Length != 0 ? profile.ProfileImageHash.ToByteArray() : null;
             }
 
-            if (UpdateProfileRequest.SetLocation)
+            if (ThumbnailImageChanged)
             {
-              GpsLocation gpsLocation = new GpsLocation(UpdateProfileRequest.Latitude, UpdateProfileRequest.Longitude);
-              identity.SetInitialLocation(gpsLocation);
+              if (identity.ThumbnailImage != null) imagesToDelete.Add(identity.ThumbnailImage);
+              identity.ThumbnailImage = profile.ThumbnailImageHash.Length != 0 ? profile.ThumbnailImageHash.ToByteArray() : null;
             }
 
-            if (UpdateProfileRequest.SetExtraData)
-              identity.ExtraData = UpdateProfileRequest.ExtraData;
 
             Update(identity);
 
 
-            // The profile change has to be propagated to all our followers
-            // we create database actions that will be processed by dedicated thread.
-            NeighborhoodActionType actionType = isProfileInitialization ? NeighborhoodActionType.AddProfile : NeighborhoodActionType.ChangeProfile;
-            string extraInfo = null;
-            if (actionType == NeighborhoodActionType.ChangeProfile)
+            if (!NoPropagation)
             {
-              SharedProfileChangeItem changeItem = new SharedProfileChangeItem()
-              {
-                SetVersion = UpdateProfileRequest.SetVersion,
-                SetName = UpdateProfileRequest.SetName,
-                SetThumbnailImage = UpdateProfileRequest.SetImage,
-                SetLocation = UpdateProfileRequest.SetLocation,
-                SetExtraData = UpdateProfileRequest.SetExtraData
-              };
-              extraInfo = changeItem.ToString();
+              // The profile change has to be propagated to all our followers
+              // we create database actions that will be processed by dedicated thread.
+              NeighborhoodActionType actionType = isProfileInitialization ? NeighborhoodActionType.AddProfile : NeighborhoodActionType.ChangeProfile;
+              string extraInfo = identity.PublicKey.ToHex();
+              signalNeighborhoodAction = await unitOfWork.NeighborhoodActionRepository.AddIdentityProfileFollowerActionsAsync(actionType, identity.IdentityId, extraInfo);
             }
-            else
-            {
-              extraInfo = identity.PublicKey.ToHex();
-            }
-            signalNeighborhoodAction = await unitOfWork.NeighborhoodActionRepository.AddIdentityProfileFollowerActionsAsync(actionType, identity.IdentityId, extraInfo);
 
             await unitOfWork.SaveThrowAsync();
             transaction.Commit();
             success = true;
+           
           }
           else IdentityNotFound.Value = true;
         }
@@ -243,6 +231,9 @@ namespace ProfileServer.Data.Repositories
 
       if (success)
       {
+        // Only when the function succeeds the old images can be deleted.
+        ImagesToDelete.AddRange(imagesToDelete);
+
         // Send signal to neighborhood action processor to process the new series of actions.
         if (signalNeighborhoodAction)
         {
@@ -253,6 +244,95 @@ namespace ProfileServer.Data.Repositories
         res = true;
       }
 
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+
+    /// <summary>
+    /// Cancels the hosting of the profile in the database.
+    /// </summary>
+    /// <param name="IdentityId">Network identifier of the hosted identity to cancel.</param>
+    /// <param name="CancelHostingAgreementRequest">Cancellation request from the client/</param>
+    /// <param name="NotFound">If the function fails because the identity does not exist, this value is set to true.</param>
+    /// <param name="IdentityNotFound">If the function fails because the identity is not found, this referenced value is set to true.
+    /// are returned in this list, which has to be initialized by the caller.</param>
+    /// <returns>true if the function succeeds, false otherwise.</returns>
+    public async Task<bool> CancelProfileAndPropagateAsync(byte[] IdentityId, CancelHostingAgreementRequest CancelHostingAgreementRequest, StrongBox<bool> IdentityNotFound, List<byte[]> ImagesToDelete)
+    {
+      log.Trace("()");
+      bool res = false;
+
+      bool signalNeighborhoodAction = false;
+      bool success = false;
+      bool redirected = false;
+
+      List<byte[]> imagesToDelete = new List<byte[]>();
+
+      DatabaseLock[] lockObjects = new DatabaseLock[] { UnitOfWork.HostedIdentityLock, UnitOfWork.FollowerLock, UnitOfWork.NeighborhoodActionLock };
+      using (IDbContextTransaction transaction = await unitOfWork.BeginTransactionWithLockAsync(lockObjects))
+      {
+        try
+        {
+          HostedIdentity identity = (await GetAsync(i => (i.IdentityId == IdentityId) && (i.ExpirationDate == null))).FirstOrDefault();
+          if (identity != null)
+          {
+            // We are going to delete the images, so we have to make sure, the identity in database does not reference it anymore.
+            if (identity.ProfileImage != null) imagesToDelete.Add(identity.ProfileImage);
+            if (identity.ThumbnailImage != null) imagesToDelete.Add(identity.ThumbnailImage);
+
+            identity.ProfileImage = null;
+            identity.ThumbnailImage = null;
+
+            if (CancelHostingAgreementRequest.RedirectToNewProfileServer)
+            {
+              // The customer cancelled the contract, but left a redirect, which we will maintain for 14 days,
+              // but only if the profile was initialized.
+              identity.ExpirationDate = DateTime.UtcNow.AddDays(14);
+              identity.HostingServerId = CancelHostingAgreementRequest.NewProfileServerNetworkId.ToByteArray();
+              redirected = true;
+            }
+            else
+            {
+              // The customer cancelled the contract, no redirect is being maintained, we can delete the record at any time.
+              identity.ExpirationDate = DateTime.UtcNow;
+            }
+
+            Update(identity);
+
+            // The profile change has to be propagated to all our followers
+            // we create database actions that will be processed by dedicated thread.
+            signalNeighborhoodAction = await unitOfWork.NeighborhoodActionRepository.AddIdentityProfileFollowerActionsAsync(NeighborhoodActionType.RemoveProfile, identity.IdentityId);
+
+            await unitOfWork.SaveThrowAsync();
+            transaction.Commit();
+            success = true;
+          }
+          else IdentityNotFound.Value = true;
+        }
+        catch (Exception e)
+        {
+          log.Error("Exception occurred: {0}", e.ToString());
+
+        }
+
+        if (!success)
+        {
+          log.Warn("Rolling back transaction.");
+          unitOfWork.SafeTransactionRollback(transaction);
+        }
+
+        unitOfWork.ReleaseLock(lockObjects);
+
+        if (success)
+        {
+          if (redirected) log.Debug("Identity '{0}' hosting agreement cancelled and redirection set to profile server ID '{1}'.", IdentityId.ToHex(), CancelHostingAgreementRequest.NewProfileServerNetworkId.ToByteArray().ToHex());
+          else log.Debug("Identity '{0}' hosting agreement cancelled and no redirection set.", IdentityId.ToHex());
+
+          res = true;
+        }
+      }
 
       log.Trace("(-):{0}", res);
       return res;

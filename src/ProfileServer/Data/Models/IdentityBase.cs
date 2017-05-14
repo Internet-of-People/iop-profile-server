@@ -1,4 +1,6 @@
-﻿using IopCommon;
+﻿using Iop.Profileserver;
+using IopCommon;
+using IopCrypto;
 using IopProtocol;
 using System;
 using System.Collections;
@@ -34,7 +36,7 @@ namespace ProfileServer.Data.Models
     public const int MaxProfileExtraDataLengthBytes = 200;
 
     /// <summary>Special type of profile that is used internally and should not be displayed to users.</summary>
-    public const string InternalInvalidProfileType = "<INVALID_INTERNAL>";
+    public const string InternalInvalidProfileType = "";
 
 
     /// <summary>Unique primary key for the database.</summary>
@@ -48,8 +50,14 @@ namespace ProfileServer.Data.Models
     [MaxLength(ProtocolHelper.NetworkIdentifierLength)]
     public byte[] IdentityId { get; set; }
 
-    /// <summary>Identifier of the server that hosts the identity profile, or empty array if the identity is hosted by this profile server.</summary>
+    /// <summary>
+    /// Identifier of the server that hosts the identity profile, or empty array if the identity is hosted by this profile server.
+    /// <para>For NeighborIdentity this is identifer of the profile server where the profile is registered.</para>
+    /// <para>For HostedIdentity this is usually null unless the hosting agreement is cancelled and the client provided the information about its new profile server,
+    /// in which case this holds the redirection information for some time for the purpose of providing the information to other clients.</para>
+    /// </summary>
     /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
+    [Required]
     [MaxLength(ProtocolHelper.NetworkIdentifierLength)]
     public byte[] HostingServerId { get; set; }
 
@@ -74,7 +82,7 @@ namespace ProfileServer.Data.Models
 
     /// <summary>Profile type.</summary>
     /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
-    [Required]
+    [Required(AllowEmptyStrings = true)]
     [MaxLength(MaxProfileTypeLengthBytes)]
     public string Type { get; set; }
 
@@ -118,9 +126,23 @@ namespace ProfileServer.Data.Models
     /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
     public DateTime? ExpirationDate { get; set; }
 
+    /// <summary>
+    /// Cryptographic signature of the profile information when represented in a ProfileInformation structure.
+    /// <para>This can be null only before the profile initialization.</para>
+    /// </summary>
+    [MaxLength(ProtocolHelper.MaxSignatureLengthBytes)]
+    public byte[] Signature { get; set; }
 
+
+    /// <summary>
+    /// SHA256 hash of profile image data, which is stored on disk, or null if the identity has no profile image.
+    /// <para>In case of NeighborIdentity, the local profile server does not store the profile image data.</para>
+    /// </summary>
+    [MaxLength(ProtocolHelper.HashLengthBytes)]
+    public byte[] ProfileImage { get; set; }
 
     /// <summary>SHA256 hash of thumbnail image data, which is stored on disk, or null if the identity has no thumbnail image.</summary>
+    [MaxLength(ProtocolHelper.HashLengthBytes)]
     public byte[] ThumbnailImage { get; set; }
 
 
@@ -212,6 +234,77 @@ namespace ProfileServer.Data.Models
     {
       InitialLocationLatitude = Location.Latitude;
       InitialLocationLongitude = Location.Longitude;
+    }
+
+
+    /// <summary>
+    /// Create SignedProfileInformation representation of the identity's profile.
+    /// </summary>
+    /// <returns>SignedProfileInformation structure describing the profile.</returns>
+    public SignedProfileInformation ToSignedProfileInformation()
+    {
+      GpsLocation location = this.GetInitialLocation();
+      SignedProfileInformation res = new SignedProfileInformation()
+      {
+        Profile = new ProfileInformation()
+        {
+          Version = new SemVer(this.Version).ToByteString(),
+          PublicKey = ProtocolHelper.ByteArrayToByteString(this.PublicKey),
+          Type = this.Type,
+          Name = this.Name,
+          ExtraData = this.ExtraData,
+          Latitude = location.GetLocationTypeLatitude(),
+          Longitude = location.GetLocationTypeLongitude(),
+          ProfileImageHash = ProtocolHelper.ByteArrayToByteString(this.ProfileImage != null ? this.ProfileImage : new byte[0]),
+          ThumbnailImageHash = ProtocolHelper.ByteArrayToByteString(this.ThumbnailImage != null ? this.ThumbnailImage: new byte[0])
+        },
+        Signature = ProtocolHelper.ByteArrayToByteString(this.Signature != null ? this.Signature : new byte[0])
+      };
+      return res;
+    }
+
+    /// <summary>
+    /// Creates a new instance of identity from ProfileInformation data structure.
+    /// </summary>
+    /// <param name="SignedProfile">Signed information about the profile.</param>
+    /// <param name="HostingServerId">In case of NeighborhIdentity, this is set to network identifier of the hosting server.</param>
+    /// <returns>New identity instance.</returns>
+    public static T FromSignedProfileInformation<T>(SignedProfileInformation SignedProfile, byte[] HostingServerId) where T: IdentityBase, new()
+    {
+      T res = new T();
+      res.CopyFromSignedProfileInformation(SignedProfile, HostingServerId);
+      res.HostingServerId = HostingServerId;
+
+      return res;
+    }
+
+    /// <summary>
+    /// Copies values from signed profile information to properties of this instance of the identity.
+    /// </summary>
+    /// <param name="SignedProfile">Signed information about the profile.</param>
+    /// <param name="HostingServerId">In case of NeighborhIdentity, this is set to network identifier of the hosting server.</param>
+    public void CopyFromSignedProfileInformation(SignedProfileInformation SignedProfile, byte[] HostingServerId)
+    {
+      if (HostingServerId == null) HostingServerId = new byte[0];
+
+      ProfileInformation profile = SignedProfile.Profile;
+      byte[] pubKey = profile.PublicKey.ToByteArray();
+      byte[] identityId = Crypto.Sha256(pubKey);
+      GpsLocation location = new GpsLocation(profile.Latitude, profile.Longitude);
+
+      this.IdentityId = identityId;
+      this.HostingServerId = HostingServerId;
+      this.PublicKey = pubKey;
+      this.Version = profile.Version.ToByteArray();
+      this.Name = profile.Name;
+      this.Type = profile.Type;
+      this.InitialLocationLatitude = location.Latitude;
+      this.InitialLocationLongitude = location.Longitude;
+      this.ExtraData = profile.ExtraData;
+      this.ProfileImage = profile.ProfileImageHash.Length != 0 ? profile.ProfileImageHash.ToByteArray() : null;
+      this.ThumbnailImage = profile.ThumbnailImageHash.Length != 0 ? profile.ThumbnailImageHash.ToByteArray() : null;
+      this.Signature = SignedProfile.Signature.ToByteArray();
+      this.ExpirationDate = null;
     }
   }
 }

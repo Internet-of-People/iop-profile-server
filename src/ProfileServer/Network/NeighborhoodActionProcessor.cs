@@ -1016,20 +1016,25 @@ namespace ProfileServer.Network
                   if (identity != null)
                   {
                     byte[] thumbnailImage = await identity.GetThumbnailImageDataAsync();
-                    GpsLocation location = identity.GetInitialLocation();
+                    bool failedToLoadImage = (identity.ThumbnailImage != null) && (thumbnailImage == null);
+                    if (thumbnailImage == null) thumbnailImage = new byte[0];
+
+                    SignedProfileInformation signedProfile = identity.ToSignedProfileInformation();
                     SharedProfileAddItem item = new SharedProfileAddItem()
                     {
-                      Version = ProtocolHelper.ByteArrayToByteString(identity.Version),
-                      IdentityPublicKey = ProtocolHelper.ByteArrayToByteString(identity.PublicKey),
-                      Name = identity.Name,
-                      Type = identity.Type,
-                      SetThumbnailImage = thumbnailImage != null,
-                      Latitude = location.GetLocationTypeLatitude(),
-                      Longitude = location.GetLocationTypeLongitude(),
-                      ExtraData = identity.ExtraData
+                      SignedProfile = signedProfile,
+                      ThumbnailImage = ProtocolHelper.ByteArrayToByteString(thumbnailImage)
                     };
-                    if (item.SetThumbnailImage)
-                      item.ThumbnailImage = ProtocolHelper.ByteArrayToByteString(thumbnailImage);
+
+                    if (failedToLoadImage)
+                    {
+                      //
+                      // We failed to load identity's thumbnail image.
+                      // We can't send valid add update to the neighbor.
+                      // We send dummy update instead, see below the comment for identity == null case.
+                      //
+                      item.SignedProfile.Profile.Type = IdentityBase.InternalInvalidProfileType;
+                    }
 
                     updateItem = new SharedProfileUpdateItem();
                     updateItem.Add = item;
@@ -1057,19 +1062,22 @@ namespace ProfileServer.Network
                     // a solution is complex and error prone. This seems to be by far the easiest way to deal 
                     // with this somewhat rare case.
                     //
-
-#warning TODO: If we implement data signing and verification, we have to make sure that Type "<INVALID_INTERNAL>" is accepted without verification.
                     byte[] identityPublicKey = AdditionalData.FromHex();
                     SharedProfileAddItem item = new SharedProfileAddItem()
                     {
-                      Version =  SemVer.V100.ToByteString(),
-                      IdentityPublicKey = ProtocolHelper.ByteArrayToByteString(identityPublicKey),
-                      Name = AdditionalData,
-                      Type = IdentityBase.InternalInvalidProfileType,
-                      SetThumbnailImage = false,
-                      Latitude = 0,
-                      Longitude = 0,
-                      ExtraData = ""
+                      SignedProfile = new SignedProfileInformation()
+                      {
+                        Profile = new ProfileInformation()
+                        {
+                          Version = SemVer.V100.ToByteString(),
+                          PublicKey = ProtocolHelper.ByteArrayToByteString(identityPublicKey),
+                          Name = AdditionalData,
+                          Type = IdentityBase.InternalInvalidProfileType,
+                          Latitude = 0,
+                          Longitude = 0,
+                          ExtraData = ""
+                        }
+                      }                      
                     };
 
                     updateItem = new SharedProfileUpdateItem();
@@ -1084,35 +1092,33 @@ namespace ProfileServer.Network
                   HostedIdentity identity = (await unitOfWork.HostedIdentityRepository.GetAsync(i => i.IdentityId == IdentityId)).FirstOrDefault();
                   if (identity != null)
                   {
-                    SharedProfileChangeItem additionalDataItem = SharedProfileChangeItem.Parser.ParseJson(AdditionalData);
+                    byte[] thumbnailImage = await identity.GetThumbnailImageDataAsync();
+                    bool failedToLoadImage = (identity.ThumbnailImage != null) && (thumbnailImage == null);
+                    if (thumbnailImage == null) thumbnailImage = new byte[0];
 
-                    byte[] thumbnailImage = additionalDataItem.SetThumbnailImage ? await identity.GetThumbnailImageDataAsync() : null;
-                    GpsLocation location = identity.GetInitialLocation();
+                    SignedProfileInformation signedProfile = identity.ToSignedProfileInformation();
                     SharedProfileChangeItem item = new SharedProfileChangeItem()
                     {
-                      IdentityNetworkId = ProtocolHelper.ByteArrayToByteString(identity.IdentityId),
-
-                      SetVersion = additionalDataItem.SetVersion,
-                      SetName = additionalDataItem.SetName,
-                      SetLocation = additionalDataItem.SetLocation,
-                      SetExtraData = additionalDataItem.SetExtraData,
-
-                      // Thumbnail image could have been erased since the action was created.
-                      SetThumbnailImage = thumbnailImage != null
+                      SignedProfile = signedProfile,
+                      ThumbnailImage = ProtocolHelper.ByteArrayToByteString(thumbnailImage)
                     };
 
-                    if (item.SetVersion) item.Version = ProtocolHelper.ByteArrayToByteString(identity.Version);
-                    if (item.SetName) item.Name = identity.Name;
-                    if (item.SetThumbnailImage) item.ThumbnailImage = ProtocolHelper.ByteArrayToByteString(thumbnailImage);
-                    if (item.SetLocation)
+                    if (!failedToLoadImage)
                     {
-                      item.Latitude = location.GetLocationTypeLatitude();
-                      item.Longitude = location.GetLocationTypeLongitude();
+                      updateItem = new SharedProfileUpdateItem();
+                      updateItem.Change = item;
                     }
-                    if (item.SetExtraData) item.ExtraData = identity.ExtraData;
-
-                    updateItem = new SharedProfileUpdateItem();
-                    updateItem.Change = item;
+                    else 
+                    {
+                      //
+                      // We failed to load identity's thumbnail image.
+                      // We can't send this update to the neighbor, but no one gets hurt.
+                      // We simply return true here to erase this action from the queue.
+                      //
+                      // See the analysis in AddProfile case for more information.
+                      //
+                      res = true;
+                    }
                   }
                   else
                   {
@@ -1359,11 +1365,11 @@ namespace ProfileServer.Network
           PsProtocolMessage errorResponse;
           if (InputValidators.ValidateInMemorySharedProfileAddItem(addItem, itemIndex, identityDatabase, Client.MessageBuilder, RequestMessage, out errorResponse))
           {
-            byte[] thumbnailImageHash = null;
-            byte[] thumbnailImageData = addItem.SetThumbnailImage ? addItem.ThumbnailImage.ToByteArray() : null;
+            byte[] thumbnailImageHash = addItem.SignedProfile.Profile.ThumbnailImageHash.ToByteArray();
+            if (thumbnailImageHash.Length == 0) thumbnailImageHash = null;
+            byte[] thumbnailImageData = thumbnailImageHash != null ? addItem.ThumbnailImage.ToByteArray() : null;
             if (thumbnailImageData != null)
             {
-              thumbnailImageHash = Crypto.Sha256(thumbnailImageData);
               if (!await ImageManager.SaveImageDataAsync(thumbnailImageHash, thumbnailImageData))
               {
                 log.Error("Unable to save image hash '{0}' data to images directory.", thumbnailImageHash.ToHex());
@@ -1372,23 +1378,7 @@ namespace ProfileServer.Network
               }
             }
 
-            byte[] pubKey = addItem.IdentityPublicKey.ToByteArray();
-            byte[] id = Crypto.Sha256(pubKey);
-            GpsLocation location = new GpsLocation(addItem.Latitude, addItem.Longitude);
-            NeighborIdentity identity = new NeighborIdentity()
-            {
-              IdentityId = id,
-              HostingServerId = Client.ServerId,
-              PublicKey = pubKey,
-              Version = addItem.Version.ToByteArray(),
-              Name = addItem.Name,
-              Type = addItem.Type,
-              InitialLocationLatitude = location.Latitude,
-              InitialLocationLongitude = location.Longitude,
-              ExtraData = addItem.ExtraData,
-              ExpirationDate = null,
-              ThumbnailImage = thumbnailImageHash
-            };
+            NeighborIdentity identity = IdentityBase.FromSignedProfileInformation<NeighborIdentity>(addItem.SignedProfile, Client.ServerId);
             identityDatabase.Add(identity.IdentityId, identity);
           }
           else

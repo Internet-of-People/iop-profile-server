@@ -9,7 +9,7 @@ using ProfileServer.Data.Models;
 namespace ProfileServer.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20170320153539_initial")]
+    [Migration("20170514113429_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -61,6 +61,7 @@ namespace ProfileServer.Migrations
                         .HasMaxLength(200);
 
                     b.Property<byte[]>("HostingServerId")
+                        .IsRequired()
                         .HasMaxLength(32);
 
                     b.Property<byte[]>("IdentityId")
@@ -77,13 +78,18 @@ namespace ProfileServer.Migrations
                         .IsRequired()
                         .HasMaxLength(64);
 
-                    b.Property<byte[]>("ProfileImage");
+                    b.Property<byte[]>("ProfileImage")
+                        .HasMaxLength(32);
 
                     b.Property<byte[]>("PublicKey")
                         .IsRequired()
                         .HasMaxLength(128);
 
-                    b.Property<byte[]>("ThumbnailImage");
+                    b.Property<byte[]>("Signature")
+                        .HasMaxLength(100);
+
+                    b.Property<byte[]>("ThumbnailImage")
+                        .HasMaxLength(32);
 
                     b.Property<string>("Type")
                         .IsRequired()
@@ -220,11 +226,18 @@ namespace ProfileServer.Migrations
                         .IsRequired()
                         .HasMaxLength(64);
 
+                    b.Property<byte[]>("ProfileImage")
+                        .HasMaxLength(32);
+
                     b.Property<byte[]>("PublicKey")
                         .IsRequired()
                         .HasMaxLength(128);
 
-                    b.Property<byte[]>("ThumbnailImage");
+                    b.Property<byte[]>("Signature")
+                        .HasMaxLength(100);
+
+                    b.Property<byte[]>("ThumbnailImage")
+                        .HasMaxLength(32);
 
                     b.Property<string>("Type")
                         .IsRequired()

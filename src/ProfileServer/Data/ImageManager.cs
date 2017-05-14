@@ -1,6 +1,7 @@
 ﻿using ImageSharp;
 using ImageSharp.Formats;
 using IopCommon;
+using IopCrypto;
 using IopProtocol;
 using IopServerCore.Data;
 using IopServerCore.Kernel;
@@ -579,6 +580,30 @@ namespace ProfileServer.Data
       }
       catch
       {
+      }
+
+      log.Trace("(-):{0}", res);
+      return res;
+    }
+
+
+    /// <summary>
+    /// Checks whether binary data represent a valid PNG or JPEG image and checks that the claimed hash matches the data.
+    /// </summary>
+    /// <param name="Data">Binary data to check.</param>
+    /// <param name="ImageHash">Claimed image hash that has to be equal to SHA256 hash of <paramref name="Data"/> for the function to be able to succeed.</param>
+    /// <returns>true if the data represents a valid PNG or JPEG image and if the data hash matches, false otherwise</returns>
+    public static bool ValidateImageWithHash(byte[] Data, byte[] ImageHash)
+    {
+      log.Trace("(Data.Length:{0},ImageHash:'{1}')", Data.Length, ImageHash.ToHex());
+
+      bool res = false;
+
+      if (ValidateImageFormat(Data))
+      {
+        byte[] hash = Crypto.Sha256(Data);
+        if (ByteArrayComparer.Equals(hash, ImageHash))
+          res = true;
       }
 
       log.Trace("(-):{0}", res);

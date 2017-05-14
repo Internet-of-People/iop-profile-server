@@ -353,7 +353,7 @@ namespace ProfileServer.Network
       log.Trace("()");
 
       byte[] receivedChallenge = StartConversationResponse.Response.ConversationResponse.Start.ClientChallenge.ToByteArray();
-      bool res = StructuralEqualityComparer<byte[]>.Default.Equals(receivedChallenge, clientChallenge)
+      bool res = ByteArrayComparer.Equals(receivedChallenge, clientChallenge)
         && MessageBuilder.VerifySignedConversationResponseBodyPart(StartConversationResponse, receivedChallenge, serverKey);
 
       log.Trace("(-):{0}", res);
@@ -369,7 +369,7 @@ namespace ProfileServer.Network
     {
       log.Trace("(Id:'{0}',serverId:'{1}')", Id.ToHex(), serverId.ToHex());
 
-      bool res = StructuralEqualityComparer<byte[]>.Default.Equals(Id, serverId);
+      bool res = ByteArrayComparer.Equals(Id, serverId);
 
       log.Trace("(-):{0}", res);
       return res;

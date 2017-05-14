@@ -22,10 +22,6 @@ namespace ProfileServer.Data.Models
     public const int MaxProfileImageLengthBytes = 20 * 1024;
 
 
-    /// <summary>SHA256 hash of profile image data, which is stored on disk, or null if the identity has no profile image.</summary>
-    public byte[] ProfileImage { get; set; }
-
-
 
     /// <summary>CAN hash of the object that the client uploaded to CAN.</summary>
     public byte[] CanObjectHash { get; set; }

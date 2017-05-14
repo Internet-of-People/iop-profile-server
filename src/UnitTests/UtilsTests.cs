@@ -157,7 +157,7 @@ namespace UnitTests
       {
         for (int j = i + 1; j < inputs.Count; j++)
         {
-          Assert.Equal(expectedResults[index], StructuralEqualityComparer<byte[]>.Default.Equals(inputs[i], inputs[j]));
+          Assert.Equal(expectedResults[index], ByteArrayComparer.Equals(inputs[i], inputs[j]));
 
           index++;
         }

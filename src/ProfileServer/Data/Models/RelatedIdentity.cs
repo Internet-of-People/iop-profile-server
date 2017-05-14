@@ -34,9 +34,6 @@ namespace ProfileServer.Data.Models
     /// <summary>Maximum number of bytes that card application identifier can occupy.</summary>
     public const int MaxApplicationIdLengthBytes = 32;
 
-    /// <summary>Maximum number of bytes that a signature can occupy.</summary>
-    public const int MaxSignatureLengthBytes = 100;
-
 
     /// <summary>Unique primary key for the database.</summary>
     /// <remarks>This is primary key - see ProfileServer.Data.Context.OnModelCreating.</remarks>
@@ -100,12 +97,12 @@ namespace ProfileServer.Data.Models
 
     /// <summary>Signature of CardId value using private key of the issuer of the card.</summary>
     [Required]
-    [MaxLength(MaxSignatureLengthBytes)]
+    [MaxLength(ProtocolHelper.MaxSignatureLengthBytes)]
     public byte[] IssuerSignature { get; set; }
 
     /// <summary>Signature of Protobuf CardApplicationInformation message using private key of the recipient of the card.</summary>
     [Required]
-    [MaxLength(MaxSignatureLengthBytes)]
+    [MaxLength(ProtocolHelper.MaxSignatureLengthBytes)]
     public byte[] RecipientSignature { get; set; }
   }
 }

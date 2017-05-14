@@ -87,7 +87,7 @@ namespace ProfileServer.Network
     private object profileSearchResultCacheLock = new object();
 
     /// <summary>Cache for profile search result queries.</summary>
-    private List<IdentityNetworkProfileInformation> profileSearchResultCache;
+    private List<ProfileQueryInformation> profileSearchResultCache;
 
     /// <summary>Original value of ProfileSearchResponse.includeThumbnailImages from the search query request.</summary>
     private bool profileSearchResultCacheIncludeImages;
@@ -196,7 +196,7 @@ namespace ProfileServer.Network
     /// </summary>
     /// <param name="SearchResults">Search results to save.</param>
     /// <param name="IncludeImages">Original value of ProfileSearchResponse.includeThumbnailImages from the search query request.</param>
-    public void SaveProfileSearchResults(List<IdentityNetworkProfileInformation> SearchResults, bool IncludeImages)
+    public void SaveProfileSearchResults(List<ProfileQueryInformation> SearchResults, bool IncludeImages)
     {
       log.Trace("(SearchResults.GetHashCode():{0},IncludeImages:{1})", SearchResults.GetHashCode(), IncludeImages);
 
@@ -250,15 +250,15 @@ namespace ProfileServer.Network
     /// <param name="Index">Index of the first item to retrieve.</param>
     /// <param name="Count">Number of items to retrieve.</param>
     /// <returns>A copy of search results loaded from the cache or null if the required item range is not available.</returns>
-    public List<IdentityNetworkProfileInformation> GetProfileSearchResults(int Index, int Count)
+    public List<ProfileQueryInformation> GetProfileSearchResults(int Index, int Count)
     {
       log.Trace("()");
 
-      List<IdentityNetworkProfileInformation> res = null;
+      List<ProfileQueryInformation> res = null;
       lock (profileSearchResultCacheLock)
       {
         if ((profileSearchResultCache != null) && (Index + Count <= profileSearchResultCache.Count))
-          res = new List<IdentityNetworkProfileInformation>(profileSearchResultCache.GetRange(Index, Count));
+          res = new List<ProfileQueryInformation>(profileSearchResultCache.GetRange(Index, Count));
       }
 
       log.Trace("(-):*.Count={0}", res != null ? res.Count.ToString() : "N/A");
@@ -273,7 +273,7 @@ namespace ProfileServer.Network
     /// this has to match the current search results, otherwise it means the results have been replaced already.</param>
     private void ProfileSearchResultCacheTimerCallback(object State)
     {
-      List<IdentityNetworkProfileInformation> searchResults = (List<IdentityNetworkProfileInformation>)State;
+      List<ProfileQueryInformation> searchResults = (List<ProfileQueryInformation>)State;
       log.Trace("(State.GetHashCode():{0})", searchResults.GetHashCode());
 
       lock (profileSearchResultCacheLock)
