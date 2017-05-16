@@ -60,6 +60,20 @@ If you are using Windows Server software, please check list of [.NET Core Runtim
 The publish command will create `$InstDir\src\ProfileServer\bin` folder with a subfolder structure that contains the compiled Profile Server binaries. The actual name of the final binary folder 
 differs with each operating system. The final folder with the binaries will be called `$BinDir` in the text below. 
 
+Now you need to edit file `$InstDir\src\ProfileServer\ProfileServer.csproj` and change the value of `RuntimeIdentifier` inside `PropertyGroup` tag to contain runtime ID of your system. 
+For example, if you are using 64-bit Windows 10, you need to have this line 
+
+```
+    <RuntimeIdentifier>win10-x64</RuntimeIdentifier>
+```
+
+if you are on 64-bit Ubuntu 14.04, you want to change it to 
+```
+    <RuntimeIdentifier>ubuntu.14.04-x64</RuntimeIdentifier>
+```
+
+
+
 Finally, in `$InstDir\src\ProfileServer` execute 
 
 ```
