@@ -5,7 +5,7 @@ In order to install and run the Profile Server, you need to
  * Install .NET Core,
  * install OpenSSL (needed only for TLS certificate generation),
  * download the latest release Profile Server source codes from GitHub,
-   * AND download IoP Server Library sources,
+   * AND download IoP SDK for .NET Core sources,
    * AND build the Profile Server binaries,
  * OR download the Profile Server binaries and install dependencies,
  * configure the Profile Server,
@@ -30,11 +30,11 @@ The goal here is to download the latest release branch of the source code. If yo
 If you are not familiar with them, simply go to the [Branches Page](https://github.com/Fermat-ORG/iop-profile-server/branches/) of the repository and find a branch that starts with `release/` and click on its name. 
 Then click the *Clone or download* green button on the right side. Then click the *Download ZIP* link and save the file to your disk. Unzip the file to any folder of your choice. This folder will be called `$InstDir` in the text below. 
 
-## Download IoP Server Library Source Codes
+## Download IoP SDK for .NET Core Source Codes
 
-Profile Server project has a dependency on [IoP Server Library](https://github.com/Fermat-ORG/iop-server-library) project. In order to compile Profile Server, you will need to download the source code 
-of IoP Server Library and have it in the right directory. Just as in case of Profile Server, you need to find the latest release branch on the [Branches Page](https://github.com/Fermat-ORG/iop-server-library/branches/) 
-of IoP Server Library repository and download it or clone it. You need to put the source code of IoP Server Library into a directory called `iop-server-library` on the same level as your `$InstDir`. 
+Profile Server project has a dependency on [IoP SDK for .NET Core](https://github.com/Fermat-ORG/iop-sdk-netcore) project. In order to compile Profile Server, you will need to download the source code 
+of IoP SDK for .NET Core and have it in the right directory. Just as in case of Profile Server, you need to find the latest release branch on the [Branches Page](https://github.com/Fermat-ORG/iop-sdk-netcore/branches/) 
+of IoP SDK for .NET Core repository and download it or clone it. You need to put the source code of IoP SDK for .NET Core into a directory called `iop-sdk-netcore` on the same level as your `$InstDir`. 
 
 
 ## Build Profile Server

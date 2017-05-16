@@ -7,10 +7,10 @@ This particular implementation is a fully asynchronous, multithreaded server wri
 and the further text is related to this implementation only and it may not be accurate for other implementations of IoP Profile Server.
 
 
-## IoP Server Library
+## IoP SDK for .NET Core
 
-Profile server depends on [IoP Server Library](https://github.com/Fermat-ORG/iop-server-library), which is a set of reusable modules that can be used 
-to create IoP network servers as well as clients that connect to them. The following are some examples of what IoP Server Library offers to profile server:
+Profile server depends on [IoP SDK for .NET Core](https://github.com/Fermat-ORG/iop-sdk-netcore), which is a set of reusable modules that can be used 
+to create IoP network servers as well as clients that connect to them. The following are some examples of what IoP SDK for .NET Core offers to profile server:
 
 
 ### Cryptography 
@@ -43,7 +43,7 @@ replaced with a fully mature database engine due to performance reasons. As of n
 
 ## Projects
 
-The development of the profile server consists of several projects. The main profile server project only depends on the IoP Server Library, but there are other project 
+The development of the profile server consists of several projects. The main profile server project only depends on the IoP SDK for .NET Core, but there are other project 
 that support the development:
 
  * [IoP Message Protocol Tests](https://github.com/Fermat-ORG/iop-message-protocol-tests) is a project that contains all functional IoP Network protocol tests related 
