@@ -127,7 +127,7 @@ namespace ProfileServer.Data.Models
     public DateTime? ExpirationDate { get; set; }
 
     /// <summary>
-    /// Cryptographic signature of the profile information when represented in a ProfileInformation structure.
+    /// Cryptographic signature of the profile information when represented with a ProfileInformation structure.
     /// <para>This can be null only before the profile initialization.</para>
     /// </summary>
     [MaxLength(ProtocolHelper.MaxSignatureLengthBytes)]
@@ -238,7 +238,7 @@ namespace ProfileServer.Data.Models
 
 
     /// <summary>
-    /// Create SignedProfileInformation representation of the identity's profile.
+    /// Creates SignedProfileInformation representation of the identity's profile.
     /// </summary>
     /// <returns>SignedProfileInformation structure describing the profile.</returns>
     public SignedProfileInformation ToSignedProfileInformation()
