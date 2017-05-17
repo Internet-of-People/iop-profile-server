@@ -807,6 +807,9 @@ namespace ProfileServer.Network
 
       PsMessageBuilder messageBuilder = Client.MessageBuilder;
       RegisterHostingRequest registerHostingRequest = RequestMessage.Request.ConversationRequest.RegisterHosting;
+      if (registerHostingRequest == null) registerHostingRequest = new RegisterHostingRequest();
+      if (registerHostingRequest.Contract == null) registerHostingRequest.Contract = new HostingPlanContract();
+
       HostingPlanContract contract = registerHostingRequest.Contract;
 
       bool success = false;
@@ -1066,6 +1069,8 @@ namespace ProfileServer.Network
 
       PsMessageBuilder messageBuilder = Client.MessageBuilder;
       UpdateProfileRequest updateProfileRequest = RequestMessage.Request.ConversationRequest.UpdateProfile;
+      if (updateProfileRequest == null) updateProfileRequest = new UpdateProfileRequest();
+      if (updateProfileRequest.Profile == null) updateProfileRequest.Profile = new ProfileInformation();
 
       res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
       using (UnitOfWork unitOfWork = new UnitOfWork())
@@ -2951,7 +2956,6 @@ namespace ProfileServer.Network
       PsMessageBuilder messageBuilder = Client.MessageBuilder;
       StopNeighborhoodUpdatesRequest stopNeighborhoodUpdatesRequest = RequestMessage.Request.ConversationRequest.StopNeighborhoodUpdates;
 
-      
       byte[] followerId = Client.IdentityId;
 
       using (UnitOfWork unitOfWork = new UnitOfWork())
@@ -3270,10 +3274,7 @@ namespace ProfileServer.Network
       PsMessageBuilder messageBuilder = Client.MessageBuilder;
       CanPublishIpnsRecordRequest canPublishIpnsRecordRequest = RequestMessage.Request.ConversationRequest.CanPublishIpnsRecord;
 
-      if (canPublishIpnsRecordRequest.Record == null)
-        res = messageBuilder.CreateErrorInvalidValueResponse(RequestMessage, "record");
-
-      if (res == null)
+      if (canPublishIpnsRecordRequest.Record != null)
       {
         using (UnitOfWork unitOfWork = new UnitOfWork())
         {
@@ -3313,6 +3314,11 @@ namespace ProfileServer.Network
             res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
           }
         }
+      }
+      else
+      {
+        log.Debug("Null record provided.");
+        res = messageBuilder.CreateErrorInvalidValueResponse(RequestMessage, "record");
       }
 
       if (res == null)

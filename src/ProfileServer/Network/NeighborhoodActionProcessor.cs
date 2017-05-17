@@ -513,40 +513,47 @@ namespace ProfileServer.Network
                   if (requestMessage != null)
                   {
                     PsProtocolMessage responseMessage = client.MessageBuilder.CreateErrorProtocolViolationResponse(requestMessage);
-
-                    if (requestMessage.MessageTypeCase == Message.MessageTypeOneofCase.Request)
+                    try
                     {
-                      Request request = requestMessage.Request;
-                      if (request.ConversationTypeCase == Request.ConversationTypeOneofCase.ConversationRequest)
+                      if (requestMessage.MessageTypeCase == Message.MessageTypeOneofCase.Request)
                       {
-                        ConversationRequest conversationRequest = request.ConversationRequest;
-                        log.Trace("Conversation request type '{0}' received.", conversationRequest.RequestTypeCase);
-                        switch (conversationRequest.RequestTypeCase)
+                        Request request = requestMessage.Request;
+                        if (request.ConversationTypeCase == Request.ConversationTypeOneofCase.ConversationRequest)
                         {
-                          case ConversationRequest.RequestTypeOneofCase.NeighborhoodSharedProfileUpdate:
-                            responseMessage = await ProcessMessageNeighborhoodSharedProfileUpdateRequestAsync(client, requestMessage);
-                            break;
+                          ConversationRequest conversationRequest = request.ConversationRequest;
+                          log.Trace("Conversation request type '{0}' received.", conversationRequest.RequestTypeCase);
+                          switch (conversationRequest.RequestTypeCase)
+                          {
+                            case ConversationRequest.RequestTypeOneofCase.NeighborhoodSharedProfileUpdate:
+                              responseMessage = await ProcessMessageNeighborhoodSharedProfileUpdateRequestAsync(client, requestMessage);
+                              break;
 
-                          case ConversationRequest.RequestTypeOneofCase.FinishNeighborhoodInitialization:
-                            responseMessage = await ProcessMessageFinishNeighborhoodInitializationRequestAsync(client, requestMessage);
-                            done = true;
-                            break;
+                            case ConversationRequest.RequestTypeOneofCase.FinishNeighborhoodInitialization:
+                              responseMessage = await ProcessMessageFinishNeighborhoodInitializationRequestAsync(client, requestMessage);
+                              done = true;
+                              break;
 
-                          default:
-                            log.Error("Invalid conversation request type '{0}' received, will retry later.", conversationRequest.RequestTypeCase);
-                            error = true;
-                            break;
+                            default:
+                              log.Error("Invalid conversation request type '{0}' received, will retry later.", conversationRequest.RequestTypeCase);
+                              error = true;
+                              break;
+                          }
+                        }
+                        else
+                        {
+                          log.Warn("Invalid conversation type '{0}' received, will retry later.", request.ConversationTypeCase);
+                          error = true;
                         }
                       }
                       else
                       {
-                        log.Warn("Invalid conversation type '{0}' received, will retry later.", request.ConversationTypeCase);
+                        log.Warn("Invalid message type '{0}' received, expected Request, will retry later.", requestMessage.MessageTypeCase);
                         error = true;
                       }
                     }
-                    else
+                    catch (Exception e)
                     {
-                      log.Warn("Invalid message type '{0}' received, expected Request, will retry later.", requestMessage.MessageTypeCase);
+                      log.Error("Exception occurred: {0}", e.ToString());
                       error = true;
                     }
 

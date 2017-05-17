@@ -38,6 +38,7 @@ namespace ProfileServer.Network
       ErrorResponse = null;
       string details = null;
 
+      if (Profile == null) Profile = new ProfileInformation();
 
       SemVer version = new SemVer(Profile.Version);
       // Currently only supported version is 1.0.0.
@@ -157,6 +158,8 @@ namespace ProfileServer.Network
       log.Trace("()");
       ErrorResponse = null;
 
+      if (SignedProfile == null) SignedProfile = new SignedProfileInformation();
+
       bool res = false;
       if (ValidateProfileInformation(SignedProfile.Profile, IdentityPublicKey, MessageBuilder, RequestMessage, ErrorPrefix + "profile.", out ErrorResponse))
       {
@@ -194,6 +197,8 @@ namespace ProfileServer.Network
 
       bool res = false;
       ErrorResponse = null;
+
+      if (UpdateProfileRequest == null) UpdateProfileRequest = new UpdateProfileRequest();
 
       SignedProfileInformation signedProfile = new SignedProfileInformation()
       {
@@ -281,6 +286,8 @@ namespace ProfileServer.Network
       ErrorResponse = null;
       string details = null;
 
+      if (ProfileSearchRequest == null) ProfileSearchRequest = new ProfileSearchRequest();
+
       bool includeImages = ProfileSearchRequest.IncludeThumbnailImages;
       int responseResultLimit = includeImages ? PsMessageProcessor.ProfileSearchMaxResponseRecordsWithImage : PsMessageProcessor.ProfileSearchMaxResponseRecordsWithoutImage;
       int totalResultLimit = includeImages ? PsMessageProcessor.ProfileSearchMaxTotalRecordsWithImage : PsMessageProcessor.ProfileSearchMaxTotalRecordsWithoutImage;
@@ -361,10 +368,7 @@ namespace ProfileServer.Network
         }
       }
 
-      if (details == null)
-      {
-        res = true;
-      }
+      if (details == null) res = true;
       else ErrorResponse = MessageBuilder.CreateErrorInvalidValueResponse(RequestMessage, details);
 
       log.Trace("(-):{0}", res);
@@ -388,6 +392,11 @@ namespace ProfileServer.Network
       bool res = false;
       ErrorResponse = null;
       string details = null;
+
+      if (AddRelatedIdentityRequest == null) AddRelatedIdentityRequest = new AddRelatedIdentityRequest();
+      if (AddRelatedIdentityRequest.CardApplication == null) AddRelatedIdentityRequest.CardApplication = new CardApplicationInformation();
+      if (AddRelatedIdentityRequest.SignedCard == null) AddRelatedIdentityRequest.SignedCard = new SignedRelationshipCard();
+      if (AddRelatedIdentityRequest.SignedCard.Card == null) AddRelatedIdentityRequest.SignedCard.Card = new RelationshipCard();
 
       CardApplicationInformation cardApplication = AddRelatedIdentityRequest.CardApplication;
       SignedRelationshipCard signedCard = AddRelatedIdentityRequest.SignedCard;
@@ -551,6 +560,8 @@ namespace ProfileServer.Network
       bool res = false;
       ErrorResponse = null;
 
+      if (UpdateItem == null) UpdateItem = new SharedProfileUpdateItem();
+
       switch (UpdateItem.ActionTypeCase)
       {
         case SharedProfileUpdateItem.ActionTypeOneofCase.Add:
@@ -597,6 +608,10 @@ namespace ProfileServer.Network
 
       bool res = false;
       ErrorResponse = null;
+
+      if (AddItem == null) AddItem = new SharedProfileAddItem();
+      if (AddItem.SignedProfile == null) AddItem.SignedProfile = new SignedProfileInformation();
+      if (AddItem.SignedProfile.Profile == null) AddItem.SignedProfile.Profile = new ProfileInformation();
 
       byte[] identityPubKey = AddItem.SignedProfile.Profile.PublicKey.ToByteArray();
       if (ValidateSignedProfileInformation(AddItem.SignedProfile, identityPubKey, MessageBuilder, RequestMessage, Index.ToString() + ".add.signedProfile.", true, out ErrorResponse))
@@ -666,6 +681,10 @@ namespace ProfileServer.Network
       bool res = false;
       ErrorResponse = null;
 
+      if (ChangeItem == null) ChangeItem = new SharedProfileChangeItem();
+      if (ChangeItem.SignedProfile == null) ChangeItem.SignedProfile = new SignedProfileInformation();
+      if (ChangeItem.SignedProfile.Profile == null) ChangeItem.SignedProfile.Profile = new ProfileInformation();
+
       byte[] identityPubKey = ChangeItem.SignedProfile.Profile.PublicKey.ToByteArray();
       if (ValidateSignedProfileInformation(ChangeItem.SignedProfile, identityPubKey, MessageBuilder, RequestMessage, Index.ToString() + ".change.signedProfile.", true, out ErrorResponse))
       {
@@ -726,6 +745,8 @@ namespace ProfileServer.Network
       bool res = false;
       ErrorResponse = null;
 
+      if (DeleteItem == null) DeleteItem = new SharedProfileDeleteItem();
+
       string details = null;
 
       byte[] identityId = DeleteItem.IdentityNetworkId.ToByteArray();
@@ -774,6 +795,10 @@ namespace ProfileServer.Network
 
       bool res = false;
       ErrorResponse = null;
+
+      if (AddItem == null) AddItem = new SharedProfileAddItem();
+      if (AddItem.SignedProfile == null) AddItem.SignedProfile = new SignedProfileInformation();
+      if (AddItem.SignedProfile.Profile == null) AddItem.SignedProfile.Profile = new ProfileInformation();
 
       byte[] identityPubKey = AddItem.SignedProfile.Profile.PublicKey.ToByteArray();
       if (ValidateSignedProfileInformation(AddItem.SignedProfile, identityPubKey, MessageBuilder, RequestMessage, Index.ToString() + ".add.signedProfile.", true, out ErrorResponse))
@@ -837,8 +862,9 @@ namespace ProfileServer.Network
 
       bool res = false;
       ErrorResponse = null;
-
       string details = null;
+
+      if (Contract == null) Contract = new HostingPlanContract();
 
       if (!MessageBuilder.VerifySignedConversationRequestBodyPart(RequestMessage, Contract.ToByteArray(), IdentityPublicKey))
       {
