@@ -223,8 +223,8 @@ namespace ProfileServer.Network
 
         if (details == null)
         {
-          // Profile type is unchangable after registration, unless it is special internal type.
-          bool identityTypeValid = (Identity.Type == UpdateProfileRequest.Profile.Type) || (Identity.Type == IdentityBase.InternalInvalidProfileType);
+          // Profile type is unchangable after registration.
+          bool identityTypeValid = Identity.Type == UpdateProfileRequest.Profile.Type;
           if (!identityTypeValid)
           {
             log.Debug("Attempt to change profile type.");

@@ -424,13 +424,13 @@ namespace ProfileServer.Data
             log.Debug("There are {0} followers that need refresh.", followersToRefresh.Count);
             foreach (Follower follower in followersToRefresh)
             {
-              int unprocessedRefreshProfileActions = await unitOfWork.NeighborhoodActionRepository.CountAsync(a => (a.ServerId == follower.FollowerId) && (a.Type == NeighborhoodActionType.RefreshProfiles));
+              int unprocessedRefreshProfileActions = await unitOfWork.NeighborhoodActionRepository.CountAsync(a => (a.ServerId == follower.FollowerId) && (a.Type == NeighborhoodActionType.RefreshNeighborStatus));
               if (unprocessedRefreshProfileActions < 3)
               {
                 NeighborhoodAction action = new NeighborhoodAction()
                 {
                   ServerId = follower.FollowerId,
-                  Type = NeighborhoodActionType.RefreshProfiles,
+                  Type = NeighborhoodActionType.RefreshNeighborStatus,
                   Timestamp = DateTime.UtcNow,
                   ExecuteAfter = DateTime.UtcNow,
                   TargetIdentityId = null,
@@ -444,7 +444,7 @@ namespace ProfileServer.Data
               }
               else
               {
-                log.Debug("There are {0} unprocessed RefreshProfiles neighborhood actions for follower ID '{1}'. Follower will be deleted.", unprocessedRefreshProfileActions, follower.FollowerId.ToHex());
+                log.Debug("There are {0} unprocessed RefreshNeighborStatus neighborhood actions for follower ID '{1}'. Follower will be deleted.", unprocessedRefreshProfileActions, follower.FollowerId.ToHex());
                 followersToDeleteIds.Add(follower.FollowerId);
               }
             }
@@ -490,52 +490,12 @@ namespace ProfileServer.Data
     {
       log.Trace("()");
 
-      DateTime now = DateTime.UtcNow;
-      List<byte[]> imagesToDelete = new List<byte[]>();
       using (UnitOfWork unitOfWork = new UnitOfWork())
       {
         // Disable change tracking for faster multiple deletes.
         unitOfWork.Context.ChangeTracker.AutoDetectChangesEnabled = false;
-
-        DatabaseLock lockObject = UnitOfWork.HostedIdentityLock;
-        await unitOfWork.AcquireLockAsync(lockObject);
-        try
-        {
-          List<HostedIdentity> expiredIdentities = (await unitOfWork.HostedIdentityRepository.GetAsync(i => i.ExpirationDate < now, null, true)).ToList();
-          if (expiredIdentities.Count > 0)
-          {
-            log.Debug("There are {0} expired hosted identities.", expiredIdentities.Count);
-            foreach (HostedIdentity identity in expiredIdentities)
-            {
-              if (identity.ProfileImage != null) imagesToDelete.Add(identity.ProfileImage);
-              if (identity.ThumbnailImage != null) imagesToDelete.Add(identity.ThumbnailImage);
-
-              unitOfWork.HostedIdentityRepository.Delete(identity);
-              log.Debug("Identity ID '{0}' expired and will be deleted.", identity.IdentityId.ToHex());
-            }
-
-            await unitOfWork.SaveThrowAsync();
-            log.Debug("{0} expired hosted identities were deleted.", expiredIdentities.Count);
-          }
-          else log.Debug("No expired hosted identities found.");
-        }
-        catch (Exception e)
-        {
-          log.Error("Exception occurred: {0}", e.ToString());
-        }
-
-        unitOfWork.ReleaseLock(lockObject);
+        await unitOfWork.HostedIdentityRepository.DeleteExpiredIdentitiesAsync();
       }
-
-
-      if (imagesToDelete.Count > 0)
-      {
-        ImageManager imageManager = (ImageManager)Base.ComponentDictionary[ImageManager.ComponentName];
-
-        foreach (byte[] hash in imagesToDelete)
-          imageManager.RemoveImageReference(hash);
-      }
-
 
       log.Trace("(-)");
     }

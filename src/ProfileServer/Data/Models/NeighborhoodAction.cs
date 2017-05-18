@@ -42,21 +42,21 @@ namespace ProfileServer.Data.Models
     AddProfile = 10,
 
     /// <summary>
-    /// The profile server wants to refresh profiles on the follower server in order to prevent their expiration.
-    /// </summary>
-    RefreshProfiles = 11,
-
-    /// <summary>
     /// Existing identity changed its profile on the profile server.
     /// The profile server has to inform its followers about the change.
     /// </summary>
-    ChangeProfile = 12,
+    ChangeProfile = 11,
 
     /// <summary>
     /// Existing identity cancelled its hosting agreement with the profile server.
     /// The profile server has to inform its followers about the change.
     /// </summary>
-    RemoveProfile = 13,
+    RemoveProfile = 12,
+
+    /// <summary>
+    /// The profile server wants to refresh its neighbor status on the follower server in order to prevent its expiration.
+    /// </summary>
+    RefreshNeighborStatus = 13,
 
     /// <summary>
     /// Purpose of this action is to prevent other profile actions to be sent as updates to followers 

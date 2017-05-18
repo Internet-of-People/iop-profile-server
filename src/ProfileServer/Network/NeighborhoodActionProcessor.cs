@@ -424,7 +424,7 @@ namespace ProfileServer.Network
         case NeighborhoodActionType.AddProfile:
         case NeighborhoodActionType.ChangeProfile:
         case NeighborhoodActionType.RemoveProfile:
-        case NeighborhoodActionType.RefreshProfiles:
+        case NeighborhoodActionType.RefreshNeighborStatus:
           res = await NeighborhoodProfileUpdateAsync(Action.ServerId, Action.TargetIdentityId, Action.Type, Action.AdditionalData, Action.Id);
           break;
 
@@ -556,6 +556,7 @@ namespace ProfileServer.Network
                       log.Error("Exception occurred: {0}", e.ToString());
                       error = true;
                     }
+
 
                     // Send response to neighbor.
                     if (!await client.SendMessageAsync(responseMessage))
@@ -1083,7 +1084,8 @@ namespace ProfileServer.Network
                           Latitude = 0,
                           Longitude = 0,
                           ExtraData = ""
-                        }
+                        },
+                        Signature = ProtocolHelper.ByteArrayToByteString(new byte[0])
                       }                      
                     };
 
@@ -1103,17 +1105,16 @@ namespace ProfileServer.Network
                     bool failedToLoadImage = (identity.ThumbnailImage != null) && (thumbnailImage == null);
                     if (thumbnailImage == null) thumbnailImage = new byte[0];
 
-                    SignedProfileInformation signedProfile = identity.ToSignedProfileInformation();
-                    SharedProfileChangeItem item = new SharedProfileChangeItem()
-                    {
-                      SignedProfile = signedProfile,
-                      ThumbnailImage = ProtocolHelper.ByteArrayToByteString(thumbnailImage)
-                    };
-
                     if (!failedToLoadImage)
                     {
-                      updateItem = new SharedProfileUpdateItem();
-                      updateItem.Change = item;
+                      updateItem = new SharedProfileUpdateItem()
+                      {
+                        Change = new SharedProfileChangeItem()
+                        {
+                          SignedProfile = identity.ToSignedProfileInformation(),
+                          ThumbnailImage = ProtocolHelper.ByteArrayToByteString(thumbnailImage)
+                        }
+                      };
                     }
                     else 
                     {
@@ -1147,23 +1148,23 @@ namespace ProfileServer.Network
                   // Because of using the artifical profile trick, we can be sure here that the follower is aware of 
                   // this profile even if it was deleted from our database before add profile update action 
                   // was taken from the queue. See the analysis in AddProfile case for more information.
-                  SharedProfileDeleteItem item = new SharedProfileDeleteItem()
+                  updateItem = new SharedProfileUpdateItem()
                   {
-                    IdentityNetworkId = ProtocolHelper.ByteArrayToByteString(IdentityId)
+                    Delete = new SharedProfileDeleteItem()
+                    {
+                      IdentityNetworkId = ProtocolHelper.ByteArrayToByteString(IdentityId)
+                    }
                   };
-
-                  updateItem = new SharedProfileUpdateItem();
-                  updateItem.Delete = item;
                   break;
                 }
 
 
-              case NeighborhoodActionType.RefreshProfiles:
+              case NeighborhoodActionType.RefreshNeighborStatus:
                 {
-                  SharedProfileRefreshAllItem item = new SharedProfileRefreshAllItem();
-
-                  updateItem = new SharedProfileUpdateItem();
-                  updateItem.Refresh = item;
+                  updateItem = new SharedProfileUpdateItem()
+                  {
+                    Refresh = new SharedProfileRefreshAllItem()
+                  };
                   break;
                 }
 

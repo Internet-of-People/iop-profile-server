@@ -337,5 +337,60 @@ namespace ProfileServer.Data.Repositories
       log.Trace("(-):{0}", res);
       return res;
     }
+
+
+    /// <summary>
+    /// Finds and deletes expired identities.
+    /// </summary>
+    public async Task DeleteExpiredIdentitiesAsync()
+    {
+      log.Trace("()");
+
+      DateTime now = DateTime.UtcNow;
+      List<byte[]> imagesToDelete = new List<byte[]>();
+
+      DatabaseLock lockObject = UnitOfWork.HostedIdentityLock;
+      await unitOfWork.AcquireLockAsync(lockObject);
+      try
+      {
+        List<HostedIdentity> expiredIdentities = (await unitOfWork.HostedIdentityRepository.GetAsync(i => i.ExpirationDate < now, null, true)).ToList();
+        if (expiredIdentities.Count > 0)
+        {
+          log.Debug("There are {0} expired hosted identities.", expiredIdentities.Count);
+          foreach (HostedIdentity identity in expiredIdentities)
+          {
+            if (identity.ProfileImage != null) imagesToDelete.Add(identity.ProfileImage);
+            if (identity.ThumbnailImage != null) imagesToDelete.Add(identity.ThumbnailImage);
+
+            unitOfWork.HostedIdentityRepository.Delete(identity);
+            log.Debug("Identity ID '{0}' expired and will be deleted.", identity.IdentityId.ToHex());
+          }
+
+          await unitOfWork.SaveThrowAsync();
+          log.Debug("{0} expired hosted identities were deleted.", expiredIdentities.Count);
+        }
+        else log.Debug("No expired hosted identities found.");
+      }
+      catch (Exception e)
+      {
+        log.Error("Exception occurred: {0}", e.ToString());
+      }
+
+      unitOfWork.ReleaseLock(lockObject);
+
+
+      if (imagesToDelete.Count > 0)
+      {
+        ImageManager imageManager = (ImageManager)Base.ComponentDictionary[ImageManager.ComponentName];
+
+        foreach (byte[] hash in imagesToDelete)
+          imageManager.RemoveImageReference(hash);
+      }
+
+
+      log.Trace("(-)");
+    }
   }
+
+}
 }

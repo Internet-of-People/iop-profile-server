@@ -66,6 +66,7 @@ namespace ProfileServer.Data.Models
     [MaxLength(ProtocolHelper.MaxPublicKeyLengthBytes)]
     public byte[] PublicKey { get; set; }
 
+#warning TODO: create separated boolean value for profile initialization
     /// <summary>
     /// Profile version according to http://semver.org/. First byte is MAJOR, second byte is MINOR, third byte is PATCH.
     /// </summary>
@@ -107,7 +108,7 @@ namespace ProfileServer.Data.Models
     [MaxLength(MaxProfileExtraDataLengthBytes)]
     public string ExtraData { get; set; }
 
-
+#warning TODO: create separated boolean value for valid contract, use expiration date only for removal from database
     /// <summary>
     /// Expiration date after which this whole record can be deleted. 
     /// It is used only in HostedIdentity class.
@@ -264,7 +265,7 @@ namespace ProfileServer.Data.Models
     }
 
     /// <summary>
-    /// Creates a new instance of identity from ProfileInformation data structure.
+    /// Creates a new instance of identity from SignedProfileInformation data structure.
     /// </summary>
     /// <param name="SignedProfile">Signed information about the profile.</param>
     /// <param name="HostingServerId">In case of NeighborhIdentity, this is set to network identifier of the hosting server.</param>
@@ -273,7 +274,6 @@ namespace ProfileServer.Data.Models
     {
       T res = new T();
       res.CopyFromSignedProfileInformation(SignedProfile, HostingServerId);
-      res.HostingServerId = HostingServerId;
 
       return res;
     }

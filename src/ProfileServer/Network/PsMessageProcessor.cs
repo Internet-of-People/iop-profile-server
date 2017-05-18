@@ -1659,6 +1659,7 @@ namespace ProfileServer.Network
 
       PsMessageBuilder messageBuilder = Client.MessageBuilder;
       ProfileSearchRequest profileSearchRequest = RequestMessage.Request.ConversationRequest.ProfileSearch;
+      if (profileSearchRequest == null) profileSearchRequest = new ProfileSearchRequest();
 
       PsProtocolMessage errorResponse;
       if (InputValidators.ValidateProfileSearchRequest(profileSearchRequest, messageBuilder, RequestMessage, out errorResponse))
@@ -1733,7 +1734,8 @@ namespace ProfileServer.Network
 
           watch.Stop();
         }
-      } else res = errorResponse;
+      }
+      else res = errorResponse;
 
       if (res != null) log.Trace("(-):*.Response.Status={0}", res.Response.Status);
       else log.Trace("(-):null");
@@ -2257,8 +2259,11 @@ namespace ProfileServer.Network
         return res;
       }
 
+
       PsMessageBuilder messageBuilder = Client.MessageBuilder;
       StartNeighborhoodInitializationRequest startNeighborhoodInitializationRequest = RequestMessage.Request.ConversationRequest.StartNeighborhoodInitialization;
+      if (startNeighborhoodInitializationRequest == null) startNeighborhoodInitializationRequest = new StartNeighborhoodInitializationRequest();
+
       int primaryPort = (int)startNeighborhoodInitializationRequest.PrimaryPort;
       int srNeighborPort = (int)startNeighborhoodInitializationRequest.SrNeighborPort;
       byte[] ipAddressBytes = startNeighborhoodInitializationRequest.IpAddress.ToByteArray();
@@ -2298,7 +2303,7 @@ namespace ProfileServer.Network
                     Follower existingFollower = (await unitOfWork.FollowerRepository.GetAsync(f => f.FollowerId == followerId)).FirstOrDefault();
                     if (existingFollower == null)
                     {
-                      // Take snapshot of all our identities.
+                      // Take snapshot of all our identities that have valid contracts.
                       byte[] invalidVersion = SemVer.Invalid.ToByteArray();
                       List<HostedIdentity> allHostedIdentities = (await unitOfWork.HostedIdentityRepository.GetAsync(i => (i.ExpirationDate == null) && (i.Version != invalidVersion), null, true)).ToList();
 
@@ -2420,8 +2425,6 @@ namespace ProfileServer.Network
     }
 
 
-
-
     /// <summary>
     /// Builds an update message for neighborhood initialization process.
     /// <para>An update message is built in a way that as many as possible consecutive profiles from the list 
@@ -2527,8 +2530,10 @@ namespace ProfileServer.Network
         return res;
       }
 
+
       PsMessageBuilder messageBuilder = Client.MessageBuilder;
       NeighborhoodSharedProfileUpdateRequest neighborhoodSharedProfileUpdateRequest = RequestMessage.Request.ConversationRequest.NeighborhoodSharedProfileUpdate;
+      if (neighborhoodSharedProfileUpdateRequest == null) neighborhoodSharedProfileUpdateRequest = new NeighborhoodSharedProfileUpdateRequest();
 
       bool error = false;
       byte[] neighborId = Client.IdentityId;
@@ -2549,7 +2554,8 @@ namespace ProfileServer.Network
           log.Warn("Share profile update request came from client ID '{0}', who is our neighbor, but we have not finished the initialization process with it yet.", neighborId.ToHex());
           res = messageBuilder.CreateErrorRejectedResponse(RequestMessage);
           error = true;
-        } else
+        }
+        else
         {
           sharedProfilesCount = neighbor.SharedProfiles;
           log.Trace("Neighbor ID '{0}' currently shares {1} profiles with the profile server.", neighborId.ToHex(), sharedProfilesCount);
@@ -2955,6 +2961,7 @@ namespace ProfileServer.Network
 
       PsMessageBuilder messageBuilder = Client.MessageBuilder;
       StopNeighborhoodUpdatesRequest stopNeighborhoodUpdatesRequest = RequestMessage.Request.ConversationRequest.StopNeighborhoodUpdates;
+      if (stopNeighborhoodUpdatesRequest == null) stopNeighborhoodUpdatesRequest = new StopNeighborhoodUpdatesRequest();
 
       byte[] followerId = Client.IdentityId;
 

@@ -11,6 +11,7 @@ using IopCommon;
 
 namespace ProfileServer.Data.Models
 {
+#warning TODO: create an abstract base class for neighbors and followers and unite the common functionality 
   /// <summary>
   /// Database representation of a profile server neighbor. A neighbor is another profile server within the profile server's neighborhood,
   /// which was announced to the profile server by its LOC server. There are two directions of a neighborhood relationship,
@@ -70,6 +71,7 @@ namespace ProfileServer.Data.Models
     [Range(-180, 180)]
     public decimal LocationLongitude { get; set; }
 
+#warning TODO: add specific boolean value for finished initialization and leave LastRefreshTime just to be the refresh time
     /// <summary>
     /// Time of the last refresh message received from the neighbor.
     /// <para>
