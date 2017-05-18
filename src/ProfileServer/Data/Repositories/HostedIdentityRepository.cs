@@ -391,6 +391,4 @@ namespace ProfileServer.Data.Repositories
       log.Trace("(-)");
     }
   }
-
-}
 }
