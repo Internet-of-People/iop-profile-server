@@ -145,7 +145,7 @@ namespace ProfileServer.Network
     /// <summary>
     /// Checks whether a signed profile information is valid.
     /// </summary>
-    /// <param name="SignedProfile">Signed profile information to chec.</param>
+    /// <param name="SignedProfile">Signed profile information to check.</param>
     /// <param name="IdentityPublicKey">Public key of the profile's identity.</param>
     /// <param name="MessageBuilder">Client's network message builder.</param>
     /// <param name="RequestMessage">Full request message from client.</param>
@@ -159,6 +159,7 @@ namespace ProfileServer.Network
       ErrorResponse = null;
 
       if (SignedProfile == null) SignedProfile = new SignedProfileInformation();
+      if (SignedProfile.Profile == null) SignedProfile.Profile = new ProfileInformation();
 
       bool res = false;
       if (ValidateProfileInformation(SignedProfile.Profile, IdentityPublicKey, MessageBuilder, RequestMessage, ErrorPrefix + "profile.", out ErrorResponse))
@@ -199,6 +200,7 @@ namespace ProfileServer.Network
       ErrorResponse = null;
 
       if (UpdateProfileRequest == null) UpdateProfileRequest = new UpdateProfileRequest();
+      if (UpdateProfileRequest.Profile == null) UpdateProfileRequest.Profile = new ProfileInformation();
 
       SignedProfileInformation signedProfile = new SignedProfileInformation()
       {
