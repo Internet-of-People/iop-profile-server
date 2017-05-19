@@ -673,7 +673,7 @@ namespace ProfileServer.Network
                   thumbnailImage = await identity.GetThumbnailImageDataAsync();
 
                 if (getProfileInformationRequest.IncludeApplicationServices)
-                  applicationServices = targetClient.ApplicationServices.GetServices();
+                  applicationServices = targetClient != null ? targetClient.ApplicationServices.GetServices() : null;
 
                 res = messageBuilder.CreateGetProfileInformationResponse(RequestMessage, isHosted, null, isOnline, signedProfile, profileImage, thumbnailImage, applicationServices);
               }
