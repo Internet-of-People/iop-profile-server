@@ -53,7 +53,9 @@ namespace ProfileServer.Migrations
 
                     b.Property<byte[]>("CanObjectHash");
 
-                    b.Property<DateTime?>("ExpirationDate");
+                    b.Property<bool>("Cancelled");
+
+                    b.Property<DateTime>("ExpirationDate");
 
                     b.Property<string>("ExtraData")
                         .IsRequired()
@@ -72,6 +74,8 @@ namespace ProfileServer.Migrations
 
                     b.Property<decimal>("InitialLocationLongitude")
                         .HasColumnType("decimal(9,6)");
+
+                    b.Property<bool>("Initialized");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -100,6 +104,8 @@ namespace ProfileServer.Migrations
 
                     b.HasKey("DbId");
 
+                    b.HasIndex("Cancelled");
+
                     b.HasIndex("ExpirationDate");
 
                     b.HasIndex("ExtraData");
@@ -107,13 +113,15 @@ namespace ProfileServer.Migrations
                     b.HasIndex("IdentityId")
                         .IsUnique();
 
+                    b.HasIndex("Initialized");
+
                     b.HasIndex("Name");
 
                     b.HasIndex("Type");
 
                     b.HasIndex("InitialLocationLatitude", "InitialLocationLongitude");
 
-                    b.HasIndex("ExpirationDate", "InitialLocationLatitude", "InitialLocationLongitude", "Type", "Name");
+                    b.HasIndex("Initialized", "Cancelled", "InitialLocationLatitude", "InitialLocationLongitude", "Type", "Name");
 
                     b.ToTable("Identities");
                 });
@@ -200,8 +208,6 @@ namespace ProfileServer.Migrations
                 {
                     b.Property<int>("DbId")
                         .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime?>("ExpirationDate");
 
                     b.Property<string>("ExtraData")
                         .IsRequired()

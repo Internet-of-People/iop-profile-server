@@ -32,12 +32,14 @@ namespace ProfileServer.Migrations
                     DbId = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     CanObjectHash = table.Column<byte[]>(nullable: true),
-                    ExpirationDate = table.Column<DateTime>(nullable: true),
+                    Cancelled = table.Column<bool>(nullable: false),
+                    ExpirationDate = table.Column<DateTime>(nullable: false),
                     ExtraData = table.Column<string>(maxLength: 200, nullable: false),
                     HostingServerId = table.Column<byte[]>(maxLength: 32, nullable: false),
                     IdentityId = table.Column<byte[]>(maxLength: 32, nullable: false),
                     InitialLocationLatitude = table.Column<decimal>(type: "decimal(9,6)", nullable: false),
                     InitialLocationLongitude = table.Column<decimal>(type: "decimal(9,6)", nullable: false),
+                    Initialized = table.Column<bool>(nullable: false),
                     Name = table.Column<string>(maxLength: 64, nullable: false),
                     ProfileImage = table.Column<byte[]>(maxLength: 32, nullable: true),
                     PublicKey = table.Column<byte[]>(maxLength: 128, nullable: false),
@@ -95,7 +97,6 @@ namespace ProfileServer.Migrations
                 {
                     DbId = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    ExpirationDate = table.Column<DateTime>(nullable: true),
                     ExtraData = table.Column<string>(maxLength: 200, nullable: false),
                     HostingServerId = table.Column<byte[]>(maxLength: 32, nullable: false),
                     IdentityId = table.Column<byte[]>(maxLength: 32, nullable: false),
@@ -167,6 +168,11 @@ namespace ProfileServer.Migrations
                 columns: new[] { "IpAddress", "PrimaryPort" });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Identities_Cancelled",
+                table: "Identities",
+                column: "Cancelled");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Identities_ExpirationDate",
                 table: "Identities",
                 column: "ExpirationDate");
@@ -181,6 +187,11 @@ namespace ProfileServer.Migrations
                 table: "Identities",
                 column: "IdentityId",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Identities_Initialized",
+                table: "Identities",
+                column: "Initialized");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Identities_Name",
@@ -198,9 +209,9 @@ namespace ProfileServer.Migrations
                 columns: new[] { "InitialLocationLatitude", "InitialLocationLongitude" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Identities_ExpirationDate_InitialLocationLatitude_InitialLocationLongitude_Type_Name",
+                name: "IX_Identities_Initialized_Cancelled_InitialLocationLatitude_InitialLocationLongitude_Type_Name",
                 table: "Identities",
-                columns: new[] { "ExpirationDate", "InitialLocationLatitude", "InitialLocationLongitude", "Type", "Name" });
+                columns: new[] { "Initialized", "Cancelled", "InitialLocationLatitude", "InitialLocationLongitude", "Type", "Name" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Neighbors_LastRefreshTime",

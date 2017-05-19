@@ -215,7 +215,7 @@ namespace ProfileServer.Network
         // Check if the update is a valid profile initialization.
         // If the profile is updated for the first time (aka is being initialized),
         // NoPropagation must be false.
-        if (!Identity.IsProfileInitialized() && UpdateProfileRequest.NoPropagation)
+        if (!Identity.Initialized && UpdateProfileRequest.NoPropagation)
         {
           log.Debug("Attempt to initialize profile with NoPropagation set to false.");
           details = "noPropagation";

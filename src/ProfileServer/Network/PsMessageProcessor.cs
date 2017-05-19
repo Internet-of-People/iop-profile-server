@@ -652,10 +652,10 @@ namespace ProfileServer.Network
           HostedIdentity identity = (await unitOfWork.HostedIdentityRepository.GetAsync(i => i.IdentityId == identityId)).FirstOrDefault();
           if (identity != null)
           {
-            bool isHosted = identity.ExpirationDate == null;
+            bool isHosted = !identity.Cancelled;
             if (isHosted)
             {
-              if (identity.IsProfileInitialized())
+              if (identity.Initialized)
               {
                 IncomingClient targetClient = (IncomingClient)clientList.GetAuthenticatedOnlineClient(identityId);
                 bool isOnline = targetClient != null;
@@ -832,7 +832,7 @@ namespace ProfileServer.Network
               {
                 HostedIdentity existingIdentity = (await unitOfWork.HostedIdentityRepository.GetAsync(i => i.IdentityId == Client.IdentityId)).FirstOrDefault();
                 // Identity does not exist at all, or it has been cancelled so that ExpirationDate was set.
-                if ((existingIdentity == null) || (existingIdentity.ExpirationDate != null))
+                if ((existingIdentity == null) || (existingIdentity.Cancelled))
                 {
                   // We do not have the identity in our client's database,
                   // OR we do have the identity in our client's database, but it's contract has been cancelled.
@@ -856,7 +856,10 @@ namespace ProfileServer.Network
                   identity.InitialLocationLatitude = GpsLocation.NoLocation.Latitude;
                   identity.InitialLocationLongitude = GpsLocation.NoLocation.Longitude;
                   identity.ExtraData = "";
-                  identity.ExpirationDate = null;
+#warning TODO: When we implement hosting plans, this should be set to the period of hosting contract + some reserve.
+                  identity.ExpirationDate = DateTime.UtcNow.AddYears(10);
+                  identity.Initialized = false;
+                  identity.Cancelled = false;
 
                   if (existingIdentity == null) await unitOfWork.HostedIdentityRepository.InsertAsync(identity);
                   else unitOfWork.HostedIdentityRepository.Update(identity);
@@ -946,7 +949,7 @@ namespace ProfileServer.Network
           {
             try
             {
-              HostedIdentity identity = (await unitOfWork.HostedIdentityRepository.GetAsync(i => (i.IdentityId == Client.IdentityId) && (i.ExpirationDate == null))).FirstOrDefault();
+              HostedIdentity identity = (await unitOfWork.HostedIdentityRepository.GetAsync(i => (i.IdentityId == Client.IdentityId) && (i.Cancelled == false))).FirstOrDefault();
               if (identity != null)
               {
                 if (await clientList.AddAuthenticatedOnlineClient(Client))
@@ -1077,7 +1080,7 @@ namespace ProfileServer.Network
       {
         try
         {
-          HostedIdentity identityForValidation = (await unitOfWork.HostedIdentityRepository.GetAsync(i => (i.IdentityId == Client.IdentityId) && (i.ExpirationDate == null), null, true)).FirstOrDefault();
+          HostedIdentity identityForValidation = (await unitOfWork.HostedIdentityRepository.GetAsync(i => (i.IdentityId == Client.IdentityId) && (i.Cancelled == false), null, true)).FirstOrDefault();
           if (identityForValidation != null)
           {
             PsProtocolMessage errorResponse;
@@ -1383,7 +1386,7 @@ namespace ProfileServer.Network
           HostedIdentity identity = (await unitOfWork.HostedIdentityRepository.GetAsync(i => (i.IdentityId == calleeIdentityId))).FirstOrDefault();
           if (identity != null)
           {
-            if (!identity.IsProfileInitialized())
+            if (!identity.Initialized)
             {
               log.Debug("Identity ID '{0}' not initialized and can not be called.", calleeIdentityId.ToHex());
               res = messageBuilder.CreateErrorUninitializedResponse(RequestMessage);
@@ -2304,8 +2307,7 @@ namespace ProfileServer.Network
                     if (existingFollower == null)
                     {
                       // Take snapshot of all our identities that have valid contracts.
-                      byte[] invalidVersion = SemVer.Invalid.ToByteArray();
-                      List<HostedIdentity> allHostedIdentities = (await unitOfWork.HostedIdentityRepository.GetAsync(i => (i.ExpirationDate == null) && (i.Version != invalidVersion), null, true)).ToList();
+                      List<HostedIdentity> allHostedIdentities = (await unitOfWork.HostedIdentityRepository.GetAsync(i => (i.Initialized == true) && (i.Cancelled == false), null, true)).ToList();
 
                       // Create new follower.
                       Follower follower = new Follower()
@@ -2847,7 +2849,7 @@ namespace ProfileServer.Network
               {
                 res.ItemImageUsed = addItem.SignedProfile.Profile.ThumbnailImageHash.Length != 0;
 
-                NeighborIdentity newIdentity = IdentityBase.FromSignedProfileInformation<NeighborIdentity>(addItem.SignedProfile, Neighbor.NeighborId);
+                NeighborIdentity newIdentity = NeighborIdentity.FromSignedProfileInformation(addItem.SignedProfile, Neighbor.NeighborId);
                 await UnitOfWork.NeighborIdentityRepository.InsertAsync(newIdentity);
 
                 Neighbor.SharedProfiles++;

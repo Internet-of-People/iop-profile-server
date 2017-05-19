@@ -39,8 +39,7 @@ namespace ProfileServer.Data.Repositories
     /// <returns>List of statistics of hosted profile types.</returns>
     public async Task<List<ProfileStatsItem>> GetProfileStatsAsync()
     {
-      byte[] invalidVersion = SemVer.Invalid.ToByteArray();
-      return await context.Identities.Where(i => (i.ExpirationDate == null) && (i.Version != invalidVersion)).GroupBy(i => i.Type)
+      return await context.Identities.Where(i => (i.Initialized == true) && (i.Cancelled == false)).GroupBy(i => i.Type)
         .Select(g => new ProfileStatsItem { IdentityType = g.Key, Count = (uint)g.Count() }).ToListAsync();
     }
 
@@ -170,11 +169,12 @@ namespace ProfileServer.Data.Repositories
       {
         try
         {
-          HostedIdentity identity = (await GetAsync(i => (i.IdentityId == IdentityId) && (i.ExpirationDate == null))).FirstOrDefault();
+          HostedIdentity identity = (await GetAsync(i => (i.IdentityId == IdentityId) && (i.Cancelled == false))).FirstOrDefault();
           if (identity != null)
           {
-            bool isProfileInitialization = !identity.IsProfileInitialized();
+            bool isProfileInitialization = !identity.Initialized;
 
+            identity.Initialized = true;
             identity.Version = profile.Version.ToByteArray();
             identity.Name = profile.Name;
 
@@ -211,7 +211,6 @@ namespace ProfileServer.Data.Repositories
             await unitOfWork.SaveThrowAsync();
             transaction.Commit();
             success = true;
-           
           }
           else IdentityNotFound.Value = true;
         }
@@ -275,7 +274,7 @@ namespace ProfileServer.Data.Repositories
       {
         try
         {
-          HostedIdentity identity = (await GetAsync(i => (i.IdentityId == IdentityId) && (i.ExpirationDate == null))).FirstOrDefault();
+          HostedIdentity identity = (await GetAsync(i => (i.IdentityId == IdentityId) && (i.Cancelled == false))).FirstOrDefault();
           if (identity != null)
           {
             // We are going to delete the images, so we have to make sure, the identity in database does not reference it anymore.
@@ -284,11 +283,11 @@ namespace ProfileServer.Data.Repositories
 
             identity.ProfileImage = null;
             identity.ThumbnailImage = null;
+            identity.Cancelled = true;
 
             if (CancelHostingAgreementRequest.RedirectToNewProfileServer)
             {
-              // The customer cancelled the contract, but left a redirect, which we will maintain for 14 days,
-              // but only if the profile was initialized.
+              // The customer cancelled the contract, but left a redirect, which we will maintain for 14 days.
               identity.ExpirationDate = DateTime.UtcNow.AddDays(14);
               identity.HostingServerId = CancelHostingAgreementRequest.NewProfileServerNetworkId.ToByteArray();
               redirected = true;

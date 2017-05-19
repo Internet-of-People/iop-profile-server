@@ -1386,7 +1386,7 @@ namespace ProfileServer.Network
               }
             }
 
-            NeighborIdentity identity = IdentityBase.FromSignedProfileInformation<NeighborIdentity>(addItem.SignedProfile, Client.ServerId);
+            NeighborIdentity identity = NeighborIdentity.FromSignedProfileInformation(addItem.SignedProfile, Client.ServerId);
             identityDatabase.Add(identity.IdentityId, identity);
           }
           else

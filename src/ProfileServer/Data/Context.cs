@@ -65,8 +65,10 @@ namespace ProfileServer.Data
       modelBuilder.Entity<HostedIdentity>().HasIndex(i => new { i.Type });
       modelBuilder.Entity<HostedIdentity>().HasIndex(i => new { i.InitialLocationLatitude, i.InitialLocationLongitude });
       modelBuilder.Entity<HostedIdentity>().HasIndex(i => new { i.ExtraData });
+      modelBuilder.Entity<HostedIdentity>().HasIndex(i => new { i.Initialized });
       modelBuilder.Entity<HostedIdentity>().HasIndex(i => new { i.ExpirationDate });
-      modelBuilder.Entity<HostedIdentity>().HasIndex(i => new { i.ExpirationDate, i.InitialLocationLatitude, i.InitialLocationLongitude, i.Type, i.Name });
+      modelBuilder.Entity<HostedIdentity>().HasIndex(i => new { i.Cancelled });
+      modelBuilder.Entity<HostedIdentity>().HasIndex(i => new { i.Initialized, i.Cancelled, i.InitialLocationLatitude, i.InitialLocationLongitude, i.Type, i.Name });
 
       modelBuilder.Entity<HostedIdentity>().Property(i => i.InitialLocationLatitude).HasColumnType("decimal(9,6)").IsRequired(true);
       modelBuilder.Entity<HostedIdentity>().Property(i => i.InitialLocationLongitude).HasColumnType("decimal(9,6)").IsRequired(true);

@@ -57,12 +57,11 @@ namespace ProfileServer.Data.Repositories
 
       // This is to exclude cancelled profiles and special internal profile type.
       byte[] invalidVersion = SemVer.Invalid.ToByteArray();
-      IQueryable<T> query = dbSet.Where(i => (i.Version != invalidVersion) && (i.Type != IdentityBase.InternalInvalidProfileType));
+      IQueryable<T> query = dbSet.Where(i => i.Type != IdentityBase.InternalInvalidProfileType);
 
-      // If we are querying HostedIdentityRepository we need to make sure only active identities are counted in.
+      // If we are querying HostedIdentityRepository we need to make sure only initialized profiles of active identities are counted in.
       bool homeRepo = this is HostedIdentityRepository;
-      if (homeRepo)
-        query = query.Where(i => i.ExpirationDate == null);
+      if (homeRepo) query = (IQueryable<T>)(query as IQueryable<HostedIdentity>).Where(i => (i.Initialized == true) && (i.Cancelled == false));
 
       // Apply type filter if any.
       if (!string.IsNullOrEmpty(TypeFilter) && (TypeFilter != "*") && (TypeFilter != "**"))

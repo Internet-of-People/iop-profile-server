@@ -162,8 +162,7 @@ namespace ProfileServer.Data
         unitOfWork.AcquireLock(lockObject);
         try
         {
-          byte[] invalidVersion = SemVer.Invalid.ToByteArray();
-          List<HostedIdentity> identities = unitOfWork.HostedIdentityRepository.Get(i => (i.ExpirationDate == null) && (i.Version != invalidVersion), null, true).ToList();
+          List<HostedIdentity> identities = unitOfWork.HostedIdentityRepository.Get(i => (i.Initialized == true) && (i.Cancelled == false), null, true).ToList();
           foreach (HostedIdentity identity in identities)
           {
             if (identity.ProfileImage != null) AddImageReference(identity.ProfileImage);

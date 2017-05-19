@@ -22,12 +22,39 @@ namespace ProfileServer.Data.Models
     public const int MaxProfileImageLengthBytes = 20 * 1024;
 
 
+    /// <summary>true if the profile is initialized, false otherwise.</summary>
+    /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
+    [Required]
+    public bool Initialized { get; set; }
+
+    /// <summary>true if the profile's hosting agreement has been cancelled, false otherwise.</summary>
+    /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
+    [Required]
+    public bool Cancelled { get; set; }
+
+    /// <summary>
+    /// Expiration date after which this whole record can be deleted. 
+    /// 
+    /// <para>
+    /// This is also used when the profile server clients change their profile server and the server holds 
+    /// the redirection information to their new hosting server. The redirect is maintained only until 
+    /// the expiration date.
+    /// </para>
+    /// 
+    /// </summary>
+    /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
+    [Required]
+    public DateTime ExpirationDate { get; set; }
+
 
     /// <summary>CAN hash of the object that the client uploaded to CAN.</summary>
     public byte[] CanObjectHash { get; set; }
 
     /// <summary>Profile image binary data that are not stored into database.</summary>
     private byte[] profileImageData { get; set; }
+
+
+
 
     /// <summary>
     /// Loads profile image data to profileImageData field.

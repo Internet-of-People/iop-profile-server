@@ -66,11 +66,9 @@ namespace ProfileServer.Data.Models
     [MaxLength(ProtocolHelper.MaxPublicKeyLengthBytes)]
     public byte[] PublicKey { get; set; }
 
-#warning TODO: create separated boolean value for profile initialization
     /// <summary>
     /// Profile version according to http://semver.org/. First byte is MAJOR, second byte is MINOR, third byte is PATCH.
     /// </summary>
-    /// <remarks>Value of 0,0,0 is reserved for uninitialized profile.</remarks>
     [Required]
     [MaxLength(3)]
     public byte[] Version { get; set; }
@@ -107,25 +105,6 @@ namespace ProfileServer.Data.Models
     [Required(AllowEmptyStrings = true)]
     [MaxLength(MaxProfileExtraDataLengthBytes)]
     public string ExtraData { get; set; }
-
-#warning TODO: create separated boolean value for valid contract, use expiration date only for removal from database
-    /// <summary>
-    /// Expiration date after which this whole record can be deleted. 
-    /// It is used only in HostedIdentity class.
-    /// 
-    /// <para>
-    /// This is used when the profile server clients change their profile server and the server holds 
-    /// the redirection information to their new hosting server. The redirect is maintained only until 
-    /// the expiration date.
-    /// </para>
-    /// 
-    /// <para>
-    /// If ExpirationDate is null, the identity's contract is valid. If it is not null, it has been cancelled.
-    /// </para>
-    /// 
-    /// </summary>
-    /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
-    public DateTime? ExpirationDate { get; set; }
 
     /// <summary>
     /// Cryptographic signature of the profile information when represented with a ProfileInformation structure.
@@ -208,17 +187,6 @@ namespace ProfileServer.Data.Models
 
 
     /// <summary>
-    /// Checks whether the profile was fully initialized.
-    /// </summary>
-    /// <returns>true if the identity's profile was initialized properly, false otherwise.</returns>
-    public bool IsProfileInitialized()
-    {
-      SemVer ver = new SemVer(Version);
-      return ver.IsValid();
-    }
-
-
-    /// <summary>
     /// Creates GPS location from identity's latitude and longitude.
     /// </summary>
     /// <returns>GPS location information.</returns>
@@ -262,49 +230,6 @@ namespace ProfileServer.Data.Models
         Signature = ProtocolHelper.ByteArrayToByteString(this.Signature != null ? this.Signature : new byte[0])
       };
       return res;
-    }
-
-    /// <summary>
-    /// Creates a new instance of identity from SignedProfileInformation data structure.
-    /// </summary>
-    /// <param name="SignedProfile">Signed information about the profile.</param>
-    /// <param name="HostingServerId">In case of NeighborhIdentity, this is set to network identifier of the hosting server.</param>
-    /// <returns>New identity instance.</returns>
-    public static T FromSignedProfileInformation<T>(SignedProfileInformation SignedProfile, byte[] HostingServerId) where T: IdentityBase, new()
-    {
-      T res = new T();
-      res.CopyFromSignedProfileInformation(SignedProfile, HostingServerId);
-
-      return res;
-    }
-
-    /// <summary>
-    /// Copies values from signed profile information to properties of this instance of the identity.
-    /// </summary>
-    /// <param name="SignedProfile">Signed information about the profile.</param>
-    /// <param name="HostingServerId">In case of NeighborhIdentity, this is set to network identifier of the hosting server.</param>
-    public void CopyFromSignedProfileInformation(SignedProfileInformation SignedProfile, byte[] HostingServerId)
-    {
-      if (HostingServerId == null) HostingServerId = new byte[0];
-
-      ProfileInformation profile = SignedProfile.Profile;
-      byte[] pubKey = profile.PublicKey.ToByteArray();
-      byte[] identityId = Crypto.Sha256(pubKey);
-      GpsLocation location = new GpsLocation(profile.Latitude, profile.Longitude);
-
-      this.IdentityId = identityId;
-      this.HostingServerId = HostingServerId;
-      this.PublicKey = pubKey;
-      this.Version = profile.Version.ToByteArray();
-      this.Name = profile.Name;
-      this.Type = profile.Type;
-      this.InitialLocationLatitude = location.Latitude;
-      this.InitialLocationLongitude = location.Longitude;
-      this.ExtraData = profile.ExtraData;
-      this.ProfileImage = profile.ProfileImageHash.Length != 0 ? profile.ProfileImageHash.ToByteArray() : null;
-      this.ThumbnailImage = profile.ThumbnailImageHash.Length != 0 ? profile.ThumbnailImageHash.ToByteArray() : null;
-      this.Signature = SignedProfile.Signature.ToByteArray();
-      this.ExpirationDate = null;
     }
   }
 }
