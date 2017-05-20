@@ -9,7 +9,7 @@ using ProfileServer.Data.Models;
 namespace ProfileServer.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20170519155309_initial")]
+    [Migration("20170520084023_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -22,14 +22,17 @@ namespace ProfileServer.Migrations
                     b.Property<int>("DbId")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<byte[]>("FollowerId")
+                    b.Property<bool>("Initialized");
+
+                    b.Property<byte[]>("IpAddress")
+                        .IsRequired()
+                        .HasMaxLength(16);
+
+                    b.Property<DateTime>("LastRefreshTime");
+
+                    b.Property<byte[]>("NetworkId")
                         .IsRequired()
                         .HasMaxLength(32);
-
-                    b.Property<string>("IpAddress")
-                        .IsRequired();
-
-                    b.Property<DateTime?>("LastRefreshTime");
 
                     b.Property<int>("PrimaryPort");
 
@@ -37,10 +40,12 @@ namespace ProfileServer.Migrations
 
                     b.HasKey("DbId");
 
-                    b.HasIndex("FollowerId")
-                        .IsUnique();
+                    b.HasIndex("Initialized");
 
                     b.HasIndex("LastRefreshTime");
+
+                    b.HasIndex("NetworkId")
+                        .IsUnique();
 
                     b.HasIndex("IpAddress", "PrimaryPort");
 
@@ -132,10 +137,13 @@ namespace ProfileServer.Migrations
                     b.Property<int>("DbId")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("IpAddress")
-                        .IsRequired();
+                    b.Property<bool>("Initialized");
 
-                    b.Property<DateTime?>("LastRefreshTime");
+                    b.Property<byte[]>("IpAddress")
+                        .IsRequired()
+                        .HasMaxLength(16);
+
+                    b.Property<DateTime>("LastRefreshTime");
 
                     b.Property<decimal>("LocationLatitude")
                         .HasColumnType("decimal(9,6)");
@@ -143,7 +151,7 @@ namespace ProfileServer.Migrations
                     b.Property<decimal>("LocationLongitude")
                         .HasColumnType("decimal(9,6)");
 
-                    b.Property<byte[]>("NeighborId")
+                    b.Property<byte[]>("NetworkId")
                         .IsRequired()
                         .HasMaxLength(32);
 
@@ -155,9 +163,11 @@ namespace ProfileServer.Migrations
 
                     b.HasKey("DbId");
 
+                    b.HasIndex("Initialized");
+
                     b.HasIndex("LastRefreshTime");
 
-                    b.HasIndex("NeighborId")
+                    b.HasIndex("NetworkId")
                         .IsUnique();
 
                     b.HasIndex("IpAddress", "PrimaryPort");

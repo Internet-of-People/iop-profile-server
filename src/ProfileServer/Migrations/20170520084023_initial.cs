@@ -14,9 +14,10 @@ namespace ProfileServer.Migrations
                 {
                     DbId = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    FollowerId = table.Column<byte[]>(maxLength: 32, nullable: false),
-                    IpAddress = table.Column<string>(nullable: false),
-                    LastRefreshTime = table.Column<DateTime>(nullable: true),
+                    Initialized = table.Column<bool>(nullable: false),
+                    IpAddress = table.Column<byte[]>(maxLength: 16, nullable: false),
+                    LastRefreshTime = table.Column<DateTime>(nullable: false),
+                    NetworkId = table.Column<byte[]>(maxLength: 32, nullable: false),
                     PrimaryPort = table.Column<int>(nullable: false),
                     SrNeighborPort = table.Column<int>(nullable: true)
                 },
@@ -59,11 +60,12 @@ namespace ProfileServer.Migrations
                 {
                     DbId = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    IpAddress = table.Column<string>(nullable: false),
-                    LastRefreshTime = table.Column<DateTime>(nullable: true),
+                    Initialized = table.Column<bool>(nullable: false),
+                    IpAddress = table.Column<byte[]>(maxLength: 16, nullable: false),
+                    LastRefreshTime = table.Column<DateTime>(nullable: false),
                     LocationLatitude = table.Column<decimal>(type: "decimal(9,6)", nullable: false),
                     LocationLongitude = table.Column<decimal>(type: "decimal(9,6)", nullable: false),
-                    NeighborId = table.Column<byte[]>(maxLength: 32, nullable: false),
+                    NetworkId = table.Column<byte[]>(maxLength: 32, nullable: false),
                     PrimaryPort = table.Column<int>(nullable: false),
                     SharedProfiles = table.Column<int>(nullable: false),
                     SrNeighborPort = table.Column<int>(nullable: true)
@@ -152,15 +154,20 @@ namespace ProfileServer.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Followers_FollowerId",
+                name: "IX_Followers_Initialized",
                 table: "Followers",
-                column: "FollowerId",
-                unique: true);
+                column: "Initialized");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Followers_LastRefreshTime",
                 table: "Followers",
                 column: "LastRefreshTime");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Followers_NetworkId",
+                table: "Followers",
+                column: "NetworkId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Followers_IpAddress_PrimaryPort",
@@ -214,14 +221,19 @@ namespace ProfileServer.Migrations
                 columns: new[] { "Initialized", "Cancelled", "InitialLocationLatitude", "InitialLocationLongitude", "Type", "Name" });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Neighbors_Initialized",
+                table: "Neighbors",
+                column: "Initialized");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Neighbors_LastRefreshTime",
                 table: "Neighbors",
                 column: "LastRefreshTime");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Neighbors_NeighborId",
+                name: "IX_Neighbors_NetworkId",
                 table: "Neighbors",
-                column: "NeighborId",
+                column: "NetworkId",
                 unique: true);
 
             migrationBuilder.CreateIndex(

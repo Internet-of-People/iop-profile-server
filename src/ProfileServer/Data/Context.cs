@@ -98,9 +98,10 @@ namespace ProfileServer.Data
 
 
       modelBuilder.Entity<Neighbor>().HasKey(i => i.DbId);
-      modelBuilder.Entity<Neighbor>().HasIndex(i => new { i.NeighborId }).IsUnique();
+      modelBuilder.Entity<Neighbor>().HasIndex(i => new { i.NetworkId }).IsUnique();
       modelBuilder.Entity<Neighbor>().HasIndex(i => new { i.IpAddress, i.PrimaryPort });
       modelBuilder.Entity<Neighbor>().HasIndex(i => new { i.LastRefreshTime });
+      modelBuilder.Entity<Neighbor>().HasIndex(i => new { i.Initialized });
 
 
       modelBuilder.Entity<Neighbor>().Property(i => i.LocationLatitude).HasColumnType("decimal(9,6)").IsRequired(true);
@@ -108,9 +109,10 @@ namespace ProfileServer.Data
 
 
       modelBuilder.Entity<Follower>().HasKey(i => i.DbId);
-      modelBuilder.Entity<Follower>().HasIndex(i => new { i.FollowerId }).IsUnique();
+      modelBuilder.Entity<Follower>().HasIndex(i => new { i.NetworkId }).IsUnique();
       modelBuilder.Entity<Follower>().HasIndex(i => new { i.IpAddress, i.PrimaryPort });
       modelBuilder.Entity<Follower>().HasIndex(i => new { i.LastRefreshTime });
+      modelBuilder.Entity<Follower>().HasIndex(i => new { i.Initialized });
 
 
       modelBuilder.Entity<NeighborhoodAction>().HasKey(i => i.Id);

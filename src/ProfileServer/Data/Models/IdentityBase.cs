@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace ProfileServer.Data.Models
 {
   /// <summary>
-  /// Database representation of IoP Identity profile. This is base class for HomeIdentity and NeighborIdentity classes
+  /// Database representation of IoP Identity profile. This is base class for HostedIdentity and NeighborIdentity classes
   /// and must not be used on its own.
   /// </summary>
   public abstract class IdentityBase 

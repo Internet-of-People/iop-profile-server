@@ -687,52 +687,10 @@ namespace ProfileServer.Network
       IPEndPoint res = null;
       using (UnitOfWork unitOfWork = new UnitOfWork())
       {
-        DatabaseLock lockObject = null;
-        bool unlock = false;
-        try
-        {
-          Neighbor neighbor = (await unitOfWork.NeighborRepository.GetAsync(n => n.NeighborId == NeighborId)).FirstOrDefault();
-          if (neighbor != null)
-          {
-            IPAddress addr = IPAddress.Parse(neighbor.IpAddress);
-            if (!IgnoreDbPortValue && (neighbor.SrNeighborPort != null))
-            {
-              res = new IPEndPoint(addr, neighbor.SrNeighborPort.Value);
-            }
-            else
-            {
-              // We do not know srNeighbor port of this neighbor yet (or we ignore it), we have to connect to its primary port and get that information.
-              int srNeighborPort = await GetServerRolePortFromPrimaryPort(addr, neighbor.PrimaryPort, ServerRoleType.SrNeighbor);
-              if (srNeighborPort != 0)
-              {
-                lockObject = UnitOfWork.NeighborLock;
-                await unitOfWork.AcquireLockAsync(lockObject);
-                unlock = true;
-
-                neighbor.SrNeighborPort = srNeighborPort;
-                if (!await unitOfWork.SaveAsync())
-                  log.Error("Unable to save new srNeighbor port information {0} of neighbor ID '{1}' to the database.", srNeighborPort, NeighborId.ToHex());
-
-                res = new IPEndPoint(addr, srNeighborPort);
-              }
-              else log.Debug("Unable to obtain srNeighbor port from primary port of neighbor ID '{0}'.", NeighborId.ToHex());
-            }
-          }
-          else
-          {
-            log.Error("Unable to find neighbor ID '{0}' in the database.", NeighborId.ToHex());
-            NotFound.Value = true;
-          }
-        }
-        catch (Exception e)
-        {
-          log.Error("Exception occurred: {0}", e.ToString());
-        }
-
-        if (unlock) unitOfWork.ReleaseLock(lockObject);
+        res = await unitOfWork.NeighborRepository.GetServerContactAsync(NeighborId, NotFound, IgnoreDbPortValue);
       }
 
-      log.Trace("(-):{0}", res != null ? res.ToString() : "null");
+      log.Trace("(-):{0},*NotFound.Value={1}", res != null ? res.ToString() : "null", NotFound.Value);
       return res;
     }
 
@@ -752,52 +710,10 @@ namespace ProfileServer.Network
       IPEndPoint res = null;
       using (UnitOfWork unitOfWork = new UnitOfWork())
       {
-        DatabaseLock lockObject = null;
-        bool unlock = false;
-        try
-        {
-          Follower follower = (await unitOfWork.FollowerRepository.GetAsync(f => f.FollowerId == FollowerId)).FirstOrDefault();
-          if (follower != null)
-          {
-            IPAddress addr = IPAddress.Parse(follower.IpAddress);
-            if (!IgnoreDbPortValue && (follower.SrNeighborPort != null))
-            {
-              res = new IPEndPoint(addr, follower.SrNeighborPort.Value);
-            }
-            else
-            {
-              // We do not know srNeighbor port of this follower yet (or we ignore it), we have to connect to its primary port and get that information.
-              int srNeighborPort = await GetServerRolePortFromPrimaryPort(addr, follower.PrimaryPort, ServerRoleType.SrNeighbor);
-              if (srNeighborPort != 0)
-              {
-                lockObject = UnitOfWork.FollowerLock;
-                await unitOfWork.AcquireLockAsync(lockObject);
-                unlock = true;
-
-                follower.SrNeighborPort = srNeighborPort;
-                if (!await unitOfWork.SaveAsync())
-                  log.Error("Unable to save new srNeighbor port information {0} of follower ID '{1}' to the database.", srNeighborPort, FollowerId.ToHex());
-
-                res = new IPEndPoint(addr, srNeighborPort);
-              }
-              else log.Debug("Unable to obtain srNeighbor port from primary port of follower ID '{0}'.", FollowerId.ToHex());
-            }
-          }
-          else
-          {
-            log.Error("Unable to find follower ID '{0}' in the database.", FollowerId.ToHex());
-            NotFound.Value = true;
-          }
-        }
-        catch (Exception e)
-        {
-          log.Error("Exception occurred: {0}", e.ToString());
-        }
-
-        if (unlock) unitOfWork.ReleaseLock(lockObject);
+        res = await unitOfWork.FollowerRepository.GetServerContactAsync(FollowerId, NotFound, IgnoreDbPortValue);
       }
 
-      log.Trace("(-):{0}", res != null ? res.ToString() : "null");
+      log.Trace("(-):{0},*NotFound.Value={1}", res != null ? res.ToString() : "null", NotFound.Value);
       return res;
     }
 
@@ -858,7 +774,7 @@ namespace ProfileServer.Network
         DatabaseLock lockObject = UnitOfWork.NeighborhoodActionLock;
         try
         {
-          Neighbor neighbor = (await unitOfWork.NeighborRepository.GetAsync(n => n.NeighborId == NeighborId, null, true)).FirstOrDefault();
+          Neighbor neighbor = (await unitOfWork.NeighborRepository.GetAsync(n => n.NetworkId == NeighborId, null, true)).FirstOrDefault();
           if (neighbor != null)
           {
             string neighborInfo = JsonConvert.SerializeObject(neighbor);
@@ -922,7 +838,7 @@ namespace ProfileServer.Network
       try
       {
         neighbor = JsonConvert.DeserializeObject<Neighbor>(NeighborInfo);
-        ipAddress = IPAddress.Parse(neighbor.IpAddress);
+        ipAddress = new IPAddress(neighbor.IpAddress);
       }
       catch (Exception e)
       {
@@ -1222,7 +1138,10 @@ namespace ProfileServer.Network
                   if (updateItem.ActionTypeCase == SharedProfileUpdateItem.ActionTypeOneofCase.Refresh)
                   {
                     // If database update fails, the follower server will just be refreshed again later.
-                    await UpdateFollowerLastRefreshTime(FollowerId);
+                    using (UnitOfWork unitOfWork = new UnitOfWork())
+                    {
+                      await unitOfWork.FollowerRepository.UpdateLastRefreshTimeAsync(FollowerId);
+                    }
                   }
 
                   res = true;
@@ -1450,49 +1369,5 @@ namespace ProfileServer.Network
       log.Trace("(-):*.Response.Status={0}", res.Response.Status);
       return res;
     }
-
-
-    /// <summary>
-    /// Updates LastRefreshTime of a follower server.
-    /// </summary>
-    /// <param name="FollowerId">Identifier of the follower server to update.</param>
-    /// <returns>true if the function succeeds, false otherwise.</returns>
-    private async Task<bool> UpdateFollowerLastRefreshTime(byte[] FollowerId)
-    {
-      log.Trace("(FollowerId:'{0}')", FollowerId.ToHex());
-
-      bool res = false;
-      using (UnitOfWork unitOfWork = new UnitOfWork())
-      {
-        DatabaseLock lockObject = UnitOfWork.FollowerLock;
-        await unitOfWork.AcquireLockAsync(lockObject);
-        try
-        {
-          Follower follower = (await unitOfWork.FollowerRepository.GetAsync(f => f.FollowerId == FollowerId)).FirstOrDefault();
-          if (follower != null)
-          {
-            follower.LastRefreshTime = DateTime.UtcNow;
-            unitOfWork.FollowerRepository.Update(follower);
-            await unitOfWork.SaveThrowAsync();
-            res = true;
-          }
-          else
-          {
-            log.Error("Follower ID '{0}' not found.", FollowerId.ToHex());
-          }
-        }
-        catch (Exception e)
-        {
-          log.Error("Exception occurred while trying to update LastRefreshTime of follower ID '{0}': {1}", FollowerId.ToHex(), e.ToString());
-        }
-
-        unitOfWork.ReleaseLock(lockObject);
-      }
-
-      log.Trace("(-):{0}", res);
-      return res;
-    }
-
-
   }
 }

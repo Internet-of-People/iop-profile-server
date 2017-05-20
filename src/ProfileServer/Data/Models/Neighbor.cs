@@ -11,7 +11,6 @@ using IopCommon;
 
 namespace ProfileServer.Data.Models
 {
-#warning TODO: create an abstract base class for neighbors and followers and unite the common functionality 
   /// <summary>
   /// Database representation of a profile server neighbor. A neighbor is another profile server within the profile server's neighborhood,
   /// which was announced to the profile server by its LOC server. There are two directions of a neighborhood relationship,
@@ -22,7 +21,7 @@ namespace ProfileServer.Data.Models
   /// The opposite direction relation is represented by <see cref="Follower"/> class.
   /// </para>
   /// </summary>
-  public class Neighbor
+  public class Neighbor: RemoteServerBase
   {
     /// <summary>Class logger.</summary>
     private static Logger log = new Logger("ProfileServer.Data.Models.Neighbor");
@@ -32,32 +31,6 @@ namespace ProfileServer.Data.Models
 
     /// <summary>Minimal allowed value for the limit of the size of the profile server's neighborhood.</summary>
     public const int MinMaxNeighborhoodSize = 105;
-
-    /// <summary>Unique primary key for the database.</summary>
-    /// <remarks>This is primary key - see ProfileServer.Data.Context.OnModelCreating.</remarks>
-    [Required]
-    public int DbId { get; set; }
-
-    /// <summary>Network identifier of the profile server is SHA256 hash of identity's public key.</summary>
-    /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
-    [Required]
-    [MaxLength(ProtocolHelper.NetworkIdentifierLength)]
-    public byte[] NeighborId { get; set; }
-
-    /// <summary>IP address of the profile server.</summary>
-    /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
-    [Required]
-    public string IpAddress { get; set; }
-
-    /// <summary>TCP port of the profile server's primary interface.</summary>
-    /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
-    [Required]
-    [Range(1, 65535)]
-    public int PrimaryPort { get; set; }
-
-    /// <summary>TCP port of the profile server's neighbors interface.</summary>
-    [Range(1, 65535)]
-    public int? SrNeighborPort { get; set; }
 
     /// <summary>Profile server's GPS location latitude.</summary>
     /// <remarks>For precision definition see ProfileServer.Data.Context.OnModelCreating.</remarks>
@@ -70,17 +43,6 @@ namespace ProfileServer.Data.Models
     [Required]
     [Range(-180, 180)]
     public decimal LocationLongitude { get; set; }
-
-#warning TODO: add specific boolean value for finished initialization and leave LastRefreshTime just to be the refresh time
-    /// <summary>
-    /// Time of the last refresh message received from the neighbor.
-    /// <para>
-    /// A null value means that the profile server did not finish the initialization process with the neighbor.
-    /// Once the initialization process is completed this field is initialized.
-    /// </para>
-    /// </summary>
-    /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
-    public DateTime? LastRefreshTime { get; set; }
 
     /// <summary>Number of shared profiles that the profile server received from this neighbor.</summary>
     public int SharedProfiles { get; set; }

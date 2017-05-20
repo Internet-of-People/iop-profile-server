@@ -65,7 +65,7 @@ namespace ProfileServer.Data.Repositories
         {
           NeighborhoodAction neighborhoodAction = new NeighborhoodAction()
           {
-            ServerId = follower.FollowerId,
+            ServerId = follower.NetworkId,
             ExecuteAfter = null,
             TargetIdentityId = IdentityId,
             Timestamp = now,
@@ -75,7 +75,7 @@ namespace ProfileServer.Data.Repositories
           await InsertAsync(neighborhoodAction);
 
           res = true;
-          log.Trace("Profile action with identity ID '{0}' added for follower ID '{1}'.", IdentityId.ToHex(), follower.FollowerId.ToHex());
+          log.Trace("Profile action with identity ID '{0}' added for follower ID '{1}'.", IdentityId.ToHex(), follower.NetworkId.ToHex());
         }
       }
       else log.Trace("No followers found to propagate identity profile change to.");

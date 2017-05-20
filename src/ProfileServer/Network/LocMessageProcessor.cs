@@ -342,7 +342,7 @@ namespace ProfileServer.Network
       }
 
       // Data processing.
-      Neighbor existingNeighbor = (await UnitOfWork.NeighborRepository.GetAsync(n => n.NeighborId == ServerId)).FirstOrDefault();
+      Neighbor existingNeighbor = (await UnitOfWork.NeighborRepository.GetAsync(n => n.NetworkId == ServerId)).FirstOrDefault();
       if (existingNeighbor == null)
       {
         // New neighbor server.
@@ -352,17 +352,18 @@ namespace ProfileServer.Network
           log.Trace("New neighbor ID '{0}' detected, IP address {1}, port {2}, latitude {3}, longitude {4}.", ServerId.ToHex(), IpAddress, Port, Latitude, Longitude);
 
           // Add neighbor to the database of neighbors.
-          // The neighbor is not initialized (LastRefreshTime is not set), so we will not allow it to send us
+          // The neighbor is not initialized, so we will not allow it to send us
           // any updates. First, we need to contact it and start the neighborhood initialization process.
           Neighbor neighbor = new Neighbor()
           {
-            NeighborId = ServerId,
-            IpAddress = IpAddress.ToString(),
+            NetworkId = ServerId,
+            IpAddress = IpAddress.GetAddressBytes(),
             PrimaryPort = Port,
             SrNeighborPort = null,
             LocationLatitude = location.Latitude,
             LocationLongitude = location.Longitude,
-            LastRefreshTime = null,
+            LastRefreshTime = DateTime.UtcNow,
+            Initialized = false,
             SharedProfiles = 0
           };
           await UnitOfWork.NeighborRepository.InsertAsync(neighbor);
@@ -392,11 +393,11 @@ namespace ProfileServer.Network
       else
       {
         // This is a neighbor we already know about. Just check that its information is up to date and if not, update it.
-        string ipAddress = IpAddress.ToString();
-        if (existingNeighbor.IpAddress != ipAddress)
+        IPAddress existingNeighborIpAddress = new IPAddress(existingNeighbor.IpAddress);
+        if (!existingNeighborIpAddress.Equals(IpAddress))
         {
-          log.Trace("Existing neighbor ID '{0}' changed its IP address from {1} to {2}.", ServerId.ToHex(), existingNeighbor.IpAddress, ipAddress);
-          existingNeighbor.IpAddress = ipAddress;
+          log.Trace("Existing neighbor ID '{0}' changed its IP address from {1} to {2}.", ServerId.ToHex(), existingNeighborIpAddress, IpAddress);
+          existingNeighbor.IpAddress = IpAddress.GetAddressBytes();
         }
 
         if (existingNeighbor.PrimaryPort != Port)
@@ -420,8 +421,8 @@ namespace ProfileServer.Network
         }
 
         // We consider a fresh LOC info to be accurate, so we do not want to delete the neighbors received here
-        // and hence we update their refresh time. We can only do this if the neighbor finished the initialization process.
-        if (existingNeighbor.LastRefreshTime != null) existingNeighbor.LastRefreshTime = DateTime.UtcNow;
+        // and hence we update their refresh time.
+        existingNeighbor.LastRefreshTime = DateTime.UtcNow;
 
         UnitOfWork.NeighborRepository.Update(existingNeighbor);
         res.SaveDb = true;
@@ -508,7 +509,7 @@ namespace ProfileServer.Network
                     }
 
                     // Data processing.
-                    Neighbor existingNeighbor = (await unitOfWork.NeighborRepository.GetAsync(n => n.NeighborId == serverId)).FirstOrDefault();
+                    Neighbor existingNeighbor = (await unitOfWork.NeighborRepository.GetAsync(n => n.NetworkId == serverId)).FirstOrDefault();
                     if (existingNeighbor != null)
                     {
                       log.Trace("Creating neighborhood action to deleting neighbor ID '{0}' from the database.", serverId.ToHex());

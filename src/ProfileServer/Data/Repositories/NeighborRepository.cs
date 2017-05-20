@@ -19,7 +19,7 @@ namespace ProfileServer.Data.Repositories
   /// <summary>
   /// Repository of profile server neighbors.
   /// </summary>
-  public class NeighborRepository : GenericRepository<Neighbor>
+  public class NeighborRepository : RemoteServerRepositoryBase<Neighbor>
   {
     /// <summary>Class logger.</summary>
     private static Logger log = new Logger("ProfileServer.Data.Repositories.NeighborRepository");
@@ -34,6 +34,13 @@ namespace ProfileServer.Data.Repositories
       : base(Context, UnitOfWork)
     {
     }
+
+
+    public override DatabaseLock GetTableLock()
+    {
+      return UnitOfWork.NeighborLock;
+    }
+
 
 
     /// <summary>
@@ -57,7 +64,7 @@ namespace ProfileServer.Data.Repositories
       if (!HoldingLocks) await unitOfWork.AcquireLockAsync(lockObject);
       try
       {
-        Neighbor neighbor = (await GetAsync(n => n.NeighborId == NeighborId)).FirstOrDefault();
+        Neighbor neighbor = (await GetAsync(n => n.NetworkId == NeighborId)).FirstOrDefault();
         if (neighbor != null)
         {
           Delete(neighbor);
@@ -166,97 +173,6 @@ namespace ProfileServer.Data.Repositories
     }
 
 
-
-    /// <summary>
-    /// Sets srNeighborPort of a neighbor to null.
-    /// </summary>
-    /// <param name="NeighborId">Identifier of the neighbor server.</param>
-    /// <returns>true if the function succeeds, false otherwise.</returns>
-    public async Task<bool> ResetSrNeighborPortAsync(byte[] NeighborId)
-    {
-      log.Trace("(NeighborId:'{0}')", NeighborId.ToHex());
-
-      bool res = false;
-      bool dbSuccess = false;
-      DatabaseLock lockObject = UnitOfWork.FollowerLock;
-      using (IDbContextTransaction transaction = await unitOfWork.BeginTransactionWithLockAsync(lockObject))
-      {
-        try
-        {
-          Neighbor neighbor = (await GetAsync(f => f.NeighborId == NeighborId)).FirstOrDefault();
-          if (neighbor != null)
-          {
-            neighbor.SrNeighborPort = null;
-            Update(neighbor);
-
-            await unitOfWork.SaveThrowAsync();
-            transaction.Commit();
-            res = true;
-          }
-          else log.Error("Unable to find follower ID '{0}'.", NeighborId.ToHex());
-
-          dbSuccess = true;
-        }
-        catch (Exception e)
-        {
-          log.Error("Exception occurred: {0}", e.ToString());
-        }
-
-        if (!dbSuccess)
-        {
-          log.Warn("Rolling back transaction.");
-          unitOfWork.SafeTransactionRollback(transaction);
-        }
-
-        unitOfWork.ReleaseLock(lockObject);
-      }
-
-      log.Trace("(-):{0}", res);
-      return res;
-    }
-
-
-    /// <summary>
-    /// Updates LastRefreshTime of a neighbor server.
-    /// </summary>
-    /// <param name="NeighborId">Identifier of the neighbor server to update.</param>
-    /// <returns>true if the function succeeds, false otherwise.</returns>
-    public async Task<bool> UpdateNeighborLastRefreshTimeAsync(byte[] NeighborId)
-    {
-      log.Trace("(NeighborId:'{0}')", NeighborId.ToHex());
-
-      bool res = false;
-
-      DatabaseLock lockObject = UnitOfWork.NeighborLock;
-      await unitOfWork.AcquireLockAsync(lockObject);
-      try
-      {
-        Neighbor neighbor = (await GetAsync(n => n.NeighborId == NeighborId)).FirstOrDefault();
-        if (neighbor != null)
-        {
-          neighbor.LastRefreshTime = DateTime.UtcNow;
-          Update(neighbor);
-          await unitOfWork.SaveThrowAsync();
-        }
-        else
-        {
-          // Between the check couple of lines above and here, the requesting server stop being our neighbor
-          // we can ignore it now and proceed as this does no harm and the requesting server will be informed later.
-          log.Error("Client ID '{0}' is no longer our neighbor.", NeighborId.ToHex());
-        }
-      }
-      catch (Exception e)
-      {
-        log.Error("Exception occurred while trying to update LastRefreshTime of neighbor ID '{0}': {1}", NeighborId.ToHex(), e.ToString());
-      }
-
-      unitOfWork.ReleaseLock(lockObject);
-
-      log.Trace("(-):{0}", res);
-      return res;
-    }
-
-
     /// <summary>
     /// Saves profiles of a neighbor from the memory to the database. This is done when the neighborhood initialization process is finished.
     /// </summary>
@@ -274,11 +190,12 @@ namespace ProfileServer.Data.Repositories
       {
         try
         {
-          Neighbor neighbor = (await GetAsync(n => n.NeighborId == NeighborId)).FirstOrDefault();
+          Neighbor neighbor = (await GetAsync(n => n.NetworkId == NeighborId)).FirstOrDefault();
           if (neighbor != null)
           {
             // The neighbor is now initialized and is allowed to send us updates.
             neighbor.LastRefreshTime = DateTime.UtcNow;
+            neighbor.Initialized = true;
             neighbor.SharedProfiles = IdentityDatabase.Count;
             Update(neighbor);
 
@@ -313,6 +230,5 @@ namespace ProfileServer.Data.Repositories
       log.Trace("(-):{0}", res);
       return res;
     }
-
   }
 }

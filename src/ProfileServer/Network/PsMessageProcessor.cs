@@ -1764,7 +1764,7 @@ namespace ProfileServer.Network
       res.Add(serverComponent.ServerId);
       if (!LocalServerOnly)
       {
-        List<byte[]> neighborIds = (await UnitOfWork.NeighborRepository.GetAsync(null, null, true)).Select(n => n.NeighborId).ToList();
+        List<byte[]> neighborIds = (await UnitOfWork.NeighborRepository.GetAsync(null, null, true)).Select(n => n.NetworkId).ToList();
         res.AddRange(neighborIds);
       }
 
@@ -1789,7 +1789,7 @@ namespace ProfileServer.Network
     /// <remarks>In order to prevent DoS attacks, we require the search to complete within small period of time. 
     /// One the allowed time is up, the search is terminated even if we do not have enough results yet and there 
     /// is still a possibility to get more.</remarks>
-    private async Task<List<ProfileQueryInformation>> ProfileSearchAsync<T>(IdentityRepository<T> Repository, uint MaxResults, string TypeFilter, string NameFilter, GpsLocation LocationFilter, uint RadiusFilter, string ExtraDataFilter, bool IncludeImages, Stopwatch TimeoutWatch) where T : IdentityBase
+    private async Task<List<ProfileQueryInformation>> ProfileSearchAsync<T>(IdentityRepositoryBase<T> Repository, uint MaxResults, string TypeFilter, string NameFilter, GpsLocation LocationFilter, uint RadiusFilter, string ExtraDataFilter, bool IncludeImages, Stopwatch TimeoutWatch) where T : IdentityBase
     {
       log.Trace("(Repository:{0},MaxResults:{1},TypeFilter:'{2}',NameFilter:'{3}',LocationFilter:[{4}],RadiusFilter:{5},ExtraDataFilter:'{6}',IncludeImages:{7})",
         Repository, MaxResults, TypeFilter, NameFilter, LocationFilter, RadiusFilter, ExtraDataFilter, IncludeImages);
@@ -2300,10 +2300,10 @@ namespace ProfileServer.Network
                 int followerCount = await unitOfWork.FollowerRepository.CountAsync();
                 if (followerCount < Config.Configuration.MaxFollowerServersCount)
                 {
-                  int neighborhoodInitializationsInProgress = await unitOfWork.FollowerRepository.CountAsync(f => f.LastRefreshTime == null);
+                  int neighborhoodInitializationsInProgress = await unitOfWork.FollowerRepository.CountAsync(f => f.Initialized == false);
                   if (neighborhoodInitializationsInProgress < Config.Configuration.NeighborhoodInitializationParallelism)
                   {
-                    Follower existingFollower = (await unitOfWork.FollowerRepository.GetAsync(f => f.FollowerId == followerId)).FirstOrDefault();
+                    Follower existingFollower = (await unitOfWork.FollowerRepository.GetAsync(f => f.NetworkId == followerId)).FirstOrDefault();
                     if (existingFollower == null)
                     {
                       // Take snapshot of all our identities that have valid contracts.
@@ -2312,11 +2312,12 @@ namespace ProfileServer.Network
                       // Create new follower.
                       Follower follower = new Follower()
                       {
-                        FollowerId = followerId,
-                        IpAddress = followerIpAddress.ToString(),
+                        NetworkId = followerId,
+                        IpAddress = followerIpAddress.GetAddressBytes(),
                         PrimaryPort = primaryPort,
                         SrNeighborPort = srNeighborPort,
-                        LastRefreshTime = null
+                        LastRefreshTime = DateTime.UtcNow,
+                        Initialized = false
                       };
 
                       await unitOfWork.FollowerRepository.InsertAsync(follower);
@@ -2544,23 +2545,23 @@ namespace ProfileServer.Network
       // First, we verify that the client is our neighbor and how many profiles it shares with us.
       using (UnitOfWork unitOfWork = new UnitOfWork())
       {
-        Neighbor neighbor = (await unitOfWork.NeighborRepository.GetAsync(n => n.NeighborId == neighborId)).FirstOrDefault();
-        if (neighbor == null)
+        Neighbor neighbor = (await unitOfWork.NeighborRepository.GetAsync(n => n.NetworkId == neighborId)).FirstOrDefault();
+        if ((neighbor != null) && neighbor.Initialized)
+        {
+          sharedProfilesCount = neighbor.SharedProfiles;
+          log.Trace("Neighbor ID '{0}' currently shares {1} profiles with the profile server.", neighborId.ToHex(), sharedProfilesCount);
+        }
+        else if (neighbor == null)
         {
           log.Warn("Share profile update request came from client ID '{0}', who is not our neighbor.", neighborId.ToHex());
           res = messageBuilder.CreateErrorRejectedResponse(RequestMessage);
           error = true;
         }
-        else if (neighbor.LastRefreshTime == null)
+        else 
         {
           log.Warn("Share profile update request came from client ID '{0}', who is our neighbor, but we have not finished the initialization process with it yet.", neighborId.ToHex());
           res = messageBuilder.CreateErrorRejectedResponse(RequestMessage);
           error = true;
-        }
-        else
-        {
-          sharedProfilesCount = neighbor.SharedProfiles;
-          log.Trace("Neighbor ID '{0}' currently shares {1} profiles with the profile server.", neighborId.ToHex(), sharedProfilesCount);
         }
       }
 
@@ -2655,7 +2656,7 @@ namespace ProfileServer.Network
         {
           // If there was a refresh request, we process it first as it does no harm and we do not need to care about it later.
           if (doRefresh)
-            await unitOfWork.NeighborRepository.UpdateNeighborLastRefreshTimeAsync(neighborId);
+            await unitOfWork.NeighborRepository.UpdateLastRefreshTimeAsync(neighborId);
 
 
           // Batch number just for logging purposes.
@@ -2679,7 +2680,7 @@ namespace ProfileServer.Network
               bool saveDb = false;
               try
               {
-                Neighbor neighbor = (await unitOfWork.NeighborRepository.GetAsync(n => n.NeighborId == neighborId)).FirstOrDefault();
+                Neighbor neighbor = (await unitOfWork.NeighborRepository.GetAsync(n => n.NetworkId == neighborId)).FirstOrDefault();
                 if (neighbor != null)
                 {
                   int oldSharedProfilesCount = neighbor.SharedProfiles;
@@ -2833,7 +2834,7 @@ namespace ProfileServer.Network
             {
               if (Neighbor.SharedProfiles >= IdentityBase.MaxHostedIdentities)
               {
-                log.Warn("Neighbor ID '{0}' already shares the maximum number of profiles.", Neighbor.NeighborId.ToHex());
+                log.Warn("Neighbor ID '{0}' already shares the maximum number of profiles.", Neighbor.NetworkId.ToHex());
                 res.ErrorResponse = MessageBuilder.CreateErrorInvalidValueResponse(RequestMessage, UpdateItemIndex + ".add");
                 res.Error = true;
                 break;
@@ -2844,12 +2845,12 @@ namespace ProfileServer.Network
               byte[] identityId = Crypto.Sha256(pubKey);
 
               // Identity already exists if there exists a NeighborIdentity with same identity ID and the same hosting server ID.
-              NeighborIdentity existingIdentity = (await UnitOfWork.NeighborIdentityRepository.GetAsync(i => (i.IdentityId == identityId) && (i.HostingServerId == Neighbor.NeighborId))).FirstOrDefault();
+              NeighborIdentity existingIdentity = (await UnitOfWork.NeighborIdentityRepository.GetAsync(i => (i.IdentityId == identityId) && (i.HostingServerId == Neighbor.NetworkId))).FirstOrDefault();
               if (existingIdentity == null)
               {
                 res.ItemImageUsed = addItem.SignedProfile.Profile.ThumbnailImageHash.Length != 0;
 
-                NeighborIdentity newIdentity = NeighborIdentity.FromSignedProfileInformation(addItem.SignedProfile, Neighbor.NeighborId);
+                NeighborIdentity newIdentity = NeighborIdentity.FromSignedProfileInformation(addItem.SignedProfile, Neighbor.NetworkId);
                 await UnitOfWork.NeighborIdentityRepository.InsertAsync(newIdentity);
 
                 Neighbor.SharedProfiles++;
@@ -2858,7 +2859,7 @@ namespace ProfileServer.Network
               }
               else
               {
-                log.Warn("Identity ID '{0}' already exists with hosting server ID '{1}'.", identityId.ToHex(), Neighbor.NeighborId.ToHex());
+                log.Warn("Identity ID '{0}' already exists with hosting server ID '{1}'.", identityId.ToHex(), Neighbor.NetworkId.ToHex());
                 res.ErrorResponse = MessageBuilder.CreateErrorInvalidValueResponse(RequestMessage, UpdateItemIndex + ".add.signedProfile.profile.publicKey");
                 res.Error = true;
               }
@@ -2873,14 +2874,14 @@ namespace ProfileServer.Network
               byte[] identityId = Crypto.Sha256(pubKey);
 
               // Identity already exists if there exists a NeighborIdentity with same identity ID and the same hosting server ID.
-              NeighborIdentity existingIdentity = (await UnitOfWork.NeighborIdentityRepository.GetAsync(i => (i.IdentityId == identityId) && (i.HostingServerId == Neighbor.NeighborId))).FirstOrDefault();
+              NeighborIdentity existingIdentity = (await UnitOfWork.NeighborIdentityRepository.GetAsync(i => (i.IdentityId == identityId) && (i.HostingServerId == Neighbor.NetworkId))).FirstOrDefault();
               if (existingIdentity != null)
               {
                 // Changing type is not allowed.
                 if (existingIdentity.Type != changeItem.SignedProfile.Profile.Type)
                 {
                   log.Debug("Attempt to change profile type.");
-                  log.Warn("Neighbor ID '{0}' already shares the maximum number of profiles.", Neighbor.NeighborId.ToHex());
+                  log.Warn("Neighbor ID '{0}' already shares the maximum number of profiles.", Neighbor.NetworkId.ToHex());
                   res.ErrorResponse = MessageBuilder.CreateErrorInvalidValueResponse(RequestMessage, UpdateItemIndex + ".change.signedProfile.profile.type");
                   res.Error = true;
                   break;
@@ -2889,14 +2890,14 @@ namespace ProfileServer.Network
                 res.ImageToDelete = existingIdentity.ThumbnailImage;
                 res.ItemImageUsed = changeItem.SignedProfile.Profile.ThumbnailImageHash.Length != 0;
 
-                existingIdentity.CopyFromSignedProfileInformation(changeItem.SignedProfile, Neighbor.NeighborId);
+                existingIdentity.CopyFromSignedProfileInformation(changeItem.SignedProfile, Neighbor.NetworkId);
 
                 UnitOfWork.NeighborIdentityRepository.Update(existingIdentity);
                 res.SaveDb = true;
               }
               else
               {
-                log.Warn("Identity ID '{0}' does not exist with hosting server ID '{1}'.", identityId.ToHex(), Neighbor.NeighborId.ToHex());
+                log.Warn("Identity ID '{0}' does not exist with hosting server ID '{1}'.", identityId.ToHex(), Neighbor.NetworkId.ToHex());
                 res.ErrorResponse = MessageBuilder.CreateErrorInvalidValueResponse(RequestMessage, UpdateItemIndex + ".change.signedProfile.profile.publicKey");
                 res.Error = true;
               }
@@ -2910,7 +2911,7 @@ namespace ProfileServer.Network
               byte[] identityId = deleteItem.IdentityNetworkId.ToByteArray();
 
               // Identity already exists if there exists a NeighborIdentity with same identity ID and the same hosting server ID.
-              NeighborIdentity existingIdentity = (await UnitOfWork.NeighborIdentityRepository.GetAsync(i => (i.IdentityId == identityId) && (i.HostingServerId == Neighbor.NeighborId))).FirstOrDefault();
+              NeighborIdentity existingIdentity = (await UnitOfWork.NeighborIdentityRepository.GetAsync(i => (i.IdentityId == identityId) && (i.HostingServerId == Neighbor.NetworkId))).FirstOrDefault();
               if (existingIdentity != null)
               {
                 res.ImageToDelete = existingIdentity.ThumbnailImage;
@@ -2921,7 +2922,7 @@ namespace ProfileServer.Network
               }
               else
               {
-                log.Warn("Identity ID '{0}' does exists with hosting server ID '{1}'.", identityId.ToHex(), Neighbor.NeighborId.ToHex());
+                log.Warn("Identity ID '{0}' does exists with hosting server ID '{1}'.", identityId.ToHex(), Neighbor.NetworkId.ToHex());
                 res.ErrorResponse = MessageBuilder.CreateErrorInvalidValueResponse(RequestMessage, UpdateItemIndex + ".delete.identityNetworkId");
                 res.Error = true;
               }
@@ -3074,10 +3075,11 @@ namespace ProfileServer.Network
                 bool saveDb = false;
 
                 // Update the follower, so it is considered as fully initialized.
-                Follower follower = (await unitOfWork.FollowerRepository.GetAsync(f => f.FollowerId == followerId)).FirstOrDefault();
+                Follower follower = (await unitOfWork.FollowerRepository.GetAsync(f => f.NetworkId == followerId)).FirstOrDefault();
                 if (follower != null)
                 {
                   follower.LastRefreshTime = DateTime.UtcNow;
+                  follower.Initialized = true;
                   unitOfWork.FollowerRepository.Update(follower);
                   saveDb = true;
                 }

@@ -19,45 +19,9 @@ namespace ProfileServer.Data.Models
   /// The opposite direction relation is represented by <see cref="Neighbor"/> class.
   /// </para>
   /// </summary>
-  public class Follower
+  public class Follower: RemoteServerBase
   {
+    /// <summary>Class logger.</summary>
     private static Logger log = new Logger("ProfileServer.Data.Models.Follower");
-
-    /// <summary>Unique primary key for the database.</summary>
-    /// <remarks>This is primary key - see ProfileServer.Data.Context.OnModelCreating.</remarks>
-    [Required]
-    public int DbId { get; set; }
-
-    /// <summary>Network identifier of the profile server is SHA256 hash of identity's public key.</summary>
-    /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
-    [Required]
-    [MaxLength(ProtocolHelper.NetworkIdentifierLength)]
-    public byte[] FollowerId { get; set; }
-
-    /// <summary>IP address of the profile server.</summary>
-    /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
-    [Required]
-    public string IpAddress { get; set; }
-
-    /// <summary>TCP port of the profile server's primary interface.</summary>
-    /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
-    [Required]
-    [Range(1, 65535)]
-    public int PrimaryPort { get; set; }
-
-    /// <summary>TCP port of the profile server's neighbors interface.</summary>
-    [Range(1, 65535)]
-    public int? SrNeighborPort { get; set; }
-
-    /// <summary>
-    /// Time of the last refresh message sent to the follower server.
-    /// <para>
-    /// A null value means that the follower server is in the middle of the initialization process 
-    /// and the full synchronization has not been done yet. Once the initialization process is completed 
-    /// this field is initialized.
-    /// </para>
-    /// </summary>
-    /// <remarks>This is index - see ProfileServer.Data.Context.OnModelCreating.</remarks>
-    public DateTime? LastRefreshTime { get; set; }
   }
 }

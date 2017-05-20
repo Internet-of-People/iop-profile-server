@@ -18,7 +18,7 @@ namespace ProfileServer.Data.Repositories
   /// <summary>
   /// Repository of profile server followers.
   /// </summary>
-  public class FollowerRepository : GenericRepository<Follower>
+  public class FollowerRepository : RemoteServerRepositoryBase<Follower> 
   {
     /// <summary>Class logger.</summary>
     private static Logger log = new Logger("ProfileServer.Data.Repositories.FollowerRepository");
@@ -32,6 +32,12 @@ namespace ProfileServer.Data.Repositories
     public FollowerRepository(Context Context, UnitOfWork UnitOfWork)
       : base(Context, UnitOfWork)
     {
+    }
+
+
+    public override DatabaseLock GetTableLock()
+    {
+      return UnitOfWork.FollowerLock;
     }
 
 
@@ -53,7 +59,7 @@ namespace ProfileServer.Data.Repositories
       {
         try
         {
-          Follower existingFollower = (await unitOfWork.FollowerRepository.GetAsync(f => f.FollowerId == FollowerId)).FirstOrDefault();
+          Follower existingFollower = (await unitOfWork.FollowerRepository.GetAsync(f => f.NetworkId == FollowerId)).FirstOrDefault();
           if (existingFollower != null)
           {
             Delete(existingFollower);
@@ -97,56 +103,6 @@ namespace ProfileServer.Data.Repositories
         }
 
         unitOfWork.ReleaseLock(lockObjects);
-      }
-
-      log.Trace("(-):{0}", res);
-      return res;
-    }
-
-
-
-    /// <summary>
-    /// Sets srNeighborPort of a follower to null.
-    /// </summary>
-    /// <param name="FollowerId">Identifier of the follower server.</param>
-    /// <returns>true if the function succeeds, false otherwise.</returns>
-    public async Task<bool> ResetSrNeighborPortAsync(byte[] FollowerId)
-    {
-      log.Trace("(FollowerId:'{0}')", FollowerId.ToHex());
-
-      bool res = false;
-      bool dbSuccess = false;
-      DatabaseLock lockObject = UnitOfWork.FollowerLock;
-      using (IDbContextTransaction transaction = await unitOfWork.BeginTransactionWithLockAsync(lockObject))
-      {
-        try
-        {
-          Follower follower = (await GetAsync(f => f.FollowerId == FollowerId)).FirstOrDefault();
-          if (follower != null)
-          {
-            follower.SrNeighborPort = null;
-            Update(follower);
-
-            await unitOfWork.SaveThrowAsync();
-            transaction.Commit();
-            res = true;
-          }
-          else log.Error("Unable to find follower ID '{0}'.", FollowerId.ToHex());
-
-          dbSuccess = true;
-        }
-        catch (Exception e)
-        {
-          log.Error("Exception occurred: {0}", e.ToString());
-        }
-
-        if (!dbSuccess)
-        {
-          log.Warn("Rolling back transaction.");
-          unitOfWork.SafeTransactionRollback(transaction);
-        }
-
-        unitOfWork.ReleaseLock(lockObject);
       }
 
       log.Trace("(-):{0}", res);

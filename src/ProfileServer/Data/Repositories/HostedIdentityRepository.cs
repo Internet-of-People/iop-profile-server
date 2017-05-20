@@ -18,7 +18,7 @@ namespace ProfileServer.Data.Repositories
   /// <summary>
   /// Repository for locally hosted identities.
   /// </summary>
-  public class HostedIdentityRepository : IdentityRepository<HostedIdentity>
+  public class HostedIdentityRepository : IdentityRepositoryBase<HostedIdentity>
   {
     /// <summary>Class logger.</summary>
     private static Logger log = new Logger("ProfileServer.Data.Repositories.HostedIdentityRepository");

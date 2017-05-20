@@ -14,13 +14,13 @@ using IopServerCore.Data;
 namespace ProfileServer.Data.Repositories
 {
   /// <summary>
-  /// Generic repository for identities, which is the base for HomeIdentityReposity for identities hosted on this profile server
+  /// Generic repository for identities, which is the base for HostedIdentityReposity for identities hosted on this profile server
   /// and NeighborIdentityRepository for identities hosted in this profile server's neighborhood.
   /// </summary>
-  public class IdentityRepository<T> : GenericRepository<T> where T:IdentityBase
+  public abstract class IdentityRepositoryBase<T> : GenericRepository<T> where T:IdentityBase
   {
     /// <summary>Class logger.</summary>
-    private static Logger log = new Logger("ProfileServer.Data.Repositories.IdentityRepository");
+    private static Logger log = new Logger("ProfileServer.Data.Repositories.IdentityRepositoryBase");
 
 
     /// <summary>
@@ -28,7 +28,7 @@ namespace ProfileServer.Data.Repositories
     /// </summary>
     /// <param name="Context">Database context.</param>
     /// <param name="UnitOfWork">Instance of unit of work that owns the repository.</param>
-    public IdentityRepository(Context Context, UnitOfWork UnitOfWork)
+    public IdentityRepositoryBase(Context Context, UnitOfWork UnitOfWork)
       : base(Context, UnitOfWork)
     {
     }
