@@ -2,6 +2,7 @@
 *.*~
 bin/
 obj/
+*.user
 project.lock.json
 .DS_Store
 *.db
