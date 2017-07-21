@@ -1,4 +1,4 @@
-![IoP Logo](https://raw.githubusercontent.com/Internet-of-People/media/master/official/iop_logo_main.png "IoP Logo")
+<img src="https://raw.githubusercontent.com/Internet-of-People/media/master/official/iop_logo_main.png" alt="IoP Logo" height="100px">
 
 # IoP Profile Server
 
