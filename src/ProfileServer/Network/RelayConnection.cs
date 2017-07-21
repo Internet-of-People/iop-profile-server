@@ -62,12 +62,12 @@ namespace ProfileServer.Network
     public RelayConnection Relay;
 
     /// <summary>ApplicationServiceSendMessageRequest from sender.</summary>
-    public PsProtocolMessage SenderRequest;
+    public IProtocolMessage<Message> SenderRequest;
 
     /// <summary>
     /// Initializes the relay message context.
     /// </summary>
-    public RelayMessageContext(RelayConnection Relay, PsProtocolMessage SenderRequest)
+    public RelayMessageContext(RelayConnection Relay, IProtocolMessage<Message> SenderRequest)
     {
       this.Relay = Relay;
       this.SenderRequest = SenderRequest;
@@ -168,7 +168,7 @@ namespace ProfileServer.Network
     /// If relay status is WaitingForFirstInitMessage or WaitingForSecondInitMessage, this is the initialization message of the first client.
     /// </para>
     /// </summary>
-    private PsProtocolMessage pendingMessage;
+    private IProtocolMessage<Message> pendingMessage;
 
     /// <summary>
     /// Creates a new relay connection from a caller to a callee using a specific application service.
@@ -177,7 +177,7 @@ namespace ProfileServer.Network
     /// <param name="Callee">Network client of the callee.</param>
     /// <param name="ServiceName">Name of the application service of the callee that is being used for the call.</param>
     /// <param name="RequestMessage">CallIdentityApplicationServiceRequest message that the caller send in order to initiate the call.</param>
-    public RelayConnection(IncomingClient Caller, IncomingClient Callee, string ServiceName, PsProtocolMessage RequestMessage)
+    public RelayConnection(IncomingClient Caller, IncomingClient Callee, string ServiceName, IProtocolMessage<Message> RequestMessage)
     {
       lockObject = new SemaphoreSlim(1);
       id = Guid.NewGuid();
@@ -230,7 +230,7 @@ namespace ProfileServer.Network
       log.Trace("(State:{0})", previousStatus);
 
       IncomingClient clientToSendMessage = null;
-      PsProtocolMessage messageToSend = null;
+      IProtocolMessage<Message> messageToSend = null;
       bool destroyRelay = false;
 
       await lockObject.WaitAsync();
@@ -376,7 +376,7 @@ namespace ProfileServer.Network
     /// <param name="ResponseMessage">Full response message from the callee.</param>
     /// <param name="Request">Unfinished call request message of the caller that corresponds to the response message.</param>
     /// <returns></returns>
-    public async Task<bool> CalleeRepliedToIncomingCallNotification(PsProtocolMessage ResponseMessage, UnfinishedRequest Request)
+    public async Task<bool> CalleeRepliedToIncomingCallNotification(IProtocolMessage<Message> ResponseMessage, UnfinishedRequest<Message> Request)
     {
       log.Trace("()");
 
@@ -384,7 +384,7 @@ namespace ProfileServer.Network
 
       bool destroyRelay = false;
       IncomingClient clientToSendMessage = null;
-      PsProtocolMessage messageToSend = null;
+      IProtocolMessage<Message> messageToSend = null;
 
       await lockObject.WaitAsync();
 
@@ -394,7 +394,7 @@ namespace ProfileServer.Network
         CancelTimeoutTimerLocked();
 
         // The caller is still connected and waiting for an answer to its call request.
-        if (ResponseMessage.Response.Status == Status.Ok)
+        if (ResponseMessage.Message.Response.Status == Status.Ok)
         {
           // The callee is now expected to connect to clAppService with its token.
           // We need to inform caller that the callee accepted the call.
@@ -418,7 +418,7 @@ namespace ProfileServer.Network
         {
           // The callee rejected the call or reported other error.
           // These are options 3) and 2) from ProcessMessageCallIdentityApplicationServiceRequestAsync.
-          if (ResponseMessage.Response.Status == Status.ErrorRejected)
+          if (ResponseMessage.Message.Response.Status == Status.ErrorRejected)
           {
             log.Debug("Callee ID '{0}' rejected the call from caller identity ID '{1}', relay '{2}'.", callee.Id.ToHex(), caller.Id.ToHex(), id);
             messageToSend = caller.MessageBuilder.CreateErrorRejectedResponse(pendingMessage);
@@ -426,7 +426,7 @@ namespace ProfileServer.Network
           else
           {
             log.Warn("Callee ID '0} sent error response '{1}' for call request from caller identity ID {2}, relay '{3}'.", 
-              callee.Id.ToHex(), ResponseMessage.Response.Status, caller.Id.ToHex(), id);
+              callee.Id.ToHex(), ResponseMessage.Message.Response.Status, caller.Id.ToHex(), id);
 
             messageToSend = caller.MessageBuilder.CreateErrorNotAvailableResponse(pendingMessage);
           }
@@ -475,11 +475,11 @@ namespace ProfileServer.Network
     /// <param name="RequestMessage">Full request message.</param>
     /// <param name="Token">Sender's relay token.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public async Task<PsProtocolMessage> ProcessIncomingMessage(IncomingClient Client, PsProtocolMessage RequestMessage, Guid Token)
+    public async Task<IProtocolMessage<Message>> ProcessIncomingMessage(IncomingClient Client, IProtocolMessage<Message> RequestMessage, Guid Token)
     {
       log.Trace("()");
 
-      PsProtocolMessage res = null;
+      IProtocolMessage<Message> res = null;
       bool destroyRelay = false;
 
       await lockObject.WaitAsync();
@@ -604,7 +604,7 @@ namespace ProfileServer.Network
               status = RelayConnectionStatus.Open;
               log.Trace("Relay '{0}' status changed to {1}.", id, status);
 
-              PsProtocolMessage otherClientResponse = otherClient.MessageBuilder.CreateApplicationServiceSendMessageResponse(pendingMessage);
+              var otherClientResponse = otherClient.MessageBuilder.CreateApplicationServiceSendMessageResponse(pendingMessage);
               pendingMessage = null;
               if (await otherClient.SendMessageAsync(otherClientResponse))
               {
@@ -636,8 +636,8 @@ namespace ProfileServer.Network
             if (Client.Relay == this)
             {
               // Relay is open, this means that all incoming messages are sent to the other client.
-              byte[] messageForOtherClient = RequestMessage.Request.SingleRequest.ApplicationServiceSendMessage.Message.ToByteArray();
-              PsProtocolMessage otherClientMessage = otherClient.MessageBuilder.CreateApplicationServiceReceiveMessageNotificationRequest(messageForOtherClient);
+              byte[] messageForOtherClient = RequestMessage.Message.Request.SingleRequest.ApplicationServiceSendMessage.Message.ToByteArray();
+              var otherClientMessage = otherClient.MessageBuilder.CreateApplicationServiceReceiveMessageNotificationRequest(messageForOtherClient);
               RelayMessageContext context = new RelayMessageContext(this, RequestMessage);
               if (await otherClient.SendMessageAndSaveUnfinishedRequestAsync(otherClientMessage, context))
               {
@@ -702,7 +702,7 @@ namespace ProfileServer.Network
     /// <param name="ResponseMessage">Full response message.</param>
     /// <param name="SenderRequest">Sender request message that the recipient confirmed.</param>
     /// <returns>true if the connection to the client that sent the response should remain open, false if the client should be disconnected.</returns>
-    public async Task<bool> RecipientConfirmedMessage(IncomingClient Client, PsProtocolMessage ResponseMessage, PsProtocolMessage SenderRequest)
+    public async Task<bool> RecipientConfirmedMessage(IncomingClient Client, IProtocolMessage<Message> ResponseMessage, IProtocolMessage<Message> SenderRequest)
     {
       log.Trace("()");
 
@@ -717,12 +717,12 @@ namespace ProfileServer.Network
 
         IncomingClient otherClient = isCaller ? callee : caller;
         log.Trace("Over relay '{0}', received confirmation (status code {1}) from client ID {2} of a message sent by client ID {3}.",
-          id, ResponseMessage.Response.Status, Client.Id.ToHex(), otherClient.Id.ToHex());
+          id, ResponseMessage.Message.Response.Status, Client.Id.ToHex(), otherClient.Id.ToHex());
 
-        if (ResponseMessage.Response.Status == Status.Ok)
+        if (ResponseMessage.Message.Response.Status == Status.Ok)
         {
           // We have received a confirmation from the recipient, so we just complete the sender's request to inform it that the message was delivered.
-          PsProtocolMessage otherClientResponse = otherClient.MessageBuilder.CreateApplicationServiceSendMessageResponse(SenderRequest);
+          var otherClientResponse = otherClient.MessageBuilder.CreateApplicationServiceSendMessageResponse(SenderRequest);
           if (await otherClient.SendMessageAsync(otherClientResponse))
           {
             res = true;
@@ -736,7 +736,7 @@ namespace ProfileServer.Network
         else
         {
           // We have received error from the recipient, so we forward it to the sender and destroy the relay.
-          PsProtocolMessage errorResponse = otherClient.MessageBuilder.CreateErrorNotFoundResponse(SenderRequest);
+          var errorResponse = otherClient.MessageBuilder.CreateErrorNotFoundResponse(SenderRequest);
 
           if (!await otherClient.SendMessageAsync(errorResponse))
             log.Warn("In relay '{0}', unable to send error response to the sender client ID {1}, maybe it is disconnected already, destroying the relay.", id, otherClient.Id.ToHex());
@@ -776,7 +776,7 @@ namespace ProfileServer.Network
       log.Trace("(Client.Id:{0},IsRelayConnection:{1})", Client.Id.ToHex(), IsRelayConnection);
 
       IncomingClient clientToSendMessages = null;
-      List<PsProtocolMessage> messagesToSend = new List<PsProtocolMessage>();
+      var messagesToSend = new List<IProtocolMessage<Message>>();
       IncomingClient clientToClose = null;
 
       await lockObject.WaitAsync();
@@ -871,8 +871,8 @@ namespace ProfileServer.Network
               // When a client sends ApplicationServiceSendMessageRequest, the profile server creates ApplicationServiceReceiveMessageNotificationRequest 
               // and adds it as an unfinished request with context set to RelayMessageContext, which contains the sender's ApplicationServiceSendMessageRequest.
               // This unfinished message is in the list of unfinished message of the recipient.
-              List<UnfinishedRequest> unfinishedRelayRequests = Client.GetAndRemoveUnfinishedRequests();
-              foreach (UnfinishedRequest unfinishedRequest in unfinishedRelayRequests)
+              var unfinishedRelayRequests = Client.GetAndRemoveUnfinishedRequests();
+              foreach (var unfinishedRequest in unfinishedRelayRequests)
               {
                 Message unfinishedRequestMessage = (Message)unfinishedRequest.RequestMessage.Message;
                 // Find ApplicationServiceReceiveMessageNotificationRequest request messages sent to the client who closed the connection.
@@ -882,7 +882,7 @@ namespace ProfileServer.Network
                 {
                   // This unfinished request's context holds ApplicationServiceSendMessageRequest message of the client that is still connected.
                   RelayMessageContext ctx = (RelayMessageContext)unfinishedRequest.Context;
-                  PsProtocolMessage responseError = clientToSendMessages.MessageBuilder.CreateErrorNotFoundResponse(ctx.SenderRequest);
+                  var responseError = clientToSendMessages.MessageBuilder.CreateErrorNotFoundResponse(ctx.SenderRequest);
                   messagesToSend.Add(responseError);
                 }
               }
@@ -903,7 +903,7 @@ namespace ProfileServer.Network
 
       if (messagesToSend.Count > 0)
       {
-        foreach (PsProtocolMessage messageToSend in messagesToSend)
+        foreach (var messageToSend in messagesToSend)
         {
           if (!await clientToSendMessages.SendMessageAsync(messageToSend))
           {

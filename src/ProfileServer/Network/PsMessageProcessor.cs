@@ -29,7 +29,7 @@ namespace ProfileServer.Network
   /// <summary>
   /// Implements the logic behind processing incoming messages to the profile server.
   /// </summary>
-  public class PsMessageProcessor: IMessageProcessor
+  public class PsMessageProcessor: IMessageProcessor<Message>
   {
     /// <summary>Instance logger.</summary>
     private Logger log;
@@ -38,13 +38,13 @@ namespace ProfileServer.Network
     private string logPrefix;
 
     /// <summary>Parent role server.</summary>
-    private TcpRoleServer<IncomingClient> roleServer;
+    private TcpRoleServer<IncomingClient, Message> roleServer;
 
     /// <summary>Pointer to the Network.Server component.</summary>
     private Server serverComponent;
 
     /// <summary>List of server's network peers and clients owned by Network.Server component.</summary>
-    public IncomingClientList clientList;
+    public IncomingClientList<Message> clientList;
 
     /// <summary>List of server's network peers and clients owned by Network.Server component.</summary>
     public RelayList relayList;
@@ -54,7 +54,7 @@ namespace ProfileServer.Network
     /// </summary>
     /// <param name="RoleServer">Parent role server.</param>
     /// <param name="LogPrefix">Log prefix of the parent role server.</param>
-    public PsMessageProcessor(TcpRoleServer<IncomingClient> RoleServer, string LogPrefix = "")
+    public PsMessageProcessor(TcpRoleServer<IncomingClient, Message> RoleServer, string LogPrefix = "")
     {
       roleServer = RoleServer;
       logPrefix = LogPrefix;
@@ -72,10 +72,10 @@ namespace ProfileServer.Network
     /// <param name="Client">TCP client who send the message.</param>
     /// <param name="IncomingMessage">Full ProtoBuf message to be processed.</param>
     /// <returns>true if the conversation with the client should continue, false if a protocol violation error occurred and the client should be disconnected.</returns>
-    public async Task<bool> ProcessMessageAsync(ClientBase Client, IProtocolMessage IncomingMessage)
+    public async Task<bool> ProcessMessageAsync(ClientBase<Message> Client, IProtocolMessage<Message> IncomingMessage)
     {
       IncomingClient client = (IncomingClient)Client;
-      PsProtocolMessage incomingMessage = (PsProtocolMessage)IncomingMessage;
+      var incomingMessage = IncomingMessage;
       PsMessageBuilder messageBuilder = client.MessageBuilder;
 
       bool res = false;
@@ -86,13 +86,13 @@ namespace ProfileServer.Network
         client.NextKeepAliveTime = DateTime.UtcNow.AddMilliseconds(client.KeepAliveIntervalMs);
         log.Trace("Client ID {0} NextKeepAliveTime updated to {1}.", client.Id.ToHex(), client.NextKeepAliveTime.ToString("yyyy-MM-dd HH:mm:ss"));
 
-        log.Trace("Received message type is {0}, message ID is {1}.", incomingMessage.MessageTypeCase, incomingMessage.Id);
-        switch (incomingMessage.MessageTypeCase)
+        log.Trace("Received message type is {0}, message ID is {1}.", incomingMessage.Message.MessageTypeCase, incomingMessage.Id);
+        switch (incomingMessage.Message.MessageTypeCase)
         {
           case Message.MessageTypeOneofCase.Request:
             {
-              PsProtocolMessage responseMessage = messageBuilder.CreateErrorProtocolViolationResponse(incomingMessage);
-              Request request = incomingMessage.Request;
+              var responseMessage = messageBuilder.CreateErrorProtocolViolationResponse(incomingMessage);
+              Request request = incomingMessage.Message.Request;
               log.Trace("Request conversation type is {0}.", request.ConversationTypeCase);
               switch (request.ConversationTypeCase)
               {
@@ -104,7 +104,7 @@ namespace ProfileServer.Network
 
                     if (!version.IsValid())
                     {
-                      responseMessage.Response.Details = "version";
+                      responseMessage.Message.Response.Details = "version";
                       break;
                     }
 
@@ -250,8 +250,8 @@ namespace ProfileServer.Network
                 if (res)
                 {
                   // If the message was sent successfully to the target, we close the connection in case it was a protocol violation error response.
-                  if (responseMessage.MessageTypeCase == Message.MessageTypeOneofCase.Response)
-                    res = responseMessage.Response.Status != Status.ErrorProtocolViolation;
+                  if (responseMessage.Message.MessageTypeCase == Message.MessageTypeOneofCase.Response)
+                    res = responseMessage.Message.Response.Status != Status.ErrorProtocolViolation;
                 }
               }
               else
@@ -265,18 +265,18 @@ namespace ProfileServer.Network
 
           case Message.MessageTypeOneofCase.Response:
             {
-              Response response = incomingMessage.Response;
+              Response response = incomingMessage.Message.Response;
               log.Trace("Response status is {0}, details are '{1}', conversation type is {2}.", response.Status, response.Details, response.ConversationTypeCase);
 
               // Find associated request. If it does not exist, disconnect the client as it 
               // send a response without receiving a request. This is protocol violation, 
               // but as this is a reponse, we have no how to inform the client about it, 
               // so we just disconnect it.
-              UnfinishedRequest unfinishedRequest = client.GetAndRemoveUnfinishedRequest(incomingMessage.Id);
+              UnfinishedRequest<Message> unfinishedRequest = client.GetAndRemoveUnfinishedRequest(incomingMessage.Id);
               if ((unfinishedRequest != null) && (unfinishedRequest.RequestMessage != null))
               {
-                PsProtocolMessage requestMessage = (PsProtocolMessage)unfinishedRequest.RequestMessage;
-                Request request = requestMessage.Request;
+                var requestMessage = unfinishedRequest.RequestMessage;
+                Request request = requestMessage.Message.Request;
                 // We now check whether the response message type corresponds with the request type.
                 // This is only valid if the status is Ok. If the message types do not match, we disconnect 
                 // for the protocol violation again.
@@ -367,7 +367,7 @@ namespace ProfileServer.Network
             }
 
           default:
-            log.Error("Unknown message type '{0}', connection to the client will be closed.", incomingMessage.MessageTypeCase);
+            log.Error("Unknown message type '{0}', connection to the client will be closed.", incomingMessage.Message.MessageTypeCase);
             await SendProtocolViolation(client);
             // Connection will be closed in ReceiveMessageLoop.
             break;
@@ -395,10 +395,10 @@ namespace ProfileServer.Network
     /// Sends ERROR_PROTOCOL_VIOLATION to client with message ID set to 0x0BADC0DE.
     /// </summary>
     /// <param name="Client">Client to send the error to.</param>
-    public async Task SendProtocolViolation(ClientBase Client)
+    public async Task SendProtocolViolation(ClientBase<Message> Client)
     {
       PsMessageBuilder mb = new PsMessageBuilder(0, new List<SemVer>() { SemVer.V100 }, null);
-      PsProtocolMessage response = mb.CreateErrorProtocolViolationResponse(new PsProtocolMessage(new Message() { Id = 0x0BADC0DE }));
+      var response = mb.CreateErrorProtocolViolationResponse();
 
       await Client.SendMessageAsync(response);
     }
@@ -415,14 +415,14 @@ namespace ProfileServer.Network
     /// <param name="RequiredConversationStatus">Required conversation status for the message, or null for single messages.</param>
     /// <param name="ResponseMessage">If the verification fails, this is filled with error response to be sent to the client.</param>
     /// <returns>true if the function succeeds (i.e. required conditions are met and the message can be processed), false otherwise.</returns>
-    public bool CheckSessionConditions(IncomingClient Client, PsProtocolMessage RequestMessage, ServerRole? RequiredRole, ClientConversationStatus? RequiredConversationStatus, out PsProtocolMessage ResponseMessage)
+    public bool CheckSessionConditions(IncomingClient Client, IProtocolMessage<Message> RequestMessage, ServerRole? RequiredRole, ClientConversationStatus? RequiredConversationStatus, out IProtocolMessage<Message> ResponseMessage)
     {
       log.Trace("(RequiredRole:{0},RequiredConversationStatus:{1})", RequiredRole != null ? RequiredRole.ToString() : "null", RequiredConversationStatus != null ? RequiredConversationStatus.Value.ToString() : "null");
 
       bool res = false;
       ResponseMessage = null;
 
-      string requestName = RequestMessage.Request.ConversationTypeCase == Request.ConversationTypeOneofCase.SingleRequest ? "single request " + RequestMessage.Request.SingleRequest.RequestTypeCase.ToString() : "conversation request " + RequestMessage.Request.ConversationRequest.RequestTypeCase.ToString();
+      string requestName = RequestMessage.Message.Request.ConversationTypeCase == Request.ConversationTypeOneofCase.SingleRequest ? "single request " + RequestMessage.Message.Request.SingleRequest.RequestTypeCase.ToString() : "conversation request " + RequestMessage.Message.Request.ConversationRequest.RequestTypeCase.ToString();
 
       // RequiredRole contains one or more roles and the current server has to have at least one of them.
       if ((RequiredRole == null) || ((roleServer.Roles & (uint)RequiredRole.Value) != 0))
@@ -528,16 +528,16 @@ namespace ProfileServer.Network
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public PsProtocolMessage ProcessMessagePingRequest(IncomingClient Client, PsProtocolMessage RequestMessage)
+    public IProtocolMessage<Message> ProcessMessagePingRequest(IncomingClient Client, IProtocolMessage<Message> RequestMessage)
     {
       log.Trace("()");
 
       PsMessageBuilder messageBuilder = Client.MessageBuilder;
-      PingRequest pingRequest = RequestMessage.Request.SingleRequest.Ping;
+      PingRequest pingRequest = RequestMessage.Message.Request.SingleRequest.Ping;
 
-      PsProtocolMessage res = messageBuilder.CreatePingResponse(RequestMessage, pingRequest.Payload.ToByteArray(), DateTime.UtcNow);
+      var res = messageBuilder.CreatePingResponse(RequestMessage, pingRequest.Payload.ToByteArray(), DateTime.UtcNow);
 
-      log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+      log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
       return res;
     }
 
@@ -549,24 +549,24 @@ namespace ProfileServer.Network
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public PsProtocolMessage ProcessMessageListRolesRequest(IncomingClient Client, PsProtocolMessage RequestMessage)
+    public IProtocolMessage<Message> ProcessMessageListRolesRequest(IncomingClient Client, IProtocolMessage<Message> RequestMessage)
     {
       log.Trace("()");
 
-      PsProtocolMessage res = null;
+      IProtocolMessage<Message> res = null;
       if (!CheckSessionConditions(Client, RequestMessage, ServerRole.Primary, null, out res))
       {
-        log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+        log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
         return res;
       }
 
       PsMessageBuilder messageBuilder = Client.MessageBuilder;
-      ListRolesRequest listRolesRequest = RequestMessage.Request.SingleRequest.ListRoles;
+      ListRolesRequest listRolesRequest = RequestMessage.Message.Request.SingleRequest.ListRoles;
 
       List<Iop.Profileserver.ServerRole> roles = GetRolesFromServerComponent();
       res = messageBuilder.CreateListRolesResponse(RequestMessage, roles);
 
-      log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+      log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
       return res;
     }
 
@@ -580,9 +580,9 @@ namespace ProfileServer.Network
     {
       log.Trace("()");
 
-      List<Iop.Profileserver.ServerRole> res = new List<Iop.Profileserver.ServerRole>();
+      var res = new List<Iop.Profileserver.ServerRole>();
 
-      foreach (TcpRoleServer<IncomingClient> roleServer in serverComponent.GetRoleServers())
+      foreach (var roleServer in serverComponent.GetRoleServers())
       {
         foreach (ServerRole role in Enum.GetValues(typeof(ServerRole)))
         {
@@ -630,19 +630,19 @@ namespace ProfileServer.Network
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public async Task<PsProtocolMessage> ProcessMessageGetProfileInformationRequestAsync(IncomingClient Client, PsProtocolMessage RequestMessage)
+    public async Task<IProtocolMessage<Message>> ProcessMessageGetProfileInformationRequestAsync(IncomingClient Client, IProtocolMessage<Message> RequestMessage)
     {
       log.Trace("()");
 
-      PsProtocolMessage res = null;
+      IProtocolMessage<Message> res = null;
       if (!CheckSessionConditions(Client, RequestMessage, ServerRole.ClientCustomer | ServerRole.ClientNonCustomer, null, out res))
       {
-        log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+        log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
         return res;
       }
 
       PsMessageBuilder messageBuilder = Client.MessageBuilder;
-      GetProfileInformationRequest getProfileInformationRequest = RequestMessage.Request.SingleRequest.GetProfileInformation;
+      GetProfileInformationRequest getProfileInformationRequest = RequestMessage.Message.Request.SingleRequest.GetProfileInformation;
 
       byte[] identityId = getProfileInformationRequest.IdentityNetworkId.ToByteArray();
       if (identityId.Length == ProtocolHelper.NetworkIdentifierLength)
@@ -702,7 +702,7 @@ namespace ProfileServer.Network
         res = messageBuilder.CreateErrorNotFoundResponse(RequestMessage);
       }
 
-      log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+      log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
       return res;
     }
 
@@ -714,20 +714,20 @@ namespace ProfileServer.Network
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public PsProtocolMessage ProcessMessageStartConversationRequest(IncomingClient Client, PsProtocolMessage RequestMessage)
+    public IProtocolMessage<Message> ProcessMessageStartConversationRequest(IncomingClient Client, IProtocolMessage<Message> RequestMessage)
     {
       log.Trace("()");
 
-      PsProtocolMessage res = null;
+      IProtocolMessage<Message> res = null;
       if (!CheckSessionConditions(Client, RequestMessage, null, ClientConversationStatus.NoConversation, out res))
       {
-        log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+        log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
         return res;
       }
 
 
       PsMessageBuilder messageBuilder = Client.MessageBuilder;
-      StartConversationRequest startConversationRequest = RequestMessage.Request.ConversationRequest.Start;
+      StartConversationRequest startConversationRequest = RequestMessage.Message.Request.ConversationRequest.Start;
       byte[] clientChallenge = startConversationRequest.ClientChallenge.ToByteArray();
       byte[] pubKey = startConversationRequest.PublicKey.ToByteArray();
 
@@ -775,7 +775,7 @@ namespace ProfileServer.Network
         res = messageBuilder.CreateErrorInvalidValueResponse(RequestMessage, "clientChallenge");
       }
 
-      log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+      log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
       return res;
     }
 
@@ -789,7 +789,7 @@ namespace ProfileServer.Network
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public async Task<PsProtocolMessage> ProcessMessageRegisterHostingRequestAsync(IncomingClient Client, PsProtocolMessage RequestMessage)
+    public async Task<IProtocolMessage<Message>> ProcessMessageRegisterHostingRequestAsync(IncomingClient Client, IProtocolMessage<Message> RequestMessage)
     {
 #warning TODO: This function is currently implemented to support arbitrary contracts as the server does not have any list of contracts.
       // TODO: CHECK CONTRACT:
@@ -798,15 +798,15 @@ namespace ProfileServer.Network
       log.Trace("()");
       log.Fatal("TODO UNIMPLEMENTED");
 
-      PsProtocolMessage res = null;
+      IProtocolMessage<Message> res = null;
       if (!CheckSessionConditions(Client, RequestMessage, ServerRole.ClientNonCustomer, ClientConversationStatus.ConversationStarted, out res))
       {
-        log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+        log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
         return res;
       }
 
       PsMessageBuilder messageBuilder = Client.MessageBuilder;
-      RegisterHostingRequest registerHostingRequest = RequestMessage.Request.ConversationRequest.RegisterHosting;
+      RegisterHostingRequest registerHostingRequest = RequestMessage.Message.Request.ConversationRequest.RegisterHosting;
       if (registerHostingRequest == null) registerHostingRequest = new RegisterHostingRequest();
       if (registerHostingRequest.Contract == null) registerHostingRequest.Contract = new HostingPlanContract();
 
@@ -815,7 +815,7 @@ namespace ProfileServer.Network
       bool success = false;
       res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
 
-      PsProtocolMessage errorResponse;
+      IProtocolMessage<Message> errorResponse;
       if (InputValidators.ValidateRegisterHostingRequest(Client.PublicKey, contract, messageBuilder, RequestMessage, out errorResponse))
       {
         using (UnitOfWork unitOfWork = new UnitOfWork())
@@ -905,7 +905,7 @@ namespace ProfileServer.Network
         res = messageBuilder.CreateRegisterHostingResponse(RequestMessage, contract);
       }
 
-      log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+      log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
       return res;
     }
 
@@ -921,20 +921,20 @@ namespace ProfileServer.Network
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public async Task<PsProtocolMessage> ProcessMessageCheckInRequestAsync(IncomingClient Client, PsProtocolMessage RequestMessage)
+    public async Task<IProtocolMessage<Message>> ProcessMessageCheckInRequestAsync(IncomingClient Client, IProtocolMessage<Message> RequestMessage)
     {
       log.Trace("()");
 
-      PsProtocolMessage res = null;
+      IProtocolMessage<Message> res = null;
       if (!CheckSessionConditions(Client, RequestMessage, ServerRole.ClientCustomer, ClientConversationStatus.ConversationStarted, out res))
       {
-        log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+        log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
         return res;
       }
 
 
       PsMessageBuilder messageBuilder = Client.MessageBuilder;
-      CheckInRequest checkInRequest = RequestMessage.Request.ConversationRequest.CheckIn;
+      CheckInRequest checkInRequest = RequestMessage.Message.Request.ConversationRequest.CheckIn;
 
       byte[] challenge = checkInRequest.Challenge.ToByteArray();
       if (ByteArrayComparer.Equals(challenge, Client.AuthenticationChallenge))
@@ -991,7 +991,7 @@ namespace ProfileServer.Network
         res = messageBuilder.CreateErrorInvalidValueResponse(RequestMessage, "challenge");
       }
 
-      log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+      log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
       return res;
     }
 
@@ -1004,20 +1004,20 @@ namespace ProfileServer.Network
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public PsProtocolMessage ProcessMessageVerifyIdentityRequest(IncomingClient Client, PsProtocolMessage RequestMessage)
+    public IProtocolMessage<Message> ProcessMessageVerifyIdentityRequest(IncomingClient Client, IProtocolMessage<Message> RequestMessage)
     {
       log.Trace("()");
 
-      PsProtocolMessage res = null;
+      IProtocolMessage<Message> res = null;
       if (!CheckSessionConditions(Client, RequestMessage, ServerRole.ClientNonCustomer | ServerRole.ServerNeighbor, ClientConversationStatus.ConversationStarted, out res))
       {
-        log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+        log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
         return res;
       }
 
 
       PsMessageBuilder messageBuilder = Client.MessageBuilder;
-      VerifyIdentityRequest verifyIdentityRequest = RequestMessage.Request.ConversationRequest.VerifyIdentity;
+      VerifyIdentityRequest verifyIdentityRequest = RequestMessage.Message.Request.ConversationRequest.VerifyIdentity;
 
       byte[] challenge = verifyIdentityRequest.Challenge.ToByteArray();
       if (ByteArrayComparer.Equals(challenge, Client.AuthenticationChallenge))
@@ -1040,7 +1040,7 @@ namespace ProfileServer.Network
         res = messageBuilder.CreateErrorInvalidValueResponse(RequestMessage, "challenge");
       }
 
-      log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+      log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
       return res;
     }
 
@@ -1059,19 +1059,19 @@ namespace ProfileServer.Network
     /// without any reference from the database, thus possibly creates a resource leak.
     /// This is solved by cleanup routines during the profile server start - see 
     /// ProfileServer.Data.ImageManager.DeleteUnusedImages.</remarks>
-    public async Task<PsProtocolMessage> ProcessMessageUpdateProfileRequestAsync(IncomingClient Client, PsProtocolMessage RequestMessage)
+    public async Task<IProtocolMessage<Message>> ProcessMessageUpdateProfileRequestAsync(IncomingClient Client, IProtocolMessage<Message> RequestMessage)
     {
       log.Trace("()");
 
-      PsProtocolMessage res = null;
+      IProtocolMessage<Message> res = null;
       if (!CheckSessionConditions(Client, RequestMessage, ServerRole.ClientCustomer, ClientConversationStatus.Authenticated, out res))
       {
-        log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+        log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
         return res;
       }
 
       PsMessageBuilder messageBuilder = Client.MessageBuilder;
-      UpdateProfileRequest updateProfileRequest = RequestMessage.Request.ConversationRequest.UpdateProfile;
+      UpdateProfileRequest updateProfileRequest = RequestMessage.Message.Request.ConversationRequest.UpdateProfile;
       if (updateProfileRequest == null) updateProfileRequest = new UpdateProfileRequest();
       if (updateProfileRequest.Profile == null) updateProfileRequest.Profile = new ProfileInformation();
 
@@ -1083,7 +1083,7 @@ namespace ProfileServer.Network
           HostedIdentity identityForValidation = (await unitOfWork.HostedIdentityRepository.GetAsync(i => (i.IdentityId == Client.IdentityId) && (i.Cancelled == false), null, true)).FirstOrDefault();
           if (identityForValidation != null)
           {
-            PsProtocolMessage errorResponse;
+            IProtocolMessage<Message> errorResponse;
             if (InputValidators.ValidateUpdateProfileRequest(identityForValidation, updateProfileRequest, messageBuilder, RequestMessage, out errorResponse))
             {
               bool error = false;
@@ -1148,7 +1148,7 @@ namespace ProfileServer.Network
                 SignedProfileInformation signedProfile = new SignedProfileInformation()
                 {
                   Profile = profile,
-                  Signature = RequestMessage.Request.ConversationRequest.Signature
+                  Signature = RequestMessage.Message.Request.ConversationRequest.Signature
                 };
                 if (await unitOfWork.HostedIdentityRepository.UpdateProfileAndPropagateAsync(Client.IdentityId, signedProfile, profileImageChanged, thumbnailImageChanged, updateProfileRequest.NoPropagation, notFound, imagesToDelete))
                 {
@@ -1162,7 +1162,7 @@ namespace ProfileServer.Network
                 }
               }
 
-              if (res.Response.Status != Status.Ok)
+              if (res.Message.Response.Status != Status.Ok)
                 imagesToDelete.AddRange(newlyCreatedImages);
 
               // Delete old/unused image files, if there are any.
@@ -1184,7 +1184,7 @@ namespace ProfileServer.Network
         }
       }
 
-      log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+      log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
       return res;
     }
 
@@ -1200,19 +1200,19 @@ namespace ProfileServer.Network
     /// The profile itself is not immediately deleted, but its expiration date is set, 
     /// which will lead to its deletion. If the hosting server redirection is installed, 
     /// the expiration date is set to a later time.</remarks>
-    public async Task<PsProtocolMessage> ProcessMessageCancelHostingAgreementRequestAsync(IncomingClient Client, PsProtocolMessage RequestMessage)
+    public async Task<IProtocolMessage<Message>> ProcessMessageCancelHostingAgreementRequestAsync(IncomingClient Client, IProtocolMessage<Message> RequestMessage)
     {
       log.Trace("()");
 
-      PsProtocolMessage res = null;
+      IProtocolMessage<Message> res = null;
       if (!CheckSessionConditions(Client, RequestMessage, ServerRole.ClientCustomer, ClientConversationStatus.Authenticated, out res))
       {
-        log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+        log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
         return res;
       }
 
       PsMessageBuilder messageBuilder = Client.MessageBuilder;
-      CancelHostingAgreementRequest cancelHostingAgreementRequest = RequestMessage.Request.ConversationRequest.CancelHostingAgreement;
+      CancelHostingAgreementRequest cancelHostingAgreementRequest = RequestMessage.Message.Request.ConversationRequest.CancelHostingAgreement;
 
       if (!cancelHostingAgreementRequest.RedirectToNewProfileServer || (cancelHostingAgreementRequest.NewProfileServerNetworkId.Length == ProtocolHelper.NetworkIdentifierLength))
       {
@@ -1253,7 +1253,7 @@ namespace ProfileServer.Network
         res = messageBuilder.CreateErrorInvalidValueResponse(RequestMessage, "newProfileServerNetworkId");
       }
 
-      log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+      log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
       return res;
     }
 
@@ -1266,19 +1266,19 @@ namespace ProfileServer.Network
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public PsProtocolMessage ProcessMessageApplicationServiceAddRequest(IncomingClient Client, PsProtocolMessage RequestMessage)
+    public IProtocolMessage<Message> ProcessMessageApplicationServiceAddRequest(IncomingClient Client, IProtocolMessage<Message> RequestMessage)
     {
       log.Trace("()");
 
-      PsProtocolMessage res = null;
+      IProtocolMessage<Message> res = null;
       if (!CheckSessionConditions(Client, RequestMessage, ServerRole.ClientCustomer, ClientConversationStatus.Authenticated, out res))
       {
-        log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+        log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
         return res;
       }
 
       PsMessageBuilder messageBuilder = Client.MessageBuilder;
-      ApplicationServiceAddRequest applicationServiceAddRequest = RequestMessage.Request.ConversationRequest.ApplicationServiceAdd;
+      ApplicationServiceAddRequest applicationServiceAddRequest = RequestMessage.Message.Request.ConversationRequest.ApplicationServiceAdd;
 
       // Validation of service names.
       for (int i = 0; i < applicationServiceAddRequest.ServiceNames.Count; i++)
@@ -1306,7 +1306,7 @@ namespace ProfileServer.Network
         }
       }
 
-      log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+      log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
       return res;
     }
 
@@ -1321,19 +1321,19 @@ namespace ProfileServer.Network
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public PsProtocolMessage ProcessMessageApplicationServiceRemoveRequest(IncomingClient Client, PsProtocolMessage RequestMessage)
+    public IProtocolMessage<Message> ProcessMessageApplicationServiceRemoveRequest(IncomingClient Client, IProtocolMessage<Message> RequestMessage)
     {
       log.Trace("()");
 
-      PsProtocolMessage res = null;
+      IProtocolMessage<Message> res = null;
       if (!CheckSessionConditions(Client, RequestMessage, ServerRole.ClientCustomer, ClientConversationStatus.Authenticated, out res))
       {
-        log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+        log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
         return res;
       }
 
       PsMessageBuilder messageBuilder = Client.MessageBuilder;
-      ApplicationServiceRemoveRequest applicationServiceRemoveRequest = RequestMessage.Request.ConversationRequest.ApplicationServiceRemove;
+      ApplicationServiceRemoveRequest applicationServiceRemoveRequest = RequestMessage.Message.Request.ConversationRequest.ApplicationServiceRemove;
 
       string serviceName = applicationServiceRemoveRequest.ServiceName;
       if (Client.ApplicationServices.RemoveService(serviceName))
@@ -1347,7 +1347,7 @@ namespace ProfileServer.Network
         res = messageBuilder.CreateErrorNotFoundResponse(RequestMessage);
       }
 
-      log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+      log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
       return res;
     }
 
@@ -1362,19 +1362,19 @@ namespace ProfileServer.Network
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Error response message to be sent to the client, or null if everything goes OK and the callee is going to be informed 
     /// about an incoming call.</returns>
-    public async Task<PsProtocolMessage> ProcessMessageCallIdentityApplicationServiceRequestAsync(IncomingClient Client, PsProtocolMessage RequestMessage)
+    public async Task<IProtocolMessage<Message>> ProcessMessageCallIdentityApplicationServiceRequestAsync(IncomingClient Client, IProtocolMessage<Message> RequestMessage)
     {
       log.Trace("()");
 
-      PsProtocolMessage res = null;
+      IProtocolMessage<Message> res = null;
       if (!CheckSessionConditions(Client, RequestMessage, ServerRole.ClientCustomer | ServerRole.ClientNonCustomer, ClientConversationStatus.Verified, out res))
       {
-        log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+        log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
         return res;
       }
 
       PsMessageBuilder messageBuilder = Client.MessageBuilder;
-      CallIdentityApplicationServiceRequest callIdentityApplicationServiceRequest = RequestMessage.Request.ConversationRequest.CallIdentityApplicationService;
+      CallIdentityApplicationServiceRequest callIdentityApplicationServiceRequest = RequestMessage.Message.Request.ConversationRequest.CallIdentityApplicationService;
 
       byte[] calleeIdentityId = callIdentityApplicationServiceRequest.IdentityNetworkId.ToByteArray();
       string serviceName = callIdentityApplicationServiceRequest.ServiceName;
@@ -1419,7 +1419,7 @@ namespace ProfileServer.Network
             if (relay != null)
             {
               bool error = false;
-              PsProtocolMessage notificationMessage = callee.MessageBuilder.CreateIncomingCallNotificationRequest(Client.PublicKey, serviceName, relay.GetCalleeToken().ToByteArray());
+              var notificationMessage = callee.MessageBuilder.CreateIncomingCallNotificationRequest(Client.PublicKey, serviceName, relay.GetCalleeToken().ToByteArray());
               if (await callee.SendMessageAndSaveUnfinishedRequestAsync(notificationMessage, relay))
               {
                 // res remains null, which is fine!
@@ -1458,7 +1458,7 @@ namespace ProfileServer.Network
         }
       }
 
-      if (res != null) log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+      if (res != null) log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
       else log.Trace("(-):null");
       return res;
     }
@@ -1473,7 +1473,7 @@ namespace ProfileServer.Network
     /// <param name="ResponseMessage">Full response message.</param>
     /// <param name="Request">Unfinished request message that corresponds to the response message.</param>
     /// <returns>true if the connection to the client that sent the response should remain open, false if the client should be disconnected.</returns>
-    public async Task<bool> ProcessMessageIncomingCallNotificationResponseAsync(IncomingClient Client, PsProtocolMessage ResponseMessage, UnfinishedRequest Request)
+    public async Task<bool> ProcessMessageIncomingCallNotificationResponseAsync(IncomingClient Client, IProtocolMessage<Message> ResponseMessage, UnfinishedRequest<Message> Request)
     {
       log.Trace("()");
 
@@ -1495,19 +1495,19 @@ namespace ProfileServer.Network
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public async Task<PsProtocolMessage> ProcessMessageApplicationServiceSendMessageRequestAsync(IncomingClient Client, PsProtocolMessage RequestMessage)
+    public async Task<IProtocolMessage<Message>> ProcessMessageApplicationServiceSendMessageRequestAsync(IncomingClient Client, IProtocolMessage<Message> RequestMessage)
     {
       log.Trace("()");
 
-      PsProtocolMessage res = null;
+      IProtocolMessage<Message> res = null;
       if (!CheckSessionConditions(Client, RequestMessage, ServerRole.ClientAppService, null, out res))
       {
-        log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+        log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
         return res;
       }
 
       PsMessageBuilder messageBuilder = Client.MessageBuilder;
-      ApplicationServiceSendMessageRequest applicationServiceSendMessageRequest = RequestMessage.Request.SingleRequest.ApplicationServiceSendMessage;
+      ApplicationServiceSendMessageRequest applicationServiceSendMessageRequest = RequestMessage.Message.Request.SingleRequest.ApplicationServiceSendMessage;
 
       byte[] tokenBytes = applicationServiceSendMessageRequest.Token.ToByteArray();
       if (tokenBytes.Length == 16)
@@ -1532,7 +1532,7 @@ namespace ProfileServer.Network
         Client.ForceDisconnect = true;
       }
 
-      if (res != null) log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+      if (res != null) log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
       else log.Trace("(-):null");
       return res;
     }
@@ -1546,7 +1546,7 @@ namespace ProfileServer.Network
     /// <param name="ResponseMessage">Full response message.</param>
     /// <param name="Request">Unfinished request message that corresponds to the response message.</param>
     /// <returns>true if the connection to the client that sent the response should remain open, false if the client should be disconnected.</returns>
-    public async Task<bool> ProcessMessageApplicationServiceReceiveMessageNotificationResponseAsync(IncomingClient Client, PsProtocolMessage ResponseMessage, UnfinishedRequest Request)
+    public async Task<bool> ProcessMessageApplicationServiceReceiveMessageNotificationResponseAsync(IncomingClient Client, IProtocolMessage<Message> ResponseMessage, UnfinishedRequest<Message> Request)
     {
       log.Trace("()");
 
@@ -1568,19 +1568,19 @@ namespace ProfileServer.Network
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public async Task<PsProtocolMessage> ProcessMessageProfileStatsRequestAsync(IncomingClient Client, PsProtocolMessage RequestMessage)
+    public async Task<IProtocolMessage<Message>> ProcessMessageProfileStatsRequestAsync(IncomingClient Client, IProtocolMessage<Message> RequestMessage)
     {
       log.Trace("()");
 
-      PsProtocolMessage res = null;
+      IProtocolMessage<Message> res = null;
       if (!CheckSessionConditions(Client, RequestMessage, ServerRole.ClientNonCustomer | ServerRole.ClientCustomer, null, out res))
       {
-        log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+        log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
         return res;
       }
 
       PsMessageBuilder messageBuilder = Client.MessageBuilder;
-      ProfileStatsRequest profileStatsRequest = RequestMessage.Request.SingleRequest.ProfileStats;
+      ProfileStatsRequest profileStatsRequest = RequestMessage.Message.Request.SingleRequest.ProfileStats;
 
       res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
       using (UnitOfWork unitOfWork = new UnitOfWork())
@@ -1596,7 +1596,7 @@ namespace ProfileServer.Network
         }
       }
 
-      log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+      log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
       return res;
     }
 
@@ -1649,22 +1649,22 @@ namespace ProfileServer.Network
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public async Task<PsProtocolMessage> ProcessMessageProfileSearchRequestAsync(IncomingClient Client, PsProtocolMessage RequestMessage)
+    public async Task<IProtocolMessage<Message>> ProcessMessageProfileSearchRequestAsync(IncomingClient Client, IProtocolMessage<Message> RequestMessage)
     {
       log.Trace("()");
 
-      PsProtocolMessage res = null;
+      IProtocolMessage<Message> res = null;
       if (!CheckSessionConditions(Client, RequestMessage, ServerRole.ClientCustomer | ServerRole.ClientNonCustomer, ClientConversationStatus.ConversationAny, out res))
       {
-        log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+        log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
         return res;
       }
 
       PsMessageBuilder messageBuilder = Client.MessageBuilder;
-      ProfileSearchRequest profileSearchRequest = RequestMessage.Request.SingleRequest.ProfileSearch;
+      ProfileSearchRequest profileSearchRequest = RequestMessage.Message.Request.SingleRequest.ProfileSearch;
       if (profileSearchRequest == null) profileSearchRequest = new ProfileSearchRequest();
 
-      PsProtocolMessage errorResponse;
+      IProtocolMessage<Message> errorResponse;
       if (InputValidators.ValidateProfileSearchRequest(profileSearchRequest, messageBuilder, RequestMessage, out errorResponse))
       {
         res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
@@ -1740,7 +1740,7 @@ namespace ProfileServer.Network
       }
       else res = errorResponse;
 
-      if (res != null) log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+      if (res != null) log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
       else log.Trace("(-):null");
       return res;
     }
@@ -1924,19 +1924,19 @@ namespace ProfileServer.Network
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public PsProtocolMessage ProcessMessageProfileSearchPartRequest(IncomingClient Client, PsProtocolMessage RequestMessage)
+    public IProtocolMessage<Message> ProcessMessageProfileSearchPartRequest(IncomingClient Client, IProtocolMessage<Message> RequestMessage)
     {
       log.Trace("()");
 
-      PsProtocolMessage res = null;
+      IProtocolMessage<Message> res = null;
       if (!CheckSessionConditions(Client, RequestMessage, ServerRole.ClientCustomer | ServerRole.ClientNonCustomer, ClientConversationStatus.ConversationAny, out res))
       {
-        log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+        log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
         return res;
       }
 
       PsMessageBuilder messageBuilder = Client.MessageBuilder;
-      ProfileSearchPartRequest profileSearchPartRequest = RequestMessage.Request.SingleRequest.ProfileSearchPart;
+      ProfileSearchPartRequest profileSearchPartRequest = RequestMessage.Message.Request.SingleRequest.ProfileSearchPart;
 
       int cacheResultsCount;
       bool cacheIncludeImages;
@@ -1972,7 +1972,7 @@ namespace ProfileServer.Network
         res = messageBuilder.CreateErrorNotAvailableResponse(RequestMessage);
       }
 
-      log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+      log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
       return res;
     }
 
@@ -1985,28 +1985,28 @@ namespace ProfileServer.Network
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public async Task<PsProtocolMessage> ProcessMessageAddRelatedIdentityRequestAsync(IncomingClient Client, PsProtocolMessage RequestMessage)
+    public async Task<IProtocolMessage<Message>> ProcessMessageAddRelatedIdentityRequestAsync(IncomingClient Client, IProtocolMessage<Message> RequestMessage)
     {
       log.Trace("()");
 
-      PsProtocolMessage res = null;
+      IProtocolMessage<Message> res = null;
       if (!CheckSessionConditions(Client, RequestMessage, ServerRole.ClientCustomer, ClientConversationStatus.Authenticated, out res))
       {
-        log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+        log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
         return res;
       }
 
       PsMessageBuilder messageBuilder = Client.MessageBuilder;
-      AddRelatedIdentityRequest addRelatedIdentityRequest = RequestMessage.Request.ConversationRequest.AddRelatedIdentity;
+      AddRelatedIdentityRequest addRelatedIdentityRequest = RequestMessage.Message.Request.ConversationRequest.AddRelatedIdentity;
 
-      PsProtocolMessage errorResponse;
+      IProtocolMessage<Message> errorResponse;
       if (InputValidators.ValidateAddRelatedIdentityRequest(Client, addRelatedIdentityRequest, messageBuilder, RequestMessage, out errorResponse))
       {
         CardApplicationInformation application = addRelatedIdentityRequest.CardApplication;
         SignedRelationshipCard signedCard = addRelatedIdentityRequest.SignedCard;
         RelationshipCard card = signedCard.Card;
         byte[] issuerSignature = signedCard.IssuerSignature.ToByteArray();
-        byte[] recipientSignature = RequestMessage.Request.ConversationRequest.Signature.ToByteArray();
+        byte[] recipientSignature = RequestMessage.Message.Request.ConversationRequest.Signature.ToByteArray();
         byte[] cardId = card.CardId.ToByteArray();
         byte[] cardVersion = card.Version.ToByteArray();
         byte[] applicationId = application.ApplicationId.ToByteArray();
@@ -2086,7 +2086,7 @@ namespace ProfileServer.Network
       }
       else res = errorResponse;
 
-      log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+      log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
       return res;
     }
 
@@ -2100,19 +2100,19 @@ namespace ProfileServer.Network
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public async Task<PsProtocolMessage> ProcessMessageRemoveRelatedIdentityRequestAsync(IncomingClient Client, PsProtocolMessage RequestMessage)
+    public async Task<IProtocolMessage<Message>> ProcessMessageRemoveRelatedIdentityRequestAsync(IncomingClient Client, IProtocolMessage<Message> RequestMessage)
     {
       log.Trace("()");
 
-      PsProtocolMessage res = null;
+      IProtocolMessage<Message> res = null;
       if (!CheckSessionConditions(Client, RequestMessage, ServerRole.ClientCustomer, ClientConversationStatus.Authenticated, out res))
       {
-        log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+        log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
         return res;
       }
 
       PsMessageBuilder messageBuilder = Client.MessageBuilder;
-      RemoveRelatedIdentityRequest removeRelatedIdentityRequest = RequestMessage.Request.ConversationRequest.RemoveRelatedIdentity;
+      RemoveRelatedIdentityRequest removeRelatedIdentityRequest = RequestMessage.Message.Request.ConversationRequest.RemoveRelatedIdentity;
       byte[] applicationId = removeRelatedIdentityRequest.ApplicationId.ToByteArray();
 
       res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
@@ -2146,7 +2146,7 @@ namespace ProfileServer.Network
         unitOfWork.ReleaseLock(lockObject);
       }
 
-      log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+      log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
       return res;
     }
 
@@ -2159,19 +2159,19 @@ namespace ProfileServer.Network
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public async Task<PsProtocolMessage> ProcessMessageGetIdentityRelationshipsInformationRequestAsync(IncomingClient Client, PsProtocolMessage RequestMessage)
+    public async Task<IProtocolMessage<Message>> ProcessMessageGetIdentityRelationshipsInformationRequestAsync(IncomingClient Client, IProtocolMessage<Message> RequestMessage)
     {
       log.Trace("()");
 
-      PsProtocolMessage res = null;
+      IProtocolMessage<Message> res = null;
       if (!CheckSessionConditions(Client, RequestMessage, ServerRole.ClientCustomer | ServerRole.ClientNonCustomer, null, out res))
       {
-        log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+        log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
         return res;
       }
 
       PsMessageBuilder messageBuilder = Client.MessageBuilder;
-      GetIdentityRelationshipsInformationRequest getIdentityRelationshipsInformationRequest = RequestMessage.Request.SingleRequest.GetIdentityRelationshipsInformation;
+      GetIdentityRelationshipsInformationRequest getIdentityRelationshipsInformationRequest = RequestMessage.Message.Request.SingleRequest.GetIdentityRelationshipsInformation;
       byte[] identityId = getIdentityRelationshipsInformationRequest.IdentityNetworkId.ToByteArray();
       bool includeInvalid = getIdentityRelationshipsInformationRequest.IncludeInvalid;
       string type = getIdentityRelationshipsInformationRequest.Type;
@@ -2237,7 +2237,7 @@ namespace ProfileServer.Network
         res = messageBuilder.CreateErrorInvalidValueResponse(RequestMessage, "type");
       }
 
-      log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+      log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
       return res;
     }
 
@@ -2251,20 +2251,20 @@ namespace ProfileServer.Network
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client, or null if no response is to be sent by the calling function.</returns>
-    public async Task<PsProtocolMessage> ProcessMessageStartNeighborhoodInitializationRequestAsync(IncomingClient Client, PsProtocolMessage RequestMessage)
+    public async Task<IProtocolMessage<Message>> ProcessMessageStartNeighborhoodInitializationRequestAsync(IncomingClient Client, IProtocolMessage<Message> RequestMessage)
     {
       log.Trace("()");
 
-      PsProtocolMessage res = null;
+      IProtocolMessage<Message> res = null;
       if (!CheckSessionConditions(Client, RequestMessage, ServerRole.ServerNeighbor, ClientConversationStatus.Verified, out res))
       {
-        log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+        log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
         return res;
       }
 
 
       PsMessageBuilder messageBuilder = Client.MessageBuilder;
-      StartNeighborhoodInitializationRequest startNeighborhoodInitializationRequest = RequestMessage.Request.ConversationRequest.StartNeighborhoodInitialization;
+      StartNeighborhoodInitializationRequest startNeighborhoodInitializationRequest = RequestMessage.Message.Request.ConversationRequest.StartNeighborhoodInitialization;
       if (startNeighborhoodInitializationRequest == null) startNeighborhoodInitializationRequest = new StartNeighborhoodInitializationRequest();
 
       int primaryPort = (int)startNeighborhoodInitializationRequest.PrimaryPort;
@@ -2387,13 +2387,13 @@ namespace ProfileServer.Network
       {
         log.Info("New follower ID '{0}' added to the database.", followerId.ToHex());
 
-        PsProtocolMessage responseMessage = messageBuilder.CreateStartNeighborhoodInitializationResponse(RequestMessage);
+        var responseMessage = messageBuilder.CreateStartNeighborhoodInitializationResponse(RequestMessage);
         if (await Client.SendMessageAsync(responseMessage))
         {
           if (nipContext.HostedIdentities.Count > 0)
           {
             log.Trace("Sending first batch of our {0} hosted identities.", nipContext.HostedIdentities.Count);
-            PsProtocolMessage updateMessage = await BuildNeighborhoodSharedProfileUpdateRequestAsync(Client, nipContext);
+            var updateMessage = await BuildNeighborhoodSharedProfileUpdateRequestAsync(Client, nipContext);
             if (!await Client.SendMessageAndSaveUnfinishedRequestAsync(updateMessage, nipContext))
             {
               log.Warn("Unable to send first update message to the client.");
@@ -2405,7 +2405,7 @@ namespace ProfileServer.Network
             log.Trace("No hosted identities to be shared, finishing neighborhood initialization process.");
 
             // If the profile server hosts no identities, simply finish initialization process.
-            PsProtocolMessage finishMessage = messageBuilder.CreateFinishNeighborhoodInitializationRequest();
+            var finishMessage = messageBuilder.CreateFinishNeighborhoodInitializationRequest();
             if (!await Client.SendMessageAndSaveUnfinishedRequestAsync(finishMessage, null))
             {
               log.Warn("Unable to send finish message to the client.");
@@ -2422,7 +2422,7 @@ namespace ProfileServer.Network
         res = null;
       }
 
-      if (res != null) log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+      if (res != null) log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
       else log.Trace("(-):null");
       return res;
     }
@@ -2436,11 +2436,11 @@ namespace ProfileServer.Network
     /// <param name="Client">Client for which the message is to be prepared.</param>
     /// <param name="Context">Context describing the status of the initialization process.</param>
     /// <returns>Upadate request message that is ready to be sent to the client.</returns>
-    public async Task<PsProtocolMessage> BuildNeighborhoodSharedProfileUpdateRequestAsync(IncomingClient Client, NeighborhoodInitializationProcessContext Context)
+    public async Task<IProtocolMessage<Message>> BuildNeighborhoodSharedProfileUpdateRequestAsync(IncomingClient Client, NeighborhoodInitializationProcessContext Context)
     {
       log.Trace("()");
 
-      PsProtocolMessage res = Client.MessageBuilder.CreateNeighborhoodSharedProfileUpdateRequest();
+      var res = Client.MessageBuilder.CreateNeighborhoodSharedProfileUpdateRequest();
 
       // We want to send as many items as possible in one message in order to minimize the number of messages 
       // there is some overhead when the message put into the final MessageWithHeader structure, 
@@ -2464,23 +2464,23 @@ namespace ProfileServer.Network
           }
         };
 
-        res.Request.ConversationRequest.NeighborhoodSharedProfileUpdate.Items.Add(updateItem);
+        res.Message.Request.ConversationRequest.NeighborhoodSharedProfileUpdate.Items.Add(updateItem);
         int newSize = res.Message.CalculateSize();
 
         log.Trace("Index {0}, message size is {1} bytes, limit is {2} bytes.", index, newSize, messageSizeLimit);
         if (newSize > messageSizeLimit)
         {
           // We have reached the limit, remove the last item and send the message.
-          res.Request.ConversationRequest.NeighborhoodSharedProfileUpdate.Items.RemoveAt(res.Request.ConversationRequest.NeighborhoodSharedProfileUpdate.Items.Count - 1);
+          res.Message.Request.ConversationRequest.NeighborhoodSharedProfileUpdate.Items.RemoveAt(res.Message.Request.ConversationRequest.NeighborhoodSharedProfileUpdate.Items.Count - 1);
           break;
         }
 
         index++;
       }
 
-      Context.IdentitiesDone += res.Request.ConversationRequest.NeighborhoodSharedProfileUpdate.Items.Count;
+      Context.IdentitiesDone += res.Message.Request.ConversationRequest.NeighborhoodSharedProfileUpdate.Items.Count;
       log.Debug("{0} update items inserted to the message. Already processed {1}/{2} profiles.", 
-        res.Request.ConversationRequest.NeighborhoodSharedProfileUpdate.Items.Count, Context.IdentitiesDone, Context.HostedIdentities.Count);
+        res.Message.Request.ConversationRequest.NeighborhoodSharedProfileUpdate.Items.Count, Context.IdentitiesDone, Context.HostedIdentities.Count);
 
       log.Trace("(-)");
       return res;
@@ -2495,21 +2495,21 @@ namespace ProfileServer.Network
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public PsProtocolMessage ProcessMessageFinishNeighborhoodInitializationRequest(IncomingClient Client, PsProtocolMessage RequestMessage)
+    public IProtocolMessage<Message> ProcessMessageFinishNeighborhoodInitializationRequest(IncomingClient Client, IProtocolMessage<Message> RequestMessage)
     {
       log.Trace("()");
 
-      PsProtocolMessage res = null;
+      IProtocolMessage<Message> res = null;
       if (!CheckSessionConditions(Client, RequestMessage, ServerRole.ServerNeighbor, ClientConversationStatus.Verified, out res))
       {
-        log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+        log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
         return res;
       }
 
       PsMessageBuilder messageBuilder = Client.MessageBuilder;
       res = messageBuilder.CreateErrorRejectedResponse(RequestMessage);
 
-      log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+      log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
       return res;
     }
 
@@ -2522,20 +2522,20 @@ namespace ProfileServer.Network
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public async Task<PsProtocolMessage> ProcessMessageNeighborhoodSharedProfileUpdateRequestAsync(IncomingClient Client, PsProtocolMessage RequestMessage)
+    public async Task<IProtocolMessage<Message>> ProcessMessageNeighborhoodSharedProfileUpdateRequestAsync(IncomingClient Client, IProtocolMessage<Message> RequestMessage)
     {
       log.Trace("()");
 
-      PsProtocolMessage res = null;
+      IProtocolMessage<Message> res = null;
       if (!CheckSessionConditions(Client, RequestMessage, ServerRole.ServerNeighbor, ClientConversationStatus.Verified, out res))
       {
-        log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+        log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
         return res;
       }
 
 
       PsMessageBuilder messageBuilder = Client.MessageBuilder;
-      NeighborhoodSharedProfileUpdateRequest neighborhoodSharedProfileUpdateRequest = RequestMessage.Request.ConversationRequest.NeighborhoodSharedProfileUpdate;
+      NeighborhoodSharedProfileUpdateRequest neighborhoodSharedProfileUpdateRequest = RequestMessage.Message.Request.ConversationRequest.NeighborhoodSharedProfileUpdate;
       if (neighborhoodSharedProfileUpdateRequest == null) neighborhoodSharedProfileUpdateRequest = new NeighborhoodSharedProfileUpdateRequest();
 
       bool error = false;
@@ -2567,7 +2567,7 @@ namespace ProfileServer.Network
 
       if (error)
       {
-        log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+        log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
         return res;
       }
 
@@ -2592,7 +2592,7 @@ namespace ProfileServer.Network
       while (itemIndex < neighborhoodSharedProfileUpdateRequest.Items.Count)
       {
         SharedProfileUpdateItem updateItem = neighborhoodSharedProfileUpdateRequest.Items[itemIndex];
-        PsProtocolMessage errorResponse;
+        IProtocolMessage<Message> errorResponse;
         if (InputValidators.ValidateSharedProfileUpdateItem(updateItem, itemIndex, sharedProfilesCount, usedProfileIdsInBatch, Client.MessageBuilder, RequestMessage, out errorResponse))
         {
           // Modify sharedProfilesCount to reflect the item we just validated.
@@ -2775,7 +2775,7 @@ namespace ProfileServer.Network
 
       if (res == null) res = messageBuilder.CreateNeighborhoodSharedProfileUpdateResponse(RequestMessage);
 
-      log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+      log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
       return res;
     }
 
@@ -2792,7 +2792,7 @@ namespace ProfileServer.Network
       public bool Error;
 
       /// <summary>If there was an error, this is the error response message to be delivered to the neighbor.</summary>
-      public PsProtocolMessage ErrorResponse;
+      public IProtocolMessage<Message> ErrorResponse;
 
       /// <summary>If any image was replaced and the file on disk should be deleted, this is set to its hash.</summary>
       public byte[] ImageToDelete;
@@ -2813,7 +2813,7 @@ namespace ProfileServer.Network
     /// <param name="RequestMessage">Original request message sent by the neighbor.</param>
     /// <returns>Result described by StoreSharedProfileUpdateResult class.</returns>
     /// <remarks>The caller of this function is responsible to call this function within a database transaction with acquired NeighborIdentityLock.</remarks>
-    private async Task<StoreSharedProfileUpdateResult> StoreSharedProfileUpdateToDatabaseAsync(UnitOfWork UnitOfWork, SharedProfileUpdateItem UpdateItem, int UpdateItemIndex, Neighbor Neighbor, PsMessageBuilder MessageBuilder, PsProtocolMessage RequestMessage)
+    private async Task<StoreSharedProfileUpdateResult> StoreSharedProfileUpdateToDatabaseAsync(UnitOfWork UnitOfWork, SharedProfileUpdateItem UpdateItem, int UpdateItemIndex, Neighbor Neighbor, PsMessageBuilder MessageBuilder, IProtocolMessage<Message> RequestMessage)
     {
       log.Trace("(UpdateItemIndex:{0},Neighbor.SharedProfiles:{1})", UpdateItemIndex, Neighbor.SharedProfiles);
 
@@ -2951,19 +2951,19 @@ namespace ProfileServer.Network
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public async Task<PsProtocolMessage> ProcessMessageStopNeighborhoodUpdatesRequestAsync(IncomingClient Client, PsProtocolMessage RequestMessage)
+    public async Task<IProtocolMessage<Message>> ProcessMessageStopNeighborhoodUpdatesRequestAsync(IncomingClient Client, IProtocolMessage<Message> RequestMessage)
     {
       log.Trace("()");
 
-      PsProtocolMessage res = null;
+      IProtocolMessage<Message> res = null;
       if (!CheckSessionConditions(Client, RequestMessage, ServerRole.ServerNeighbor, ClientConversationStatus.Verified, out res))
       {
-        log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+        log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
         return res;
       }
 
       PsMessageBuilder messageBuilder = Client.MessageBuilder;
-      StopNeighborhoodUpdatesRequest stopNeighborhoodUpdatesRequest = RequestMessage.Request.ConversationRequest.StopNeighborhoodUpdates;
+      StopNeighborhoodUpdatesRequest stopNeighborhoodUpdatesRequest = RequestMessage.Message.Request.ConversationRequest.StopNeighborhoodUpdates;
       if (stopNeighborhoodUpdatesRequest == null) stopNeighborhoodUpdatesRequest = new StopNeighborhoodUpdatesRequest();
 
       byte[] followerId = Client.IdentityId;
@@ -2978,7 +2978,7 @@ namespace ProfileServer.Network
       }
 
 
-      log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+      log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
       return res;
     }
 
@@ -2991,7 +2991,7 @@ namespace ProfileServer.Network
     /// <param name="ResponseMessage">Full response message.</param>
     /// <param name="Request">Unfinished request message that corresponds to the response message.</param>
     /// <returns>true if the connection to the client that sent the response should remain open, false if the client should be disconnected.</returns>
-    public async Task<bool> ProcessMessageNeighborhoodSharedProfileUpdateResponseAsync(IncomingClient Client, PsProtocolMessage ResponseMessage, UnfinishedRequest Request)
+    public async Task<bool> ProcessMessageNeighborhoodSharedProfileUpdateResponseAsync(IncomingClient Client, IProtocolMessage<Message> ResponseMessage, UnfinishedRequest<Message> Request)
     {
       log.Trace("()");
 
@@ -3000,12 +3000,12 @@ namespace ProfileServer.Network
       PsMessageBuilder messageBuilder = Client.MessageBuilder;
       if (Client.NeighborhoodInitializationProcessInProgress)
       {
-        if (ResponseMessage.Response.Status == Status.Ok)
+        if (ResponseMessage.Message.Response.Status == Status.Ok)
         {
           NeighborhoodInitializationProcessContext nipContext = (NeighborhoodInitializationProcessContext)Request.Context;
           if (nipContext.IdentitiesDone < nipContext.HostedIdentities.Count)
           {
-            PsProtocolMessage updateMessage = await BuildNeighborhoodSharedProfileUpdateRequestAsync(Client, nipContext);
+            var updateMessage = await BuildNeighborhoodSharedProfileUpdateRequestAsync(Client, nipContext);
             if (await Client.SendMessageAndSaveUnfinishedRequestAsync(updateMessage, nipContext))
             {
               res = true;
@@ -3015,7 +3015,7 @@ namespace ProfileServer.Network
           else
           {
             // If all hosted identities were sent, finish initialization process.
-            PsProtocolMessage finishMessage = messageBuilder.CreateFinishNeighborhoodInitializationRequest();
+            var finishMessage = messageBuilder.CreateFinishNeighborhoodInitializationRequest();
             if (await Client.SendMessageAndSaveUnfinishedRequestAsync(finishMessage, null))
             {
               res = true;
@@ -3029,7 +3029,7 @@ namespace ProfileServer.Network
           // We should disconnect from the follower and delete it from our follower database.
           // If it wants to retry later, it can.
           // Follower will be deleted automatically as the connection terminates in IncomingClient.HandleDisconnect.
-          log.Warn("Client ID '{0}' is follower in the middle of the neighborhood initialization process, but it did not accept our profiles (error code {1}), so we will disconnect it and delete it from our database.", Client.IdentityId.ToHex(), ResponseMessage.Response.Status);
+          log.Warn("Client ID '{0}' is follower in the middle of the neighborhood initialization process, but it did not accept our profiles (error code {1}), so we will disconnect it and delete it from our database.", Client.IdentityId.ToHex(), ResponseMessage.Message.Response.Status);
         }
       }
       else log.Error("Client ID '{0}' does not have neighborhood initialization process in progress, client will be disconnected.", Client.IdentityId.ToHex());
@@ -3051,7 +3051,7 @@ namespace ProfileServer.Network
     /// <param name="ResponseMessage">Full response message.</param>
     /// <param name="Request">Unfinished request message that corresponds to the response message.</param>
     /// <returns>true if the connection to the client that sent the response should remain open, false if the client should be disconnected.</returns>
-    public async Task<bool> ProcessMessageFinishNeighborhoodInitializationResponseAsync(IncomingClient Client, PsProtocolMessage ResponseMessage, UnfinishedRequest Request)
+    public async Task<bool> ProcessMessageFinishNeighborhoodInitializationResponseAsync(IncomingClient Client, IProtocolMessage<Message> ResponseMessage, UnfinishedRequest<Message> Request)
     {
       log.Trace("()");
 
@@ -3059,7 +3059,7 @@ namespace ProfileServer.Network
 
       if (Client.NeighborhoodInitializationProcessInProgress)
       {
-        if (ResponseMessage.Response.Status == Status.Ok)
+        if (ResponseMessage.Message.Response.Status == Status.Ok)
         {
           using (UnitOfWork unitOfWork = new UnitOfWork())
           {
@@ -3133,7 +3133,7 @@ namespace ProfileServer.Network
         {
           // Client is a follower in the middle of the initialization process and failed to accept the finish request.
           // Follower will be deleted automatically as the connection terminates in IncomingClient.HandleDisconnect.
-          log.Error("Client ID '{0}' is a follower and failed to accept finish request to neighborhood initialization process (error code {1}), it will be disconnected and deleted from our database.", Client.IdentityId.ToHex(), ResponseMessage.Response.Status);
+          log.Error("Client ID '{0}' is a follower and failed to accept finish request to neighborhood initialization process (error code {1}), it will be disconnected and deleted from our database.", Client.IdentityId.ToHex(), ResponseMessage.Message.Response.Status);
         }
       }
       else log.Error("Client ID '{0}' does not have neighborhood initialization process in progress.", Client.IdentityId.ToHex());
@@ -3150,19 +3150,19 @@ namespace ProfileServer.Network
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public async Task<PsProtocolMessage> ProcessMessageCanStoreDataRequestAsync(IncomingClient Client, PsProtocolMessage RequestMessage)
+    public async Task<IProtocolMessage<Message>> ProcessMessageCanStoreDataRequestAsync(IncomingClient Client, IProtocolMessage<Message> RequestMessage)
     {
       log.Trace("()");
 
-      PsProtocolMessage res = null;
+      IProtocolMessage<Message> res = null;
       if (!CheckSessionConditions(Client, RequestMessage, ServerRole.ClientCustomer, ClientConversationStatus.Authenticated, out res))
       {
-        log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+        log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
         return res;
       }
 
       PsMessageBuilder messageBuilder = Client.MessageBuilder;
-      CanStoreDataRequest canStoreDataRequest = RequestMessage.Request.ConversationRequest.CanStoreData;
+      CanStoreDataRequest canStoreDataRequest = RequestMessage.Message.Request.ConversationRequest.CanStoreData;
 
       // First check whether the new object is valid.
       CanIdentityData identityData = canStoreDataRequest.Data;
@@ -3258,7 +3258,7 @@ namespace ProfileServer.Network
         }
       }
 
-      log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+      log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
       return res;
     }
 
@@ -3271,19 +3271,19 @@ namespace ProfileServer.Network
     /// <param name="Client">Client that sent the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public async Task<PsProtocolMessage> ProcessMessageCanPublishIpnsRecordRequestAsync(IncomingClient Client, PsProtocolMessage RequestMessage)
+    public async Task<IProtocolMessage<Message>> ProcessMessageCanPublishIpnsRecordRequestAsync(IncomingClient Client, IProtocolMessage<Message> RequestMessage)
     {
       log.Trace("()");
 
-      PsProtocolMessage res = null;
+      IProtocolMessage<Message> res = null;
       if (!CheckSessionConditions(Client, RequestMessage, ServerRole.ClientCustomer, ClientConversationStatus.Authenticated, out res))
       {
-        log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+        log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
         return res;
       }
 
       PsMessageBuilder messageBuilder = Client.MessageBuilder;
-      CanPublishIpnsRecordRequest canPublishIpnsRecordRequest = RequestMessage.Request.ConversationRequest.CanPublishIpnsRecord;
+      CanPublishIpnsRecordRequest canPublishIpnsRecordRequest = RequestMessage.Message.Request.ConversationRequest.CanPublishIpnsRecord;
 
       if (canPublishIpnsRecordRequest.Record != null)
       {
@@ -3340,7 +3340,7 @@ namespace ProfileServer.Network
         else res = messageBuilder.CreateErrorRejectedResponse(RequestMessage, cres.Message);
       }
 
-      log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+      log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
       return res;
     }
   }

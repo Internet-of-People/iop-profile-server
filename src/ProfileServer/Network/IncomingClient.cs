@@ -44,7 +44,7 @@ namespace ProfileServer.Network
   /// <summary>
   /// Incoming client class represents any kind of TCP client that connects to one of the profile server's TCP servers.
   /// </summary>
-  public class IncomingClient : IncomingClientBase, IDisposable
+  public class IncomingClient : IncomingClientBase<Message>, IDisposable
   {   
     /// <summary>Maximum number of bytes that application service name can occupy.</summary>
     public const int MaxApplicationServiceNameLengthBytes = 32;
@@ -104,7 +104,7 @@ namespace ProfileServer.Network
 
 
     /// <summary>List of unprocessed requests that we expect to receive responses to mapped by Message.id.</summary>
-    private Dictionary<uint, UnfinishedRequest> unfinishedRequests = new Dictionary<uint, UnfinishedRequest>();
+    private Dictionary<uint, UnfinishedRequest<Message>> unfinishedRequests = new Dictionary<uint, UnfinishedRequest<Message>>();
 
     /// <summary>Lock for access to unfinishedRequests list.</summary>
     private object unfinishedRequestsLock = new object();
@@ -121,7 +121,7 @@ namespace ProfileServer.Network
     /// <param name="UseTls">true if the client is connected to the TLS port, false otherwise.</param>
     /// <param name="KeepAliveIntervalMs">Number of seconds for the connection to this client to be without any message until the profile server can close it for inactivity.</param>
     /// <param name="LogPrefix">Prefix for log entries created by the client.</param>
-    public IncomingClient(TcpRoleServer<IncomingClient> Server, TcpClient TcpClient, ulong Id, bool UseTls, int KeepAliveIntervalMs, string LogPrefix) :
+    public IncomingClient(TcpRoleServer<IncomingClient, Message> Server, TcpClient TcpClient, ulong Id, bool UseTls, int KeepAliveIntervalMs, string LogPrefix) :
       base(TcpClient, new PsMessageProcessor(Server, LogPrefix), Id, UseTls, KeepAliveIntervalMs, Server.IdBase, Server.ShutdownSignaling, LogPrefix)
     {
       this.Id = Id;
@@ -146,7 +146,7 @@ namespace ProfileServer.Network
     /// </summary>
     /// <param name="Data">Raw data to be decoded to the message.</param>
     /// <returns>ProtoBuf message or null if the data do not represent a valid message.</returns>
-    public override IProtocolMessage CreateMessageFromRawData(byte[] Data)
+    public override IProtocolMessage<Message> CreateMessageFromRawData(byte[] Data)
     {
       return PsMessageBuilder.CreateMessageFromRawData(Data);
     }
@@ -157,7 +157,7 @@ namespace ProfileServer.Network
     /// </summary>
     /// <param name="Data">IoP Profile Server Network protocol message.</param>
     /// <returns>Binary representation of the message to be sent over the network.</returns>
-    public override byte[] MessageToByteArray(IProtocolMessage Data)
+    public override byte[] MessageToByteArray(IProtocolMessage<Message> Data)
     {
       return PsMessageBuilder.MessageToByteArray(Data);
     }

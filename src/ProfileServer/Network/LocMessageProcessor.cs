@@ -29,7 +29,7 @@ namespace ProfileServer.Network
   /// <summary>
   /// Implements the logic behind processing incoming messages from the LOC server.
   /// </summary>
-  public class LocMessageProcessor: IMessageProcessor
+  public class LocMessageProcessor: IMessageProcessor<Message>
   {
     /// <summary>Instance logger.</summary>
     private Logger log;
@@ -53,24 +53,24 @@ namespace ProfileServer.Network
     /// <param name="Client">TCP client who received the message.</param>
     /// <param name="IncomingMessage">Full ProtoBuf message to be processed.</param>
     /// <returns>true if the conversation with the client should continue, false if a protocol violation error occurred and the client should be disconnected.</returns>
-    public async Task<bool> ProcessMessageAsync(ClientBase Client, IProtocolMessage IncomingMessage)
+    public async Task<bool> ProcessMessageAsync(ClientBase<Message> Client, IProtocolMessage<Message> IncomingMessage)
     {
       LocClient client = (LocClient)Client;
-      LocProtocolMessage incomingMessage = (LocProtocolMessage)IncomingMessage;
+      var incomingMessage = IncomingMessage;
 
       log.Debug("()");
 
       bool res = false;
       try
       {
-        log.Trace("Received message type is {0}, message ID is {1}.", incomingMessage.MessageTypeCase, incomingMessage.Id);
+        log.Trace("Received message type is {0}, message ID is {1}.", incomingMessage.Message.MessageTypeCase, incomingMessage.Id);
 
-        switch (incomingMessage.MessageTypeCase)
+        switch (incomingMessage.Message.MessageTypeCase)
         {
           case Message.MessageTypeOneofCase.Request:
             {
-              LocProtocolMessage responseMessage = client.MessageBuilder.CreateErrorProtocolViolationResponse(incomingMessage);
-              Request request = incomingMessage.Request;
+              var responseMessage = client.MessageBuilder.CreateErrorProtocolViolationResponse(incomingMessage);
+              Request request = incomingMessage.Message.Request;
 
               SemVer version = new SemVer(request.Version);
               log.Trace("Request type is {0}, version is {1}.", request.RequestTypeCase, version);
@@ -109,8 +109,8 @@ namespace ProfileServer.Network
                 if (res)
                 {
                   // If the message was sent successfully to the target, we close the connection only in case of protocol violation error.
-                  if (responseMessage.MessageTypeCase == Message.MessageTypeOneofCase.Response)
-                    res = responseMessage.Response.Status != Status.ErrorProtocolViolation;
+                  if (responseMessage.Message.MessageTypeCase == Message.MessageTypeOneofCase.Response)
+                    res = responseMessage.Message.Response.Status != Status.ErrorProtocolViolation;
                 }
 
               }
@@ -125,7 +125,7 @@ namespace ProfileServer.Network
 
           case Message.MessageTypeOneofCase.Response:
             {
-              Response response = incomingMessage.Response;
+              Response response = incomingMessage.Message.Response;
               log.Trace("Response status is {0}, details are '{1}', response type is {2}.", response.Status, response.Details, response.ResponseTypeCase);
 
               // The only response we should ever receive here is GetNeighbourNodesByDistanceResponse in response to our refresh request that we do from time to time.
@@ -145,7 +145,7 @@ namespace ProfileServer.Network
             }
 
           default:
-            log.Error("Unknown message type '{0}', connection to the client will be closed.", incomingMessage.MessageTypeCase);
+            log.Error("Unknown message type '{0}', connection to the client will be closed.", incomingMessage.Message.MessageTypeCase);
             await SendProtocolViolation(client);
             // Connection will be closed in ReceiveMessageLoop.
             break;
@@ -167,10 +167,10 @@ namespace ProfileServer.Network
     /// Sends ERROR_PROTOCOL_VIOLATION to client with message ID set to 0x0BADC0DE.
     /// </summary>
     /// <param name="Client">Client to send the error to.</param>
-    public async Task SendProtocolViolation(ClientBase Client)
+    public async Task SendProtocolViolation(ClientBase<Message> Client)
     {
       LocMessageBuilder mb = new LocMessageBuilder(0, new List<SemVer> { SemVer.V100 });
-      LocProtocolMessage response = mb.CreateErrorProtocolViolationResponse(new LocProtocolMessage(new Message() { Id = 0x0BADC0DE }));
+      var response = mb.CreateErrorProtocolViolationResponse();
 
       await Client.SendMessageAsync(response);
     }
@@ -183,14 +183,14 @@ namespace ProfileServer.Network
     /// <param name="ResponseMessage">Full response message.</param>
     /// <param name="IsInitialization">true if the response was received to the request during the LOC initialization, false if it was received to the refresh request after the initialization.</param>
     /// <returns>true if the connection to the LOC server should remain open, false if it should be closed.</returns>
-    public async Task<bool> ProcessMessageGetNeighbourNodesByDistanceResponseAsync(LocProtocolMessage ResponseMessage, bool IsInitialization)
+    public async Task<bool> ProcessMessageGetNeighbourNodesByDistanceResponseAsync(IProtocolMessage<Message> ResponseMessage, bool IsInitialization)
     {
       log.Trace("(IsInitialization:{0})", IsInitialization);
 
       bool res = false;
       bool signalActionProcessor = false;
 
-      GetNeighbourNodesByDistanceResponse getNeighbourNodesByDistanceResponse = ResponseMessage.Response.LocalService.GetNeighbourNodes;
+      GetNeighbourNodesByDistanceResponse getNeighbourNodesByDistanceResponse = ResponseMessage.Message.Response.LocalService.GetNeighbourNodes;
       if (getNeighbourNodesByDistanceResponse.Nodes.Count > 0)
       {
         using (UnitOfWork unitOfWork = new UnitOfWork())
@@ -440,14 +440,14 @@ namespace ProfileServer.Network
     /// <param name="Client">TCP client who received the message.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public async Task<LocProtocolMessage> ProcessMessageNeighbourhoodChangedNotificationRequestAsync(LocClient Client, LocProtocolMessage RequestMessage)
+    public async Task<IProtocolMessage<Message>> ProcessMessageNeighbourhoodChangedNotificationRequestAsync(LocClient Client, IProtocolMessage<Message> RequestMessage)
     {
       log.Trace("()");
 
-      LocProtocolMessage res = Client.MessageBuilder.CreateErrorInternalResponse(RequestMessage);
+      var res = Client.MessageBuilder.CreateErrorInternalResponse(RequestMessage);
       bool signalActionProcessor = false;
 
-      NeighbourhoodChangedNotificationRequest neighbourhoodChangedNotificationRequest = RequestMessage.Request.LocalService.NeighbourhoodChanged;
+      NeighbourhoodChangedNotificationRequest neighbourhoodChangedNotificationRequest = RequestMessage.Message.Request.LocalService.NeighbourhoodChanged;
 
       using (UnitOfWork unitOfWork = new UnitOfWork())
       {
@@ -602,7 +602,7 @@ namespace ProfileServer.Network
         neighborhoodActionProcessor.Signal();
       }
 
-      log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+      log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
       return res;
     }
 

@@ -77,8 +77,8 @@ namespace ProfileServer.Network
       try
       {
         Server serverComponent = (Server)Base.ComponentDictionary[Server.ComponentName];
-        List<TcpRoleServer<IncomingClient>> roleServers = serverComponent.GetRoleServers();
-        foreach (TcpRoleServer<IncomingClient> roleServer in roleServers)
+        var roleServers = serverComponent.GetRoleServers();
+        foreach (var roleServer in roleServers)
         {
           if ((roleServer.Roles & (uint)ServerRole.Primary) != 0)
             primaryPort = (uint)roleServer.EndPoint.Port;
@@ -473,7 +473,7 @@ namespace ProfileServer.Network
       IPEndPoint endPoint = await GetNeighborServerContactAsync(NeighborId, notFound);
       if (endPoint != null)
       {
-        using (OutgoingClient client = new OutgoingClient(endPoint, true, ShutdownSignaling.ShutdownCancellationTokenSource.Token))
+        using (var client = new OutgoingClient(endPoint, true, ShutdownSignaling.ShutdownCancellationTokenSource.Token))
         {
           Dictionary<byte[], NeighborIdentity> identityDatabase = new Dictionary<byte[], NeighborIdentity>(StructuralEqualityComparer<byte[]>.Default);
           client.Context = identityDatabase;
@@ -509,15 +509,15 @@ namespace ProfileServer.Network
                     break;
                   }
 
-                  PsProtocolMessage requestMessage = await client.ReceiveMessageAsync();
+                  var requestMessage = await client.ReceiveMessageAsync();
                   if (requestMessage != null)
                   {
-                    PsProtocolMessage responseMessage = client.MessageBuilder.CreateErrorProtocolViolationResponse(requestMessage);
+                    var responseMessage = client.MessageBuilder.CreateErrorProtocolViolationResponse(requestMessage);
                     try
                     {
-                      if (requestMessage.MessageTypeCase == Message.MessageTypeOneofCase.Request)
+                      if (requestMessage.Message.MessageTypeCase == Message.MessageTypeOneofCase.Request)
                       {
-                        Request request = requestMessage.Request;
+                        Request request = requestMessage.Message.Request;
                         if (request.ConversationTypeCase == Request.ConversationTypeOneofCase.ConversationRequest)
                         {
                           ConversationRequest conversationRequest = request.ConversationRequest;
@@ -547,7 +547,7 @@ namespace ProfileServer.Network
                       }
                       else
                       {
-                        log.Warn("Invalid message type '{0}' received, expected Request, will retry later.", requestMessage.MessageTypeCase);
+                        log.Warn("Invalid message type '{0}' received, expected Request, will retry later.", requestMessage.Message.MessageTypeCase);
                         error = true;
                       }
                     }
@@ -883,7 +883,7 @@ namespace ProfileServer.Network
           {
             if (client.MatchServerId(NeighborId))
             {
-              PsProtocolMessage requestMessage = client.MessageBuilder.CreateStopNeighborhoodUpdatesRequest();
+              var requestMessage = client.MessageBuilder.CreateStopNeighborhoodUpdatesRequest();
               if (!await client.SendStopNeighborhoodUpdates(requestMessage))
               {
                 if (client.LastResponseStatus == Status.ErrorNotFound) log.Info("Neighbor ID '{0}' does not register us as followers.", NeighborId.ToHex());
@@ -1132,7 +1132,7 @@ namespace ProfileServer.Network
               if (client.MatchServerId(FollowerId))
               {
                 List<SharedProfileUpdateItem> updateList = new List<SharedProfileUpdateItem>() { updateItem };
-                PsProtocolMessage updateMessage = client.MessageBuilder.CreateNeighborhoodSharedProfileUpdateRequest(updateList);
+                var updateMessage = client.MessageBuilder.CreateNeighborhoodSharedProfileUpdateRequest(updateList);
                 if (await client.SendNeighborhoodSharedProfileUpdateAsync(updateMessage))
                 {
                   if (updateItem.ActionTypeCase == SharedProfileUpdateItem.ActionTypeOneofCase.Refresh)
@@ -1271,15 +1271,15 @@ namespace ProfileServer.Network
     /// <param name="Client">Client that received the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the remote peer.</returns>
-    private async Task<PsProtocolMessage> ProcessMessageNeighborhoodSharedProfileUpdateRequestAsync(OutgoingClient Client, PsProtocolMessage RequestMessage)
+    private async Task<IProtocolMessage<Message>> ProcessMessageNeighborhoodSharedProfileUpdateRequestAsync(OutgoingClient Client, IProtocolMessage<Message> RequestMessage)
     {
       log.Trace("()");
 
       PsMessageBuilder messageBuilder = Client.MessageBuilder;
-      PsProtocolMessage res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
+      var res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
 
       bool error = false;
-      NeighborhoodSharedProfileUpdateRequest neighborhoodSharedProfileUpdateRequest = RequestMessage.Request.ConversationRequest.NeighborhoodSharedProfileUpdate;
+      NeighborhoodSharedProfileUpdateRequest neighborhoodSharedProfileUpdateRequest = RequestMessage.Message.Request.ConversationRequest.NeighborhoodSharedProfileUpdate;
       log.Debug("Received {0} update items.", neighborhoodSharedProfileUpdateRequest.Items.Count);
 
       Dictionary<byte[], NeighborIdentity> identityDatabase = (Dictionary<byte[], NeighborIdentity>)Client.Context;
@@ -1289,7 +1289,7 @@ namespace ProfileServer.Network
         if (updateItem.ActionTypeCase == SharedProfileUpdateItem.ActionTypeOneofCase.Add)
         {
           SharedProfileAddItem addItem = updateItem.Add;
-          PsProtocolMessage errorResponse;
+          IProtocolMessage<Message> errorResponse;
           if (InputValidators.ValidateInMemorySharedProfileAddItem(addItem, itemIndex, identityDatabase, Client.MessageBuilder, RequestMessage, out errorResponse))
           {
             byte[] thumbnailImageHash = addItem.SignedProfile.Profile.ThumbnailImageHash.ToByteArray();
@@ -1330,7 +1330,7 @@ namespace ProfileServer.Network
       if (!error) res = messageBuilder.CreateNeighborhoodSharedProfileUpdateResponse(RequestMessage);
       else Client.ForceDisconnect = true;
 
-      log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+      log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
       return res;
     }
 
@@ -1342,14 +1342,14 @@ namespace ProfileServer.Network
     /// <param name="Client">Client that received the request.</param>
     /// <param name="RequestMessage">Full request message.</param>
     /// <returns>Response message to be sent to the remote peer.</returns>
-    private async Task<PsProtocolMessage> ProcessMessageFinishNeighborhoodInitializationRequestAsync(OutgoingClient Client, PsProtocolMessage RequestMessage)
+    private async Task<IProtocolMessage<Message>> ProcessMessageFinishNeighborhoodInitializationRequestAsync(OutgoingClient Client, IProtocolMessage<Message> RequestMessage)
     {
       log.Trace("()");
 
       PsMessageBuilder messageBuilder = Client.MessageBuilder;
-      PsProtocolMessage res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
+      var res = messageBuilder.CreateErrorInternalResponse(RequestMessage);
 
-      FinishNeighborhoodInitializationRequest finishNeighborhoodInitializationRequest = RequestMessage.Request.ConversationRequest.FinishNeighborhoodInitialization;
+      FinishNeighborhoodInitializationRequest finishNeighborhoodInitializationRequest = RequestMessage.Message.Request.ConversationRequest.FinishNeighborhoodInitialization;
 
       bool success = false;
       Dictionary<byte[], NeighborIdentity> identityDatabase = (Dictionary<byte[], NeighborIdentity>)Client.Context;
@@ -1366,7 +1366,7 @@ namespace ProfileServer.Network
       if (success) res = messageBuilder.CreateFinishNeighborhoodInitializationResponse(RequestMessage);
       else Client.ForceDisconnect = true;
 
-      log.Trace("(-):*.Response.Status={0}", res.Response.Status);
+      log.Trace("(-):*.Response.Status={0}", res.Message.Response.Status);
       return res;
     }
   }

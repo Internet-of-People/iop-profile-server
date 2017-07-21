@@ -24,7 +24,7 @@ namespace ProfileServer.Network
   /// <summary>
   /// Outgoing client class represents a TCP client the profile server, in the role of a client, used to connect to other profile servers.
   /// </summary>
-  public class OutgoingClient : ClientBase, IDisposable
+  public class OutgoingClient : ClientBase<Message>, IDisposable
   {
     /// <summary>Special value for LastResponseDetails to indicate connection failure.</summary>
     public const string LastResponseDetailsConnectionFailed = "<ConnectionFailed>";
@@ -97,7 +97,7 @@ namespace ProfileServer.Network
     /// </summary>
     /// <param name="Data">Raw data to be decoded to the message.</param>
     /// <returns>ProtoBuf message or null if the data do not represent a valid message.</returns>
-    public override IProtocolMessage CreateMessageFromRawData(byte[] Data)
+    public override IProtocolMessage<Message> CreateMessageFromRawData(byte[] Data)
     {
       return PsMessageBuilder.CreateMessageFromRawData(Data);
     }
@@ -108,7 +108,7 @@ namespace ProfileServer.Network
     /// </summary>
     /// <param name="Data">IoP Profile Server Network protocol message.</param>
     /// <returns>Binary representation of the message to be sent over the network.</returns>
-    public override byte[] MessageToByteArray(IProtocolMessage Data)
+    public override byte[] MessageToByteArray(IProtocolMessage<Message> Data)
     {
       return PsMessageBuilder.MessageToByteArray(Data);
     }
@@ -118,11 +118,11 @@ namespace ProfileServer.Network
     /// Reads and parses protocol message from the network stream.
     /// </summary>
     /// <returns>Parsed protocol message or null if the function fails.</returns>
-    public async Task<PsProtocolMessage> ReceiveMessageAsync()
+    public async Task<IProtocolMessage<Message>> ReceiveMessageAsync()
     {
       log.Trace("()");
 
-      PsProtocolMessage res = null;
+      IProtocolMessage<Message> res = null;
 
       using (CancellationTokenSource readTimeoutTokenSource = new CancellationTokenSource(60000),
              timeoutShutdownTokenSource = CancellationTokenSource.CreateLinkedTokenSource(readTimeoutTokenSource.Token, shutdownCancellationToken))
@@ -131,11 +131,11 @@ namespace ProfileServer.Network
         RawMessageResult rawMessage = await messageReader.ReceiveMessageAsync(timeoutShutdownTokenSource.Token);
         if (rawMessage.Data != null)
         {
-          res = (PsProtocolMessage)CreateMessageFromRawData(rawMessage.Data);
-          if (res.MessageTypeCase == Message.MessageTypeOneofCase.Response)
+          res = CreateMessageFromRawData(rawMessage.Data);
+          if (res.Message.MessageTypeCase == Message.MessageTypeOneofCase.Response)
           {
-            lastResponseStatus = res.Response.Status;
-            lastResponseDetails = res.Response.Details;
+            lastResponseStatus = res.Message.Response.Status;
+            lastResponseDetails = res.Message.Response.Details;
           }
         }
       }
@@ -152,7 +152,7 @@ namespace ProfileServer.Network
     /// </summary>
     /// <param name="Message">Message to send.</param>
     /// <returns>true if the connection to the client should remain open, false otherwise.</returns>
-    public override async Task<bool> SendMessageAsync(IProtocolMessage Message)
+    public override async Task<bool> SendMessageAsync(IProtocolMessage<Message> Message)
     {
       log.Trace("()");
 
@@ -169,11 +169,11 @@ namespace ProfileServer.Network
     /// Generates client's challenge and creates start conversation request with it.
     /// </summary>
     /// <returns>StartConversationRequest message that is ready to be sent to the server.</returns>
-    public PsProtocolMessage CreateStartConversationRequest()
+    public IProtocolMessage<Message> CreateStartConversationRequest()
     {
       clientChallenge = new byte[PsMessageBuilder.ChallengeDataSize];
       Crypto.Rng.GetBytes(clientChallenge);
-      PsProtocolMessage res = MessageBuilder.CreateStartConversationRequest(clientChallenge);
+      var res = MessageBuilder.CreateStartConversationRequest(clientChallenge);
       return res;
     }
 
@@ -185,7 +185,7 @@ namespace ProfileServer.Network
     /// <param name="RequestMessage">Request message for which the response was received.</param>
     /// <param name="ResponseMessage">Response message received.</param>
     /// <returns>true if the response is valid and its status is OK.</returns>
-    public bool CheckResponseMessage(PsProtocolMessage RequestMessage, PsProtocolMessage ResponseMessage)
+    public bool CheckResponseMessage(IProtocolMessage<Message> RequestMessage, IProtocolMessage<Message> ResponseMessage)
     {
       log.Trace("()");
 
@@ -195,47 +195,47 @@ namespace ProfileServer.Network
       {
         if (ResponseMessage.Id == RequestMessage.Id)
         {
-          if (ResponseMessage.MessageTypeCase == Message.MessageTypeOneofCase.Response)
+          if (ResponseMessage.Message.MessageTypeCase == Message.MessageTypeOneofCase.Response)
           {
-            Response response = ResponseMessage.Response;
+            Response response = ResponseMessage.Message.Response;
             if (response.Status == Status.Ok)
             {
               switch (response.ConversationTypeCase)
               {
                 case Response.ConversationTypeOneofCase.SingleResponse:
-                  if (RequestMessage.Request.ConversationTypeCase == Request.ConversationTypeOneofCase.SingleRequest)
+                  if (RequestMessage.Message.Request.ConversationTypeCase == Request.ConversationTypeOneofCase.SingleRequest)
                   {
-                    SingleRequest.RequestTypeOneofCase requestType = RequestMessage.Request.SingleRequest.RequestTypeCase;
+                    SingleRequest.RequestTypeOneofCase requestType = RequestMessage.Message.Request.SingleRequest.RequestTypeCase;
                     if (response.SingleResponse.ResponseTypeCase.ToString() == requestType.ToString())
                     {
                       res = true;
                     }
                     else log.Debug("Single response type {0} does not match single request type {1}.", response.SingleResponse.ResponseTypeCase, requestType);
                   }
-                  else log.Debug("Response message conversation type {0} does not match request message conversation type {1}.", response.ConversationTypeCase, RequestMessage.Request.ConversationTypeCase);
+                  else log.Debug("Response message conversation type {0} does not match request message conversation type {1}.", response.ConversationTypeCase, RequestMessage.Message.Request.ConversationTypeCase);
                   break;
 
                 case Response.ConversationTypeOneofCase.ConversationResponse:
-                  if (RequestMessage.Request.ConversationTypeCase == Request.ConversationTypeOneofCase.ConversationRequest)
+                  if (RequestMessage.Message.Request.ConversationTypeCase == Request.ConversationTypeOneofCase.ConversationRequest)
                   {
-                    ConversationRequest.RequestTypeOneofCase requestType = RequestMessage.Request.ConversationRequest.RequestTypeCase;
+                    ConversationRequest.RequestTypeOneofCase requestType = RequestMessage.Message.Request.ConversationRequest.RequestTypeCase;
                     if (response.ConversationResponse.ResponseTypeCase.ToString() == requestType.ToString())
                     {
                       res = true;
                     }
                     else log.Debug("Conversation response type {0} does not match conversation request type {1}.", response.ConversationResponse.ResponseTypeCase, requestType);
                   }
-                  else log.Debug("Response message conversation type {0} does not match request message conversation type {1}.", response.ConversationTypeCase, RequestMessage.Request.ConversationTypeCase);
+                  else log.Debug("Response message conversation type {0} does not match request message conversation type {1}.", response.ConversationTypeCase, RequestMessage.Message.Request.ConversationTypeCase);
                   break;
 
                 default:
-                  log.Error("Invalid response conversation type {0}.", ResponseMessage.Response.ConversationTypeCase);
+                  log.Error("Invalid response conversation type {0}.", ResponseMessage.Message.Response.ConversationTypeCase);
                   break;
               }
             }
-            else log.Debug("Response message status is {0}.", ResponseMessage.Response.Status);
+            else log.Debug("Response message status is {0}.", ResponseMessage.Message.Response.Status);
           }
-          else log.Debug("Received message is not response, its message type is {0}.", ResponseMessage.MessageTypeCase);
+          else log.Debug("Received message is not response, its message type is {0}.", ResponseMessage.Message.MessageTypeCase);
         }
         else log.Debug("Response message ID {0} does not match request message ID {1}.", ResponseMessage.Id, RequestMessage.Id);
       }
@@ -255,23 +255,23 @@ namespace ProfileServer.Network
 
       bool res = false;
 
-      PsProtocolMessage requestMessage = CreateStartConversationRequest();
+      var requestMessage = CreateStartConversationRequest();
       if (await SendMessageAsync(requestMessage))
       {
-        PsProtocolMessage responseMessage = await ReceiveMessageAsync();
+        var responseMessage = await ReceiveMessageAsync();
         if (CheckResponseMessage(requestMessage, responseMessage))
         {
           try
           {
-            SemVer receivedVersion = new SemVer(responseMessage.Response.ConversationResponse.Start.Version);
+            SemVer receivedVersion = new SemVer(responseMessage.Message.Response.ConversationResponse.Start.Version);
             bool versionOk = receivedVersion.Equals(new SemVer(MessageBuilder.Version));
 
-            bool pubKeyLenOk = responseMessage.Response.ConversationResponse.Start.PublicKey.Length == ProtocolHelper.NetworkIdentifierLength;
-            bool challengeOk = responseMessage.Response.ConversationResponse.Start.Challenge.Length == PsMessageBuilder.ChallengeDataSize;
+            bool pubKeyLenOk = responseMessage.Message.Response.ConversationResponse.Start.PublicKey.Length == ProtocolHelper.NetworkIdentifierLength;
+            bool challengeOk = responseMessage.Message.Response.ConversationResponse.Start.Challenge.Length == PsMessageBuilder.ChallengeDataSize;
 
-            serverKey = responseMessage.Response.ConversationResponse.Start.PublicKey.ToByteArray();
+            serverKey = responseMessage.Message.Response.ConversationResponse.Start.PublicKey.ToByteArray();
             serverId = Crypto.Sha256(serverKey);
-            serverChallenge = responseMessage.Response.ConversationResponse.Start.Challenge.ToByteArray();
+            serverChallenge = responseMessage.Message.Response.ConversationResponse.Start.Challenge.ToByteArray();
             bool challengeVerifyOk = VerifyServerChallengeSignature(responseMessage);
 
             res = versionOk && pubKeyLenOk && challengeOk && challengeVerifyOk;
@@ -301,10 +301,10 @@ namespace ProfileServer.Network
       bool res = false;
       if (await StartConversationAsync())
       {
-        PsProtocolMessage requestMessage = MessageBuilder.CreateVerifyIdentityRequest(serverChallenge);
+        var requestMessage = MessageBuilder.CreateVerifyIdentityRequest(serverChallenge);
         if (await SendMessageAsync(requestMessage))
         {
-          PsProtocolMessage responseMessage = await ReceiveMessageAsync();
+          var responseMessage = await ReceiveMessageAsync();
           if (CheckResponseMessage(requestMessage, responseMessage))
           {
             res = true;
@@ -348,11 +348,11 @@ namespace ProfileServer.Network
     /// </summary>
     /// <param name="StartConversationResponse">StartConversationResponse received from the server.</param>
     /// <returns>true if the signature is valid, false otherwise.</returns>
-    public bool VerifyServerChallengeSignature(PsProtocolMessage StartConversationResponse)
+    public bool VerifyServerChallengeSignature(IProtocolMessage<Message> StartConversationResponse)
     {
       log.Trace("()");
 
-      byte[] receivedChallenge = StartConversationResponse.Response.ConversationResponse.Start.ClientChallenge.ToByteArray();
+      byte[] receivedChallenge = StartConversationResponse.Message.Response.ConversationResponse.Start.ClientChallenge.ToByteArray();
       bool res = ByteArrayComparer.Equals(receivedChallenge, clientChallenge)
         && MessageBuilder.VerifySignedConversationResponseBodyPart(StartConversationResponse, receivedChallenge, serverKey);
 
@@ -388,10 +388,10 @@ namespace ProfileServer.Network
 
       bool res = false;
       Config config = (Config)Base.ComponentDictionary[ConfigBase.ComponentName];
-      PsProtocolMessage requestMessage = MessageBuilder.CreateStartNeighborhoodInitializationRequest(PrimaryPort, SrNeighborPort, config.ExternalServerAddress);
+      var requestMessage = MessageBuilder.CreateStartNeighborhoodInitializationRequest(PrimaryPort, SrNeighborPort, config.ExternalServerAddress);
       if (await SendMessageAsync(requestMessage))
       {
-        PsProtocolMessage responseMessage = await ReceiveMessageAsync();
+        var responseMessage = await ReceiveMessageAsync();
         if (CheckResponseMessage(requestMessage, responseMessage))
         {
           res = true;
@@ -415,15 +415,15 @@ namespace ProfileServer.Network
     /// </summary>
     /// <param name="RequestMessage">Request message to send.</param>
     /// <returns>true if the function succeeds, false otherwise.</returns>
-    public async Task<bool> SendNeighborhoodSharedProfileUpdateAsync(PsProtocolMessage RequestMessage)
+    public async Task<bool> SendNeighborhoodSharedProfileUpdateAsync(IProtocolMessage<Message> RequestMessage)
     {
       log.Trace("()");
 
       bool res = false;
-      PsProtocolMessage requestMessage = RequestMessage;
+      var requestMessage = RequestMessage;
       if (await SendMessageAsync(requestMessage))
       {
-        PsProtocolMessage responseMessage = await ReceiveMessageAsync();
+        var responseMessage = await ReceiveMessageAsync();
         if (CheckResponseMessage(requestMessage, responseMessage))
         {
           res = true;
@@ -448,15 +448,15 @@ namespace ProfileServer.Network
     /// </summary>
     /// <param name="RequestMessage">Request message to send.</param>
     /// <returns>true if the function succeeds, false otherwise.</returns>
-    public async Task<bool> SendStopNeighborhoodUpdates(PsProtocolMessage RequestMessage)
+    public async Task<bool> SendStopNeighborhoodUpdates(IProtocolMessage<Message> RequestMessage)
     {
       log.Trace("()");
 
       bool res = false;
-      PsProtocolMessage requestMessage = RequestMessage;
+      var requestMessage = RequestMessage;
       if (await SendMessageAsync(requestMessage))
       {
-        PsProtocolMessage responseMessage = await ReceiveMessageAsync();
+        var responseMessage = await ReceiveMessageAsync();
         if (CheckResponseMessage(requestMessage, responseMessage))
         {
           res = true;
@@ -483,13 +483,13 @@ namespace ProfileServer.Network
       log.Trace("()");
 
       ListRolesResponse res = null;
-      PsProtocolMessage requestMessage = MessageBuilder.CreateListRolesRequest();
+      var requestMessage = MessageBuilder.CreateListRolesRequest();
       if (await SendMessageAsync(requestMessage))
       {
-        PsProtocolMessage responseMessage = await ReceiveMessageAsync();
+        var responseMessage = await ReceiveMessageAsync();
         if (CheckResponseMessage(requestMessage, responseMessage))
         {
-          res = responseMessage.Response.SingleResponse.ListRoles;
+          res = responseMessage.Message.Response.SingleResponse.ListRoles;
         }
         else log.Warn("Received unexpected or invalid message.");
       }

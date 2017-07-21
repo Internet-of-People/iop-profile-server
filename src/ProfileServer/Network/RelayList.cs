@@ -28,7 +28,7 @@ namespace ProfileServer.Network
     /// <param name="ServiceName">Name of the application service to use.</param>
     /// <param name="RequestMessage">CallIdentityApplicationServiceRequest message that the caller send in order to initiate the call.</param>
     /// <returns>New relay connection object if the function succeeds, or null otherwise.</returns>
-    public RelayConnection CreateNetworkRelay(IncomingClient Caller, IncomingClient Callee, string ServiceName, PsProtocolMessage RequestMessage)
+    public RelayConnection CreateNetworkRelay(IncomingClient Caller, IncomingClient Callee, string ServiceName, IProtocolMessage<Iop.Profileserver.Message> RequestMessage)
     {
       log.Trace("(Caller.Id:{0},Callee.Id:{1},ServiceName:'{2}')", Caller.Id.ToHex(), Callee.Id.ToHex(), ServiceName);
 

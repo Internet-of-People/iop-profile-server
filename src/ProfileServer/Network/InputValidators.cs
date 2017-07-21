@@ -30,7 +30,7 @@ namespace ProfileServer.Network
     /// <param name="ErrorPrefix">Prefix to add to the validation error details.</param>
     /// <param name="ErrorResponse">If the function fails, this is filled with error response message that is ready to be sent to the client.</param>
     /// <returns>true if the signed profile information is valid, false otherwise.</returns>
-    public static bool ValidateProfileInformation(ProfileInformation Profile, byte[] IdentityPublicKey, PsMessageBuilder MessageBuilder, PsProtocolMessage RequestMessage, string ErrorPrefix, out PsProtocolMessage ErrorResponse)
+    public static bool ValidateProfileInformation(ProfileInformation Profile, byte[] IdentityPublicKey, PsMessageBuilder MessageBuilder, IProtocolMessage<Message> RequestMessage, string ErrorPrefix, out IProtocolMessage<Message> ErrorResponse)
     {
       log.Trace("()");
 
@@ -153,7 +153,7 @@ namespace ProfileServer.Network
     /// <param name="InvalidSignatureToDetails">If set to true, invalid signature error will be reported as invalid value in signature field.</param>
     /// <param name="ErrorResponse">If the function fails, this is filled with error response message that is ready to be sent to the client.</param>
     /// <returns>true if the signed profile information is valid and signed correctly by the given identity, false otherwise.</returns>
-    public static bool ValidateSignedProfileInformation(SignedProfileInformation SignedProfile, byte[] IdentityPublicKey, PsMessageBuilder MessageBuilder, PsProtocolMessage RequestMessage, string ErrorPrefix, bool InvalidSignatureToDetails, out PsProtocolMessage ErrorResponse)
+    public static bool ValidateSignedProfileInformation(SignedProfileInformation SignedProfile, byte[] IdentityPublicKey, PsMessageBuilder MessageBuilder, IProtocolMessage<Message> RequestMessage, string ErrorPrefix, bool InvalidSignatureToDetails, out IProtocolMessage<Message> ErrorResponse)
     {
       log.Trace("()");
       ErrorResponse = null;
@@ -192,7 +192,7 @@ namespace ProfileServer.Network
     /// <param name="RequestMessage">Full request message from client.</param>
     /// <param name="ErrorResponse">If the function fails, this is filled with error response message that is ready to be sent to the client.</param>
     /// <returns>true if the profile update request can be applied, false otherwise.</returns>
-    public static bool ValidateUpdateProfileRequest(HostedIdentity Identity, UpdateProfileRequest UpdateProfileRequest, PsMessageBuilder MessageBuilder, PsProtocolMessage RequestMessage, out PsProtocolMessage ErrorResponse)
+    public static bool ValidateUpdateProfileRequest(HostedIdentity Identity, UpdateProfileRequest UpdateProfileRequest, PsMessageBuilder MessageBuilder, IProtocolMessage<Message> RequestMessage, out IProtocolMessage<Message> ErrorResponse)
     {
       log.Trace("(Identity.IdentityId:'{0}')", Identity.IdentityId.ToHex());
 
@@ -205,7 +205,7 @@ namespace ProfileServer.Network
       SignedProfileInformation signedProfile = new SignedProfileInformation()
       {
         Profile = UpdateProfileRequest.Profile,
-        Signature = RequestMessage.Request.ConversationRequest.Signature
+        Signature = RequestMessage.Message.Request.ConversationRequest.Signature
       };
 
       if (ValidateSignedProfileInformation(signedProfile, Identity.PublicKey, MessageBuilder, RequestMessage, "", false, out ErrorResponse))
@@ -280,7 +280,7 @@ namespace ProfileServer.Network
     /// <param name="RequestMessage">Full request message from client.</param>
     /// <param name="ErrorResponse">If the function fails, this is filled with error response message that is ready to be sent to the client.</param>
     /// <returns>true if the profile search request is valid, false otherwise.</returns>
-    public static bool ValidateProfileSearchRequest(ProfileSearchRequest ProfileSearchRequest, PsMessageBuilder MessageBuilder, PsProtocolMessage RequestMessage, out PsProtocolMessage ErrorResponse)
+    public static bool ValidateProfileSearchRequest(ProfileSearchRequest ProfileSearchRequest, PsMessageBuilder MessageBuilder, IProtocolMessage<Message> RequestMessage, out IProtocolMessage<Message> ErrorResponse)
     {
       log.Trace("()");
 
@@ -387,7 +387,7 @@ namespace ProfileServer.Network
     /// <param name="RequestMessage">Full request message from client.</param>
     /// <param name="ErrorResponse">If the function fails, this is filled with error response message that is ready to be sent to the client.</param>
     /// <returns>true if the profile update request can be applied, false otherwise.</returns>
-    public static bool ValidateAddRelatedIdentityRequest(IncomingClient Client, AddRelatedIdentityRequest AddRelatedIdentityRequest, PsMessageBuilder MessageBuilder, PsProtocolMessage RequestMessage, out PsProtocolMessage ErrorResponse)
+    public static bool ValidateAddRelatedIdentityRequest(IncomingClient Client, AddRelatedIdentityRequest AddRelatedIdentityRequest, PsMessageBuilder MessageBuilder, IProtocolMessage<Message> RequestMessage, out IProtocolMessage<Message> ErrorResponse)
     {
       log.Trace("()");
 
@@ -555,7 +555,7 @@ namespace ProfileServer.Network
     /// <param name="RequestMessage">Full request message received by the client.</param>
     /// <param name="ErrorResponse">If the validation fails, this is filled with response message to be sent to the neighbor.</param>
     /// <returns>true if the validation is successful, false otherwise.</returns>
-    public static bool ValidateSharedProfileUpdateItem(SharedProfileUpdateItem UpdateItem, int Index, int SharedProfilesCount, HashSet<byte[]> UsedProfileIdsInBatch, PsMessageBuilder MessageBuilder, PsProtocolMessage RequestMessage, out PsProtocolMessage ErrorResponse)
+    public static bool ValidateSharedProfileUpdateItem(SharedProfileUpdateItem UpdateItem, int Index, int SharedProfilesCount, HashSet<byte[]> UsedProfileIdsInBatch, PsMessageBuilder MessageBuilder, IProtocolMessage<Message> RequestMessage, out IProtocolMessage<Message> ErrorResponse)
     {
       log.Trace("(Index:{0},SharedProfilesCount:{1})", Index, SharedProfilesCount);
 
@@ -604,7 +604,7 @@ namespace ProfileServer.Network
     /// <param name="RequestMessage">Full request message received by the client.</param>
     /// <param name="ErrorResponse">If the validation fails, this is filled with response message to be sent to the neighbor.</param>
     /// <returns>true if the validation is successful, false otherwise.</returns>
-    public static bool ValidateSharedProfileAddItem(SharedProfileAddItem AddItem, int Index, int SharedProfilesCount, HashSet<byte[]> UsedProfileIdsInBatch, PsMessageBuilder MessageBuilder, PsProtocolMessage RequestMessage, out PsProtocolMessage ErrorResponse)
+    public static bool ValidateSharedProfileAddItem(SharedProfileAddItem AddItem, int Index, int SharedProfilesCount, HashSet<byte[]> UsedProfileIdsInBatch, PsMessageBuilder MessageBuilder, IProtocolMessage<Message> RequestMessage, out IProtocolMessage<Message> ErrorResponse)
     {
       log.Trace("(Index:{0},SharedProfilesCount:{1})", Index, SharedProfilesCount);
 
@@ -676,7 +676,7 @@ namespace ProfileServer.Network
     /// <param name="RequestMessage">Full request message received by the client.</param>
     /// <param name="ErrorResponse">If the validation fails, this is filled with response message to be sent to the neighbor.</param>
     /// <returns>true if the validation is successful, false otherwise.</returns>
-    public static bool ValidateSharedProfileChangeItem(SharedProfileChangeItem ChangeItem, int Index, HashSet<byte[]> UsedProfileIdsInBatch, PsMessageBuilder MessageBuilder, PsProtocolMessage RequestMessage, out PsProtocolMessage ErrorResponse)
+    public static bool ValidateSharedProfileChangeItem(SharedProfileChangeItem ChangeItem, int Index, HashSet<byte[]> UsedProfileIdsInBatch, PsMessageBuilder MessageBuilder, IProtocolMessage<Message> RequestMessage, out IProtocolMessage<Message> ErrorResponse)
     {
       log.Trace("(Index:{0})", Index);
 
@@ -740,7 +740,7 @@ namespace ProfileServer.Network
     /// <param name="RequestMessage">Full request message received by the client.</param>
     /// <param name="ErrorResponse">If the validation fails, this is filled with response message to be sent to the neighbor.</param>
     /// <returns>true if the validation is successful, false otherwise.</returns>
-    public static bool ValidateSharedProfileDeleteItem(SharedProfileDeleteItem DeleteItem, int Index, HashSet<byte[]> UsedProfileIdsInBatch, PsMessageBuilder MessageBuilder, PsProtocolMessage RequestMessage, out PsProtocolMessage ErrorResponse)
+    public static bool ValidateSharedProfileDeleteItem(SharedProfileDeleteItem DeleteItem, int Index, HashSet<byte[]> UsedProfileIdsInBatch, PsMessageBuilder MessageBuilder, IProtocolMessage<Message> RequestMessage, out IProtocolMessage<Message> ErrorResponse)
     {
       log.Trace("(Index:{0})", Index);
 
@@ -791,7 +791,7 @@ namespace ProfileServer.Network
     /// <param name="RequestMessage">Full request message received by the client.</param>
     /// <param name="ErrorResponse">If the validation fails, this is filled with response message to be sent to the neighbor.</param>
     /// <returns>true if the validation is successful, false otherwise.</returns>
-    public static bool ValidateInMemorySharedProfileAddItem(SharedProfileAddItem AddItem, int Index, Dictionary<byte[], NeighborIdentity> IdentityDatabase, PsMessageBuilder MessageBuilder, PsProtocolMessage RequestMessage, out PsProtocolMessage ErrorResponse)
+    public static bool ValidateInMemorySharedProfileAddItem(SharedProfileAddItem AddItem, int Index, Dictionary<byte[], NeighborIdentity> IdentityDatabase, PsMessageBuilder MessageBuilder, IProtocolMessage<Message> RequestMessage, out IProtocolMessage<Message> ErrorResponse)
     {
       log.Trace("(Index:{0})", Index);
 
@@ -858,7 +858,7 @@ namespace ProfileServer.Network
     /// <param name="RequestMessage">Full request message from client.</param>
     /// <param name="ErrorResponse">If the function fails, this is filled with error response message that is ready to be sent to the client.</param>
     /// <returns>true if the profile update request can be applied, false otherwise.</returns>
-    public static bool ValidateRegisterHostingRequest(byte[] IdentityPublicKey, HostingPlanContract Contract, PsMessageBuilder MessageBuilder, PsProtocolMessage RequestMessage, out PsProtocolMessage ErrorResponse)
+    public static bool ValidateRegisterHostingRequest(byte[] IdentityPublicKey, HostingPlanContract Contract, PsMessageBuilder MessageBuilder, IProtocolMessage<Message> RequestMessage, out IProtocolMessage<Message> ErrorResponse)
     {
       log.Trace("(IdentityPublicKey:'{0}')", IdentityPublicKey.ToHex());
 

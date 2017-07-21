@@ -38,7 +38,7 @@ namespace ProfileServer.Network
   /// <summary>
   /// Network server component is responsible managing the role TCP servers.
   /// </summary>
-  public class Server : IopServerCore.Network.ServerBase<IncomingClient>
+  public class Server : IopServerCore.Network.ServerBase<IncomingClient, Iop.Profileserver.Message>
   {
     /// <summary>Class logger.</summary>
     private static Logger log = new Logger("ProfileServer." + ComponentName);

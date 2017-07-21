@@ -211,7 +211,7 @@ namespace ProfileServer.Network
 
       bool res = false;
 
-      LocProtocolMessage response = await client.GetNeighborhoodInformationAsync();
+      var response = await client.GetNeighborhoodInformationAsync();
       if (response != null)
       {
         LocMessageProcessor locMessageProcessor = (LocMessageProcessor)client.MessageProcessor;
@@ -248,7 +248,7 @@ namespace ProfileServer.Network
       {
         try
         {
-          LocProtocolMessage request = client.MessageBuilder.CreateGetNeighbourNodesByDistanceLocalRequest();
+          var request = client.MessageBuilder.CreateGetNeighbourNodesByDistanceLocalRequest();
           if (await client.SendMessageAsync(request))
           {
             log.Trace("GetNeighbourNodesByDistanceLocalRequest sent to LOC server to get fresh neighborhood data.");
