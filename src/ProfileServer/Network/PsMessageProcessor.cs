@@ -122,6 +122,14 @@ namespace ProfileServer.Network
                         responseMessage = await ProcessMessageGetProfileInformationRequestAsync(client, incomingMessage);
                         break;
 
+                      case SingleRequest.RequestTypeOneofCase.ProfileSearch:
+                        responseMessage = await ProcessMessageProfileSearchRequestAsync(client, incomingMessage);
+                        break;
+
+                      case SingleRequest.RequestTypeOneofCase.ProfileSearchPart:
+                        responseMessage = ProcessMessageProfileSearchPartRequest(client, incomingMessage);
+                        break;
+
                       case SingleRequest.RequestTypeOneofCase.ApplicationServiceSendMessage:
                         responseMessage = await ProcessMessageApplicationServiceSendMessageRequestAsync(client, incomingMessage);
                         break;
@@ -185,14 +193,6 @@ namespace ProfileServer.Network
 
                       case ConversationRequest.RequestTypeOneofCase.CallIdentityApplicationService:
                         responseMessage = await ProcessMessageCallIdentityApplicationServiceRequestAsync(client, incomingMessage);
-                        break;
-
-                      case ConversationRequest.RequestTypeOneofCase.ProfileSearch:
-                        responseMessage = await ProcessMessageProfileSearchRequestAsync(client, incomingMessage);
-                        break;
-
-                      case ConversationRequest.RequestTypeOneofCase.ProfileSearchPart:
-                        responseMessage = ProcessMessageProfileSearchPartRequest(client, incomingMessage);
                         break;
 
                       case ConversationRequest.RequestTypeOneofCase.AddRelatedIdentity:
@@ -1661,7 +1661,7 @@ namespace ProfileServer.Network
       }
 
       PsMessageBuilder messageBuilder = Client.MessageBuilder;
-      ProfileSearchRequest profileSearchRequest = RequestMessage.Request.ConversationRequest.ProfileSearch;
+      ProfileSearchRequest profileSearchRequest = RequestMessage.Request.SingleRequest.ProfileSearch;
       if (profileSearchRequest == null) profileSearchRequest = new ProfileSearchRequest();
 
       PsProtocolMessage errorResponse;
@@ -1936,7 +1936,7 @@ namespace ProfileServer.Network
       }
 
       PsMessageBuilder messageBuilder = Client.MessageBuilder;
-      ProfileSearchPartRequest profileSearchPartRequest = RequestMessage.Request.ConversationRequest.ProfileSearchPart;
+      ProfileSearchPartRequest profileSearchPartRequest = RequestMessage.Request.SingleRequest.ProfileSearchPart;
 
       int cacheResultsCount;
       bool cacheIncludeImages;
