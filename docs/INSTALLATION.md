@@ -27,14 +27,13 @@ Please visit [OpenSSL website](https://www.openssl.org/) and follow the instruct
 ## Download Profile Server Source Codes
 
 The goal here is to download the latest release branch of the source code. If you are familiar with GIT and GitHub, you will probably know what to do.
-If you are not familiar with them, simply go to the [Branches Page](https://github.com/Fermat-ORG/iop-profile-server/branches/) of the repository and find a branch that starts with `release/` and click on its name. 
+If you are not familiar with them, simply go to the [Branches Page](https://github.com/Internet-of-People/iop-profile-server/branches) of the repository and find a branch that starts with `release/` and click on its name. 
 Then click the *Clone or download* green button on the right side. Then click the *Download ZIP* link and save the file to your disk. Unzip the file to any folder of your choice. This folder will be called `$CloneDir` in the text below. 
 
 ## Download IoP SDK for .NET Core Source Codes
 
-Profile Server project has a dependency on [IoP SDK for .NET Core](https://github.com/Fermat-ORG/iop-sdk-netcore) project. In order to compile Profile Server, you will need to download the source code 
-of IoP SDK for .NET Core and have it in the right directory. Just as in case of Profile Server, you need to find the latest release branch on the [Branches Page](https://github.com/Fermat-ORG/iop-sdk-netcore/branches/) 
-of IoP SDK for .NET Core repository and download it or clone it. You need to put the source code of IoP SDK for .NET Core into a directory called `iop-sdk-netcore` on the same level as your `$CloneDir`. 
+Profile Server project has a dependency on [IoP SDK for .NET Core](https://github.com/Internet-of-People/iop-sdk-netcore) project. In order to compile Profile Server, you will need to download the source code 
+of IoP SDK for .NET Core and have it in the right directory. Just as in case of Profile Server, you need to find the latest release branch on the [Branches Page](https://github.com/Internet-of-People/iop-sdk-netcore/branches) of on the IoP SDK for .NET Core repository and download it or clone it. You need to put the source code of IoP SDK for .NET Core into a directory called `iop-sdk-netcore` on the same level as your `$CloneDir`. 
 
 
 ## Build Profile Server
@@ -77,7 +76,7 @@ instead, which will create `ProfileServer.db` inside `Debug` directory structure
 
 ## Download Profile Server Binaries
 
-Go to [Releases Page](https://github.com/Fermat-ORG/iop-profile-server/releases) and download the latest release for your platform, if available.
+Go to [Releases Page](https://github.com/Internet-of-People/iop-profile-server/releases) and download the latest release for your platform, if available.
 
 
 ### Dependencies for Windows 
