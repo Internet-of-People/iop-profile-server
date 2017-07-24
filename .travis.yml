@@ -1,20 +1,35 @@
+# https://docs.travis-ci.com/user/languages/csharp/
 language: csharp
-mono: none
-dotnet: 1.0.4
+
+# run on Ubuntu 14.04
 dist: trusty
 
+# build with .NET Core runtime
+mono: none
+dotnet: 1.0.4
+
+# install dependencies
+install:
+  # clone iop-sdk-netcore project which is a dependency
+  - git clone https://github.com/Internet-of-People/iop-sdk-netcore.git ../iop-sdk-netcore
+
+# run build
 script:
- - git clone https://github.com/Internet-of-People/iop-sdk-netcore.git ../iop-sdk-netcore
  - cd src/ProfileServer
  - dotnet restore
+ # create executable
  - dotnet publish --configuration Release --runtime ubuntu.14.04-x64
+ # initialize the Profile Server's database file
  - dotnet ef database update
  - cp bin/Debug/netcoreapp1.1/ProfileServer.db bin/Release/netcoreapp1.1/ubuntu.14.04-x64/ProfileServer.db
  - cd bin/Release/netcoreapp1.1/ubuntu.14.04-x64
+ # generate TLS certificate
  - openssl req -nodes -x509 -newkey rsa:4096 -subj "/C=CI/ST=CI/L=CI/O=CI/CN=CI" \-keyout ProfileServer.key -out ProfileServer.cer -days 365000
  - openssl pkcs12 -export -out ProfileServer.pfx -inkey ProfileServer.key -in ProfileServer.cer -passout pass:""
+ # setup conf with public IP
  - extip=$(dig +short myip.opendns.com @resolver1.opendns.com)
  - sed -i -e "/external_server_address =/ s/= .*/= ${extip}/" ./ProfileServer.conf
+ # start and validate Profile Server
  - nohup ./ProfileServer &
  - pid=$!
  - sleep 3 && kill $pid
