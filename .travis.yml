@@ -1,0 +1,21 @@
+language: csharp
+mono: none
+dotnet: 1.0.4
+dist: trusty
+
+script:
+ - git clone https://github.com/Internet-of-People/iop-sdk-netcore.git ../iop-sdk-netcore
+ - cd src/ProfileServer
+ - dotnet restore
+ - dotnet publish --configuration Release --runtime ubuntu.14.04-x64
+ - dotnet ef database update
+ - cp bin/Debug/netcoreapp1.1/ProfileServer.db bin/Release/netcoreapp1.1/ubuntu.14.04-x64/ProfileServer.db
+ - cd bin/Release/netcoreapp1.1/ubuntu.14.04-x64
+ - openssl req -nodes -x509 -newkey rsa:4096 -subj "/C=CI/ST=CI/L=CI/O=CI/CN=CI" \-keyout ProfileServer.key -out ProfileServer.cer -days 365000
+ - openssl pkcs12 -export -out ProfileServer.pfx -inkey ProfileServer.key -in ProfileServer.cer -passout pass:""
+ - extip=$(dig +short myip.opendns.com @resolver1.opendns.com)
+ - sed -i -e "/external_server_address =/ s/= .*/= ${extip}/" ./ProfileServer.conf
+ - nohup ./ProfileServer &
+ - pid=$!
+ - sleep 3 && kill $pid
+ 
