@@ -1,6 +1,8 @@
 <img src="https://raw.githubusercontent.com/Internet-of-People/media/master/official/iop_logo_main.png" alt="IoP Logo" height="100px">
 
 # IoP Profile Server
+[![Build Status](https://img.shields.io/travis/Internet-of-People/iop-profile-server/master.svg?style=flat-square)](https://travis-ci.org/Internet-of-People/iop-profile-server)
+[![.NET Core](https://img.shields.io/badge/.NET%20Core-v1.0.4-blue.svg?style=flat-square)](https://www.microsoft.com/net/core)
 
 The Profile Server is a core component of the [Internet of People architecture](https://hackernoon.com/fermat-the-internet-of-people-and-the-person-to-person-economy-ce933865a0b0). 
 If you are not familiar with IoP, the Profile Server itself will probably make not much sense to you. If that is the case, it is highly recommended to explore IoP first before you 
