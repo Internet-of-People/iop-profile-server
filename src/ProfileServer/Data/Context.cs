@@ -28,7 +28,6 @@ namespace ProfileServer.Data
 
     /// <summary>Related identities announced by hosted identities.</summary>
     public DbSet<RelatedIdentity> RelatedIdentities { get; set; }
-
     
     /// <summary>Neighbor profile servers.</summary>
     public DbSet<Neighbor> Neighbors { get; set; }
@@ -36,9 +35,11 @@ namespace ProfileServer.Data
     /// <summary>Planned actions related to the neighborhood.</summary>
     public DbSet<NeighborhoodAction> NeighborhoodActions { get; set; }
 
-
     /// <summary>Follower servers.</summary>
     public DbSet<Follower> Followers { get; set; }
+
+    /// <summary>Queued messages for offline hosted identities.</summary>
+    public DbSet<MissedCall> MissedCalls { get; set; }
 
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -69,6 +70,9 @@ namespace ProfileServer.Data
       modelBuilder.Entity<HostedIdentity>().HasIndex(i => new { i.ExpirationDate });
       modelBuilder.Entity<HostedIdentity>().HasIndex(i => new { i.Cancelled });
       modelBuilder.Entity<HostedIdentity>().HasIndex(i => new { i.Initialized, i.Cancelled, i.InitialLocationLatitude, i.InitialLocationLongitude, i.Type, i.Name });
+      modelBuilder.Entity<HostedIdentity>().HasMany(i => i.MissedCalls)
+        .WithOne(i => i.Callee)
+        .HasForeignKey(i => i.CalleeId);
 
       modelBuilder.Entity<HostedIdentity>().Property(i => i.InitialLocationLatitude).HasColumnType("decimal(9,6)").IsRequired(true);
       modelBuilder.Entity<HostedIdentity>().Property(i => i.InitialLocationLongitude).HasColumnType("decimal(9,6)").IsRequired(true);
@@ -124,6 +128,10 @@ namespace ProfileServer.Data
       modelBuilder.Entity<NeighborhoodAction>().HasIndex(i => new { i.TargetIdentityId });
       modelBuilder.Entity<NeighborhoodAction>().HasIndex(i => new { i.ServerId, i.Type, i.TargetIdentityId });
       modelBuilder.Entity<NeighborhoodAction>().Property(e => e.TargetIdentityId).IsRequired(false);
+
+      modelBuilder.Entity<MissedCall>().HasKey(i => new { i.DbId });
+      modelBuilder.Entity<MissedCall>().HasIndex(i => new { i.CallerId, i.StoredAt });
+      modelBuilder.Entity<MissedCall>().HasIndex(i => new { i.CalleeId, i.StoredAt });
     }
   }
 }

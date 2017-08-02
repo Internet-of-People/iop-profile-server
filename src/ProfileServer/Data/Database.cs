@@ -44,7 +44,8 @@ namespace ProfileServer.Data
         if (DeleteUninitializedNeighbors()
           && DeleteUninitializedFollowers()
           && DeleteInvalidNeighborIdentities()
-          && DeleteInvalidNeighborhoodActions())
+          && DeleteInvalidNeighborhoodActions()
+          && DeleteInvalidMissedCalls())
         {
           RegisterCronJobs();
 
@@ -65,7 +66,6 @@ namespace ProfileServer.Data
       log.Info("(-):{0}", res);
       return res;
     }
-
 
     public override void Shutdown()
     {
@@ -393,6 +393,21 @@ namespace ProfileServer.Data
       return res;
     }
 
+
+    private bool DeleteInvalidMissedCalls()
+    {
+      log.Info("()");
+
+      bool res = false;
+      using (UnitOfWork unitOfWork = new UnitOfWork())
+      {
+        #warning TODO: Either use foreign keys with cascading delete, or maintain messages for old profiles here.
+        unitOfWork.Save();
+      }
+
+      log.Info("(-):{0}", res);
+      return res;
+    }
 
 
     /// <summary>

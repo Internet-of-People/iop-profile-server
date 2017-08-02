@@ -46,6 +46,8 @@ namespace ProfileServer.Data.Models
     [Required]
     public DateTime ExpirationDate { get; set; }
 
+    public virtual ICollection<MissedCall> MissedCalls { get; set; }
+
 
     /// <summary>CAN hash of the object that the client uploaded to CAN.</summary>
     public byte[] CanObjectHash { get; set; }
@@ -53,7 +55,9 @@ namespace ProfileServer.Data.Models
     /// <summary>Profile image binary data that are not stored into database.</summary>
     private byte[] profileImageData { get; set; }
 
-
+    public HostedIdentity() {
+      MissedCalls = new HashSet<MissedCall>();
+    }
 
 
     /// <summary>

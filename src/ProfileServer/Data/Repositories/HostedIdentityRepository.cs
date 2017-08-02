@@ -39,8 +39,11 @@ namespace ProfileServer.Data.Repositories
     /// <returns>List of statistics of hosted profile types.</returns>
     public async Task<List<ProfileStatsItem>> GetProfileStatsAsync()
     {
-      return await context.Identities.Where(i => (i.Initialized == true) && (i.Cancelled == false)).GroupBy(i => i.Type)
-        .Select(g => new ProfileStatsItem { IdentityType = g.Key, Count = (uint)g.Count() }).ToListAsync();
+      return await context.Identities
+        .Where(i => (i.Initialized == true) && (i.Cancelled == false))
+        .GroupBy(i => i.Type)
+        .Select(g => new ProfileStatsItem { IdentityType = g.Key, Count = (uint)g.Count() })
+        .ToListAsync();
     }
 
     /// <summary>

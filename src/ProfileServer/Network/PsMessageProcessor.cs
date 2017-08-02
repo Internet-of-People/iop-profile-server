@@ -956,6 +956,8 @@ namespace ProfileServer.Network
                 {
                   Client.ConversationStatus = ClientConversationStatus.Authenticated;
 
+                  var y = identity.MissedCalls.ToArray();
+
                   success = true;
                 }
                 else log.Error("Identity '{0}' failed to check-in.", Client.IdentityId.ToHex());
