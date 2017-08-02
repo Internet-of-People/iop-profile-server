@@ -9,46 +9,46 @@ namespace ProfileServer.Network
 {
   public class RelayList : IDisposable
   {
-    private static Logger log = new Logger("ProfileServer.Network.RelayList");
+    private static Logger _log = new Logger("ProfileServer.Network.RelayList");
 
     /// <summary>Lock object for synchronized access to relay list structures.</summary>
-    private object lockObject = new object();
+    private object _lock = new object();
 
     /// <summary>
     /// List of active relay connections mapped by the caller/callee's tokens or relay ID.
     /// </summary>
-    private Dictionary<Guid, RelayConnection> relaysByGuid = new Dictionary<Guid, RelayConnection>(StructuralEqualityComparer<Guid>.Default);
+    private Dictionary<Guid, RelayConnection> _relayMap = new Dictionary<Guid, RelayConnection>(StructuralEqualityComparer<Guid>.Default);
 
 
     /// <summary>
     /// Creates a new network relay between a caller identity and one of the profile server's customer identities that is online.
     /// </summary>
-    /// <param name="Caller">Initiator of the call.</param>
-    /// <param name="Callee">Profile server's customer client to be called.</param>
-    /// <param name="ServiceName">Name of the application service to use.</param>
-    /// <param name="RequestMessage">CallIdentityApplicationServiceRequest message that the caller send in order to initiate the call.</param>
+    /// <param name="caller">Initiator of the call.</param>
+    /// <param name="callee">Profile server's customer client to be called.</param>
+    /// <param name="serviceName">Name of the application service to use.</param>
+    /// <param name="request">CallIdentityApplicationServiceRequest message that the caller send in order to initiate the call.</param>
     /// <returns>New relay connection object if the function succeeds, or null otherwise.</returns>
-    public RelayConnection CreateNetworkRelay(IncomingClient Caller, IncomingClient Callee, string ServiceName, IProtocolMessage<Iop.Profileserver.Message> RequestMessage)
+    public RelayConnection CreateNetworkRelay(IncomingClient caller, IncomingClient callee, string serviceName, IProtocolMessage<Iop.Profileserver.Message> request)
     {
-      log.Trace("(Caller.Id:{0},Callee.Id:{1},ServiceName:'{2}')", Caller.Id.ToHex(), Callee.Id.ToHex(), ServiceName);
+      _log.Trace("(Caller.Id:{0},Callee.Id:{1},ServiceName:'{2}')", caller.Id.ToHex(), callee.Id.ToHex(), serviceName);
 
       RelayConnection res = null;
 
-      RelayConnection relay = new RelayConnection(Caller, Callee, ServiceName, RequestMessage);
-      lock (lockObject)
+      RelayConnection relay = new RelayConnection(caller, callee, serviceName, request);
+      lock (_lock)
       {
-        relaysByGuid.Add(relay.GetId(), relay);
-        relaysByGuid.Add(relay.GetCallerToken(), relay);
-        relaysByGuid.Add(relay.GetCalleeToken(), relay);
+        _relayMap.Add(relay.GetId(), relay);
+        _relayMap.Add(relay.GetCallerToken(), relay);
+        _relayMap.Add(relay.GetCalleeToken(), relay);
       }
 
-      log.Debug("Relay ID '{0}' added to the relay list.", relay.GetId());
-      log.Debug("Caller token '{0}' added to the relay list.", relay.GetCallerToken());
-      log.Debug("Callee token '{0}' added to the relay list.", relay.GetCalleeToken());
+      _log.Debug("Relay ID '{0}' added to the relay list.", relay.GetId());
+      _log.Debug("Caller token '{0}' added to the relay list.", relay.GetCallerToken());
+      _log.Debug("Callee token '{0}' added to the relay list.", relay.GetCalleeToken());
 
       res = relay;
 
-      log.Trace("(-):{0}", res);
+      _log.Trace("(-):{0}", res);
       return res;
     }
 
@@ -56,62 +56,62 @@ namespace ProfileServer.Network
     /// <summary>
     /// Destroys relay connection and all references to it.
     /// </summary>
-    /// <param name="Relay">Relay connection to destroy.</param>
-    public async Task DestroyNetworkRelay(RelayConnection Relay)
+    /// <param name="relay">Relay connection to destroy.</param>
+    public async Task DestroyNetworkRelay(RelayConnection relay)
     {
-      log.Trace("(Relay.id:'{0}')", Relay.GetId());
+      _log.Trace("(Relay.id:'{0}')", relay.GetId());
 
-      bool destroyed = await Relay.TestAndSetDestroyed();
+      bool destroyed = await relay.TestAndSetDestroyed();
       if (!destroyed)
       {
         bool relayIdRemoved = false;
         bool callerTokenRemoved = false;
         bool calleeTokenRemoved = false;
-        lock (lockObject)
+        lock (_lock)
         {
-          relayIdRemoved = relaysByGuid.Remove(Relay.GetId());
-          callerTokenRemoved = relaysByGuid.Remove(Relay.GetCallerToken());
-          calleeTokenRemoved = relaysByGuid.Remove(Relay.GetCalleeToken());
+          relayIdRemoved = _relayMap.Remove(relay.GetId());
+          callerTokenRemoved = _relayMap.Remove(relay.GetCallerToken());
+          calleeTokenRemoved = _relayMap.Remove(relay.GetCalleeToken());
         }
 
-        if (!relayIdRemoved) log.Error("Relay ID '{0}' not found in relay list.", Relay.GetId());
-        if (!callerTokenRemoved) log.Error("Caller token '{0}' not found in relay list.", Relay.GetCallerToken());
-        if (!calleeTokenRemoved) log.Error("Callee token '{0}' not found in relay list.", Relay.GetCalleeToken());
+        if (!relayIdRemoved) _log.Error("Relay ID '{0}' not found in relay list.", relay.GetId());
+        if (!callerTokenRemoved) _log.Error("Caller token '{0}' not found in relay list.", relay.GetCallerToken());
+        if (!calleeTokenRemoved) _log.Error("Callee token '{0}' not found in relay list.", relay.GetCalleeToken());
 
-        Relay.Dispose();
+        relay.Dispose();
       }
-      else log.Trace("Relay ID '{0}' has been destroyed already.", Relay.GetId());
+      else _log.Trace("Relay ID '{0}' has been destroyed already.", relay.GetId());
 
-      log.Trace("(-)");
+      _log.Trace("(-)");
     }
 
 
     /// <summary>
     /// Obtains relay using its ID, caller's token, or callee's token.
     /// </summary>
-    /// <param name="Guid">Relay ID, caller's token, or callee's token</param>
+    /// <param name="token">Relay ID, caller's token, or callee's token</param>
     /// <returns>Relay that corresponds to the given GUID, or null if no such relay exists.</returns>
-    public RelayConnection GetRelayByGuid(Guid Guid)
+    public RelayConnection GetRelayByGuid(Guid token)
     {
-      log.Trace("(Guid:'{0}')", Guid);
+      _log.Trace("(Guid:'{0}')", token);
 
       RelayConnection res = null;
-      lock (lockObject)
+      lock (_lock)
       {
-        relaysByGuid.TryGetValue(Guid, out res);
+        _relayMap.TryGetValue(token, out res);
       }
 
-      if (res != null) log.Trace("(-):*.Id='{0}'", res.GetId());
-      else log.Trace("(-):null");
+      if (res != null) _log.Trace("(-):*.Id='{0}'", res.GetId());
+      else _log.Trace("(-):null");
       return res;
     }
 
 
     /// <summary>Signals whether the instance has been disposed already or not.</summary>
-    private bool disposed = false;
+    private bool _disposed = false;
 
     /// <summary>Prevents race condition from multiple threads trying to dispose the same client instance at the same time.</summary>
-    private object disposingLock = new object();
+    private object _disposingLock = new object();
 
     /// <summary>
     /// Disposes the instance of the class.
@@ -123,24 +123,24 @@ namespace ProfileServer.Network
     }
 
     /// <summary>
-    /// Disposes the instance of the class if it has not been disposed yet and <paramref name="Disposing"/> is set.
+    /// Disposes the instance of the class if it has not been disposed yet and <paramref name="_disposing"/> is set.
     /// </summary>
-    /// <param name="Disposing">Indicates whether the method was invoked from the IDisposable.Dispose implementation or from the finalizer.</param>
-    protected virtual void Dispose(bool Disposing)
+    /// <param name="_disposing">Indicates whether the method was invoked from the IDisposable.Dispose implementation or from the finalizer.</param>
+    protected virtual void Dispose(bool _disposing)
     {
       bool disposedAlready = false;
-      lock (disposingLock)
+      lock (_disposingLock)
       {
-        disposedAlready = disposed;
-        disposed = true;
+        disposedAlready = _disposed;
+        _disposed = true;
       }
       if (disposedAlready) return;
 
-      if (Disposing)
+      if (_disposing)
       {
-        lock (lockObject)
+        lock (_lock)
         {
-          List<RelayConnection> relays = relaysByGuid.Values.ToList();
+          List<RelayConnection> relays = _relayMap.Values.ToList();
           foreach (RelayConnection relay in relays)
             DestroyNetworkRelay(relay).Wait();
         }
