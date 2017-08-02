@@ -1421,7 +1421,7 @@ namespace ProfileServer.Network
             if (relay != null)
             {
               bool error = false;
-              var notificationMessage = callee.MessageBuilder.CreateIncomingCallNotificationRequest(Client.PublicKey, serviceName, relay.GetCalleeToken().ToByteArray());
+              var notificationMessage = callee.MessageBuilder.CreateIncomingCallNotificationRequest(Client.PublicKey, serviceName, relay.CalleeToken.ToByteArray());
               if (await callee.SendMessageAndSaveUnfinishedRequestAsync(notificationMessage, relay))
               {
                 // res remains null, which is fine!

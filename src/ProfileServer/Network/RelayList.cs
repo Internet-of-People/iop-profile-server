@@ -37,14 +37,14 @@ namespace ProfileServer.Network
       RelayConnection relay = new RelayConnection(caller, callee, serviceName, request);
       lock (_lock)
       {
-        _relayMap.Add(relay.GetId(), relay);
-        _relayMap.Add(relay.GetCallerToken(), relay);
-        _relayMap.Add(relay.GetCalleeToken(), relay);
+        _relayMap.Add(relay.Id, relay);
+        _relayMap.Add(relay.CallerToken, relay);
+        _relayMap.Add(relay.CalleeToken, relay);
       }
 
-      _log.Debug("Relay ID '{0}' added to the relay list.", relay.GetId());
-      _log.Debug("Caller token '{0}' added to the relay list.", relay.GetCallerToken());
-      _log.Debug("Callee token '{0}' added to the relay list.", relay.GetCalleeToken());
+      _log.Debug("Relay ID '{0}' added to the relay list.", relay.Id);
+      _log.Debug("Caller token '{0}' added to the relay list.", relay.CallerToken);
+      _log.Debug("Callee token '{0}' added to the relay list.", relay.CalleeToken);
 
       res = relay;
 
@@ -59,7 +59,7 @@ namespace ProfileServer.Network
     /// <param name="relay">Relay connection to destroy.</param>
     public async Task DestroyNetworkRelay(RelayConnection relay)
     {
-      _log.Trace("(Relay.id:'{0}')", relay.GetId());
+      _log.Trace("(Relay.id:'{0}')", relay.Id);
 
       bool destroyed = await relay.TestAndSetDestroyed();
       if (!destroyed)
@@ -69,18 +69,18 @@ namespace ProfileServer.Network
         bool calleeTokenRemoved = false;
         lock (_lock)
         {
-          relayIdRemoved = _relayMap.Remove(relay.GetId());
-          callerTokenRemoved = _relayMap.Remove(relay.GetCallerToken());
-          calleeTokenRemoved = _relayMap.Remove(relay.GetCalleeToken());
+          relayIdRemoved = _relayMap.Remove(relay.Id);
+          callerTokenRemoved = _relayMap.Remove(relay.CallerToken);
+          calleeTokenRemoved = _relayMap.Remove(relay.CalleeToken);
         }
 
-        if (!relayIdRemoved) _log.Error("Relay ID '{0}' not found in relay list.", relay.GetId());
-        if (!callerTokenRemoved) _log.Error("Caller token '{0}' not found in relay list.", relay.GetCallerToken());
-        if (!calleeTokenRemoved) _log.Error("Callee token '{0}' not found in relay list.", relay.GetCalleeToken());
+        if (!relayIdRemoved) _log.Error("Relay ID '{0}' not found in relay list.", relay.Id);
+        if (!callerTokenRemoved) _log.Error("Caller token '{0}' not found in relay list.", relay.CallerToken);
+        if (!calleeTokenRemoved) _log.Error("Callee token '{0}' not found in relay list.", relay.CalleeToken);
 
         relay.Dispose();
       }
-      else _log.Trace("Relay ID '{0}' has been destroyed already.", relay.GetId());
+      else _log.Trace("Relay ID '{0}' has been destroyed already.", relay.Id);
 
       _log.Trace("(-)");
     }
@@ -101,7 +101,7 @@ namespace ProfileServer.Network
         _relayMap.TryGetValue(token, out res);
       }
 
-      if (res != null) _log.Trace("(-):*.Id='{0}'", res.GetId());
+      if (res != null) _log.Trace("(-):*.Id='{0}'", res.Id);
       else _log.Trace("(-):null");
       return res;
     }
