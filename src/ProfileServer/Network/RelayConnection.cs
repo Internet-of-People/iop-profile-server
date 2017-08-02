@@ -59,18 +59,18 @@ namespace ProfileServer.Network
   public class RelayMessageContext
   {
     /// <summary>Open relay over which the message was sent.</summary>
-    public RelayConnection Relay;
+    public RelayConnection Relay { get; }
 
     /// <summary>ApplicationServiceSendMessageRequest from sender.</summary>
-    public IProtocolMessage<Message> SenderRequest;
+    public IProtocolMessage<Message> SenderRequest { get; }
 
     /// <summary>
     /// Initializes the relay message context.
     /// </summary>
-    public RelayMessageContext(RelayConnection Relay, IProtocolMessage<Message> SenderRequest)
+    public RelayMessageContext(RelayConnection relay, IProtocolMessage<Message> request)
     {
-      this.Relay = Relay;
-      this.SenderRequest = SenderRequest;
+      this.Relay = relay;
+      this.SenderRequest = request;
     }
   }
 
