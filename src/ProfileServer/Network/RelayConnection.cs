@@ -81,7 +81,7 @@ namespace ProfileServer.Network
   public class RelayConnection : IDisposable
   {
     /// <summary>Instance logger.</summary>
-    private Logger log;
+    private Logger _log;
 
     /// <summary>
     /// Time in seconds given to the callee to accept or reject the incoming call.
@@ -103,13 +103,13 @@ namespace ProfileServer.Network
     public const int SecondAppServiceInitializationMessageDelayMaxSeconds = 30;
 
     /// <summary>Lock object to protect access to relay.</summary>
-    private SemaphoreSlim lockObject;
+    private SemaphoreSlim _lock;
 
     /// <summary>Unique identifier of the relay.</summary>
-    private Guid id;
+    private Guid _id;
 
     /// <summary>Status of the relay.</summary>
-    private RelayConnectionStatus status;
+    private RelayConnectionStatus _status;
 
     /// <summary>
     /// Caller's network client.
@@ -121,7 +121,7 @@ namespace ProfileServer.Network
     /// or null if the caller is not yet connected to clAppService port.
     /// </para>
     /// </summary>
-    private IncomingClient caller;
+    private IncomingClient _caller;
 
     /// <summary>
     /// Callee's network client.
@@ -133,16 +133,16 @@ namespace ProfileServer.Network
     /// or null if the callee is not yet connected to clAppService port.
     /// </para>
     /// </summary>
-    private IncomingClient callee;
+    private IncomingClient _callee;
 
     /// <summary>Unique token assigned to the caller.</summary>
-    private Guid callerToken;
+    private Guid _callerToken;
 
     /// <summary>Unique token assigned to the callee.</summary>
-    private Guid calleeToken;
+    private Guid _calleeToken;
 
     /// <summary>Name of the application service of the callee that is being used for the communication.</summary>
-    private string serviceName;
+    private string _serviceName;
 
 
 
@@ -158,7 +158,7 @@ namespace ProfileServer.Network
     /// to send its initial message on the clAppService port within a reasonable time.
     /// </para>
     /// </summary>
-    private Timer timeoutTimer;
+    private Timer _timeoutTimer;
 
 
     /// <summary>
@@ -168,40 +168,40 @@ namespace ProfileServer.Network
     /// If relay status is WaitingForFirstInitMessage or WaitingForSecondInitMessage, this is the initialization message of the first client.
     /// </para>
     /// </summary>
-    private IProtocolMessage<Message> pendingMessage;
+    private IProtocolMessage<Message> _pendingMessage;
 
     /// <summary>
     /// Creates a new relay connection from a caller to a callee using a specific application service.
     /// </summary>
-    /// <param name="Caller">Network client of the caller.</param>
-    /// <param name="Callee">Network client of the callee.</param>
-    /// <param name="ServiceName">Name of the application service of the callee that is being used for the call.</param>
-    /// <param name="RequestMessage">CallIdentityApplicationServiceRequest message that the caller send in order to initiate the call.</param>
-    public RelayConnection(IncomingClient Caller, IncomingClient Callee, string ServiceName, IProtocolMessage<Message> RequestMessage)
+    /// <param name="caller">Network client of the caller.</param>
+    /// <param name="callee">Network client of the callee.</param>
+    /// <param name="serviceName">Name of the application service of the callee that is being used for the call.</param>
+    /// <param name="request">CallIdentityApplicationServiceRequest message that the caller send in order to initiate the call.</param>
+    public RelayConnection(IncomingClient caller, IncomingClient callee, string serviceName, IProtocolMessage<Message> request)
     {
-      lockObject = new SemaphoreSlim(1);
-      id = Guid.NewGuid();
-      string logPrefix = string.Format("[{0}:{1}] ", id, ServiceName);
+      _lock = new SemaphoreSlim(1);
+      _id = Guid.NewGuid();
+      string logPrefix = string.Format("[{0}:{1}] ", _id, serviceName);
       string logName = "ProfileServer.Network.ClientList";
-      log = new Logger(logName, logPrefix);
+      _log = new Logger(logName, logPrefix);
 
-      log.Trace("(Caller.Id:{0},Callee.Id:{1},ServiceName:'{2}')", Caller.Id.ToHex(), Callee.Id.ToHex(), ServiceName);
-      serviceName = ServiceName;
-      caller = Caller;
-      callee = Callee;
-      pendingMessage = RequestMessage;
+      _log.Trace("(Caller.Id:{0},Callee.Id:{1},ServiceName:'{2}')", caller.Id.ToHex(), callee.Id.ToHex(), serviceName);
+      _serviceName = serviceName;
+      _caller = caller;
+      _callee = callee;
+      _pendingMessage = request;
 
-      callerToken = Guid.NewGuid();
-      calleeToken = Guid.NewGuid();
-      log.Trace("Caller token is '{0}'.", callerToken);
-      log.Trace("Callee token is '{0}'.", calleeToken);
+      _callerToken = Guid.NewGuid();
+      _calleeToken = Guid.NewGuid();
+      _log.Trace("Caller token is '{0}'.", _callerToken);
+      _log.Trace("Callee token is '{0}'.", _calleeToken);
 
-      status = RelayConnectionStatus.WaitingForCalleeResponse;
+      _status = RelayConnectionStatus.WaitingForCalleeResponse;
 
       // Relay is created by caller's request, it will expire if the callee does not reply within reasonable time.
-      timeoutTimer = new Timer(TimeoutCallback, status, CalleeResponseCallNotificationDelayMaxSeconds * 1000, Timeout.Infinite);
+      _timeoutTimer = new Timer(TimeoutCallback, _status, CalleeResponseCallNotificationDelayMaxSeconds * 1000, Timeout.Infinite);
 
-      log.Trace("(-)");
+      _log.Trace("(-)");
     }
 
     /// <summary>
@@ -222,22 +222,22 @@ namespace ProfileServer.Network
     /// </para>
     /// </summary>
     /// <param name="state">Status of the relay when the timer was installed.</param>
-    private async void TimeoutCallback(object State)
+    private async void TimeoutCallback(object state)
     {
       LogDiagnosticContext.Start();
 
-      RelayConnectionStatus previousStatus = (RelayConnectionStatus)State;
-      log.Trace("(State:{0})", previousStatus);
+      RelayConnectionStatus previousStatus = (RelayConnectionStatus)state;
+      _log.Trace("(State:{0})", previousStatus);
 
       IncomingClient clientToSendMessage = null;
       IProtocolMessage<Message> messageToSend = null;
       bool destroyRelay = false;
 
-      await lockObject.WaitAsync();
+      await _lock.WaitAsync();
 
-      if (timeoutTimer != null)
+      if (_timeoutTimer != null)
       {
-        switch (status)
+        switch (_status)
         {
           case RelayConnectionStatus.WaitingForCalleeResponse:
             {
@@ -245,17 +245,17 @@ namespace ProfileServer.Network
               // The callee failed to send us response on time, this is situation 2)
               // from ProcessMessageCallIdentityApplicationServiceRequestAsync.
               // We send ERROR_NOT_AVAILABLE to the caller and destroy the relay.
-              log.Debug("Callee failed to reply to the incoming call notification, closing relay.");
+              _log.Debug("Callee failed to reply to the incoming call notification, closing relay.");
 
-              clientToSendMessage = caller;
-              messageToSend = caller.MessageBuilder.CreateErrorNotAvailableResponse(pendingMessage);
+              clientToSendMessage = _caller;
+              messageToSend = _caller.MessageBuilder.CreateErrorNotAvailableResponse(_pendingMessage);
               break;
             }
 
           case RelayConnectionStatus.WaitingForFirstInitMessage:
             {
               // Neither client joined the channel on time, nothing to do, just destroy the relay.
-              log.Debug("None of the clients joined the relay on time, closing relay.");
+              _log.Debug("None of the clients joined the relay on time, closing relay.");
               break;
             }
 
@@ -263,30 +263,30 @@ namespace ProfileServer.Network
             {
               // One client is waiting for the other one to join, but the other client failed to join on time.
               // We send ERROR_NOT_FOUND to the waiting client and close its connection.
-              log.Debug("{0} failed to join the relay on time, closing relay.", callee != null ? "Caller" : "Callee");
+              _log.Debug("{0} failed to join the relay on time, closing relay.", _callee != null ? "Caller" : "Callee");
 
-              clientToSendMessage = callee != null ? callee : caller;
-              messageToSend = clientToSendMessage.MessageBuilder.CreateErrorNotFoundResponse(pendingMessage);
+              clientToSendMessage = _callee != null ? _callee : _caller;
+              messageToSend = clientToSendMessage.MessageBuilder.CreateErrorNotFoundResponse(_pendingMessage);
               break;
             }
 
           default:
-            log.Debug("Time out triggered while the relay status was {0}.", status);
+            _log.Debug("Time out triggered while the relay status was {0}.", _status);
             break;
         }
 
         // In case of any timeouts, we just destroy the relay.
         destroyRelay = true;
       }
-      else log.Debug("Timeout timer of relay '{0}' has been destroyed, no action taken.", id);
+      else _log.Debug("Timeout timer of relay '{0}' has been destroyed, no action taken.", _id);
 
-      lockObject.Release();
+      _lock.Release();
 
 
       if (messageToSend != null)
       {
         if (!await clientToSendMessage.SendMessageAsync(messageToSend))
-          log.Warn("Unable to send message to the client ID {0} in relay '{1}', maybe it is not connected anymore.", clientToSendMessage.Id.ToHex(), id);
+          _log.Warn("Unable to send message to the client ID {0} in relay '{1}', maybe it is not connected anymore.", clientToSendMessage.Id.ToHex(), _id);
       }
 
       if (destroyRelay)
@@ -295,7 +295,7 @@ namespace ProfileServer.Network
         await serverComponent.RelayList.DestroyNetworkRelay(this);
       }
 
-      log.Trace("(-)");
+      _log.Trace("(-)");
 
       LogDiagnosticContext.Stop();
     }
@@ -307,7 +307,7 @@ namespace ProfileServer.Network
     /// <returns>Relay status.</returns>
     public RelayConnectionStatus GetStatus()
     {
-      return status;
+      return _status;
     }
 
     /// <summary>
@@ -316,7 +316,7 @@ namespace ProfileServer.Network
     /// <returns>Relay identifier.</returns>
     public Guid GetId()
     {
-      return id;
+      return _id;
     }
 
 
@@ -326,7 +326,7 @@ namespace ProfileServer.Network
     /// <returns>Relay callee's token.</returns>
     public Guid GetCalleeToken()
     {
-      return calleeToken;
+      return _calleeToken;
     }
 
     /// <summary>
@@ -335,7 +335,7 @@ namespace ProfileServer.Network
     /// <returns>Relay caller's token.</returns>
     public Guid GetCallerToken()
     {
-      return callerToken;
+      return _callerToken;
     }
 
     
@@ -345,15 +345,15 @@ namespace ProfileServer.Network
     /// </summary>
     private void CancelTimeoutTimer()
     {
-      log.Trace("()");
+      _log.Trace("()");
 
-      lockObject.Wait();
+      _lock.Wait();
 
       CancelTimeoutTimerLocked();
 
-      lockObject.Release();
+      _lock.Release();
 
-      log.Trace("(-)");
+      _log.Trace("(-)");
     }
 
     /// <summary>
@@ -361,24 +361,24 @@ namespace ProfileServer.Network
     /// </summary>
     private void CancelTimeoutTimerLocked()
     {
-      log.Trace("()");
+      _log.Trace("()");
 
-      if (timeoutTimer != null) timeoutTimer.Dispose();
-      timeoutTimer = null;
+      if (_timeoutTimer != null) _timeoutTimer.Dispose();
+      _timeoutTimer = null;
 
-      log.Trace("(-)");
+      _log.Trace("(-)");
     }
 
 
     /// <summary>
     /// Handles situation when the callee replied to the incoming call notification request.
     /// </summary>
-    /// <param name="ResponseMessage">Full response message from the callee.</param>
-    /// <param name="Request">Unfinished call request message of the caller that corresponds to the response message.</param>
+    /// <param name="response">Full response message from the callee.</param>
+    /// <param name="request">Unfinished call request message of the caller that corresponds to the response message.</param>
     /// <returns></returns>
-    public async Task<bool> CalleeRepliedToIncomingCallNotification(IProtocolMessage<Message> ResponseMessage, UnfinishedRequest<Message> Request)
+    public async Task<bool> CalleeRepliedToIncomingCallNotification(IProtocolMessage<Message> response, UnfinishedRequest<Message> request)
     {
-      log.Trace("()");
+      _log.Trace("()");
 
       bool res = false;
 
@@ -386,31 +386,31 @@ namespace ProfileServer.Network
       IncomingClient clientToSendMessage = null;
       IProtocolMessage<Message> messageToSend = null;
 
-      await lockObject.WaitAsync();
+      await _lock.WaitAsync();
 
 
-      if (status == RelayConnectionStatus.WaitingForCalleeResponse)
+      if (_status == RelayConnectionStatus.WaitingForCalleeResponse)
       {
         CancelTimeoutTimerLocked();
 
         // The caller is still connected and waiting for an answer to its call request.
-        if (ResponseMessage.Message.Response.Status == Status.Ok)
+        if (response.Message.Response.Status == Status.Ok)
         {
           // The callee is now expected to connect to clAppService with its token.
           // We need to inform caller that the callee accepted the call.
           // This is option 4) from ProcessMessageCallIdentityApplicationServiceRequestAsync.
-          messageToSend = caller.MessageBuilder.CreateCallIdentityApplicationServiceResponse(pendingMessage, callerToken.ToByteArray());
-          clientToSendMessage = caller;
-          pendingMessage = null;
+          messageToSend = _caller.MessageBuilder.CreateCallIdentityApplicationServiceResponse(_pendingMessage, _callerToken.ToByteArray());
+          clientToSendMessage = _caller;
+          _pendingMessage = null;
 
-          caller = null;
-          callee = null;
-          status = RelayConnectionStatus.WaitingForFirstInitMessage;
-          log.Debug("Relay '{0}' status has been changed to {1}.", id, status);
+          _caller = null;
+          _callee = null;
+          _status = RelayConnectionStatus.WaitingForFirstInitMessage;
+          _log.Debug("Relay '{0}' status has been changed to {1}.", _id, _status);
 
           /// Install timeoutTimer to expire if the first client does not connect to clAppService port 
           /// and send its initialization message within reasonable time.
-          timeoutTimer = new Timer(TimeoutCallback, RelayConnectionStatus.WaitingForFirstInitMessage, FirstAppServiceInitializationMessageDelayMaxSeconds * 1000, Timeout.Infinite);
+          _timeoutTimer = new Timer(TimeoutCallback, RelayConnectionStatus.WaitingForFirstInitMessage, FirstAppServiceInitializationMessageDelayMaxSeconds * 1000, Timeout.Infinite);
 
           res = true;
         }
@@ -418,20 +418,20 @@ namespace ProfileServer.Network
         {
           // The callee rejected the call or reported other error.
           // These are options 3) and 2) from ProcessMessageCallIdentityApplicationServiceRequestAsync.
-          if (ResponseMessage.Message.Response.Status == Status.ErrorRejected)
+          if (response.Message.Response.Status == Status.ErrorRejected)
           {
-            log.Debug("Callee ID '{0}' rejected the call from caller identity ID '{1}', relay '{2}'.", callee.Id.ToHex(), caller.Id.ToHex(), id);
-            messageToSend = caller.MessageBuilder.CreateErrorRejectedResponse(pendingMessage);
+            _log.Debug("Callee ID '{0}' rejected the call from caller identity ID '{1}', relay '{2}'.", _callee.Id.ToHex(), _caller.Id.ToHex(), _id);
+            messageToSend = _caller.MessageBuilder.CreateErrorRejectedResponse(_pendingMessage);
           }
           else
           {
-            log.Warn("Callee ID '0} sent error response '{1}' for call request from caller identity ID {2}, relay '{3}'.", 
-              callee.Id.ToHex(), ResponseMessage.Message.Response.Status, caller.Id.ToHex(), id);
+            _log.Warn("Callee ID '0} sent error response '{1}' for call request from caller identity ID {2}, relay '{3}'.", 
+              _callee.Id.ToHex(), response.Message.Response.Status, _caller.Id.ToHex(), _id);
 
-            messageToSend = caller.MessageBuilder.CreateErrorNotAvailableResponse(pendingMessage);
+            messageToSend = _caller.MessageBuilder.CreateErrorNotAvailableResponse(_pendingMessage);
           }
 
-          clientToSendMessage = caller;
+          clientToSendMessage = _caller;
           destroyRelay = true;
         }
       }
@@ -441,16 +441,16 @@ namespace ProfileServer.Network
         // We take no action here regardless of what the callee's response is.
         // If it rejected the call, there is nothing to be done since we do not have 
         // any connection to the caller anymore.
-        log.Debug("Relay status is {0}, nothing to be done.", status);
+        _log.Debug("Relay status is {0}, nothing to be done.", _status);
       }
       
-      lockObject.Release();
+      _lock.Release();
 
 
       if (messageToSend != null)
       {
-        if (await clientToSendMessage.SendMessageAsync(messageToSend)) log.Debug("Response to call initiation request sent to the caller ID {0}.", clientToSendMessage.Id.ToHex());
-        else log.Debug("Unable to reponse to call initiation request to the caller ID {0}.", clientToSendMessage.Id.ToHex());
+        if (await clientToSendMessage.SendMessageAsync(messageToSend)) _log.Debug("Response to call initiation request sent to the caller ID {0}.", clientToSendMessage.Id.ToHex());
+        else _log.Debug("Unable to reponse to call initiation request to the caller ID {0}.", clientToSendMessage.Id.ToHex());
       }
 
       if (destroyRelay)
@@ -459,7 +459,7 @@ namespace ProfileServer.Network
         await serverComponent.RelayList.DestroyNetworkRelay(this);
       }
 
-      log.Trace("(-):{0}", res);
+      _log.Trace("(-):{0}", res);
       return res;
     }
 
@@ -471,26 +471,26 @@ namespace ProfileServer.Network
     /// a client sends after it connects to clAppService port, the request's message is ignored and the reply is sent 
     /// to the client as the other client is confirmed to join the relay.</para>
     /// </summary>
-    /// <param name="Client">Client that sent the message.</param>
-    /// <param name="RequestMessage">Full request message.</param>
-    /// <param name="Token">Sender's relay token.</param>
+    /// <param name="client">Client that sent the message.</param>
+    /// <param name="request">Full request message.</param>
+    /// <param name="token">Sender's relay token.</param>
     /// <returns>Response message to be sent to the client.</returns>
-    public async Task<IProtocolMessage<Message>> ProcessIncomingMessage(IncomingClient Client, IProtocolMessage<Message> RequestMessage, Guid Token)
+    public async Task<IProtocolMessage<Message>> ProcessIncomingMessage(IncomingClient client, IProtocolMessage<Message> request, Guid token)
     {
-      log.Trace("()");
+      _log.Trace("()");
 
       IProtocolMessage<Message> res = null;
       bool destroyRelay = false;
 
-      await lockObject.WaitAsync();
+      await _lock.WaitAsync();
 
-      bool isCaller = callerToken.Equals(Token);
+      bool isCaller = _callerToken.Equals(token);
 
-      IncomingClient otherClient = isCaller ? callee : caller;
-      log.Trace("Received message over relay '{0}' in status {1} with client ID {2} being {3} and the other client ID {4} is {5}.",
-        id, status, Client.Id.ToHex(), isCaller ? "caller" : "callee", otherClient != null ? otherClient.Id.ToHex() : "N/A", isCaller ? "callee" : "caller");
+      IncomingClient otherClient = isCaller ? _callee : _caller;
+      _log.Trace("Received message over relay '{0}' in status {1} with client ID {2} being {3} and the other client ID {4} is {5}.",
+        _id, _status, client.Id.ToHex(), isCaller ? "caller" : "callee", otherClient != null ? otherClient.Id.ToHex() : "N/A", isCaller ? "callee" : "caller");
 
-      switch (status)
+      switch (_status)
       {
         case RelayConnectionStatus.WaitingForCalleeResponse:
           {
@@ -502,54 +502,54 @@ namespace ProfileServer.Network
               // In this case we will try to wait a couple of seconds and see if we receive IncomingCallNotificationResponse.
               // If yes, we continue as if we processed the message in the right order.
               // In all other cases, this is a fatal error and we have to destroy the relay.
-              lockObject.Release();
+              _lock.Release();
 
               bool statusChanged = false;
-              log.Warn("Callee sent initialization message before we received IncomingCallNotificationResponse. We will wait to see if it arrives soon.");
+              _log.Warn("Callee sent initialization message before we received IncomingCallNotificationResponse. We will wait to see if it arrives soon.");
               for (int i = 0; i < 5; i++)
               {
-                log.Warn("Attempt #{0}, waiting 1 second.", i + 1);
+                _log.Warn("Attempt #{0}, waiting 1 second.", i + 1);
                 await Task.Delay(1000);
 
-                await lockObject.WaitAsync();
+                await _lock.WaitAsync();
 
-                log.Warn("Attempt #{0}, checking relay status.", i + 1);
-                if (status != RelayConnectionStatus.WaitingForCalleeResponse)
+                _log.Warn("Attempt #{0}, checking relay status.", i + 1);
+                if (_status != RelayConnectionStatus.WaitingForCalleeResponse)
                 {
-                  log.Warn("Attempt #{0}, relay status changed to {1}.", i + 1, status);
+                  _log.Warn("Attempt #{0}, relay status changed to {1}.", i + 1, _status);
                   statusChanged = true;
                 }
 
-                lockObject.Release();
+                _lock.Release();
 
                 if (statusChanged) break;
               }
 
-              await lockObject.WaitAsync();
+              await _lock.WaitAsync();
               if (statusChanged)
               {
                 // Status of relay has change, which means either it has been destroyed already, or the IncomingCallNotificationResponse 
                 // message we were waiting for arrived. In any case, we call this method recursively, but it can not happen that we would end up here again.
-                lockObject.Release();
+                _lock.Release();
 
-                log.Trace("Calling ProcessIncomingMessage recursively.");
-                res = await ProcessIncomingMessage(Client, RequestMessage, Token);
+                _log.Trace("Calling ProcessIncomingMessage recursively.");
+                res = await ProcessIncomingMessage(client, request, token);
 
-                await lockObject.WaitAsync();
+                await _lock.WaitAsync();
               }
               else
               {
-                log.Trace("Message received from caller and relay status is WaitingForCalleeResponse and IncomingCallNotificationResponse did not arrive, closing connection to client, destroying relay.");
-                res = Client.MessageBuilder.CreateErrorNotFoundResponse(RequestMessage);
-                Client.ForceDisconnect = true;
+                _log.Trace("Message received from caller and relay status is WaitingForCalleeResponse and IncomingCallNotificationResponse did not arrive, closing connection to client, destroying relay.");
+                res = client.MessageBuilder.CreateErrorNotFoundResponse(request);
+                client.ForceDisconnect = true;
                 destroyRelay = true;
               }
             }
             else
             {
-              log.Trace("Message received from caller and relay status is WaitingForCalleeResponse, closing connection to client, destroying relay.");
-              res = Client.MessageBuilder.CreateErrorNotFoundResponse(RequestMessage);
-              Client.ForceDisconnect = true;
+              _log.Trace("Message received from caller and relay status is WaitingForCalleeResponse, closing connection to client, destroying relay.");
+              res = client.MessageBuilder.CreateErrorNotFoundResponse(request);
+              client.ForceDisconnect = true;
               destroyRelay = true;
             }
             break;
@@ -557,22 +557,22 @@ namespace ProfileServer.Network
 
         case RelayConnectionStatus.WaitingForFirstInitMessage:
           {
-            log.Debug("Received an initialization message from the first client ID '{0}' on relay '{1}', waiting for the second client.", Client.Id.ToHex(), id);
+            _log.Debug("Received an initialization message from the first client ID '{0}' on relay '{1}', waiting for the second client.", client.Id.ToHex(), _id);
             CancelTimeoutTimerLocked();
 
-            if (Client.Relay == null)
+            if (client.Relay == null)
             {
-              Client.Relay = this;
+              client.Relay = this;
 
               // Other peer is not connected yet, so we put this request on hold and wait for the other client.
-              if (isCaller) caller = Client;
-              else callee = Client;
+              if (isCaller) _caller = client;
+              else _callee = client;
 
-              status = RelayConnectionStatus.WaitingForSecondInitMessage;
-              log.Trace("Relay '{0}' status changed to {1}.", id, status);
+              _status = RelayConnectionStatus.WaitingForSecondInitMessage;
+              _log.Trace("Relay '{0}' status changed to {1}.", _id, _status);
 
-              pendingMessage = RequestMessage;
-              timeoutTimer = new Timer(TimeoutCallback, status, SecondAppServiceInitializationMessageDelayMaxSeconds * 1000, Timeout.Infinite);
+              _pendingMessage = request;
+              _timeoutTimer = new Timer(TimeoutCallback, _status, SecondAppServiceInitializationMessageDelayMaxSeconds * 1000, Timeout.Infinite);
 
               // res remains null, which is OK as the request is put on hold until the other client joins the channel.
             }
@@ -581,8 +581,8 @@ namespace ProfileServer.Network
               // Client already sent us the initialization message, this is protocol violation error, destroy the relay.
               // Since the relay should be upgraded to WaitingForSecondInitMessage status, this can happen 
               // only if a client does not use a separate connection for each clAppService session, which is forbidden.
-              log.Debug("Client ID {0} on relay '{1}' probably uses a single connection for two relays. Both relays will be destroyed.", Client.Id.ToHex(), id);
-              res = Client.MessageBuilder.CreateErrorNotFoundResponse(RequestMessage);
+              _log.Debug("Client ID {0} on relay '{1}' probably uses a single connection for two relays. Both relays will be destroyed.", client.Id.ToHex(), _id);
+              res = client.MessageBuilder.CreateErrorNotFoundResponse(request);
               destroyRelay = true;
             }
             break;
@@ -590,40 +590,40 @@ namespace ProfileServer.Network
 
         case RelayConnectionStatus.WaitingForSecondInitMessage:
           {
-            log.Debug("Received an initialization message from the second client on relay '{0}'.", id);
+            _log.Debug("Received an initialization message from the second client on relay '{0}'.", _id);
             CancelTimeoutTimerLocked();
 
-            if (Client.Relay == null)
+            if (client.Relay == null)
             {
-              Client.Relay = this;
+              client.Relay = this;
 
               // Other peer is connected already, so we just inform it by sending response to its initial ApplicationServiceSendMessageRequest.
-              if (isCaller) caller = Client;
-              else callee = Client;
+              if (isCaller) _caller = client;
+              else _callee = client;
 
-              status = RelayConnectionStatus.Open;
-              log.Trace("Relay '{0}' status changed to {1}.", id, status);
+              _status = RelayConnectionStatus.Open;
+              _log.Trace("Relay '{0}' status changed to {1}.", _id, _status);
 
-              var otherClientResponse = otherClient.MessageBuilder.CreateApplicationServiceSendMessageResponse(pendingMessage);
-              pendingMessage = null;
+              var otherClientResponse = otherClient.MessageBuilder.CreateApplicationServiceSendMessageResponse(_pendingMessage);
+              _pendingMessage = null;
               if (await otherClient.SendMessageAsync(otherClientResponse))
               {
                 // And we also send reply to the second client that the channel is now ready for communication.
-                res = Client.MessageBuilder.CreateApplicationServiceSendMessageResponse(RequestMessage);
+                res = client.MessageBuilder.CreateApplicationServiceSendMessageResponse(request);
               }
               else
               {
-                log.Warn("Unable to send message to other client ID {0}, closing connection to client and destroying the relay.", otherClient.Id.ToHex());
-                res = Client.MessageBuilder.CreateErrorNotFoundResponse(RequestMessage);
-                Client.ForceDisconnect = true;
+                _log.Warn("Unable to send message to other client ID {0}, closing connection to client and destroying the relay.", otherClient.Id.ToHex());
+                res = client.MessageBuilder.CreateErrorNotFoundResponse(request);
+                client.ForceDisconnect = true;
                 destroyRelay = true;
               }
             }
             else
             {
               // Client already sent us the initialization message, this is error, destroy the relay.
-              log.Debug("Client ID {0} on relay '{1}' sent a message before receiving a reply to its initialization message. Relay will be destroyed.", Client.Id.ToHex(), id);
-              res = Client.MessageBuilder.CreateErrorNotFoundResponse(RequestMessage);
+              _log.Debug("Client ID {0} on relay '{1}' sent a message before receiving a reply to its initialization message. Relay will be destroyed.", client.Id.ToHex(), _id);
+              res = client.MessageBuilder.CreateErrorNotFoundResponse(request);
               destroyRelay = true;
             }
 
@@ -633,31 +633,31 @@ namespace ProfileServer.Network
 
         case RelayConnectionStatus.Open:
           {
-            if (Client.Relay == this)
+            if (client.Relay == this)
             {
               // Relay is open, this means that all incoming messages are sent to the other client.
-              byte[] messageForOtherClient = RequestMessage.Message.Request.SingleRequest.ApplicationServiceSendMessage.Message.ToByteArray();
+              byte[] messageForOtherClient = request.Message.Request.SingleRequest.ApplicationServiceSendMessage.Message.ToByteArray();
               var otherClientMessage = otherClient.MessageBuilder.CreateApplicationServiceReceiveMessageNotificationRequest(messageForOtherClient);
-              RelayMessageContext context = new RelayMessageContext(this, RequestMessage);
+              RelayMessageContext context = new RelayMessageContext(this, request);
               if (await otherClient.SendMessageAndSaveUnfinishedRequestAsync(otherClientMessage, context))
               {
                 // res is null, which is fine, the sender is put on hold and we will get back to it once the recipient confirms that it received the message.
-                log.Debug("Message from client ID {0} has been relayed to other client ID {1}.", Client.Id.ToHex(), otherClient.Id.ToHex());
+                _log.Debug("Message from client ID {0} has been relayed to other client ID {1}.", client.Id.ToHex(), otherClient.Id.ToHex());
               }
               else
               {
-                log.Warn("Unable to relay message to other client ID {0}, closing connection to client and destroying the relay.", otherClient.Id.ToHex());
-                res = Client.MessageBuilder.CreateErrorNotFoundResponse(RequestMessage);
-                Client.ForceDisconnect = true;
+                _log.Warn("Unable to relay message to other client ID {0}, closing connection to client and destroying the relay.", otherClient.Id.ToHex());
+                res = client.MessageBuilder.CreateErrorNotFoundResponse(request);
+                client.ForceDisconnect = true;
                 destroyRelay = true;
               }
             }
             else
             {
               // This means that the client used a single clAppService port connection for two different relays, which is forbidden.
-              log.Warn("Client ID {0} mixed relay '{1}' with relay '{2}', closing connection to client and destroying both relays.", otherClient.Id.ToHex(), Client.Relay.id, id);
-              res = Client.MessageBuilder.CreateErrorNotFoundResponse(RequestMessage);
-              Client.ForceDisconnect = true;
+              _log.Warn("Client ID {0} mixed relay '{1}' with relay '{2}', closing connection to client and destroying both relays.", otherClient.Id.ToHex(), client.Relay._id, _id);
+              res = client.MessageBuilder.CreateErrorNotFoundResponse(request);
+              client.ForceDisconnect = true;
               destroyRelay = true;
             }
 
@@ -666,31 +666,31 @@ namespace ProfileServer.Network
 
         case RelayConnectionStatus.Destroyed:
           {
-            log.Trace("Relay has been destroyed, closing connection to client.");
-            res = Client.MessageBuilder.CreateErrorNotFoundResponse(RequestMessage);
-            Client.ForceDisconnect = true;
+            _log.Trace("Relay has been destroyed, closing connection to client.");
+            res = client.MessageBuilder.CreateErrorNotFoundResponse(request);
+            client.ForceDisconnect = true;
             break;
           }
           
         default:
-          log.Trace("Relay status is '{0}', closing connection to client, destroying relay.", status);
-          res = Client.MessageBuilder.CreateErrorNotFoundResponse(RequestMessage);
-          Client.ForceDisconnect = true;
+          _log.Trace("Relay status is '{0}', closing connection to client, destroying relay.", _status);
+          res = client.MessageBuilder.CreateErrorNotFoundResponse(request);
+          client.ForceDisconnect = true;
           destroyRelay = true;
           break;
       }      
 
-      lockObject.Release();
+      _lock.Release();
 
       if (destroyRelay)
       {
         Server serverComponent = (Server)Base.ComponentDictionary[Server.ComponentName];
         await serverComponent.RelayList.DestroyNetworkRelay(this);
-        if ((this != Client.Relay) && (Client.Relay != null))
-          await serverComponent.RelayList.DestroyNetworkRelay(Client.Relay);
+        if ((this != client.Relay) && (client.Relay != null))
+          await serverComponent.RelayList.DestroyNetworkRelay(client.Relay);
       }
 
-      log.Trace("(-)");
+      _log.Trace("(-)");
       return res;
     }
 
@@ -698,48 +698,48 @@ namespace ProfileServer.Network
     /// <summary>
     /// Processes incoming confirmation from the message recipient over the relay.
     /// </summary>
-    /// <param name="Client">Client that sent the response.</param>
-    /// <param name="ResponseMessage">Full response message.</param>
-    /// <param name="SenderRequest">Sender request message that the recipient confirmed.</param>
+    /// <param name="client">Client that sent the response.</param>
+    /// <param name="response">Full response message.</param>
+    /// <param name="request">Sender request message that the recipient confirmed.</param>
     /// <returns>true if the connection to the client that sent the response should remain open, false if the client should be disconnected.</returns>
-    public async Task<bool> RecipientConfirmedMessage(IncomingClient Client, IProtocolMessage<Message> ResponseMessage, IProtocolMessage<Message> SenderRequest)
+    public async Task<bool> RecipientConfirmedMessage(IncomingClient client, IProtocolMessage<Message> response, IProtocolMessage<Message> request)
     {
-      log.Trace("()");
+      _log.Trace("()");
 
       bool res = false;
       bool destroyRelay = false;
 
-      await lockObject.WaitAsync();
+      await _lock.WaitAsync();
 
-      if (status == RelayConnectionStatus.Open)
+      if (_status == RelayConnectionStatus.Open)
       {
-        bool isCaller = Client == caller;
+        bool isCaller = client == _caller;
 
-        IncomingClient otherClient = isCaller ? callee : caller;
-        log.Trace("Over relay '{0}', received confirmation (status code {1}) from client ID {2} of a message sent by client ID {3}.",
-          id, ResponseMessage.Message.Response.Status, Client.Id.ToHex(), otherClient.Id.ToHex());
+        IncomingClient otherClient = isCaller ? _callee : _caller;
+        _log.Trace("Over relay '{0}', received confirmation (status code {1}) from client ID {2} of a message sent by client ID {3}.",
+          _id, response.Message.Response.Status, client.Id.ToHex(), otherClient.Id.ToHex());
 
-        if (ResponseMessage.Message.Response.Status == Status.Ok)
+        if (response.Message.Response.Status == Status.Ok)
         {
           // We have received a confirmation from the recipient, so we just complete the sender's request to inform it that the message was delivered.
-          var otherClientResponse = otherClient.MessageBuilder.CreateApplicationServiceSendMessageResponse(SenderRequest);
+          var otherClientResponse = otherClient.MessageBuilder.CreateApplicationServiceSendMessageResponse(request);
           if (await otherClient.SendMessageAsync(otherClientResponse))
           {
             res = true;
           }
           else
           {
-            log.Warn("Unable to send message to other client ID '0x{0:X16}' on relay '{1}', closing connection to client and destroying the relay.", id, otherClient.Id);
+            _log.Warn("Unable to send message to other client ID '0x{0:X16}' on relay '{1}', closing connection to client and destroying the relay.", _id, otherClient.Id);
             destroyRelay = true;
           }
         }
         else
         {
           // We have received error from the recipient, so we forward it to the sender and destroy the relay.
-          var errorResponse = otherClient.MessageBuilder.CreateErrorNotFoundResponse(SenderRequest);
+          var errorResponse = otherClient.MessageBuilder.CreateErrorNotFoundResponse(request);
 
           if (!await otherClient.SendMessageAsync(errorResponse))
-            log.Warn("In relay '{0}', unable to send error response to the sender client ID {1}, maybe it is disconnected already, destroying the relay.", id, otherClient.Id.ToHex());
+            _log.Warn("In relay '{0}', unable to send error response to the sender client ID {1}, maybe it is disconnected already, destroying the relay.", _id, otherClient.Id.ToHex());
 
           destroyRelay = true;
         }
@@ -747,11 +747,11 @@ namespace ProfileServer.Network
       else
       {
         // This should never happen unless the relay is destroyed already.
-        log.Debug("Relay '{0}' status is {1} instead of Open, destroying relay if it is still active.", id, status);
-        destroyRelay = status != RelayConnectionStatus.Destroyed;
+        _log.Debug("Relay '{0}' status is {1} instead of Open, destroying relay if it is still active.", _id, _status);
+        destroyRelay = _status != RelayConnectionStatus.Destroyed;
       }
 
-      lockObject.Release();
+      _lock.Release();
 
       if (destroyRelay)
       {
@@ -759,7 +759,7 @@ namespace ProfileServer.Network
         await serverComponent.RelayList.DestroyNetworkRelay(this);
       }
 
-      log.Trace("(-)");
+      _log.Trace("(-)");
       return res;
     }
 
@@ -769,24 +769,24 @@ namespace ProfileServer.Network
     /// However, the closed connection might be either connection to clCustomer/clNonCustomer port, 
     /// or it might be connection to clAppService port.
     /// </summary>
-    /// <param name="Client">Client that disconnected.</param>
-    /// <param name="IsRelayConnection">true if the closed connection was to clAppService port, false otherwise.</param>
-    public async Task HandleDisconnectedClient(IncomingClient Client, bool IsRelayConnection)
+    /// <param name="client">Client that disconnected.</param>
+    /// <param name="isRelayConnection">true if the closed connection was to clAppService port, false otherwise.</param>
+    public async Task HandleDisconnectedClient(IncomingClient client, bool isRelayConnection)
     {
-      log.Trace("(Client.Id:{0},IsRelayConnection:{1})", Client.Id.ToHex(), IsRelayConnection);
+      _log.Trace("(Client.Id:{0},IsRelayConnection:{1})", client.Id.ToHex(), isRelayConnection);
 
       IncomingClient clientToSendMessages = null;
       var messagesToSend = new List<IProtocolMessage<Message>>();
       IncomingClient clientToClose = null;
 
-      await lockObject.WaitAsync();
+      await _lock.WaitAsync();
 
-      bool isCallee = Client == callee;
-      if (IsRelayConnection) log.Trace("Client ({0}) ID {1} disconnected, relay '{2}' status {3}.", isCallee ? "callee" : "caller", Client.Id.ToHex(), id, status);
-      else log.Trace("Client (customer) ID {0} disconnected, relay '{1}' status {2}.", Client.Id.ToHex(), id, status);
+      bool isCallee = client == _callee;
+      if (isRelayConnection) _log.Trace("Client ({0}) ID {1} disconnected, relay '{2}' status {3}.", isCallee ? "callee" : "caller", client.Id.ToHex(), _id, _status);
+      else _log.Trace("Client (customer) ID {0} disconnected, relay '{1}' status {2}.", client.Id.ToHex(), _id, _status);
 
       bool destroyRelay = false;
-      switch (status)
+      switch (_status)
       {
         case RelayConnectionStatus.WaitingForCalleeResponse:
           {
@@ -795,9 +795,9 @@ namespace ProfileServer.Network
               // The client is callee in a relay that is being initialized. The caller is waiting for callee's response and the callee has just disconnected
               // from the profile server. This is situation 1) from the comment in ProcessMessageCallIdentityApplicationServiceRequestAsync.
               // We have to send ERROR_NOT_AVAILABLE to the caller and destroy the relay.
-              log.Trace("Callee disconnected from clCustomer port of relay '{0}', message will be sent to the caller and relay destroyed.", id);
-              clientToSendMessages = caller;
-              messagesToSend.Add(caller.MessageBuilder.CreateErrorNotAvailableResponse(pendingMessage));
+              _log.Trace("Callee disconnected from clCustomer port of relay '{0}', message will be sent to the caller and relay destroyed.", _id);
+              clientToSendMessages = _caller;
+              messagesToSend.Add(_caller.MessageBuilder.CreateErrorNotAvailableResponse(_pendingMessage));
               destroyRelay = true;
             }
             else
@@ -807,7 +807,7 @@ namespace ProfileServer.Network
               // and we do not need to take any action. If the call is accepted, the callee will establish a new connection to clAppService port and will 
               // send us initial ApplicationServiceSendMessageRequest message. We will now destroy the relay so that the callee is disconnected 
               // as its token used in the initial message will not be found.
-              log.Trace("Caller disconnected from clCustomer port or clNonCustomer port of relay '{0}', relay will be destroyed.", id);
+              _log.Trace("Caller disconnected from clCustomer port or clNonCustomer port of relay '{0}', relay will be destroyed.", _id);
               destroyRelay = true;
             }
             break;
@@ -816,7 +816,7 @@ namespace ProfileServer.Network
         case RelayConnectionStatus.WaitingForFirstInitMessage:
           {
             // In this relay status we do not care about connection to other than clAppService port.
-            if (IsRelayConnection)
+            if (isRelayConnection)
             {
               // This should never happen because client's Relay is initialized only after 
               // its initialization message is received and that would upgrade the relay to WaitingForSecondInitMessage.
@@ -828,17 +828,17 @@ namespace ProfileServer.Network
         case RelayConnectionStatus.WaitingForSecondInitMessage:
           {
             // In this relay status we do not care about connection to other than clAppService port.
-            if (IsRelayConnection)
+            if (isRelayConnection)
             {
               // One of the clients has sent its initialization message to clAppService port 
               // and is waiting for the other client to do the same.
-              bool isWaitingClient = (callee == Client) || (caller == Client);
+              bool isWaitingClient = (_callee == client) || (_caller == client);
 
               if (isWaitingClient)
               {
                 // The client that disconnected was the waiting client. We destroy the relay. 
                 // The other client is not connected yet or did not sent its initialization message yet.
-                log.Trace("First client on clAppService port of relay '{0}' closed its connection, destroying the relay.", id);
+                _log.Trace("First client on clAppService port of relay '{0}' closed its connection, destroying the relay.", _id);
                 destroyRelay = true;
               }
               else
@@ -846,7 +846,7 @@ namespace ProfileServer.Network
                 // The client that disconnected was the client that the first client is waiting for.
                 // We do not need to destroy the relay as the client may still connect again 
                 // and send its initialization message on time.
-                log.Trace("Second client (that did not sent init message yet) on clAppService port of relay '{0}' closed its connection, no action taken.", id);
+                _log.Trace("Second client (that did not sent init message yet) on clAppService port of relay '{0}' closed its connection, no action taken.", _id);
               }
             }
 
@@ -856,14 +856,14 @@ namespace ProfileServer.Network
         case RelayConnectionStatus.Open:
           {
             // In this relay status we do not care about connection to other than clAppService port.
-            if (IsRelayConnection)
+            if (isRelayConnection)
             {
               // Both clients were connected. We disconnect the other client and destroy the relay.
               // However, there might be some unfinished ApplicationServiceSendMessageRequest requests 
               // that we have to send responses to.
 
-              IncomingClient otherClient = isCallee ? caller : callee;
-              log.Trace("{0} disconnected from relay '{1}', closing connection of {2}.", isCallee ? "Callee" : "Caller", id, isCallee ? "caller" : "callee");
+              IncomingClient otherClient = isCallee ? _caller : _callee;
+              _log.Trace("{0} disconnected from relay '{1}', closing connection of {2}.", isCallee ? "Callee" : "Caller", _id, isCallee ? "caller" : "callee");
               clientToSendMessages = otherClient;
               clientToClose = otherClient;
 
@@ -871,7 +871,7 @@ namespace ProfileServer.Network
               // When a client sends ApplicationServiceSendMessageRequest, the profile server creates ApplicationServiceReceiveMessageNotificationRequest 
               // and adds it as an unfinished request with context set to RelayMessageContext, which contains the sender's ApplicationServiceSendMessageRequest.
               // This unfinished message is in the list of unfinished message of the recipient.
-              var unfinishedRelayRequests = Client.GetAndRemoveUnfinishedRequests();
+              var unfinishedRelayRequests = client.GetAndRemoveUnfinishedRequests();
               foreach (var unfinishedRequest in unfinishedRelayRequests)
               {
                 Message unfinishedRequestMessage = (Message)unfinishedRequest.RequestMessage.Message;
@@ -898,7 +898,7 @@ namespace ProfileServer.Network
           break;
       }
 
-      lockObject.Release();
+      _lock.Release();
 
 
       if (messagesToSend.Count > 0)
@@ -907,7 +907,7 @@ namespace ProfileServer.Network
         {
           if (!await clientToSendMessages.SendMessageAsync(messageToSend))
           {
-            log.Warn("Unable to send message to the client ID {0}, relay '{1}', maybe it is not connected anymore.", clientToSendMessages.Id.ToHex(), id);
+            _log.Warn("Unable to send message to the client ID {0}, relay '{1}', maybe it is not connected anymore.", clientToSendMessages.Id.ToHex(), _id);
             break;
           }
         }
@@ -924,7 +924,7 @@ namespace ProfileServer.Network
         await serverComponent.RelayList.DestroyNetworkRelay(this);
       }
 
-      log.Trace("(-)");
+      _log.Trace("(-)");
     }
 
 
@@ -934,27 +934,27 @@ namespace ProfileServer.Network
     /// <returns>true if the relay has been destroyed already, false otherwise.</returns>
     public async Task<bool> TestAndSetDestroyed()
     {
-      log.Trace("()");
+      _log.Trace("()");
 
       bool res = false;
 
-      await lockObject.WaitAsync();
+      await _lock.WaitAsync();
 
-      res = status == RelayConnectionStatus.Destroyed;
-      status = RelayConnectionStatus.Destroyed;
+      res = _status == RelayConnectionStatus.Destroyed;
+      _status = RelayConnectionStatus.Destroyed;
 
-      lockObject.Release();
+      _lock.Release();
 
-      log.Trace("(-):{0}", res);
+      _log.Trace("(-):{0}", res);
       return res;
     }
 
 
     /// <summary>Signals whether the instance has been disposed already or not.</summary>
-    private bool disposed = false;
+    private bool _disposed = false;
 
     /// <summary>Prevents race condition from multiple threads trying to dispose the same client instance at the same time.</summary>
-    private object disposingLock = new object();
+    private object _disposingLock = new object();
 
     /// <summary>
     /// Disposes the instance of the class.
@@ -966,21 +966,21 @@ namespace ProfileServer.Network
     }
 
     /// <summary>
-    /// Disposes the instance of the class if it has not been disposed yet and <paramref name="Disposing"/> is set.
+    /// Disposes the instance of the class if it has not been disposed yet and <paramref name="disposing"/> is set.
     /// </summary>
-    /// <param name="Disposing">Indicates whether the method was invoked from the IDisposable.Dispose implementation or from the finalizer.</param>
-    protected virtual void Dispose(bool Disposing)
+    /// <param name="disposing">Indicates whether the method was invoked from the IDisposable.Dispose implementation or from the finalizer.</param>
+    protected virtual void Dispose(bool disposing)
     {
-      if (disposed) return;
+      if (_disposed) return;
 
-      if (Disposing)
+      if (disposing)
       {
-        lock (disposingLock)
+        lock (_disposingLock)
         {
-          status = RelayConnectionStatus.Destroyed;
+          _status = RelayConnectionStatus.Destroyed;
           CancelTimeoutTimer();
 
-          disposed = true;
+          _disposed = true;
         }
       }
     }
