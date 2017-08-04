@@ -102,15 +102,7 @@ namespace ProfileServer.Network
     /// <summary>True if the client connection is from a follower server who initiated the neighborhood initialization process in this session.</summary>
     public bool NeighborhoodInitializationProcessInProgress;
 
-
-    /// <summary>List of unprocessed requests that we expect to receive responses to mapped by Message.id.</summary>
-    private Dictionary<uint, UnfinishedRequest<Message>> unfinishedRequests = new Dictionary<uint, UnfinishedRequest<Message>>();
-
-    /// <summary>Lock for access to unfinishedRequests list.</summary>
-    private object unfinishedRequestsLock = new object();
-
     // \Client Context Section
-
 
     /// <summary>
     /// Creates the instance for a new TCP server client.

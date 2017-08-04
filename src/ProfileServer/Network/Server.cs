@@ -41,7 +41,7 @@ namespace ProfileServer.Network
   public class Server : IopServerCore.Network.ServerBase<IncomingClient, Iop.Profileserver.Message>
   {
     /// <summary>Class logger.</summary>
-    private static Logger log = new Logger("ProfileServer." + ComponentName);
+    private static Logger _log = new Logger("ProfileServer." + ComponentName);
 
     /// <summary>
     /// Time in milliseconds for which a remote client is allowed not to send any request to the profile server in the open connection.
@@ -59,21 +59,22 @@ namespace ProfileServer.Network
 
 
     /// <summary>List of open relays.</summary>
-    private RelayList relayList;
-    /// <summary>List of open relays.</summary>
-    public RelayList RelayList { get { return relayList; } }
+    public RelayList RelayList { get; private set; }
 
+    public Server(RoleServerFactory roleServerFactory)
+      : base(roleServerFactory)
+    {}
 
     public override bool Init()
     {
-      log.Info("()");
+      _log.Info("()");
 
       bool res = false;
       try
       {
         if (base.Init())
         {
-          relayList = new RelayList();
+          RelayList = new RelayList();
 
           RegisterCronJobs();
 
@@ -83,26 +84,26 @@ namespace ProfileServer.Network
       }
       catch (Exception e)
       {
-        log.Error("Exception occurred: {0}", e.ToString());
+        _log.Error("Exception occurred: {0}", e.ToString());
       }
 
       if (!res)
         ShutdownSignaling.SignalShutdown();
 
-      log.Info("(-):{0}", res);
+      _log.Info("(-):{0}", res);
       return res;
     }
 
 
     public override void Shutdown()
     {
-      log.Info("()");
+      _log.Info("()");
 
       base.Shutdown();
 
-      relayList.Dispose();
+      RelayList.Dispose();
 
-      log.Info("(-)");
+      _log.Info("(-)");
     }
 
 
@@ -111,7 +112,7 @@ namespace ProfileServer.Network
     /// </summary>
     public void RegisterCronJobs()
     {
-      log.Trace("()");
+      _log.Trace("()");
 
       List<CronJob> cronJobDefinitions = new List<CronJob>()
       {
@@ -122,7 +123,7 @@ namespace ProfileServer.Network
       Cron cron = (Cron)Base.ComponentDictionary[Cron.ComponentName];
       cron.AddJobs(cronJobDefinitions);
 
-      log.Trace("(-)");
+      _log.Trace("(-)");
     }
 
 
@@ -132,17 +133,17 @@ namespace ProfileServer.Network
     /// </summary>
     public async void CronJobHandlerCheckInactiveClientConnectionsAsync()
     {
-      log.Trace("()");
+      _log.Trace("()");
 
       if (ShutdownSignaling.IsShutdown)
       {
-        log.Trace("(-):[SHUTDOWN]");
+        _log.Trace("(-):[SHUTDOWN]");
         return;
       }
 
       await CheckInactiveClientConnectionsAsync();
 
-      log.Trace("(-)");
+      _log.Trace("(-)");
     }
   }
 }

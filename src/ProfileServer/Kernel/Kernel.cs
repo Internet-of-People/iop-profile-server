@@ -16,6 +16,15 @@ namespace ProfileServer.Kernel
     /// <summary>Class logger.</summary>
     private static Logger log = new Logger("ProfileServer.Kernel.Kernel");
 
+    private static ProfileServer.Network.IncomingClient CreateClient(IopServerCore.Network.TcpRoleServer<ProfileServer.Network.IncomingClient, Iop.Profileserver.Message> that, System.Net.Sockets.TcpClient tcpClient, ulong clientId, string logPrefix)
+    {
+      return new ProfileServer.Network.IncomingClient(that, tcpClient, clientId, that.UseTls, that.ClientKeepAliveTimeoutMs, logPrefix);
+    }
+
+    private static IopServerCore.Network.TcpRoleServer<ProfileServer.Network.IncomingClient, Iop.Profileserver.Message> CreateRoleServer(System.Net.IPAddress ipAddress, RoleServerConfiguration config)
+    {
+      return new IopServerCore.Network.TcpRoleServer<ProfileServer.Network.IncomingClient, Iop.Profileserver.Message>(CreateClient, ipAddress, config);
+    }
 
     /// <summary>
     /// Initialization of all system components. The application can not run if the initialization process fails.
@@ -33,7 +42,7 @@ namespace ProfileServer.Kernel
         new Cron(),
         new Data.Database(),
         new Data.ImageManager(),
-        new Network.Server(),
+        new Network.Server(CreateRoleServer),
         new Network.ContentAddressNetwork(),
         new Network.LocationBasedNetwork(),
         new Network.NeighborhoodActionProcessor(),
