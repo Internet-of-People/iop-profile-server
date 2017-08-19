@@ -12,10 +12,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\iop-sdk-netcore\src\IopCommon\IopCommon.csproj" />
-    <ProjectReference Include="..\..\..\iop-sdk-netcore\src\IopCrypto\IopCrypto.csproj" />
-    <ProjectReference Include="..\..\..\iop-sdk-netcore\src\IopProtocol\IopProtocol.csproj" />
-    <ProjectReference Include="..\..\..\iop-sdk-netcore\src\IopServerCore\IopServerCore.csproj" />
+    <ProjectReference Include="..\IopCommon\IopCommon.csproj" />
+    <ProjectReference Include="..\IopCrypto\IopCrypto.csproj" />
+    <ProjectReference Include="..\IopProtocol\IopProtocol.csproj" />
+    <ProjectReference Include="..\IopServerCore\IopServerCore.csproj" />
   </ItemGroup>
 
   <ItemGroup>

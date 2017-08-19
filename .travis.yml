@@ -8,11 +8,6 @@ dist: trusty
 mono: none
 dotnet: 1.0.4
 
-# install dependencies
-install:
-  # clone iop-sdk-netcore project which is a dependency
-  - git clone https://github.com/Internet-of-People/iop-sdk-netcore.git ../iop-sdk-netcore
-
 # run build
 script:
  - cd src/ProfileServer
@@ -33,4 +28,3 @@ script:
  - nohup ./ProfileServer &
  - pid=$!
  - sleep 3 && kill $pid
- 

@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.6</TargetFramework>
+    <AssemblyName>IopServerCore</AssemblyName>
+    <PackageId>IopServerCore</PackageId>
+    <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\IopCommon\IopCommon.csproj" />
+    <ProjectReference Include="..\IopCrypto\IopCrypto.csproj" />
+    <ProjectReference Include="..\IopProtocol\IopProtocol.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="1.1.1" />
+    <PackageReference Include="newtonsoft.json" Version="9.0.1" />
+    <PackageReference Include="NuGet.CommandLine" Version="3.5.0" />
+    <PackageReference Include="System.COllections.Specialized" Version="4.3.0" />
+    <PackageReference Include="System.Net.Security" Version="4.3.0" />
+  </ItemGroup>
+
+</Project>
