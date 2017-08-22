@@ -397,13 +397,14 @@ namespace ProfileServer.Data
     private bool DeleteInvalidMissedCalls()
     {
       log.Info("()");
+      #warning TODO: Either use foreign keys with cascading delete, or maintain messages for old profiles here.
 
       bool res = false;
-      using (UnitOfWork unitOfWork = new UnitOfWork())
-      {
-        #warning TODO: Either use foreign keys with cascading delete, or maintain messages for old profiles here.
-        unitOfWork.Save();
-      }
+      // using (UnitOfWork unitOfWork = new UnitOfWork())
+      // {
+      //   unitOfWork.Save();
+      // }
+      res = true;
 
       log.Info("(-):{0}", res);
       return res;
