@@ -1,11 +1,17 @@
 #!/usr/bin/env bash
+set -ex
+if [ ! -z "$1" ]; then
+    COMMIT=$1
+else
+    COMMIT=`cat protocol_version.txt`
+fi
 
-rm -R tmp
+rm -Rf tmp
 mkdir tmp
 cd tmp
-wget https://github.com/Internet-of-People/message-protocol/archive/master.zip
-unzip master.zip
-cd message-protocol-master
+git clone https://github.com/Internet-of-People/iop-message-protocol.git
+cd iop-message-protocol
+git checkout $COMMIT
 protoc --csharp_out=../.. *.proto
 cd ../..
 
