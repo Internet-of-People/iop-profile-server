@@ -11,7 +11,7 @@ dotnet: 1.0.4
 # run build
 script:
  - cd src/ProfileServer
- - dotnet restore
+ - dotnet restore --configfile NuGet.Config
  # create executable
  - dotnet publish --configuration Release --runtime ubuntu.14.04-x64
  # initialize the Profile Server's database file
