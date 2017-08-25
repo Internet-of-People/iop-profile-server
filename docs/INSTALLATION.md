@@ -41,7 +41,7 @@ of IoP SDK for .NET Core and have it in the right directory. Just as in case of 
 Go to `$CloneDir\src\ProfileServer` and execute 
 
 ```
-dotnet restore
+dotnet restore --configfile NuGet.Config
 ```
 
 Then depending on which operating system you are running, execute one of these lines (you can execute all of them if you want to create executables for all the supported platforms):
