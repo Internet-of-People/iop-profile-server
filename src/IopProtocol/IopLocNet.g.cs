@@ -115,27 +115,35 @@ namespace Iop.Locnet {
             "YWRpdXNfa20YAiABKAISFgoObWF4X25vZGVfY291bnQYAyABKA0SGgoSaW5j",
             "bHVkZV9uZWlnaGJvdXJzGAQgASgIIkgKIUdldENsb3Nlc3ROb2Rlc0J5RGlz",
             "dGFuY2VSZXNwb25zZRIjCgVub2RlcxgBIAMoCzIULmlvcC5sb2NuZXQuTm9k",
-            "ZUluZm8i/QEKDUNsaWVudFJlcXVlc3QSNwoNZ2V0X25vZGVfaW5mbxgBIAEo",
+            "ZUluZm8iyAIKDUNsaWVudFJlcXVlc3QSNwoNZ2V0X25vZGVfaW5mbxgBIAEo",
             "CzIeLmlvcC5sb2NuZXQuR2V0Tm9kZUluZm9SZXF1ZXN0SAASUwoTZ2V0X25l",
             "aWdoYm91cl9ub2RlcxgCIAEoCzI0LmlvcC5sb2NuZXQuR2V0TmVpZ2hib3Vy",
             "Tm9kZXNCeURpc3RhbmNlQ2xpZW50UmVxdWVzdEgAEkkKEWdldF9jbG9zZXN0",
             "X25vZGVzGAMgASgLMiwuaW9wLmxvY25ldC5HZXRDbG9zZXN0Tm9kZXNCeURp",
-            "c3RhbmNlUmVxdWVzdEgAQhMKEUNsaWVudFJlcXVlc3RUeXBlIvwBCg5DbGll",
-            "bnRSZXNwb25zZRI4Cg1nZXRfbm9kZV9pbmZvGAEgASgLMh8uaW9wLmxvY25l",
-            "dC5HZXROb2RlSW5mb1Jlc3BvbnNlSAASTgoTZ2V0X25laWdoYm91cl9ub2Rl",
-            "cxgCIAEoCzIvLmlvcC5sb2NuZXQuR2V0TmVpZ2hib3VyTm9kZXNCeURpc3Rh",
-            "bmNlUmVzcG9uc2VIABJKChFnZXRfY2xvc2VzdF9ub2RlcxgDIAEoCzItLmlv",
-            "cC5sb2NuZXQuR2V0Q2xvc2VzdE5vZGVzQnlEaXN0YW5jZVJlc3BvbnNlSABC",
-            "FAoSQ2xpZW50UmVzcG9uc2VUeXBlIhQKEkdldE5vZGVJbmZvUmVxdWVzdCI+",
-            "ChNHZXROb2RlSW5mb1Jlc3BvbnNlEicKCW5vZGVfaW5mbxgBIAEoCzIULmlv",
-            "cC5sb2NuZXQuTm9kZUluZm8iKgooR2V0TmVpZ2hib3VyTm9kZXNCeURpc3Rh",
-            "bmNlQ2xpZW50UmVxdWVzdCp5CgZTdGF0dXMSDQoJU1RBVFVTX09LEAASHAoY",
-            "RVJST1JfUFJPVE9DT0xfVklPTEFUSU9OEAESFQoRRVJST1JfVU5TVVBQT1JU",
-            "RUQQAhISCg5FUlJPUl9JTlRFUk5BTBAIEhcKE0VSUk9SX0lOVkFMSURfVkFM",
-            "VUUQNiqWAQoLU2VydmljZVR5cGUSEAoMVU5TVFJVQ1RVUkVEEAASCwoHQ09O",
-            "VEVOVBABEgsKB0xBVEVOQ1kQAhIMCghMT0NBVElPThADEgkKBVRPS0VOEAoS",
-            "CwoHUFJPRklMRRALEg0KCVBST1hJTUlUWRAMEgkKBVJFTEFZEA0SDgoKUkVQ",
-            "VVRBVElPThAOEgsKB01JTlRJTkcQD2IGcHJvdG8z"));
+            "c3RhbmNlUmVxdWVzdEgAEkkKDWV4cGxvcmVfbm9kZXMYBCABKAsyMC5pb3Au",
+            "bG9jbmV0LkV4cGxvcmVOZXR3b3JrTm9kZXNCeURpc3RhbmNlUmVxdWVzdEgA",
+            "QhMKEUNsaWVudFJlcXVlc3RUeXBlIsgCCg5DbGllbnRSZXNwb25zZRI4Cg1n",
+            "ZXRfbm9kZV9pbmZvGAEgASgLMh8uaW9wLmxvY25ldC5HZXROb2RlSW5mb1Jl",
+            "c3BvbnNlSAASTgoTZ2V0X25laWdoYm91cl9ub2RlcxgCIAEoCzIvLmlvcC5s",
+            "b2NuZXQuR2V0TmVpZ2hib3VyTm9kZXNCeURpc3RhbmNlUmVzcG9uc2VIABJK",
+            "ChFnZXRfY2xvc2VzdF9ub2RlcxgDIAEoCzItLmlvcC5sb2NuZXQuR2V0Q2xv",
+            "c2VzdE5vZGVzQnlEaXN0YW5jZVJlc3BvbnNlSAASSgoNZXhwbG9yZV9ub2Rl",
+            "cxgEIAEoCzIxLmlvcC5sb2NuZXQuRXhwbG9yZU5ldHdvcmtOb2Rlc0J5RGlz",
+            "dGFuY2VSZXNwb25zZUgAQhQKEkNsaWVudFJlc3BvbnNlVHlwZSIUChJHZXRO",
+            "b2RlSW5mb1JlcXVlc3QiPgoTR2V0Tm9kZUluZm9SZXNwb25zZRInCglub2Rl",
+            "X2luZm8YASABKAsyFC5pb3AubG9jbmV0Lk5vZGVJbmZvIioKKEdldE5laWdo",
+            "Ym91ck5vZGVzQnlEaXN0YW5jZUNsaWVudFJlcXVlc3QigwEKJEV4cGxvcmVO",
+            "ZXR3b3JrTm9kZXNCeURpc3RhbmNlUmVxdWVzdBIpCghsb2NhdGlvbhgBIAEo",
+            "CzIXLmlvcC5sb2NuZXQuR3BzTG9jYXRpb24SGQoRdGFyZ2V0X25vZGVfY291",
+            "bnQYAiABKA0SFQoNbWF4X25vZGVfaG9wcxgDIAEoDSJUCiVFeHBsb3JlTmV0",
+            "d29ya05vZGVzQnlEaXN0YW5jZVJlc3BvbnNlEisKDWNsb3Nlc3Rfbm9kZXMY",
+            "ASADKAsyFC5pb3AubG9jbmV0Lk5vZGVJbmZvKnkKBlN0YXR1cxINCglTVEFU",
+            "VVNfT0sQABIcChhFUlJPUl9QUk9UT0NPTF9WSU9MQVRJT04QARIVChFFUlJP",
+            "Ul9VTlNVUFBPUlRFRBACEhIKDkVSUk9SX0lOVEVSTkFMEAgSFwoTRVJST1Jf",
+            "SU5WQUxJRF9WQUxVRRA2KpYBCgtTZXJ2aWNlVHlwZRIQCgxVTlNUUlVDVFVS",
+            "RUQQABILCgdDT05URU5UEAESCwoHTEFURU5DWRACEgwKCExPQ0FUSU9OEAMS",
+            "CQoFVE9LRU4QChILCgdQUk9GSUxFEAsSDQoJUFJPWElNSVRZEAwSCQoFUkVM",
+            "QVkQDRIOCgpSRVBVVEFUSU9OEA4SCwoHTUlOVElORxAPYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Iop.Locnet.Status), typeof(global::Iop.Locnet.ServiceType), }, new pbr::GeneratedClrTypeInfo[] {
@@ -168,11 +176,13 @@ namespace Iop.Locnet {
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.GetRandomNodesResponse), global::Iop.Locnet.GetRandomNodesResponse.Parser, new[]{ "Nodes" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.GetClosestNodesByDistanceRequest), global::Iop.Locnet.GetClosestNodesByDistanceRequest.Parser, new[]{ "Location", "MaxRadiusKm", "MaxNodeCount", "IncludeNeighbours" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.GetClosestNodesByDistanceResponse), global::Iop.Locnet.GetClosestNodesByDistanceResponse.Parser, new[]{ "Nodes" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.ClientRequest), global::Iop.Locnet.ClientRequest.Parser, new[]{ "GetNodeInfo", "GetNeighbourNodes", "GetClosestNodes" }, new[]{ "ClientRequestType" }, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.ClientResponse), global::Iop.Locnet.ClientResponse.Parser, new[]{ "GetNodeInfo", "GetNeighbourNodes", "GetClosestNodes" }, new[]{ "ClientResponseType" }, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.ClientRequest), global::Iop.Locnet.ClientRequest.Parser, new[]{ "GetNodeInfo", "GetNeighbourNodes", "GetClosestNodes", "ExploreNodes" }, new[]{ "ClientRequestType" }, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.ClientResponse), global::Iop.Locnet.ClientResponse.Parser, new[]{ "GetNodeInfo", "GetNeighbourNodes", "GetClosestNodes", "ExploreNodes" }, new[]{ "ClientResponseType" }, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.GetNodeInfoRequest), global::Iop.Locnet.GetNodeInfoRequest.Parser, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.GetNodeInfoResponse), global::Iop.Locnet.GetNodeInfoResponse.Parser, new[]{ "NodeInfo" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.GetNeighbourNodesByDistanceClientRequest), global::Iop.Locnet.GetNeighbourNodesByDistanceClientRequest.Parser, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.GetNeighbourNodesByDistanceClientRequest), global::Iop.Locnet.GetNeighbourNodesByDistanceClientRequest.Parser, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.ExploreNetworkNodesByDistanceRequest), global::Iop.Locnet.ExploreNetworkNodesByDistanceRequest.Parser, new[]{ "Location", "TargetNodeCount", "MaxNodeHops" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.ExploreNetworkNodesByDistanceResponse), global::Iop.Locnet.ExploreNetworkNodesByDistanceResponse.Parser, new[]{ "ClosestNodes" }, null, null, null)
           }));
     }
     #endregion
@@ -5527,6 +5537,9 @@ namespace Iop.Locnet {
         case ClientRequestTypeOneofCase.GetClosestNodes:
           GetClosestNodes = other.GetClosestNodes.Clone();
           break;
+        case ClientRequestTypeOneofCase.ExploreNodes:
+          ExploreNodes = other.ExploreNodes.Clone();
+          break;
       }
 
     }
@@ -5569,6 +5582,17 @@ namespace Iop.Locnet {
       }
     }
 
+    /// <summary>Field number for the "explore_nodes" field.</summary>
+    public const int ExploreNodesFieldNumber = 4;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Locnet.ExploreNetworkNodesByDistanceRequest ExploreNodes {
+      get { return clientRequestTypeCase_ == ClientRequestTypeOneofCase.ExploreNodes ? (global::Iop.Locnet.ExploreNetworkNodesByDistanceRequest) clientRequestType_ : null; }
+      set {
+        clientRequestType_ = value;
+        clientRequestTypeCase_ = value == null ? ClientRequestTypeOneofCase.None : ClientRequestTypeOneofCase.ExploreNodes;
+      }
+    }
+
     private object clientRequestType_;
     /// <summary>Enum of possible cases for the "ClientRequestType" oneof.</summary>
     public enum ClientRequestTypeOneofCase {
@@ -5576,6 +5600,7 @@ namespace Iop.Locnet {
       GetNodeInfo = 1,
       GetNeighbourNodes = 2,
       GetClosestNodes = 3,
+      ExploreNodes = 4,
     }
     private ClientRequestTypeOneofCase clientRequestTypeCase_ = ClientRequestTypeOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -5605,6 +5630,7 @@ namespace Iop.Locnet {
       if (!object.Equals(GetNodeInfo, other.GetNodeInfo)) return false;
       if (!object.Equals(GetNeighbourNodes, other.GetNeighbourNodes)) return false;
       if (!object.Equals(GetClosestNodes, other.GetClosestNodes)) return false;
+      if (!object.Equals(ExploreNodes, other.ExploreNodes)) return false;
       if (ClientRequestTypeCase != other.ClientRequestTypeCase) return false;
       return true;
     }
@@ -5615,6 +5641,7 @@ namespace Iop.Locnet {
       if (clientRequestTypeCase_ == ClientRequestTypeOneofCase.GetNodeInfo) hash ^= GetNodeInfo.GetHashCode();
       if (clientRequestTypeCase_ == ClientRequestTypeOneofCase.GetNeighbourNodes) hash ^= GetNeighbourNodes.GetHashCode();
       if (clientRequestTypeCase_ == ClientRequestTypeOneofCase.GetClosestNodes) hash ^= GetClosestNodes.GetHashCode();
+      if (clientRequestTypeCase_ == ClientRequestTypeOneofCase.ExploreNodes) hash ^= ExploreNodes.GetHashCode();
       hash ^= (int) clientRequestTypeCase_;
       return hash;
     }
@@ -5638,6 +5665,10 @@ namespace Iop.Locnet {
         output.WriteRawTag(26);
         output.WriteMessage(GetClosestNodes);
       }
+      if (clientRequestTypeCase_ == ClientRequestTypeOneofCase.ExploreNodes) {
+        output.WriteRawTag(34);
+        output.WriteMessage(ExploreNodes);
+      }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -5651,6 +5682,9 @@ namespace Iop.Locnet {
       }
       if (clientRequestTypeCase_ == ClientRequestTypeOneofCase.GetClosestNodes) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(GetClosestNodes);
+      }
+      if (clientRequestTypeCase_ == ClientRequestTypeOneofCase.ExploreNodes) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(ExploreNodes);
       }
       return size;
     }
@@ -5669,6 +5703,9 @@ namespace Iop.Locnet {
           break;
         case ClientRequestTypeOneofCase.GetClosestNodes:
           GetClosestNodes = other.GetClosestNodes;
+          break;
+        case ClientRequestTypeOneofCase.ExploreNodes:
+          ExploreNodes = other.ExploreNodes;
           break;
       }
 
@@ -5707,6 +5744,15 @@ namespace Iop.Locnet {
             }
             input.ReadMessage(subBuilder);
             GetClosestNodes = subBuilder;
+            break;
+          }
+          case 34: {
+            global::Iop.Locnet.ExploreNetworkNodesByDistanceRequest subBuilder = new global::Iop.Locnet.ExploreNetworkNodesByDistanceRequest();
+            if (clientRequestTypeCase_ == ClientRequestTypeOneofCase.ExploreNodes) {
+              subBuilder.MergeFrom(ExploreNodes);
+            }
+            input.ReadMessage(subBuilder);
+            ExploreNodes = subBuilder;
             break;
           }
         }
@@ -5748,6 +5794,9 @@ namespace Iop.Locnet {
           break;
         case ClientResponseTypeOneofCase.GetClosestNodes:
           GetClosestNodes = other.GetClosestNodes.Clone();
+          break;
+        case ClientResponseTypeOneofCase.ExploreNodes:
+          ExploreNodes = other.ExploreNodes.Clone();
           break;
       }
 
@@ -5791,6 +5840,17 @@ namespace Iop.Locnet {
       }
     }
 
+    /// <summary>Field number for the "explore_nodes" field.</summary>
+    public const int ExploreNodesFieldNumber = 4;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Locnet.ExploreNetworkNodesByDistanceResponse ExploreNodes {
+      get { return clientResponseTypeCase_ == ClientResponseTypeOneofCase.ExploreNodes ? (global::Iop.Locnet.ExploreNetworkNodesByDistanceResponse) clientResponseType_ : null; }
+      set {
+        clientResponseType_ = value;
+        clientResponseTypeCase_ = value == null ? ClientResponseTypeOneofCase.None : ClientResponseTypeOneofCase.ExploreNodes;
+      }
+    }
+
     private object clientResponseType_;
     /// <summary>Enum of possible cases for the "ClientResponseType" oneof.</summary>
     public enum ClientResponseTypeOneofCase {
@@ -5798,6 +5858,7 @@ namespace Iop.Locnet {
       GetNodeInfo = 1,
       GetNeighbourNodes = 2,
       GetClosestNodes = 3,
+      ExploreNodes = 4,
     }
     private ClientResponseTypeOneofCase clientResponseTypeCase_ = ClientResponseTypeOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -5827,6 +5888,7 @@ namespace Iop.Locnet {
       if (!object.Equals(GetNodeInfo, other.GetNodeInfo)) return false;
       if (!object.Equals(GetNeighbourNodes, other.GetNeighbourNodes)) return false;
       if (!object.Equals(GetClosestNodes, other.GetClosestNodes)) return false;
+      if (!object.Equals(ExploreNodes, other.ExploreNodes)) return false;
       if (ClientResponseTypeCase != other.ClientResponseTypeCase) return false;
       return true;
     }
@@ -5837,6 +5899,7 @@ namespace Iop.Locnet {
       if (clientResponseTypeCase_ == ClientResponseTypeOneofCase.GetNodeInfo) hash ^= GetNodeInfo.GetHashCode();
       if (clientResponseTypeCase_ == ClientResponseTypeOneofCase.GetNeighbourNodes) hash ^= GetNeighbourNodes.GetHashCode();
       if (clientResponseTypeCase_ == ClientResponseTypeOneofCase.GetClosestNodes) hash ^= GetClosestNodes.GetHashCode();
+      if (clientResponseTypeCase_ == ClientResponseTypeOneofCase.ExploreNodes) hash ^= ExploreNodes.GetHashCode();
       hash ^= (int) clientResponseTypeCase_;
       return hash;
     }
@@ -5860,6 +5923,10 @@ namespace Iop.Locnet {
         output.WriteRawTag(26);
         output.WriteMessage(GetClosestNodes);
       }
+      if (clientResponseTypeCase_ == ClientResponseTypeOneofCase.ExploreNodes) {
+        output.WriteRawTag(34);
+        output.WriteMessage(ExploreNodes);
+      }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -5873,6 +5940,9 @@ namespace Iop.Locnet {
       }
       if (clientResponseTypeCase_ == ClientResponseTypeOneofCase.GetClosestNodes) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(GetClosestNodes);
+      }
+      if (clientResponseTypeCase_ == ClientResponseTypeOneofCase.ExploreNodes) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(ExploreNodes);
       }
       return size;
     }
@@ -5891,6 +5961,9 @@ namespace Iop.Locnet {
           break;
         case ClientResponseTypeOneofCase.GetClosestNodes:
           GetClosestNodes = other.GetClosestNodes;
+          break;
+        case ClientResponseTypeOneofCase.ExploreNodes:
+          ExploreNodes = other.ExploreNodes;
           break;
       }
 
@@ -5929,6 +6002,15 @@ namespace Iop.Locnet {
             }
             input.ReadMessage(subBuilder);
             GetClosestNodes = subBuilder;
+            break;
+          }
+          case 34: {
+            global::Iop.Locnet.ExploreNetworkNodesByDistanceResponse subBuilder = new global::Iop.Locnet.ExploreNetworkNodesByDistanceResponse();
+            if (clientResponseTypeCase_ == ClientResponseTypeOneofCase.ExploreNodes) {
+              subBuilder.MergeFrom(ExploreNodes);
+            }
+            input.ReadMessage(subBuilder);
+            ExploreNodes = subBuilder;
             break;
           }
         }
@@ -6240,6 +6322,300 @@ namespace Iop.Locnet {
           default:
             input.SkipLastField();
             break;
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  /// Explore the closest nodes around the specified location.
+  /// While GetClosestNodesByDistanceResponse queries information only from this single node,
+  /// this call requests the node to contact also other nodes which might know the location better
+  /// so as the mobile client doesn't have to drain too much battery for such network communication.
+  /// </summary>
+  public sealed partial class ExploreNetworkNodesByDistanceRequest : pb::IMessage<ExploreNetworkNodesByDistanceRequest> {
+    private static readonly pb::MessageParser<ExploreNetworkNodesByDistanceRequest> _parser = new pb::MessageParser<ExploreNetworkNodesByDistanceRequest>(() => new ExploreNetworkNodesByDistanceRequest());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<ExploreNetworkNodesByDistanceRequest> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[34]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ExploreNetworkNodesByDistanceRequest() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ExploreNetworkNodesByDistanceRequest(ExploreNetworkNodesByDistanceRequest other) : this() {
+      Location = other.location_ != null ? other.Location.Clone() : null;
+      targetNodeCount_ = other.targetNodeCount_;
+      maxNodeHops_ = other.maxNodeHops_;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ExploreNetworkNodesByDistanceRequest Clone() {
+      return new ExploreNetworkNodesByDistanceRequest(this);
+    }
+
+    /// <summary>Field number for the "location" field.</summary>
+    public const int LocationFieldNumber = 1;
+    private global::Iop.Locnet.GpsLocation location_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Locnet.GpsLocation Location {
+      get { return location_; }
+      set {
+        location_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "target_node_count" field.</summary>
+    public const int TargetNodeCountFieldNumber = 2;
+    private uint targetNodeCount_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public uint TargetNodeCount {
+      get { return targetNodeCount_; }
+      set {
+        targetNodeCount_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "max_node_hops" field.</summary>
+    public const int MaxNodeHopsFieldNumber = 3;
+    private uint maxNodeHops_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public uint MaxNodeHops {
+      get { return maxNodeHops_; }
+      set {
+        maxNodeHops_ = value;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as ExploreNetworkNodesByDistanceRequest);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(ExploreNetworkNodesByDistanceRequest other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (!object.Equals(Location, other.Location)) return false;
+      if (TargetNodeCount != other.TargetNodeCount) return false;
+      if (MaxNodeHops != other.MaxNodeHops) return false;
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (location_ != null) hash ^= Location.GetHashCode();
+      if (TargetNodeCount != 0) hash ^= TargetNodeCount.GetHashCode();
+      if (MaxNodeHops != 0) hash ^= MaxNodeHops.GetHashCode();
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (location_ != null) {
+        output.WriteRawTag(10);
+        output.WriteMessage(Location);
+      }
+      if (TargetNodeCount != 0) {
+        output.WriteRawTag(16);
+        output.WriteUInt32(TargetNodeCount);
+      }
+      if (MaxNodeHops != 0) {
+        output.WriteRawTag(24);
+        output.WriteUInt32(MaxNodeHops);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (location_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Location);
+      }
+      if (TargetNodeCount != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeUInt32Size(TargetNodeCount);
+      }
+      if (MaxNodeHops != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeUInt32Size(MaxNodeHops);
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(ExploreNetworkNodesByDistanceRequest other) {
+      if (other == null) {
+        return;
+      }
+      if (other.location_ != null) {
+        if (location_ == null) {
+          location_ = new global::Iop.Locnet.GpsLocation();
+        }
+        Location.MergeFrom(other.Location);
+      }
+      if (other.TargetNodeCount != 0) {
+        TargetNodeCount = other.TargetNodeCount;
+      }
+      if (other.MaxNodeHops != 0) {
+        MaxNodeHops = other.MaxNodeHops;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+          case 10: {
+            if (location_ == null) {
+              location_ = new global::Iop.Locnet.GpsLocation();
+            }
+            input.ReadMessage(location_);
+            break;
+          }
+          case 16: {
+            TargetNodeCount = input.ReadUInt32();
+            break;
+          }
+          case 24: {
+            MaxNodeHops = input.ReadUInt32();
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  public sealed partial class ExploreNetworkNodesByDistanceResponse : pb::IMessage<ExploreNetworkNodesByDistanceResponse> {
+    private static readonly pb::MessageParser<ExploreNetworkNodesByDistanceResponse> _parser = new pb::MessageParser<ExploreNetworkNodesByDistanceResponse>(() => new ExploreNetworkNodesByDistanceResponse());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<ExploreNetworkNodesByDistanceResponse> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[35]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ExploreNetworkNodesByDistanceResponse() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ExploreNetworkNodesByDistanceResponse(ExploreNetworkNodesByDistanceResponse other) : this() {
+      closestNodes_ = other.closestNodes_.Clone();
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ExploreNetworkNodesByDistanceResponse Clone() {
+      return new ExploreNetworkNodesByDistanceResponse(this);
+    }
+
+    /// <summary>Field number for the "closest_nodes" field.</summary>
+    public const int ClosestNodesFieldNumber = 1;
+    private static readonly pb::FieldCodec<global::Iop.Locnet.NodeInfo> _repeated_closestNodes_codec
+        = pb::FieldCodec.ForMessage(10, global::Iop.Locnet.NodeInfo.Parser);
+    private readonly pbc::RepeatedField<global::Iop.Locnet.NodeInfo> closestNodes_ = new pbc::RepeatedField<global::Iop.Locnet.NodeInfo>();
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<global::Iop.Locnet.NodeInfo> ClosestNodes {
+      get { return closestNodes_; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as ExploreNetworkNodesByDistanceResponse);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(ExploreNetworkNodesByDistanceResponse other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if(!closestNodes_.Equals(other.closestNodes_)) return false;
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      hash ^= closestNodes_.GetHashCode();
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      closestNodes_.WriteTo(output, _repeated_closestNodes_codec);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      size += closestNodes_.CalculateSize(_repeated_closestNodes_codec);
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(ExploreNetworkNodesByDistanceResponse other) {
+      if (other == null) {
+        return;
+      }
+      closestNodes_.Add(other.closestNodes_);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+          case 10: {
+            closestNodes_.AddEntriesFrom(input, _repeated_closestNodes_codec);
+            break;
+          }
         }
       }
     }
