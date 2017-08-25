@@ -1097,6 +1097,7 @@ namespace IopProtocol
     /// </summary>
     /// <param name="Message">Message sent by the other peer.</param>
     /// <returns>ApplicationServiceReceiveMessageNotificationRequest message that is ready to be sent.</returns>
+    [Obsolete("Aye, aye.", false)]
     public IProtocolMessage<Message> CreateApplicationServiceReceiveMessageNotificationRequest(byte[] Message)
     {
       ApplicationServiceReceiveMessageNotificationRequest applicationServiceReceiveMessageNotificationRequest = new ApplicationServiceReceiveMessageNotificationRequest();
@@ -1114,6 +1115,7 @@ namespace IopProtocol
     /// </summary>
     /// <param name="Request">ApplicationServiceReceiveMessageNotificationRequest message for which the response is created.</param>
     /// <returns>ApplicationServiceReceiveMessageNotificationResponse message that is ready to be sent.</returns>
+    [Obsolete("Aye, aye.", false)]
     public IProtocolMessage<Message> CreateApplicationServiceReceiveMessageNotificationResponse(IProtocolMessage<Message> Request)
     {
       ApplicationServiceReceiveMessageNotificationResponse applicationServiceReceiveMessageNotificationResponse = new ApplicationServiceReceiveMessageNotificationResponse();

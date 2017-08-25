@@ -36,5 +36,5 @@ cd tmp
 git clone "$REPO"
 cd iop-message-protocol
 git checkout "$COMMIT"
-protoc --csharp_out=../.. ./*.proto
+protoc --csharp_out=../.. --csharp_opt=file_extension=.g.cs ./*.proto
 cd ../..

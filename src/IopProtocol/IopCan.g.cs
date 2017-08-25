@@ -22,14 +22,14 @@ namespace Iop.Can {
     static IopCanReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "CgxJb3BDYW4ucHJvdG8SB2lvcC5jYW4itAEKDENhbklwbnNFbnRyeRINCgV2",
-            "YWx1ZRgBIAEoDBIRCglzaWduYXR1cmUYAiABKAwSOAoMdmFsaWRpdHlUeXBl",
-            "GAMgASgOMiIuaW9wLmNhbi5DYW5JcG5zRW50cnkuVmFsaWRpdHlUeXBlEhAK",
-            "CHZhbGlkaXR5GAQgASgMEhAKCHNlcXVlbmNlGAUgASgEEgsKA3R0bBgGIAEo",
-            "BCIXCgxWYWxpZGl0eVR5cGUSBwoDRU9MEAAiagoMQ2FuQ3J5cHRvS2V5EisK",
-            "BHR5cGUYASABKA4yHS5pb3AuY2FuLkNhbkNyeXB0b0tleS5LZXlUeXBlEgwK",
-            "BGRhdGEYAiABKAwiHwoHS2V5VHlwZRIHCgNSU0EQABILCgdFZDI1NTE5EAFi",
-            "BnByb3RvMw=="));
+            "CgxJb3BDYW4ucHJvdG8SB2lvcC5jYW4itQEKDENhbklwbnNFbnRyeRINCgV2",
+            "YWx1ZRgBIAEoDBIRCglzaWduYXR1cmUYAiABKAwSOQoNdmFsaWRpdHlfdHlw",
+            "ZRgDIAEoDjIiLmlvcC5jYW4uQ2FuSXBuc0VudHJ5LlZhbGlkaXR5VHlwZRIQ",
+            "Cgh2YWxpZGl0eRgEIAEoDBIQCghzZXF1ZW5jZRgFIAEoBBILCgN0dGwYBiAB",
+            "KAQiFwoMVmFsaWRpdHlUeXBlEgcKA0VPTBAAImoKDENhbkNyeXB0b0tleRIr",
+            "CgR0eXBlGAEgASgOMh0uaW9wLmNhbi5DYW5DcnlwdG9LZXkuS2V5VHlwZRIM",
+            "CgRkYXRhGAIgASgMIh8KB0tleVR5cGUSBwoDUlNBEAASCwoHRUQyNTUxORAB",
+            "YgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
@@ -111,7 +111,7 @@ namespace Iop.Can {
       }
     }
 
-    /// <summary>Field number for the "validityType" field.</summary>
+    /// <summary>Field number for the "validity_type" field.</summary>
     public const int ValidityTypeFieldNumber = 3;
     private global::Iop.Can.CanIpnsEntry.Types.ValidityType validityType_ = 0;
     /// <summary>
@@ -500,7 +500,7 @@ namespace Iop.Can {
       /// </summary>
       public enum KeyType {
         [pbr::OriginalName("RSA")] Rsa = 0,
-        [pbr::OriginalName("Ed25519")] Ed25519 = 1,
+        [pbr::OriginalName("ED25519")] Ed25519 = 1,
       }
 
     }

@@ -22,118 +22,120 @@ namespace Iop.Locnet {
     static IopLocNetReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "Cg9Jb3BMb2NOZXQucHJvdG8SCmlvcC5sb2NuZXQiVwoLU2VydmljZUluZm8S",
+            "Cg9Jb3BMb2NOZXQucHJvdG8SCmlvcC5sb2NuZXQiWAoLU2VydmljZUluZm8S",
             "JQoEdHlwZRgBIAEoDjIXLmlvcC5sb2NuZXQuU2VydmljZVR5cGUSDAoEcG9y",
-            "dBgCIAEoDRITCgtzZXJ2aWNlRGF0YRgDIAEoDCIyCgtHcHNMb2NhdGlvbhIQ",
-            "CghsYXRpdHVkZRgBIAEoDxIRCglsb25naXR1ZGUYAiABKA8iRgoLTm9kZUNv",
-            "bnRhY3QSEQoJaXBBZGRyZXNzGAEgASgMEhAKCG5vZGVQb3J0GAIgASgNEhIK",
-            "CmNsaWVudFBvcnQYAyABKA0imgEKCE5vZGVJbmZvEg4KBm5vZGVJZBgBIAEo",
-            "DBIoCgdjb250YWN0GAIgASgLMhcuaW9wLmxvY25ldC5Ob2RlQ29udGFjdBIp",
-            "Cghsb2NhdGlvbhgDIAEoCzIXLmlvcC5sb2NuZXQuR3BzTG9jYXRpb24SKQoI",
-            "c2VydmljZXMYICADKAsyFy5pb3AubG9jbmV0LlNlcnZpY2VJbmZvIkYKEU1l",
-            "c3NhZ2VXaXRoSGVhZGVyEg4KBmhlYWRlchgBIAEoBxIhCgRib2R5GAIgASgL",
-            "MhMuaW9wLmxvY25ldC5NZXNzYWdlInYKB01lc3NhZ2USCgoCaWQYASABKA0S",
-            "JgoHcmVxdWVzdBgCIAEoCzITLmlvcC5sb2NuZXQuUmVxdWVzdEgAEigKCHJl",
-            "c3BvbnNlGAMgASgLMhQuaW9wLmxvY25ldC5SZXNwb25zZUgAQg0KC01lc3Nh",
-            "Z2VUeXBlIsQBCgdSZXF1ZXN0Eg8KB3ZlcnNpb24YASABKAwSNwoMbG9jYWxT",
-            "ZXJ2aWNlGAIgASgLMh8uaW9wLmxvY25ldC5Mb2NhbFNlcnZpY2VSZXF1ZXN0",
-            "SAASMwoKcmVtb3RlTm9kZRgDIAEoCzIdLmlvcC5sb2NuZXQuUmVtb3RlTm9k",
-            "ZVJlcXVlc3RIABIrCgZjbGllbnQYBCABKAsyGS5pb3AubG9jbmV0LkNsaWVu",
-            "dFJlcXVlc3RIAEINCgtSZXF1ZXN0VHlwZSKAAgoIUmVzcG9uc2USIgoGc3Rh",
-            "dHVzGAEgASgOMhIuaW9wLmxvY25ldC5TdGF0dXMSEQoJdGltZXN0YW1wGAIg",
-            "ASgSEg8KB2RldGFpbHMYAyABKAkSOAoMbG9jYWxTZXJ2aWNlGAQgASgLMiAu",
-            "aW9wLmxvY25ldC5Mb2NhbFNlcnZpY2VSZXNwb25zZUgAEjQKCnJlbW90ZU5v",
-            "ZGUYBSABKAsyHi5pb3AubG9jbmV0LlJlbW90ZU5vZGVSZXNwb25zZUgAEiwK",
-            "BmNsaWVudBgGIAEoCzIaLmlvcC5sb2NuZXQuQ2xpZW50UmVzcG9uc2VIAEIO",
-            "CgxSZXNwb25zZVR5cGUi2QIKE0xvY2FsU2VydmljZVJlcXVlc3QSPQoPcmVn",
-            "aXN0ZXJTZXJ2aWNlGAEgASgLMiIuaW9wLmxvY25ldC5SZWdpc3RlclNlcnZp",
-            "Y2VSZXF1ZXN0SAASQQoRZGVyZWdpc3RlclNlcnZpY2UYAiABKAsyJC5pb3Au",
-            "bG9jbmV0LkRlcmVnaXN0ZXJTZXJ2aWNlUmVxdWVzdEgAElAKEWdldE5laWdo",
-            "Ym91ck5vZGVzGAMgASgLMjMuaW9wLmxvY25ldC5HZXROZWlnaGJvdXJOb2Rl",
-            "c0J5RGlzdGFuY2VMb2NhbFJlcXVlc3RIABJTChRuZWlnaGJvdXJob29kQ2hh",
-            "bmdlZBgEIAEoCzIzLmlvcC5sb2NuZXQuTmVpZ2hib3VyaG9vZENoYW5nZWRO",
-            "b3RpZmljYXRpb25SZXF1ZXN0SABCGQoXTG9jYWxTZXJ2aWNlUmVxdWVzdFR5",
-            "cGUi2gIKFExvY2FsU2VydmljZVJlc3BvbnNlEj4KD3JlZ2lzdGVyU2Vydmlj",
-            "ZRgBIAEoCzIjLmlvcC5sb2NuZXQuUmVnaXN0ZXJTZXJ2aWNlUmVzcG9uc2VI",
-            "ABJCChFkZXJlZ2lzdGVyU2VydmljZRgCIAEoCzIlLmlvcC5sb2NuZXQuRGVy",
-            "ZWdpc3RlclNlcnZpY2VSZXNwb25zZUgAEkwKEWdldE5laWdoYm91ck5vZGVz",
-            "GAMgASgLMi8uaW9wLmxvY25ldC5HZXROZWlnaGJvdXJOb2Rlc0J5RGlzdGFu",
-            "Y2VSZXNwb25zZUgAElQKFG5laWdoYm91cmhvb2RVcGRhdGVkGAQgASgLMjQu",
-            "aW9wLmxvY25ldC5OZWlnaGJvdXJob29kQ2hhbmdlZE5vdGlmaWNhdGlvblJl",
-            "c3BvbnNlSABCGgoYTG9jYWxTZXJ2aWNlUmVzcG9uc2VUeXBlIkIKFlJlZ2lz",
-            "dGVyU2VydmljZVJlcXVlc3QSKAoHc2VydmljZRgBIAEoCzIXLmlvcC5sb2Nu",
-            "ZXQuU2VydmljZUluZm8iRAoXUmVnaXN0ZXJTZXJ2aWNlUmVzcG9uc2USKQoI",
-            "bG9jYXRpb24YASABKAsyFy5pb3AubG9jbmV0Lkdwc0xvY2F0aW9uIkgKGERl",
-            "cmVnaXN0ZXJTZXJ2aWNlUmVxdWVzdBIsCgtzZXJ2aWNlVHlwZRgBIAEoDjIX",
-            "LmlvcC5sb2NuZXQuU2VydmljZVR5cGUiGwoZRGVyZWdpc3RlclNlcnZpY2VS",
-            "ZXNwb25zZSJKCidHZXROZWlnaGJvdXJOb2Rlc0J5RGlzdGFuY2VMb2NhbFJl",
-            "cXVlc3QSHwoXa2VlcEFsaXZlQW5kU2VuZFVwZGF0ZXMYASABKAgiSgojR2V0",
-            "TmVpZ2hib3VyTm9kZXNCeURpc3RhbmNlUmVzcG9uc2USIwoFbm9kZXMYASAD",
-            "KAsyFC5pb3AubG9jbmV0Lk5vZGVJbmZvIpwBChNOZWlnaGJvdXJob29kQ2hh",
-            "bmdlEi0KDWFkZGVkTm9kZUluZm8YASABKAsyFC5pb3AubG9jbmV0Lk5vZGVJ",
-            "bmZvSAASLwoPdXBkYXRlZE5vZGVJbmZvGAIgASgLMhQuaW9wLmxvY25ldC5O",
-            "b2RlSW5mb0gAEhcKDXJlbW92ZWROb2RlSWQYAyABKAxIAEIMCgpDaGFuZ2VU",
-            "eXBlIlsKJ05laWdoYm91cmhvb2RDaGFuZ2VkTm90aWZpY2F0aW9uUmVxdWVz",
-            "dBIwCgdjaGFuZ2VzGAEgAygLMh8uaW9wLmxvY25ldC5OZWlnaGJvdXJob29k",
-            "Q2hhbmdlIioKKE5laWdoYm91cmhvb2RDaGFuZ2VkTm90aWZpY2F0aW9uUmVz",
-            "cG9uc2UikAQKEVJlbW90ZU5vZGVSZXF1ZXN0EjoKD2FjY2VwdENvbGxlYWd1",
-            "ZRgBIAEoCzIfLmlvcC5sb2NuZXQuQnVpbGROZXR3b3JrUmVxdWVzdEgAEjkK",
-            "DnJlbmV3Q29sbGVhZ3VlGAIgASgLMh8uaW9wLmxvY25ldC5CdWlsZE5ldHdv",
-            "cmtSZXF1ZXN0SAASOgoPYWNjZXB0TmVpZ2hib3VyGAMgASgLMh8uaW9wLmxv",
-            "Y25ldC5CdWlsZE5ldHdvcmtSZXF1ZXN0SAASOQoOcmVuZXdOZWlnaGJvdXIY",
-            "BCABKAsyHy5pb3AubG9jbmV0LkJ1aWxkTmV0d29ya1JlcXVlc3RIABI3Cgxn",
-            "ZXROb2RlQ291bnQYBSABKAsyHy5pb3AubG9jbmV0LkdldE5vZGVDb3VudFJl",
-            "cXVlc3RIABI7Cg5nZXRSYW5kb21Ob2RlcxgGIAEoCzIhLmlvcC5sb2NuZXQu",
-            "R2V0UmFuZG9tTm9kZXNSZXF1ZXN0SAASRwoPZ2V0Q2xvc2VzdE5vZGVzGAcg",
-            "ASgLMiwuaW9wLmxvY25ldC5HZXRDbG9zZXN0Tm9kZXNCeURpc3RhbmNlUmVx",
-            "dWVzdEgAEjUKC2dldE5vZGVJbmZvGAggASgLMh4uaW9wLmxvY25ldC5HZXRO",
-            "b2RlSW5mb1JlcXVlc3RIAEIXChVSZW1vdGVOb2RlUmVxdWVzdFR5cGUimgQK",
-            "ElJlbW90ZU5vZGVSZXNwb25zZRI7Cg9hY2NlcHRDb2xsZWFndWUYASABKAsy",
-            "IC5pb3AubG9jbmV0LkJ1aWxkTmV0d29ya1Jlc3BvbnNlSAASOgoOcmVuZXdD",
-            "b2xsZWFndWUYAiABKAsyIC5pb3AubG9jbmV0LkJ1aWxkTmV0d29ya1Jlc3Bv",
-            "bnNlSAASOwoPYWNjZXB0TmVpZ2hib3VyGAMgASgLMiAuaW9wLmxvY25ldC5C",
-            "dWlsZE5ldHdvcmtSZXNwb25zZUgAEjoKDnJlbmV3TmVpZ2hib3VyGAQgASgL",
-            "MiAuaW9wLmxvY25ldC5CdWlsZE5ldHdvcmtSZXNwb25zZUgAEjgKDGdldE5v",
-            "ZGVDb3VudBgFIAEoCzIgLmlvcC5sb2NuZXQuR2V0Tm9kZUNvdW50UmVzcG9u",
-            "c2VIABI8Cg5nZXRSYW5kb21Ob2RlcxgGIAEoCzIiLmlvcC5sb2NuZXQuR2V0",
-            "UmFuZG9tTm9kZXNSZXNwb25zZUgAEkgKD2dldENsb3Nlc3ROb2RlcxgHIAEo",
-            "CzItLmlvcC5sb2NuZXQuR2V0Q2xvc2VzdE5vZGVzQnlEaXN0YW5jZVJlc3Bv",
-            "bnNlSAASNgoLZ2V0Tm9kZUluZm8YCCABKAsyHy5pb3AubG9jbmV0LkdldE5v",
-            "ZGVJbmZvUmVzcG9uc2VIAEIYChZSZW1vdGVOb2RlUmVzcG9uc2VUeXBlIkYK",
-            "E0J1aWxkTmV0d29ya1JlcXVlc3QSLwoRcmVxdWVzdG9yTm9kZUluZm8YASAB",
-            "KAsyFC5pb3AubG9jbmV0Lk5vZGVJbmZvInEKFEJ1aWxkTmV0d29ya1Jlc3Bv",
-            "bnNlEhAKCGFjY2VwdGVkGAEgASgIEi4KEGFjY2VwdG9yTm9kZUluZm8YAiAB",
-            "KAsyFC5pb3AubG9jbmV0Lk5vZGVJbmZvEhcKD3JlbW90ZUlwQWRkcmVzcxgD",
-            "IAEoDCIVChNHZXROb2RlQ291bnRSZXF1ZXN0IikKFEdldE5vZGVDb3VudFJl",
-            "c3BvbnNlEhEKCW5vZGVDb3VudBgBIAEoDSJIChVHZXRSYW5kb21Ob2Rlc1Jl",
-            "cXVlc3QSFAoMbWF4Tm9kZUNvdW50GAEgASgNEhkKEWluY2x1ZGVOZWlnaGJv",
-            "dXJzGAIgASgIIj0KFkdldFJhbmRvbU5vZGVzUmVzcG9uc2USIwoFbm9kZXMY",
-            "ASADKAsyFC5pb3AubG9jbmV0Lk5vZGVJbmZvIpMBCiBHZXRDbG9zZXN0Tm9k",
-            "ZXNCeURpc3RhbmNlUmVxdWVzdBIpCghsb2NhdGlvbhgBIAEoCzIXLmlvcC5s",
-            "b2NuZXQuR3BzTG9jYXRpb24SEwoLbWF4UmFkaXVzS20YAiABKAISFAoMbWF4",
-            "Tm9kZUNvdW50GAMgASgNEhkKEWluY2x1ZGVOZWlnaGJvdXJzGAQgASgIIkgK",
-            "IUdldENsb3Nlc3ROb2Rlc0J5RGlzdGFuY2VSZXNwb25zZRIjCgVub2RlcxgB",
-            "IAMoCzIULmlvcC5sb2NuZXQuTm9kZUluZm8i9wEKDUNsaWVudFJlcXVlc3QS",
-            "NQoLZ2V0Tm9kZUluZm8YASABKAsyHi5pb3AubG9jbmV0LkdldE5vZGVJbmZv",
-            "UmVxdWVzdEgAElEKEWdldE5laWdoYm91ck5vZGVzGAIgASgLMjQuaW9wLmxv",
-            "Y25ldC5HZXROZWlnaGJvdXJOb2Rlc0J5RGlzdGFuY2VDbGllbnRSZXF1ZXN0",
-            "SAASRwoPZ2V0Q2xvc2VzdE5vZGVzGAMgASgLMiwuaW9wLmxvY25ldC5HZXRD",
-            "bG9zZXN0Tm9kZXNCeURpc3RhbmNlUmVxdWVzdEgAQhMKEUNsaWVudFJlcXVl",
-            "c3RUeXBlIvYBCg5DbGllbnRSZXNwb25zZRI2CgtnZXROb2RlSW5mbxgBIAEo",
-            "CzIfLmlvcC5sb2NuZXQuR2V0Tm9kZUluZm9SZXNwb25zZUgAEkwKEWdldE5l",
-            "aWdoYm91ck5vZGVzGAIgASgLMi8uaW9wLmxvY25ldC5HZXROZWlnaGJvdXJO",
-            "b2Rlc0J5RGlzdGFuY2VSZXNwb25zZUgAEkgKD2dldENsb3Nlc3ROb2RlcxgD",
-            "IAEoCzItLmlvcC5sb2NuZXQuR2V0Q2xvc2VzdE5vZGVzQnlEaXN0YW5jZVJl",
-            "c3BvbnNlSABCFAoSQ2xpZW50UmVzcG9uc2VUeXBlIhQKEkdldE5vZGVJbmZv",
-            "UmVxdWVzdCI9ChNHZXROb2RlSW5mb1Jlc3BvbnNlEiYKCG5vZGVJbmZvGAEg",
-            "ASgLMhQuaW9wLmxvY25ldC5Ob2RlSW5mbyIqCihHZXROZWlnaGJvdXJOb2Rl",
-            "c0J5RGlzdGFuY2VDbGllbnRSZXF1ZXN0KnkKBlN0YXR1cxINCglTVEFUVVNf",
-            "T0sQABIcChhFUlJPUl9QUk9UT0NPTF9WSU9MQVRJT04QARIVChFFUlJPUl9V",
-            "TlNVUFBPUlRFRBACEhIKDkVSUk9SX0lOVEVSTkFMEAgSFwoTRVJST1JfSU5W",
-            "QUxJRF9WQUxVRRA2KpYBCgtTZXJ2aWNlVHlwZRIQCgxVbnN0cnVjdHVyZWQQ",
-            "ABILCgdDb250ZW50EAESCwoHTGF0ZW5jeRACEgwKCExvY2F0aW9uEAMSCQoF",
-            "VG9rZW4QChILCgdQcm9maWxlEAsSDQoJUHJveGltaXR5EAwSCQoFUmVsYXkQ",
-            "DRIOCgpSZXB1dGF0aW9uEA4SCwoHTWludGluZxAPYgZwcm90bzM="));
+            "dBgCIAEoDRIUCgxzZXJ2aWNlX2RhdGEYAyABKAwiMgoLR3BzTG9jYXRpb24S",
+            "EAoIbGF0aXR1ZGUYASABKA8SEQoJbG9uZ2l0dWRlGAIgASgPIkkKC05vZGVD",
+            "b250YWN0EhIKCmlwX2FkZHJlc3MYASABKAwSEQoJbm9kZV9wb3J0GAIgASgN",
+            "EhMKC2NsaWVudF9wb3J0GAMgASgNIpsBCghOb2RlSW5mbxIPCgdub2RlX2lk",
+            "GAEgASgMEigKB2NvbnRhY3QYAiABKAsyFy5pb3AubG9jbmV0Lk5vZGVDb250",
+            "YWN0EikKCGxvY2F0aW9uGAMgASgLMhcuaW9wLmxvY25ldC5HcHNMb2NhdGlv",
+            "bhIpCghzZXJ2aWNlcxggIAMoCzIXLmlvcC5sb2NuZXQuU2VydmljZUluZm8i",
+            "RgoRTWVzc2FnZVdpdGhIZWFkZXISDgoGaGVhZGVyGAEgASgHEiEKBGJvZHkY",
+            "AiABKAsyEy5pb3AubG9jbmV0Lk1lc3NhZ2UidgoHTWVzc2FnZRIKCgJpZBgB",
+            "IAEoDRImCgdyZXF1ZXN0GAIgASgLMhMuaW9wLmxvY25ldC5SZXF1ZXN0SAAS",
+            "KAoIcmVzcG9uc2UYAyABKAsyFC5pb3AubG9jbmV0LlJlc3BvbnNlSABCDQoL",
+            "TWVzc2FnZVR5cGUixgEKB1JlcXVlc3QSDwoHdmVyc2lvbhgBIAEoDBI4Cg1s",
+            "b2NhbF9zZXJ2aWNlGAIgASgLMh8uaW9wLmxvY25ldC5Mb2NhbFNlcnZpY2VS",
+            "ZXF1ZXN0SAASNAoLcmVtb3RlX25vZGUYAyABKAsyHS5pb3AubG9jbmV0LlJl",
+            "bW90ZU5vZGVSZXF1ZXN0SAASKwoGY2xpZW50GAQgASgLMhkuaW9wLmxvY25l",
+            "dC5DbGllbnRSZXF1ZXN0SABCDQoLUmVxdWVzdFR5cGUiggIKCFJlc3BvbnNl",
+            "EiIKBnN0YXR1cxgBIAEoDjISLmlvcC5sb2NuZXQuU3RhdHVzEhEKCXRpbWVz",
+            "dGFtcBgCIAEoEhIPCgdkZXRhaWxzGAMgASgJEjkKDWxvY2FsX3NlcnZpY2UY",
+            "BCABKAsyIC5pb3AubG9jbmV0LkxvY2FsU2VydmljZVJlc3BvbnNlSAASNQoL",
+            "cmVtb3RlX25vZGUYBSABKAsyHi5pb3AubG9jbmV0LlJlbW90ZU5vZGVSZXNw",
+            "b25zZUgAEiwKBmNsaWVudBgGIAEoCzIaLmlvcC5sb2NuZXQuQ2xpZW50UmVz",
+            "cG9uc2VIAEIOCgxSZXNwb25zZVR5cGUi3gIKE0xvY2FsU2VydmljZVJlcXVl",
+            "c3QSPgoQcmVnaXN0ZXJfc2VydmljZRgBIAEoCzIiLmlvcC5sb2NuZXQuUmVn",
+            "aXN0ZXJTZXJ2aWNlUmVxdWVzdEgAEkIKEmRlcmVnaXN0ZXJfc2VydmljZRgC",
+            "IAEoCzIkLmlvcC5sb2NuZXQuRGVyZWdpc3RlclNlcnZpY2VSZXF1ZXN0SAAS",
+            "UgoTZ2V0X25laWdoYm91cl9ub2RlcxgDIAEoCzIzLmlvcC5sb2NuZXQuR2V0",
+            "TmVpZ2hib3VyTm9kZXNCeURpc3RhbmNlTG9jYWxSZXF1ZXN0SAASVAoVbmVp",
+            "Z2hib3VyaG9vZF9jaGFuZ2VkGAQgASgLMjMuaW9wLmxvY25ldC5OZWlnaGJv",
+            "dXJob29kQ2hhbmdlZE5vdGlmaWNhdGlvblJlcXVlc3RIAEIZChdMb2NhbFNl",
+            "cnZpY2VSZXF1ZXN0VHlwZSLfAgoUTG9jYWxTZXJ2aWNlUmVzcG9uc2USPwoQ",
+            "cmVnaXN0ZXJfc2VydmljZRgBIAEoCzIjLmlvcC5sb2NuZXQuUmVnaXN0ZXJT",
+            "ZXJ2aWNlUmVzcG9uc2VIABJDChJkZXJlZ2lzdGVyX3NlcnZpY2UYAiABKAsy",
+            "JS5pb3AubG9jbmV0LkRlcmVnaXN0ZXJTZXJ2aWNlUmVzcG9uc2VIABJOChNn",
+            "ZXRfbmVpZ2hib3VyX25vZGVzGAMgASgLMi8uaW9wLmxvY25ldC5HZXROZWln",
+            "aGJvdXJOb2Rlc0J5RGlzdGFuY2VSZXNwb25zZUgAElUKFW5laWdoYm91cmhv",
+            "b2RfdXBkYXRlZBgEIAEoCzI0LmlvcC5sb2NuZXQuTmVpZ2hib3VyaG9vZENo",
+            "YW5nZWROb3RpZmljYXRpb25SZXNwb25zZUgAQhoKGExvY2FsU2VydmljZVJl",
+            "c3BvbnNlVHlwZSJCChZSZWdpc3RlclNlcnZpY2VSZXF1ZXN0EigKB3NlcnZp",
+            "Y2UYASABKAsyFy5pb3AubG9jbmV0LlNlcnZpY2VJbmZvIkQKF1JlZ2lzdGVy",
+            "U2VydmljZVJlc3BvbnNlEikKCGxvY2F0aW9uGAEgASgLMhcuaW9wLmxvY25l",
+            "dC5HcHNMb2NhdGlvbiJJChhEZXJlZ2lzdGVyU2VydmljZVJlcXVlc3QSLQoM",
+            "c2VydmljZV90eXBlGAEgASgOMhcuaW9wLmxvY25ldC5TZXJ2aWNlVHlwZSIb",
+            "ChlEZXJlZ2lzdGVyU2VydmljZVJlc3BvbnNlIk4KJ0dldE5laWdoYm91ck5v",
+            "ZGVzQnlEaXN0YW5jZUxvY2FsUmVxdWVzdBIjChtrZWVwX2FsaXZlX2FuZF9z",
+            "ZW5kX3VwZGF0ZXMYASABKAgiSgojR2V0TmVpZ2hib3VyTm9kZXNCeURpc3Rh",
+            "bmNlUmVzcG9uc2USIwoFbm9kZXMYASADKAsyFC5pb3AubG9jbmV0Lk5vZGVJ",
+            "bmZvIqIBChNOZWlnaGJvdXJob29kQ2hhbmdlEi8KD2FkZGVkX25vZGVfaW5m",
+            "bxgBIAEoCzIULmlvcC5sb2NuZXQuTm9kZUluZm9IABIxChF1cGRhdGVkX25v",
+            "ZGVfaW5mbxgCIAEoCzIULmlvcC5sb2NuZXQuTm9kZUluZm9IABIZCg9yZW1v",
+            "dmVkX25vZGVfaWQYAyABKAxIAEIMCgpDaGFuZ2VUeXBlIlsKJ05laWdoYm91",
+            "cmhvb2RDaGFuZ2VkTm90aWZpY2F0aW9uUmVxdWVzdBIwCgdjaGFuZ2VzGAEg",
+            "AygLMh8uaW9wLmxvY25ldC5OZWlnaGJvdXJob29kQ2hhbmdlIioKKE5laWdo",
+            "Ym91cmhvb2RDaGFuZ2VkTm90aWZpY2F0aW9uUmVzcG9uc2UinAQKEVJlbW90",
+            "ZU5vZGVSZXF1ZXN0EjsKEGFjY2VwdF9jb2xsZWFndWUYASABKAsyHy5pb3Au",
+            "bG9jbmV0LkJ1aWxkTmV0d29ya1JlcXVlc3RIABI6Cg9yZW5ld19jb2xsZWFn",
+            "dWUYAiABKAsyHy5pb3AubG9jbmV0LkJ1aWxkTmV0d29ya1JlcXVlc3RIABI7",
+            "ChBhY2NlcHRfbmVpZ2hib3VyGAMgASgLMh8uaW9wLmxvY25ldC5CdWlsZE5l",
+            "dHdvcmtSZXF1ZXN0SAASOgoPcmVuZXdfbmVpZ2hib3VyGAQgASgLMh8uaW9w",
+            "LmxvY25ldC5CdWlsZE5ldHdvcmtSZXF1ZXN0SAASOQoOZ2V0X25vZGVfY291",
+            "bnQYBSABKAsyHy5pb3AubG9jbmV0LkdldE5vZGVDb3VudFJlcXVlc3RIABI9",
+            "ChBnZXRfcmFuZG9tX25vZGVzGAYgASgLMiEuaW9wLmxvY25ldC5HZXRSYW5k",
+            "b21Ob2Rlc1JlcXVlc3RIABJJChFnZXRfY2xvc2VzdF9ub2RlcxgHIAEoCzIs",
+            "LmlvcC5sb2NuZXQuR2V0Q2xvc2VzdE5vZGVzQnlEaXN0YW5jZVJlcXVlc3RI",
+            "ABI3Cg1nZXRfbm9kZV9pbmZvGAggASgLMh4uaW9wLmxvY25ldC5HZXROb2Rl",
+            "SW5mb1JlcXVlc3RIAEIXChVSZW1vdGVOb2RlUmVxdWVzdFR5cGUipgQKElJl",
+            "bW90ZU5vZGVSZXNwb25zZRI8ChBhY2NlcHRfY29sbGVhZ3VlGAEgASgLMiAu",
+            "aW9wLmxvY25ldC5CdWlsZE5ldHdvcmtSZXNwb25zZUgAEjsKD3JlbmV3X2Nv",
+            "bGxlYWd1ZRgCIAEoCzIgLmlvcC5sb2NuZXQuQnVpbGROZXR3b3JrUmVzcG9u",
+            "c2VIABI8ChBhY2NlcHRfbmVpZ2hib3VyGAMgASgLMiAuaW9wLmxvY25ldC5C",
+            "dWlsZE5ldHdvcmtSZXNwb25zZUgAEjsKD3JlbmV3X25laWdoYm91chgEIAEo",
+            "CzIgLmlvcC5sb2NuZXQuQnVpbGROZXR3b3JrUmVzcG9uc2VIABI6Cg5nZXRf",
+            "bm9kZV9jb3VudBgFIAEoCzIgLmlvcC5sb2NuZXQuR2V0Tm9kZUNvdW50UmVz",
+            "cG9uc2VIABI+ChBnZXRfcmFuZG9tX25vZGVzGAYgASgLMiIuaW9wLmxvY25l",
+            "dC5HZXRSYW5kb21Ob2Rlc1Jlc3BvbnNlSAASSgoRZ2V0X2Nsb3Nlc3Rfbm9k",
+            "ZXMYByABKAsyLS5pb3AubG9jbmV0LkdldENsb3Nlc3ROb2Rlc0J5RGlzdGFu",
+            "Y2VSZXNwb25zZUgAEjgKDWdldF9ub2RlX2luZm8YCCABKAsyHy5pb3AubG9j",
+            "bmV0LkdldE5vZGVJbmZvUmVzcG9uc2VIAEIYChZSZW1vdGVOb2RlUmVzcG9u",
+            "c2VUeXBlIkgKE0J1aWxkTmV0d29ya1JlcXVlc3QSMQoTcmVxdWVzdG9yX25v",
+            "ZGVfaW5mbxgBIAEoCzIULmlvcC5sb2NuZXQuTm9kZUluZm8idQoUQnVpbGRO",
+            "ZXR3b3JrUmVzcG9uc2USEAoIYWNjZXB0ZWQYASABKAgSMAoSYWNjZXB0b3Jf",
+            "bm9kZV9pbmZvGAIgASgLMhQuaW9wLmxvY25ldC5Ob2RlSW5mbxIZChFyZW1v",
+            "dGVfaXBfYWRkcmVzcxgDIAEoDCIVChNHZXROb2RlQ291bnRSZXF1ZXN0IioK",
+            "FEdldE5vZGVDb3VudFJlc3BvbnNlEhIKCm5vZGVfY291bnQYASABKA0iSwoV",
+            "R2V0UmFuZG9tTm9kZXNSZXF1ZXN0EhYKDm1heF9ub2RlX2NvdW50GAEgASgN",
+            "EhoKEmluY2x1ZGVfbmVpZ2hib3VycxgCIAEoCCI9ChZHZXRSYW5kb21Ob2Rl",
+            "c1Jlc3BvbnNlEiMKBW5vZGVzGAEgAygLMhQuaW9wLmxvY25ldC5Ob2RlSW5m",
+            "byKYAQogR2V0Q2xvc2VzdE5vZGVzQnlEaXN0YW5jZVJlcXVlc3QSKQoIbG9j",
+            "YXRpb24YASABKAsyFy5pb3AubG9jbmV0Lkdwc0xvY2F0aW9uEhUKDW1heF9y",
+            "YWRpdXNfa20YAiABKAISFgoObWF4X25vZGVfY291bnQYAyABKA0SGgoSaW5j",
+            "bHVkZV9uZWlnaGJvdXJzGAQgASgIIkgKIUdldENsb3Nlc3ROb2Rlc0J5RGlz",
+            "dGFuY2VSZXNwb25zZRIjCgVub2RlcxgBIAMoCzIULmlvcC5sb2NuZXQuTm9k",
+            "ZUluZm8i/QEKDUNsaWVudFJlcXVlc3QSNwoNZ2V0X25vZGVfaW5mbxgBIAEo",
+            "CzIeLmlvcC5sb2NuZXQuR2V0Tm9kZUluZm9SZXF1ZXN0SAASUwoTZ2V0X25l",
+            "aWdoYm91cl9ub2RlcxgCIAEoCzI0LmlvcC5sb2NuZXQuR2V0TmVpZ2hib3Vy",
+            "Tm9kZXNCeURpc3RhbmNlQ2xpZW50UmVxdWVzdEgAEkkKEWdldF9jbG9zZXN0",
+            "X25vZGVzGAMgASgLMiwuaW9wLmxvY25ldC5HZXRDbG9zZXN0Tm9kZXNCeURp",
+            "c3RhbmNlUmVxdWVzdEgAQhMKEUNsaWVudFJlcXVlc3RUeXBlIvwBCg5DbGll",
+            "bnRSZXNwb25zZRI4Cg1nZXRfbm9kZV9pbmZvGAEgASgLMh8uaW9wLmxvY25l",
+            "dC5HZXROb2RlSW5mb1Jlc3BvbnNlSAASTgoTZ2V0X25laWdoYm91cl9ub2Rl",
+            "cxgCIAEoCzIvLmlvcC5sb2NuZXQuR2V0TmVpZ2hib3VyTm9kZXNCeURpc3Rh",
+            "bmNlUmVzcG9uc2VIABJKChFnZXRfY2xvc2VzdF9ub2RlcxgDIAEoCzItLmlv",
+            "cC5sb2NuZXQuR2V0Q2xvc2VzdE5vZGVzQnlEaXN0YW5jZVJlc3BvbnNlSABC",
+            "FAoSQ2xpZW50UmVzcG9uc2VUeXBlIhQKEkdldE5vZGVJbmZvUmVxdWVzdCI+",
+            "ChNHZXROb2RlSW5mb1Jlc3BvbnNlEicKCW5vZGVfaW5mbxgBIAEoCzIULmlv",
+            "cC5sb2NuZXQuTm9kZUluZm8iKgooR2V0TmVpZ2hib3VyTm9kZXNCeURpc3Rh",
+            "bmNlQ2xpZW50UmVxdWVzdCp5CgZTdGF0dXMSDQoJU1RBVFVTX09LEAASHAoY",
+            "RVJST1JfUFJPVE9DT0xfVklPTEFUSU9OEAESFQoRRVJST1JfVU5TVVBQT1JU",
+            "RUQQAhISCg5FUlJPUl9JTlRFUk5BTBAIEhcKE0VSUk9SX0lOVkFMSURfVkFM",
+            "VUUQNiqWAQoLU2VydmljZVR5cGUSEAoMVU5TVFJVQ1RVUkVEEAASCwoHQ09O",
+            "VEVOVBABEgsKB0xBVEVOQ1kQAhIMCghMT0NBVElPThADEgkKBVRPS0VOEAoS",
+            "CwoHUFJPRklMRRALEg0KCVBST1hJTUlUWRAMEgkKBVJFTEFZEA0SDgoKUkVQ",
+            "VVRBVElPThAOEgsKB01JTlRJTkcQD2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Iop.Locnet.Status), typeof(global::Iop.Locnet.ServiceType), }, new pbr::GeneratedClrTypeInfo[] {
@@ -213,19 +215,19 @@ namespace Iop.Locnet {
     /// <summary>
     /// Low level networks
     /// </summary>
-    [pbr::OriginalName("Unstructured")] Unstructured = 0,
-    [pbr::OriginalName("Content")] Content = 1,
-    [pbr::OriginalName("Latency")] Latency = 2,
-    [pbr::OriginalName("Location")] Location = 3,
+    [pbr::OriginalName("UNSTRUCTURED")] Unstructured = 0,
+    [pbr::OriginalName("CONTENT")] Content = 1,
+    [pbr::OriginalName("LATENCY")] Latency = 2,
+    [pbr::OriginalName("LOCATION")] Location = 3,
     /// <summary>
     /// High level servers
     /// </summary>
-    [pbr::OriginalName("Token")] Token = 10,
-    [pbr::OriginalName("Profile")] Profile = 11,
-    [pbr::OriginalName("Proximity")] Proximity = 12,
-    [pbr::OriginalName("Relay")] Relay = 13,
-    [pbr::OriginalName("Reputation")] Reputation = 14,
-    [pbr::OriginalName("Minting")] Minting = 15,
+    [pbr::OriginalName("TOKEN")] Token = 10,
+    [pbr::OriginalName("PROFILE")] Profile = 11,
+    [pbr::OriginalName("PROXIMITY")] Proximity = 12,
+    [pbr::OriginalName("RELAY")] Relay = 13,
+    [pbr::OriginalName("REPUTATION")] Reputation = 14,
+    [pbr::OriginalName("MINTING")] Minting = 15,
   }
 
   #endregion
@@ -294,7 +296,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "serviceData" field.</summary>
+    /// <summary>Field number for the "service_data" field.</summary>
     public const int ServiceDataFieldNumber = 3;
     private pb::ByteString serviceData_ = pb::ByteString.Empty;
     /// <summary>
@@ -609,7 +611,7 @@ namespace Iop.Locnet {
       return new NodeContact(this);
     }
 
-    /// <summary>Field number for the "ipAddress" field.</summary>
+    /// <summary>Field number for the "ip_address" field.</summary>
     public const int IpAddressFieldNumber = 1;
     private pb::ByteString ipAddress_ = pb::ByteString.Empty;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -620,7 +622,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "nodePort" field.</summary>
+    /// <summary>Field number for the "node_port" field.</summary>
     public const int NodePortFieldNumber = 2;
     private uint nodePort_;
     /// <summary>
@@ -634,7 +636,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "clientPort" field.</summary>
+    /// <summary>Field number for the "client_port" field.</summary>
     public const int ClientPortFieldNumber = 3;
     private uint clientPort_;
     /// <summary>
@@ -793,7 +795,7 @@ namespace Iop.Locnet {
       return new NodeInfo(this);
     }
 
-    /// <summary>Field number for the "nodeId" field.</summary>
+    /// <summary>Field number for the "node_id" field.</summary>
     public const int NodeIdFieldNumber = 1;
     private pb::ByteString nodeId_ = pb::ByteString.Empty;
     /// <summary>
@@ -1423,7 +1425,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "localService" field.</summary>
+    /// <summary>Field number for the "local_service" field.</summary>
     public const int LocalServiceFieldNumber = 2;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.LocalServiceRequest LocalService {
@@ -1434,7 +1436,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "remoteNode" field.</summary>
+    /// <summary>Field number for the "remote_node" field.</summary>
     public const int RemoteNodeFieldNumber = 3;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.RemoteNodeRequest RemoteNode {
@@ -1709,7 +1711,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "localService" field.</summary>
+    /// <summary>Field number for the "local_service" field.</summary>
     public const int LocalServiceFieldNumber = 4;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.LocalServiceResponse LocalService {
@@ -1720,7 +1722,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "remoteNode" field.</summary>
+    /// <summary>Field number for the "remote_node" field.</summary>
     public const int RemoteNodeFieldNumber = 5;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.RemoteNodeResponse RemoteNode {
@@ -1985,7 +1987,7 @@ namespace Iop.Locnet {
       return new LocalServiceRequest(this);
     }
 
-    /// <summary>Field number for the "registerService" field.</summary>
+    /// <summary>Field number for the "register_service" field.</summary>
     public const int RegisterServiceFieldNumber = 1;
     /// <summary>
     /// These requests are sent as usual from the client to the server asking to perform an operation.
@@ -1999,7 +2001,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "deregisterService" field.</summary>
+    /// <summary>Field number for the "deregister_service" field.</summary>
     public const int DeregisterServiceFieldNumber = 2;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.DeregisterServiceRequest DeregisterService {
@@ -2010,7 +2012,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "getNeighbourNodes" field.</summary>
+    /// <summary>Field number for the "get_neighbour_nodes" field.</summary>
     public const int GetNeighbourNodesFieldNumber = 3;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.GetNeighbourNodesByDistanceLocalRequest GetNeighbourNodes {
@@ -2021,11 +2023,11 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "neighbourhoodChanged" field.</summary>
+    /// <summary>Field number for the "neighbourhood_changed" field.</summary>
     public const int NeighbourhoodChangedFieldNumber = 4;
     /// <summary>
     /// This is an unique, exceptional request. If the client previously sent
-    /// a getNeigbhourNodes request to the server and set the keepAlive flag,
+    /// a get_neighbour_nodes request to the server and set the keep_alive flag,
     /// the server is supposed to keep the connection alive and notify the client
     /// about changes in its neigbhourhood by sending the following request to the client.
     /// </summary>
@@ -2252,7 +2254,7 @@ namespace Iop.Locnet {
       return new LocalServiceResponse(this);
     }
 
-    /// <summary>Field number for the "registerService" field.</summary>
+    /// <summary>Field number for the "register_service" field.</summary>
     public const int RegisterServiceFieldNumber = 1;
     /// <summary>
     /// Responses sent back to the client from the server as usual.
@@ -2266,7 +2268,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "deregisterService" field.</summary>
+    /// <summary>Field number for the "deregister_service" field.</summary>
     public const int DeregisterServiceFieldNumber = 2;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.DeregisterServiceResponse DeregisterService {
@@ -2277,7 +2279,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "getNeighbourNodes" field.</summary>
+    /// <summary>Field number for the "get_neighbour_nodes" field.</summary>
     public const int GetNeighbourNodesFieldNumber = 3;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.GetNeighbourNodesByDistanceResponse GetNeighbourNodes {
@@ -2288,7 +2290,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "neighbourhoodUpdated" field.</summary>
+    /// <summary>Field number for the "neighbourhood_updated" field.</summary>
     public const int NeighbourhoodUpdatedFieldNumber = 4;
     /// <summary>
     /// For each neigbhourhood change notification, the client must send this response as an acknowledgement.
@@ -2758,7 +2760,7 @@ namespace Iop.Locnet {
       return new DeregisterServiceRequest(this);
     }
 
-    /// <summary>Field number for the "serviceType" field.</summary>
+    /// <summary>Field number for the "service_type" field.</summary>
     public const int ServiceTypeFieldNumber = 1;
     private global::Iop.Locnet.ServiceType serviceType_ = 0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2934,7 +2936,7 @@ namespace Iop.Locnet {
 
   /// <summary>
   /// Get the list of neighbouring nodes by distance.
-  /// If the keepAlive flag is set, the server must keep the connection alive and notify the client
+  /// If the keep_alive flag is set, the server must keep the connection alive and notify the client
   /// about changes in its neigbhourhood by sending NeighbourhoodChangeRequests to the client.
   /// </summary>
   public sealed partial class GetNeighbourNodesByDistanceLocalRequest : pb::IMessage<GetNeighbourNodesByDistanceLocalRequest> {
@@ -2969,7 +2971,7 @@ namespace Iop.Locnet {
       return new GetNeighbourNodesByDistanceLocalRequest(this);
     }
 
-    /// <summary>Field number for the "keepAliveAndSendUpdates" field.</summary>
+    /// <summary>Field number for the "keep_alive_and_send_updates" field.</summary>
     public const int KeepAliveAndSendUpdatesFieldNumber = 1;
     private bool keepAliveAndSendUpdates_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -3212,7 +3214,7 @@ namespace Iop.Locnet {
       return new NeighbourhoodChange(this);
     }
 
-    /// <summary>Field number for the "addedNodeInfo" field.</summary>
+    /// <summary>Field number for the "added_node_info" field.</summary>
     public const int AddedNodeInfoFieldNumber = 1;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.NodeInfo AddedNodeInfo {
@@ -3223,7 +3225,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "updatedNodeInfo" field.</summary>
+    /// <summary>Field number for the "updated_node_info" field.</summary>
     public const int UpdatedNodeInfoFieldNumber = 2;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.NodeInfo UpdatedNodeInfo {
@@ -3234,7 +3236,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "removedNodeId" field.</summary>
+    /// <summary>Field number for the "removed_node_id" field.</summary>
     public const int RemovedNodeIdFieldNumber = 3;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public pb::ByteString RemovedNodeId {
@@ -3645,7 +3647,7 @@ namespace Iop.Locnet {
       return new RemoteNodeRequest(this);
     }
 
-    /// <summary>Field number for the "acceptColleague" field.</summary>
+    /// <summary>Field number for the "accept_colleague" field.</summary>
     public const int AcceptColleagueFieldNumber = 1;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.BuildNetworkRequest AcceptColleague {
@@ -3656,7 +3658,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "renewColleague" field.</summary>
+    /// <summary>Field number for the "renew_colleague" field.</summary>
     public const int RenewColleagueFieldNumber = 2;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.BuildNetworkRequest RenewColleague {
@@ -3667,7 +3669,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "acceptNeighbour" field.</summary>
+    /// <summary>Field number for the "accept_neighbour" field.</summary>
     public const int AcceptNeighbourFieldNumber = 3;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.BuildNetworkRequest AcceptNeighbour {
@@ -3678,7 +3680,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "renewNeighbour" field.</summary>
+    /// <summary>Field number for the "renew_neighbour" field.</summary>
     public const int RenewNeighbourFieldNumber = 4;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.BuildNetworkRequest RenewNeighbour {
@@ -3689,7 +3691,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "getNodeCount" field.</summary>
+    /// <summary>Field number for the "get_node_count" field.</summary>
     public const int GetNodeCountFieldNumber = 5;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.GetNodeCountRequest GetNodeCount {
@@ -3700,7 +3702,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "getRandomNodes" field.</summary>
+    /// <summary>Field number for the "get_random_nodes" field.</summary>
     public const int GetRandomNodesFieldNumber = 6;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.GetRandomNodesRequest GetRandomNodes {
@@ -3711,7 +3713,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "getClosestNodes" field.</summary>
+    /// <summary>Field number for the "get_closest_nodes" field.</summary>
     public const int GetClosestNodesFieldNumber = 7;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.GetClosestNodesByDistanceRequest GetClosestNodes {
@@ -3722,7 +3724,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "getNodeInfo" field.</summary>
+    /// <summary>Field number for the "get_node_info" field.</summary>
     public const int GetNodeInfoFieldNumber = 8;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.GetNodeInfoRequest GetNodeInfo {
@@ -4047,7 +4049,7 @@ namespace Iop.Locnet {
       return new RemoteNodeResponse(this);
     }
 
-    /// <summary>Field number for the "acceptColleague" field.</summary>
+    /// <summary>Field number for the "accept_colleague" field.</summary>
     public const int AcceptColleagueFieldNumber = 1;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.BuildNetworkResponse AcceptColleague {
@@ -4058,7 +4060,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "renewColleague" field.</summary>
+    /// <summary>Field number for the "renew_colleague" field.</summary>
     public const int RenewColleagueFieldNumber = 2;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.BuildNetworkResponse RenewColleague {
@@ -4069,7 +4071,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "acceptNeighbour" field.</summary>
+    /// <summary>Field number for the "accept_neighbour" field.</summary>
     public const int AcceptNeighbourFieldNumber = 3;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.BuildNetworkResponse AcceptNeighbour {
@@ -4080,7 +4082,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "renewNeighbour" field.</summary>
+    /// <summary>Field number for the "renew_neighbour" field.</summary>
     public const int RenewNeighbourFieldNumber = 4;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.BuildNetworkResponse RenewNeighbour {
@@ -4091,7 +4093,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "getNodeCount" field.</summary>
+    /// <summary>Field number for the "get_node_count" field.</summary>
     public const int GetNodeCountFieldNumber = 5;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.GetNodeCountResponse GetNodeCount {
@@ -4102,7 +4104,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "getRandomNodes" field.</summary>
+    /// <summary>Field number for the "get_random_nodes" field.</summary>
     public const int GetRandomNodesFieldNumber = 6;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.GetRandomNodesResponse GetRandomNodes {
@@ -4113,7 +4115,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "getClosestNodes" field.</summary>
+    /// <summary>Field number for the "get_closest_nodes" field.</summary>
     public const int GetClosestNodesFieldNumber = 7;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.GetClosestNodesByDistanceResponse GetClosestNodes {
@@ -4124,7 +4126,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "getNodeInfo" field.</summary>
+    /// <summary>Field number for the "get_node_info" field.</summary>
     public const int GetNodeInfoFieldNumber = 8;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.GetNodeInfoResponse GetNodeInfo {
@@ -4427,7 +4429,7 @@ namespace Iop.Locnet {
       return new BuildNetworkRequest(this);
     }
 
-    /// <summary>Field number for the "requestorNodeInfo" field.</summary>
+    /// <summary>Field number for the "requestor_node_info" field.</summary>
     public const int RequestorNodeInfoFieldNumber = 1;
     private global::Iop.Locnet.NodeInfo requestorNodeInfo_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -4566,7 +4568,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "acceptorNodeInfo" field.</summary>
+    /// <summary>Field number for the "acceptor_node_info" field.</summary>
     public const int AcceptorNodeInfoFieldNumber = 2;
     private global::Iop.Locnet.NodeInfo acceptorNodeInfo_;
     /// <summary>
@@ -4580,7 +4582,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "remoteIpAddress" field.</summary>
+    /// <summary>Field number for the "remote_ip_address" field.</summary>
     public const int RemoteIpAddressFieldNumber = 3;
     private pb::ByteString remoteIpAddress_ = pb::ByteString.Empty;
     /// <summary>
@@ -4830,7 +4832,7 @@ namespace Iop.Locnet {
       return new GetNodeCountResponse(this);
     }
 
-    /// <summary>Field number for the "nodeCount" field.</summary>
+    /// <summary>Field number for the "node_count" field.</summary>
     public const int NodeCountFieldNumber = 1;
     private uint nodeCount_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -4951,7 +4953,7 @@ namespace Iop.Locnet {
       return new GetRandomNodesRequest(this);
     }
 
-    /// <summary>Field number for the "maxNodeCount" field.</summary>
+    /// <summary>Field number for the "max_node_count" field.</summary>
     public const int MaxNodeCountFieldNumber = 1;
     private uint maxNodeCount_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -4962,7 +4964,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "includeNeighbours" field.</summary>
+    /// <summary>Field number for the "include_neighbours" field.</summary>
     public const int IncludeNeighboursFieldNumber = 2;
     private bool includeNeighbours_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -5221,7 +5223,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "maxRadiusKm" field.</summary>
+    /// <summary>Field number for the "max_radius_km" field.</summary>
     public const int MaxRadiusKmFieldNumber = 2;
     private float maxRadiusKm_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -5232,7 +5234,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "maxNodeCount" field.</summary>
+    /// <summary>Field number for the "max_node_count" field.</summary>
     public const int MaxNodeCountFieldNumber = 3;
     private uint maxNodeCount_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -5243,7 +5245,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "includeNeighbours" field.</summary>
+    /// <summary>Field number for the "include_neighbours" field.</summary>
     public const int IncludeNeighboursFieldNumber = 4;
     private bool includeNeighbours_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -5534,7 +5536,7 @@ namespace Iop.Locnet {
       return new ClientRequest(this);
     }
 
-    /// <summary>Field number for the "getNodeInfo" field.</summary>
+    /// <summary>Field number for the "get_node_info" field.</summary>
     public const int GetNodeInfoFieldNumber = 1;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.GetNodeInfoRequest GetNodeInfo {
@@ -5545,7 +5547,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "getNeighbourNodes" field.</summary>
+    /// <summary>Field number for the "get_neighbour_nodes" field.</summary>
     public const int GetNeighbourNodesFieldNumber = 2;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.GetNeighbourNodesByDistanceClientRequest GetNeighbourNodes {
@@ -5556,7 +5558,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "getClosestNodes" field.</summary>
+    /// <summary>Field number for the "get_closest_nodes" field.</summary>
     public const int GetClosestNodesFieldNumber = 3;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.GetClosestNodesByDistanceRequest GetClosestNodes {
@@ -5756,7 +5758,7 @@ namespace Iop.Locnet {
       return new ClientResponse(this);
     }
 
-    /// <summary>Field number for the "getNodeInfo" field.</summary>
+    /// <summary>Field number for the "get_node_info" field.</summary>
     public const int GetNodeInfoFieldNumber = 1;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.GetNodeInfoResponse GetNodeInfo {
@@ -5767,7 +5769,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "getNeighbourNodes" field.</summary>
+    /// <summary>Field number for the "get_neighbour_nodes" field.</summary>
     public const int GetNeighbourNodesFieldNumber = 2;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.GetNeighbourNodesByDistanceResponse GetNeighbourNodes {
@@ -5778,7 +5780,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "getClosestNodes" field.</summary>
+    /// <summary>Field number for the "get_closest_nodes" field.</summary>
     public const int GetClosestNodesFieldNumber = 3;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.GetClosestNodesByDistanceResponse GetClosestNodes {
@@ -6059,7 +6061,7 @@ namespace Iop.Locnet {
       return new GetNodeInfoResponse(this);
     }
 
-    /// <summary>Field number for the "nodeInfo" field.</summary>
+    /// <summary>Field number for the "node_info" field.</summary>
     public const int NodeInfoFieldNumber = 1;
     private global::Iop.Locnet.NodeInfo nodeInfo_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
