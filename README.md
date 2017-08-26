@@ -20,10 +20,23 @@ To get more information about Profile Server's internals, check out [Architectur
 
 If you want to develop a client application (or a server in a role of a network client) that connects to the Profile Server and consumes its services, you will be interested in [Introduction for Developers of Client Apps](docs/CLIENT-APPS.md).
 
-
-
-
 ## TO-DOs and Possible Improvements
 
 [TODO](docs/TODO.md) file contains possible improvements that are being considered, some of them are on the project's roadmap and will be implemented in upcoming versions.
 
+## License
+
+Copyright © 2016-2017 Libertaria Corp., Decentralized Society Foundation, IoP Ventures LLC
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+See [COPYING](COPYING) for more
+information or see <http://www.gnu.org/licenses/>.
