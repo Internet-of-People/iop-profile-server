@@ -5,7 +5,7 @@
     <AssemblyName>ProfileServer</AssemblyName>
     <OutputType>Exe</OutputType>
     <PackageId>ProfileServer</PackageId>
-    <RuntimeIdentifiers>win7-x64;win81-x64;win10-x64;ubuntu.14.04-x64;ubuntu.14.10-x64;ubuntu.16.04-x64;ubuntu.16.10-x64;osx.10.11-x64;osx.10.12-x64;fedora.23-x64</RuntimeIdentifiers>
+    <RuntimeIdentifiers>win7-x64;win81-x64;win10-x64;ubuntu.14.04-x64;ubuntu.14.10-x64;ubuntu.16.04-x64;ubuntu.16.10-x64;osx.10.11-x64;osx.10.12-x64;fedora.23-x64;linux-arm</RuntimeIdentifiers>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
