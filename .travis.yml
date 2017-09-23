@@ -27,4 +27,8 @@ script:
  # start and validate Profile Server
  - nohup ./ProfileServer &
  - pid=$!
+ # display any output captured and kill the server
  - sleep 3 && kill $pid
+ - cat nohup.out 
+ - cat Logs/*
+ 
