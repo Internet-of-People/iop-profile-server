@@ -11,6 +11,8 @@ dotnet: 2.0.0
 # run build
 script:
  - cd src/ProfileServer
+ # Linux NuGet doesn't play nice with dependent NuGet Configs being abset
+ - for i in ../Iop*; do ln -s `pwd`/NuGet.Config $i/; done 
  - dotnet restore --configfile NuGet.Config
  # create executable
  - dotnet publish --configuration Release --runtime linux-x64
