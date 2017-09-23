@@ -16,7 +16,7 @@ script:
  - dotnet publish --configuration Release --runtime linux-x64
  # initialize the Profile Server's database file
  - dotnet ef database update
- - cp bin/Debug/netcoreapp2.0/ProfileServer.db bin/Release/netcoreapp2.0/linux-x64/ProfileServer.db
+ - ProfileServer.db bin/Release/netcoreapp2.0/linux-x64/ProfileServer.db
  - cd bin/Release/netcoreapp2.0/linux-x64
  # generate TLS certificate
  - openssl req -nodes -x509 -newkey rsa:4096 -subj "/C=CI/ST=CI/L=CI/O=CI/CN=CI" \-keyout ProfileServer.key -out ProfileServer.cer -days 365000
