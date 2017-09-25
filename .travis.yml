@@ -6,18 +6,20 @@ dist: trusty
 
 # build with .NET Core runtime
 mono: none
-dotnet: 1.0.4
+dotnet: 2.0.0
 
 # run build
 script:
  - cd src/ProfileServer
+ # Linux NuGet doesn't play nice with dependent NuGet Configs being abset
+ - for i in ../Iop*; do ln -s `pwd`/NuGet.Config $i/; done 
  - dotnet restore --configfile NuGet.Config
  # create executable
- - dotnet publish --configuration Release --runtime ubuntu.14.04-x64
+ - dotnet publish --configuration Release --runtime linux-x64
  # initialize the Profile Server's database file
  - dotnet ef database update
- - cp bin/Debug/netcoreapp1.1/ProfileServer.db bin/Release/netcoreapp1.1/ubuntu.14.04-x64/ProfileServer.db
- - cd bin/Release/netcoreapp1.1/ubuntu.14.04-x64
+ - cp ProfileServer.db bin/Release/netcoreapp2.0/linux-x64/ProfileServer.db
+ - cd bin/Release/netcoreapp2.0/linux-x64
  # generate TLS certificate
  - openssl req -nodes -x509 -newkey rsa:4096 -subj "/C=CI/ST=CI/L=CI/O=CI/CN=CI" \-keyout ProfileServer.key -out ProfileServer.cer -days 365000
  - openssl pkcs12 -export -out ProfileServer.pfx -inkey ProfileServer.key -in ProfileServer.cer -passout pass:""
@@ -27,4 +29,8 @@ script:
  # start and validate Profile Server
  - nohup ./ProfileServer &
  - pid=$!
+ # display any output captured and kill the server
  - sleep 3 && kill $pid
+ - cat nohup.out 
+ - cat Logs/*
+ 

@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
     <AssemblyName>UnitTests</AssemblyName>
     <OutputType></OutputType>
     <PackageId>UnitTests</PackageId>
-    <RuntimeIdentifiers>win7-x64;win81-x64;win10-x64;ubuntu.14.04-x64;ubuntu.14.10-x64;ubuntu.16.04-x64;ubuntu.16.10-x64;osx.10.11-x64;osx.10.12-x64;fedora.23-x64</RuntimeIdentifiers>
+    <RuntimeIdentifiers>win7-x64;win81-x64;win10-x64;linux-x64;linux-arm</RuntimeIdentifiers>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
@@ -23,6 +23,7 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0" />
     <PackageReference Include="xunit" Version="2.2.0" />
     <PackageReference Include="NLog" Version="5.0.0-beta06" />
+    <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
   </ItemGroup>
 
   <ItemGroup>
