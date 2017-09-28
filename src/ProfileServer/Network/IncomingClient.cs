@@ -116,14 +116,11 @@ namespace ProfileServer.Network
     public IncomingClient(TcpRoleServer<IncomingClient, Message> Server, TcpClient TcpClient, ulong Id, bool UseTls, int KeepAliveIntervalMs, string LogPrefix) :
       base(TcpClient, new PsMessageProcessor(Server, LogPrefix), Id, UseTls, KeepAliveIntervalMs, Server.IdBase, Server.ShutdownSignaling, LogPrefix)
     {
-      this.Id = Id;
       log = new Logger("ProfileServer.Network.IncomingClient", LogPrefix);
 
       log.Trace("(UseTls:{0},KeepAliveIntervalMs:{1})", UseTls, KeepAliveIntervalMs);
 
       messageBuilder = new PsMessageBuilder(Server.IdBase, new List<SemVer>() { SemVer.V100 }, Config.Configuration.Keys);
-      this.KeepAliveIntervalMs = KeepAliveIntervalMs;
-      NextKeepAliveTime = DateTime.UtcNow.AddMilliseconds(this.KeepAliveIntervalMs);
     
       ConversationStatus = ClientConversationStatus.NoConversation;
 
@@ -398,6 +395,14 @@ namespace ProfileServer.Network
         // Relay is not disposed here as it is being destroyed using HandleDisconnect method
         // which is called by the RoleServer in ClientHandlerAsync method.
       }
+    }
+
+    internal void StartConversation()
+    {
+      byte[] challenge = new byte[PsMessageBuilder.ChallengeDataSize];
+      Crypto.Rng.GetBytes(challenge);
+      AuthenticationChallenge = challenge;
+      ConversationStatus = ClientConversationStatus.ConversationStarted;
     }
   }
 }

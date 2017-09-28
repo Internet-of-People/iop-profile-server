@@ -18,7 +18,9 @@ namespace ProfileServer.Kernel
 
     private static ProfileServer.Network.IncomingClient CreateClient(IopServerCore.Network.TcpRoleServer<ProfileServer.Network.IncomingClient, Iop.Profileserver.Message> that, System.Net.Sockets.TcpClient tcpClient, ulong clientId, string logPrefix)
     {
-      return new ProfileServer.Network.IncomingClient(that, tcpClient, clientId, that.UseTls, that.ClientKeepAliveTimeoutMs, logPrefix);
+      var client = new ProfileServer.Network.IncomingClient(that, tcpClient, clientId, that.UseTls, that.ClientKeepAliveTimeoutMs, logPrefix);
+      client.KeptAlive();
+      return client;
     }
 
     private static IopServerCore.Network.TcpRoleServer<ProfileServer.Network.IncomingClient, Iop.Profileserver.Message> CreateRoleServer(System.Net.IPAddress ipAddress, RoleServerConfiguration config)

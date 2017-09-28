@@ -335,5 +335,9 @@ namespace IopServerCore.Network.LOC
 
       log.Info("(-)");
     }
+
+    public override void KeptAlive()
+    {
+    }
   }
 }

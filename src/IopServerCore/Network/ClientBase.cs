@@ -298,6 +298,8 @@ namespace IopServerCore.Network
       log.Trace("(-)");
     }
 
+    public abstract void KeptAlive();
+
 
 
     /// <summary>

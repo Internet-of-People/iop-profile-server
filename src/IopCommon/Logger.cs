@@ -147,6 +147,21 @@ namespace IopCommon
 
       return res;
     }
+
+    public T TraceFunc<T>(string message, Func<T> func)
+    {
+      Trace(message);
+      T res = default(T);
+      try
+      {
+          res = func();
+      }
+      finally
+      {
+          Trace("(-):" + res);
+      }
+      return res;
+    }
   }
 
   /// <summary>

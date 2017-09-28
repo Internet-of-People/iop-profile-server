@@ -499,5 +499,8 @@ namespace ProfileServer.Network
       return res;
     }
 
+    public override void KeptAlive()
+    {
+    }
   }
 }

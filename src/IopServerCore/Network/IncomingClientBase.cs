@@ -25,24 +25,34 @@ namespace IopServerCore.Network
     public const int MaxUnfinishedRequests = 20;
 
     /// <summary>Role server assigned client identifier.</summary>
-    public ulong Id;
+    public ulong Id { get; }
 
     /// <summary>UTC time before next message has to come over the connection from this client or the server can close the connection due to inactivity.</summary>
-    public DateTime NextKeepAliveTime;
+    public DateTime NextKeepAliveTime { get; private set; }
 
     /// <summary>
     /// This is either Server.ClientKeepAliveIntervalMs for end user client device connections, 
     /// or Server.ServerKeepAliveIntervalMs for server to server or unknown connections.
     /// </summary>
-    public int KeepAliveIntervalMs;
+    private readonly int _keepAliveIntervalMs;
 
+    private byte[] _publicKey;
 
     // Client Context Section
     /// <summary>Client's public key.</summary>
-    public byte[] PublicKey;
+    public byte[] PublicKey
+    {
+      get { return _publicKey; }
+      
+      set
+      {
+        _publicKey = value;
+        IdentityId = IopCrypto.Crypto.Sha256(value);
+      }
+    }
 
     /// <summary>Client's public key hash.</summary>
-    public byte[] IdentityId;
+    public byte[] IdentityId { get; private set; }
 
     /// <summary>Random data used for client's authentication.</summary>
     public byte[] AuthenticationChallenge;
@@ -51,19 +61,19 @@ namespace IopServerCore.Network
     public bool IsAuthenticatedOnlineClient;
 
     /// <summary>List of unprocessed requests that we expect to receive responses to mapped by Message.id.</summary>
-    private Dictionary<uint, UnfinishedRequest<TMessage>> unfinishedRequests = new Dictionary<uint, UnfinishedRequest<TMessage>>();
+    private readonly Dictionary<uint, UnfinishedRequest<TMessage>> _unfinishedRequests = new Dictionary<uint, UnfinishedRequest<TMessage>>();
 
     /// <summary>Lock for access to unfinishedRequests list.</summary>
-    private object unfinishedRequestsLock = new object();
+    private readonly object _unfinishedRequestsLock = new object();
 
     // \Client Context Section
 
 
     /// <summary>Shutdown signaling from the component that created the client.</summary>
-    private ComponentShutdown shutdownSignaling;
+    private readonly ComponentShutdown _shutdownSignaling;
 
     /// <summary>Module responsible for processing logic behind incoming messages.</summary>
-    private IMessageProcessor<TMessage> messageProcessor;
+    private readonly IMessageProcessor<TMessage> _messageProcessor;
 
 
 
@@ -82,19 +92,23 @@ namespace IopServerCore.Network
       base(TcpClient, UseTls, IdBase)
     {
       this.Id = Id;
-      shutdownSignaling = ShutdownSignaling;
+      _shutdownSignaling = ShutdownSignaling;
       log = new Logger("IopServerCore.Network.IncomingClient", LogPrefix);
 
       log.Trace("(UseTls:{0},KeepAliveIntervalMs:{1})", UseTls, KeepAliveIntervalMs);
 
-      messageProcessor = MessageProcessor;
+      _messageProcessor = MessageProcessor;
 
-      this.KeepAliveIntervalMs = KeepAliveIntervalMs;
-      NextKeepAliveTime = DateTime.UtcNow.AddSeconds(KeepAliveIntervalMs);
+      this._keepAliveIntervalMs = KeepAliveIntervalMs;
 
       IsAuthenticatedOnlineClient = false;
 
       log.Trace("(-)");
+    }
+
+    public override void KeptAlive()
+    {
+      NextKeepAliveTime = DateTime.UtcNow.AddSeconds(_keepAliveIntervalMs);
     }
 
 
@@ -116,12 +130,12 @@ namespace IopServerCore.Network
         }
 
         RawMessageReader messageReader = new RawMessageReader(Stream);
-        while (!shutdownSignaling.IsShutdown)
+        while (!_shutdownSignaling.IsShutdown)
         {
-          RawMessageResult rawMessage = await messageReader.ReceiveMessageAsync(shutdownSignaling.ShutdownCancellationTokenSource.Token);
+          RawMessageResult rawMessage = await messageReader.ReceiveMessageAsync(_shutdownSignaling.ShutdownCancellationTokenSource.Token);
           if (rawMessage.ProtocolViolation)
           {
-            await messageProcessor.SendProtocolViolation(this);
+            await _messageProcessor.SendProtocolViolation(this);
             break;
           }
 
@@ -130,11 +144,11 @@ namespace IopServerCore.Network
 
           IProtocolMessage<TMessage> message = CreateMessageFromRawData(rawMessage.Data);
           if (message == null) {
-            await messageProcessor.SendProtocolViolation(this);
+            await _messageProcessor.SendProtocolViolation(this);
             break;
           }
 
-          var success = await messageProcessor.ProcessMessageAsync(this, message);
+          var success = await _messageProcessor.ProcessMessageAsync(this, message);
           if (!success)
             break;
         }
@@ -197,16 +211,16 @@ namespace IopServerCore.Network
       log.Trace("(Request.RequestMessage.Id:{0})", Request.RequestMessage.Id);
 
       bool res = false;
-      lock (unfinishedRequestsLock)
+      lock (_unfinishedRequestsLock)
       {
-        if (unfinishedRequests.Count < MaxUnfinishedRequests)
+        if (_unfinishedRequests.Count < MaxUnfinishedRequests)
         {
-          unfinishedRequests.Add(Request.RequestMessage.Id, Request);
+          _unfinishedRequests.Add(Request.RequestMessage.Id, Request);
           res = true;
         }
       }
 
-      log.Trace("(-):{0},unfinishedRequests.Count={1}", res, unfinishedRequests.Count);
+      log.Trace("(-):{0},unfinishedRequests.Count={1}", res, _unfinishedRequests.Count);
       return res;
     }
 
@@ -219,12 +233,12 @@ namespace IopServerCore.Network
       log.Trace("(Id:{0})", Id);
 
       bool res = false;
-      lock (unfinishedRequestsLock)
+      lock (_unfinishedRequestsLock)
       {
-        res = unfinishedRequests.Remove(Id);
+        res = _unfinishedRequests.Remove(Id);
       }
 
-      log.Trace("(-):{0},unfinishedRequests.Count={1}", res, unfinishedRequests.Count);
+      log.Trace("(-):{0},unfinishedRequests.Count={1}", res, _unfinishedRequests.Count);
       return res;
     }
 
@@ -239,13 +253,13 @@ namespace IopServerCore.Network
       log.Trace("(Id:{0})", Id);
 
       UnfinishedRequest<TMessage> res = null;
-      lock (unfinishedRequestsLock)
+      lock (_unfinishedRequestsLock)
       {
-        if (unfinishedRequests.TryGetValue(Id, out res))
-          unfinishedRequests.Remove(Id);
+        if (_unfinishedRequests.TryGetValue(Id, out res))
+          _unfinishedRequests.Remove(Id);
       }
 
-      log.Trace("(-):{0},unfinishedRequests.Count={1}", res != null ? "UnfinishedRequest" : "null", unfinishedRequests.Count);
+      log.Trace("(-):{0},unfinishedRequests.Count={1}", res != null ? "UnfinishedRequest" : "null", _unfinishedRequests.Count);
       return res;
     }
 
@@ -259,10 +273,10 @@ namespace IopServerCore.Network
       log.Trace("()");
 
       var res = new List<UnfinishedRequest<TMessage>>();
-      lock (unfinishedRequestsLock)
+      lock (_unfinishedRequestsLock)
       {
-        res = unfinishedRequests.Values.ToList();
-        unfinishedRequests.Clear();
+        res = _unfinishedRequests.Values.ToList();
+        _unfinishedRequests.Clear();
       }
 
       log.Trace("(-):*.Count={0}", res.Count);
