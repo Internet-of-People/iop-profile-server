@@ -119,22 +119,23 @@ namespace IopServerCore.Network
         while (!shutdownSignaling.IsShutdown)
         {
           RawMessageResult rawMessage = await messageReader.ReceiveMessageAsync(shutdownSignaling.ShutdownCancellationTokenSource.Token);
-          bool disconnect = rawMessage.Data == null;
-          bool protocolViolation = rawMessage.ProtocolViolation;
-          if (rawMessage.Data != null)
-          {
-            IProtocolMessage<TMessage> message = CreateMessageFromRawData(rawMessage.Data);
-            if (message != null) disconnect = !await messageProcessor.ProcessMessageAsync(this, message);
-            else protocolViolation = true;
-          }
-
-          if (protocolViolation)
+          if (rawMessage.ProtocolViolation)
           {
             await messageProcessor.SendProtocolViolation(this);
             break;
           }
 
-          if (disconnect)
+          if (rawMessage.Data == null)
+            break;
+
+          IProtocolMessage<TMessage> message = CreateMessageFromRawData(rawMessage.Data);
+          if (message == null) {
+            await messageProcessor.SendProtocolViolation(this);
+            break;
+          }
+
+          var success = await messageProcessor.ProcessMessageAsync(this, message);
+          if (!success)
             break;
         }
       }
