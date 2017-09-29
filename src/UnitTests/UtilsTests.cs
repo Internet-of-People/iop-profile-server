@@ -10,6 +10,7 @@ using IopProtocol;
 
 namespace UnitTests
 {
+
   /// <summary>
   /// Tests of helper classes and methods.
   /// </summary>
