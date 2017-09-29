@@ -34,7 +34,7 @@ namespace ProfileServer.Network
 
       RelayConnection res = null;
 
-      RelayConnection relay = new RelayConnection(caller, callee, serviceName, request);
+      RelayConnection relay = new RelayConnection(this, caller, callee, serviceName, request);
       lock (_lock)
       {
         _relayMap.Add(relay.Id, relay);

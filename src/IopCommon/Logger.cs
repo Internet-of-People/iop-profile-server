@@ -162,6 +162,21 @@ namespace IopCommon
       }
       return res;
     }
+
+    public async Task<T> TraceFuncAsync<T>(string message, Func<Task<T>> func)
+    {
+      Trace(message);
+      T res = default(T);
+      try
+      {
+          res = await func();
+      }
+      finally
+      {
+          Trace("(-):" + res);
+      }
+      return res;
+    }
   }
 
   /// <summary>

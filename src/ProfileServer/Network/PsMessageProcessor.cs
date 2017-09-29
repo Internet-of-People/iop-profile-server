@@ -257,7 +257,7 @@ namespace ProfileServer.Network
 
                             // Find associated request. If it does not exist, disconnect the client as it 
                             // send a response without receiving a request. This is protocol violation, 
-                            // but as this is a reponse, we have no how to inform the client about it, 
+                            // but as this is a reponse, we have no way to inform the client about it, 
                             // so we just disconnect it.
                             UnfinishedRequest<Message> unfinishedRequest = client.GetAndRemoveUnfinishedRequest(incomingMessage.Id);
                             if ((unfinishedRequest != null) && (unfinishedRequest.RequestMessage != null))
@@ -294,8 +294,8 @@ namespace ProfileServer.Network
                                                 SingleRequest singleRequest = request.SingleRequest;
                                                 switch (singleRequest.RequestTypeCase)
                                                 {
-                                                    case SingleRequest.RequestTypeOneofCase.ApplicationServiceReceiveMessageNotification:
-                                                        res = await ProcessMessageApplicationServiceReceiveMessageNotificationResponseAsync(client, incomingMessage, unfinishedRequest);
+                                                    case SingleRequest.RequestTypeOneofCase.ApplicationServiceSendMessage:
+                                                        res = await ProcessMessageApplicationSendMessageResponseAsync(client, incomingMessage, unfinishedRequest);
                                                         break;
 
                                                     default:
@@ -1508,7 +1508,7 @@ namespace ProfileServer.Network
         /// <param name="response">Full response message.</param>
         /// <param name="request">Unfinished request message that corresponds to the response message.</param>
         /// <returns>true if the connection to the client that sent the response should remain open, false if the client should be disconnected.</returns>
-        public async Task<bool> ProcessMessageApplicationServiceReceiveMessageNotificationResponseAsync(IncomingClient client, IProtocolMessage<Message> response, UnfinishedRequest<Message> request)
+        public async Task<bool> ProcessMessageApplicationSendMessageResponseAsync(IncomingClient client, IProtocolMessage<Message> response, UnfinishedRequest<Message> request)
         {
             _log.Trace("()");
 

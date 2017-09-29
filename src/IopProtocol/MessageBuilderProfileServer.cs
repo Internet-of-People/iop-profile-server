@@ -190,12 +190,14 @@ namespace IopProtocol
     /// <param name="Request">Request message for which the response is created.</param>
     /// <param name="ResponseStatus">Status code of the response.</param>
     /// <returns>Response message template for the request.</returns>
-    public IProtocolMessage<Message> CreateResponse(IProtocolMessage<Message> Request, Status ResponseStatus)
+    public IProtocolMessage<Message> CreateResponse(IProtocolMessage<Message> Request, Status ResponseStatus, string Details = null)
     {
       Message message = new Message();
       message.Id = Request.Message.Id;
       message.Response = new Response();
       message.Response.Status = ResponseStatus;
+      if (Details != null)
+        message.Response.Details = Details;
 
       var res = new PsProtocolMessage(message);
 
@@ -334,11 +336,7 @@ namespace IopProtocol
     /// <returns>Error response message that is ready to be sent.</returns>
     public IProtocolMessage<Message> CreateErrorInvalidValueResponse(IProtocolMessage<Message> Request, string Details = null)
     {
-      var res = CreateResponse(Request, Status.ErrorInvalidValue);
-      if (Details != null)
-        res.Message.Response.Details = Details;
-
-      return res;
+      return CreateResponse(Request, Status.ErrorInvalidValue, Details);
     }
 
     /// <summary>
@@ -369,11 +367,7 @@ namespace IopProtocol
     /// <returns>Error response message that is ready to be sent.</returns>
     public IProtocolMessage<Message> CreateErrorRejectedResponse(IProtocolMessage<Message> Request, string Details = null)
     {
-      var res = CreateResponse(Request, Status.ErrorRejected);
-      if (Details != null)
-        res.Message.Response.Details = Details;
-
-      return res;
+      return CreateResponse(Request, Status.ErrorRejected, Details);
     }
 
     /// <summary>
@@ -1083,6 +1077,7 @@ namespace IopProtocol
     public IProtocolMessage<Message> CreateApplicationServiceSendMessageResponse(IProtocolMessage<Message> Request)
     {
       ApplicationServiceSendMessageResponse applicationServiceSendMessageResponse = new ApplicationServiceSendMessageResponse();
+      applicationServiceSendMessageResponse.Token = Request.Message.Request.SingleRequest.ApplicationServiceSendMessage.Token;
 
       var res = CreateSingleResponse(Request);
       res.Message.Response.SingleResponse.ApplicationServiceSendMessage = applicationServiceSendMessageResponse;
