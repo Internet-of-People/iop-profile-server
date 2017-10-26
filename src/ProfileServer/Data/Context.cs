@@ -3,17 +3,30 @@ using System.IO;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+
+using IopCommon;
 using ProfileServer.Data.Models;
 using ProfileServer.Kernel;
-using IopCommon;
 
 namespace ProfileServer.Data
 {
   /// <summary>
   /// Database context that is used everytime a component reads from or writes to the database.
   /// </summary>
-  public class Context : DbContext
+  public class Context : DbContext, IDisposable
   {
+    private static ILoggerFactory _LoggerFactory = null;
+    public static ILoggerFactory LoggerFactory()
+    {
+      if(_LoggerFactory == null)
+      {
+        _LoggerFactory = new Microsoft.Extensions.Logging.LoggerFactory();
+        _LoggerFactory.AddProvider(new DbLoggerProvider());
+      }
+      return _LoggerFactory;
+    }
+
     /// <summary>Default name of the database file.</summary>
     public const string DefaultDatabaseFileName = "ProfileServer.db";
 
@@ -49,10 +62,7 @@ namespace ProfileServer.Data
 
       string dbFileName = Config.Configuration != null ? Config.Configuration.DatabaseFileName : path;
       optionsBuilder.UseSqlite(string.Format("Filename={0}", dbFileName));
-
-      Microsoft.Extensions.Logging.LoggerFactory loggerFactory = new Microsoft.Extensions.Logging.LoggerFactory();
-      loggerFactory.AddProvider(new DbLoggerProvider());
-      optionsBuilder.UseLoggerFactory(loggerFactory);
+      optionsBuilder.UseLoggerFactory(LoggerFactory());
       optionsBuilder.EnableSensitiveDataLogging();
     }
 
