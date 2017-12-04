@@ -1,0 +1,11 @@
+FROM libertaria/iop-ps:build as build
+
+FROM microsoft/dotnet:2.0-runtime-stretch
+WORKDIR /usr/app
+COPY --from=build /build /usr/app
+
+COPY run_server.sh /usr/app/
+
+EXPOSE 16987 16988
+
+ENTRYPOINT [ "./run_server.sh" ]

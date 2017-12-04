@@ -1,0 +1,14 @@
+FROM libertaria/iop-ps:build as build
+
+FROM microsoft/dotnet:2.0-runtime-stretch-arm32v7
+WORKDIR /usr/app
+COPY --from=build /build /usr/app
+
+# TODO: establish why doesn't publish get it
+COPY --from=build /root/.nuget/packages/sqlitepclraw.lib.e_sqlite3.linux/1.1.8-pre20170717084758/runtimes/linux-arm/native/libe_sqlite3.so /usr/app/
+
+COPY run_server.sh /usr/app/
+
+EXPOSE 16987 16988
+
+ENTRYPOINT [ "./run_server.sh" ]
