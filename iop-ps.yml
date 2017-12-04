@@ -1,0 +1,12 @@
+image: libertaria/iop-ps:latest
+manifests:
+    -
+        image: libertaria/iop-ps:amd64
+        platform:
+            architecture: amd64
+            os: linux
+    -
+        image: libertaria/iop-ps:arm
+        platform:
+            architecture: arm
+            os: linux
