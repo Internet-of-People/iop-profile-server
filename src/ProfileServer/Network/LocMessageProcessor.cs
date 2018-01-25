@@ -624,7 +624,7 @@ namespace ProfileServer.Network
       ProfileServerId = null;
       foreach (ServiceInfo si in NodeInfo.Services)
       {
-        if (si.Type == ServiceType.Profile)
+        if (si.Type == "Profile")
         {
           bool portValid = (0 < si.Port) && (si.Port <= 65535);
           bool serviceDataValid = si.ServiceData.Length == ProtocolHelper.NetworkIdentifierLength;

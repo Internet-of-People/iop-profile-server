@@ -22,121 +22,132 @@ namespace Iop.Locnet {
     static IopLocNetReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "Cg9Jb3BMb2NOZXQucHJvdG8SCmlvcC5sb2NuZXQiVwoLU2VydmljZUluZm8S",
-            "JQoEdHlwZRgBIAEoDjIXLmlvcC5sb2NuZXQuU2VydmljZVR5cGUSDAoEcG9y",
-            "dBgCIAEoDRITCgtzZXJ2aWNlRGF0YRgDIAEoDCIyCgtHcHNMb2NhdGlvbhIQ",
-            "CghsYXRpdHVkZRgBIAEoDxIRCglsb25naXR1ZGUYAiABKA8iRgoLTm9kZUNv",
-            "bnRhY3QSEQoJaXBBZGRyZXNzGAEgASgMEhAKCG5vZGVQb3J0GAIgASgNEhIK",
-            "CmNsaWVudFBvcnQYAyABKA0imgEKCE5vZGVJbmZvEg4KBm5vZGVJZBgBIAEo",
-            "DBIoCgdjb250YWN0GAIgASgLMhcuaW9wLmxvY25ldC5Ob2RlQ29udGFjdBIp",
-            "Cghsb2NhdGlvbhgDIAEoCzIXLmlvcC5sb2NuZXQuR3BzTG9jYXRpb24SKQoI",
-            "c2VydmljZXMYICADKAsyFy5pb3AubG9jbmV0LlNlcnZpY2VJbmZvIkYKEU1l",
-            "c3NhZ2VXaXRoSGVhZGVyEg4KBmhlYWRlchgBIAEoBxIhCgRib2R5GAIgASgL",
-            "MhMuaW9wLmxvY25ldC5NZXNzYWdlInYKB01lc3NhZ2USCgoCaWQYASABKA0S",
-            "JgoHcmVxdWVzdBgCIAEoCzITLmlvcC5sb2NuZXQuUmVxdWVzdEgAEigKCHJl",
-            "c3BvbnNlGAMgASgLMhQuaW9wLmxvY25ldC5SZXNwb25zZUgAQg0KC01lc3Nh",
-            "Z2VUeXBlIsQBCgdSZXF1ZXN0Eg8KB3ZlcnNpb24YASABKAwSNwoMbG9jYWxT",
-            "ZXJ2aWNlGAIgASgLMh8uaW9wLmxvY25ldC5Mb2NhbFNlcnZpY2VSZXF1ZXN0",
-            "SAASMwoKcmVtb3RlTm9kZRgDIAEoCzIdLmlvcC5sb2NuZXQuUmVtb3RlTm9k",
-            "ZVJlcXVlc3RIABIrCgZjbGllbnQYBCABKAsyGS5pb3AubG9jbmV0LkNsaWVu",
-            "dFJlcXVlc3RIAEINCgtSZXF1ZXN0VHlwZSKAAgoIUmVzcG9uc2USIgoGc3Rh",
-            "dHVzGAEgASgOMhIuaW9wLmxvY25ldC5TdGF0dXMSEQoJdGltZXN0YW1wGAIg",
-            "ASgSEg8KB2RldGFpbHMYAyABKAkSOAoMbG9jYWxTZXJ2aWNlGAQgASgLMiAu",
-            "aW9wLmxvY25ldC5Mb2NhbFNlcnZpY2VSZXNwb25zZUgAEjQKCnJlbW90ZU5v",
-            "ZGUYBSABKAsyHi5pb3AubG9jbmV0LlJlbW90ZU5vZGVSZXNwb25zZUgAEiwK",
-            "BmNsaWVudBgGIAEoCzIaLmlvcC5sb2NuZXQuQ2xpZW50UmVzcG9uc2VIAEIO",
-            "CgxSZXNwb25zZVR5cGUi2QIKE0xvY2FsU2VydmljZVJlcXVlc3QSPQoPcmVn",
-            "aXN0ZXJTZXJ2aWNlGAEgASgLMiIuaW9wLmxvY25ldC5SZWdpc3RlclNlcnZp",
-            "Y2VSZXF1ZXN0SAASQQoRZGVyZWdpc3RlclNlcnZpY2UYAiABKAsyJC5pb3Au",
-            "bG9jbmV0LkRlcmVnaXN0ZXJTZXJ2aWNlUmVxdWVzdEgAElAKEWdldE5laWdo",
-            "Ym91ck5vZGVzGAMgASgLMjMuaW9wLmxvY25ldC5HZXROZWlnaGJvdXJOb2Rl",
-            "c0J5RGlzdGFuY2VMb2NhbFJlcXVlc3RIABJTChRuZWlnaGJvdXJob29kQ2hh",
-            "bmdlZBgEIAEoCzIzLmlvcC5sb2NuZXQuTmVpZ2hib3VyaG9vZENoYW5nZWRO",
-            "b3RpZmljYXRpb25SZXF1ZXN0SABCGQoXTG9jYWxTZXJ2aWNlUmVxdWVzdFR5",
-            "cGUi2gIKFExvY2FsU2VydmljZVJlc3BvbnNlEj4KD3JlZ2lzdGVyU2Vydmlj",
-            "ZRgBIAEoCzIjLmlvcC5sb2NuZXQuUmVnaXN0ZXJTZXJ2aWNlUmVzcG9uc2VI",
-            "ABJCChFkZXJlZ2lzdGVyU2VydmljZRgCIAEoCzIlLmlvcC5sb2NuZXQuRGVy",
-            "ZWdpc3RlclNlcnZpY2VSZXNwb25zZUgAEkwKEWdldE5laWdoYm91ck5vZGVz",
-            "GAMgASgLMi8uaW9wLmxvY25ldC5HZXROZWlnaGJvdXJOb2Rlc0J5RGlzdGFu",
-            "Y2VSZXNwb25zZUgAElQKFG5laWdoYm91cmhvb2RVcGRhdGVkGAQgASgLMjQu",
-            "aW9wLmxvY25ldC5OZWlnaGJvdXJob29kQ2hhbmdlZE5vdGlmaWNhdGlvblJl",
-            "c3BvbnNlSABCGgoYTG9jYWxTZXJ2aWNlUmVzcG9uc2VUeXBlIkIKFlJlZ2lz",
-            "dGVyU2VydmljZVJlcXVlc3QSKAoHc2VydmljZRgBIAEoCzIXLmlvcC5sb2Nu",
-            "ZXQuU2VydmljZUluZm8iRAoXUmVnaXN0ZXJTZXJ2aWNlUmVzcG9uc2USKQoI",
-            "bG9jYXRpb24YASABKAsyFy5pb3AubG9jbmV0Lkdwc0xvY2F0aW9uIkgKGERl",
-            "cmVnaXN0ZXJTZXJ2aWNlUmVxdWVzdBIsCgtzZXJ2aWNlVHlwZRgBIAEoDjIX",
-            "LmlvcC5sb2NuZXQuU2VydmljZVR5cGUiGwoZRGVyZWdpc3RlclNlcnZpY2VS",
-            "ZXNwb25zZSJKCidHZXROZWlnaGJvdXJOb2Rlc0J5RGlzdGFuY2VMb2NhbFJl",
-            "cXVlc3QSHwoXa2VlcEFsaXZlQW5kU2VuZFVwZGF0ZXMYASABKAgiSgojR2V0",
-            "TmVpZ2hib3VyTm9kZXNCeURpc3RhbmNlUmVzcG9uc2USIwoFbm9kZXMYASAD",
-            "KAsyFC5pb3AubG9jbmV0Lk5vZGVJbmZvIpwBChNOZWlnaGJvdXJob29kQ2hh",
-            "bmdlEi0KDWFkZGVkTm9kZUluZm8YASABKAsyFC5pb3AubG9jbmV0Lk5vZGVJ",
-            "bmZvSAASLwoPdXBkYXRlZE5vZGVJbmZvGAIgASgLMhQuaW9wLmxvY25ldC5O",
-            "b2RlSW5mb0gAEhcKDXJlbW92ZWROb2RlSWQYAyABKAxIAEIMCgpDaGFuZ2VU",
-            "eXBlIlsKJ05laWdoYm91cmhvb2RDaGFuZ2VkTm90aWZpY2F0aW9uUmVxdWVz",
-            "dBIwCgdjaGFuZ2VzGAEgAygLMh8uaW9wLmxvY25ldC5OZWlnaGJvdXJob29k",
-            "Q2hhbmdlIioKKE5laWdoYm91cmhvb2RDaGFuZ2VkTm90aWZpY2F0aW9uUmVz",
-            "cG9uc2UikAQKEVJlbW90ZU5vZGVSZXF1ZXN0EjoKD2FjY2VwdENvbGxlYWd1",
-            "ZRgBIAEoCzIfLmlvcC5sb2NuZXQuQnVpbGROZXR3b3JrUmVxdWVzdEgAEjkK",
-            "DnJlbmV3Q29sbGVhZ3VlGAIgASgLMh8uaW9wLmxvY25ldC5CdWlsZE5ldHdv",
-            "cmtSZXF1ZXN0SAASOgoPYWNjZXB0TmVpZ2hib3VyGAMgASgLMh8uaW9wLmxv",
-            "Y25ldC5CdWlsZE5ldHdvcmtSZXF1ZXN0SAASOQoOcmVuZXdOZWlnaGJvdXIY",
-            "BCABKAsyHy5pb3AubG9jbmV0LkJ1aWxkTmV0d29ya1JlcXVlc3RIABI3Cgxn",
-            "ZXROb2RlQ291bnQYBSABKAsyHy5pb3AubG9jbmV0LkdldE5vZGVDb3VudFJl",
-            "cXVlc3RIABI7Cg5nZXRSYW5kb21Ob2RlcxgGIAEoCzIhLmlvcC5sb2NuZXQu",
-            "R2V0UmFuZG9tTm9kZXNSZXF1ZXN0SAASRwoPZ2V0Q2xvc2VzdE5vZGVzGAcg",
-            "ASgLMiwuaW9wLmxvY25ldC5HZXRDbG9zZXN0Tm9kZXNCeURpc3RhbmNlUmVx",
-            "dWVzdEgAEjUKC2dldE5vZGVJbmZvGAggASgLMh4uaW9wLmxvY25ldC5HZXRO",
-            "b2RlSW5mb1JlcXVlc3RIAEIXChVSZW1vdGVOb2RlUmVxdWVzdFR5cGUimgQK",
-            "ElJlbW90ZU5vZGVSZXNwb25zZRI7Cg9hY2NlcHRDb2xsZWFndWUYASABKAsy",
-            "IC5pb3AubG9jbmV0LkJ1aWxkTmV0d29ya1Jlc3BvbnNlSAASOgoOcmVuZXdD",
-            "b2xsZWFndWUYAiABKAsyIC5pb3AubG9jbmV0LkJ1aWxkTmV0d29ya1Jlc3Bv",
-            "bnNlSAASOwoPYWNjZXB0TmVpZ2hib3VyGAMgASgLMiAuaW9wLmxvY25ldC5C",
-            "dWlsZE5ldHdvcmtSZXNwb25zZUgAEjoKDnJlbmV3TmVpZ2hib3VyGAQgASgL",
-            "MiAuaW9wLmxvY25ldC5CdWlsZE5ldHdvcmtSZXNwb25zZUgAEjgKDGdldE5v",
-            "ZGVDb3VudBgFIAEoCzIgLmlvcC5sb2NuZXQuR2V0Tm9kZUNvdW50UmVzcG9u",
-            "c2VIABI8Cg5nZXRSYW5kb21Ob2RlcxgGIAEoCzIiLmlvcC5sb2NuZXQuR2V0",
-            "UmFuZG9tTm9kZXNSZXNwb25zZUgAEkgKD2dldENsb3Nlc3ROb2RlcxgHIAEo",
-            "CzItLmlvcC5sb2NuZXQuR2V0Q2xvc2VzdE5vZGVzQnlEaXN0YW5jZVJlc3Bv",
-            "bnNlSAASNgoLZ2V0Tm9kZUluZm8YCCABKAsyHy5pb3AubG9jbmV0LkdldE5v",
-            "ZGVJbmZvUmVzcG9uc2VIAEIYChZSZW1vdGVOb2RlUmVzcG9uc2VUeXBlIkYK",
-            "E0J1aWxkTmV0d29ya1JlcXVlc3QSLwoRcmVxdWVzdG9yTm9kZUluZm8YASAB",
-            "KAsyFC5pb3AubG9jbmV0Lk5vZGVJbmZvInEKFEJ1aWxkTmV0d29ya1Jlc3Bv",
-            "bnNlEhAKCGFjY2VwdGVkGAEgASgIEi4KEGFjY2VwdG9yTm9kZUluZm8YAiAB",
-            "KAsyFC5pb3AubG9jbmV0Lk5vZGVJbmZvEhcKD3JlbW90ZUlwQWRkcmVzcxgD",
-            "IAEoDCIVChNHZXROb2RlQ291bnRSZXF1ZXN0IikKFEdldE5vZGVDb3VudFJl",
-            "c3BvbnNlEhEKCW5vZGVDb3VudBgBIAEoDSJIChVHZXRSYW5kb21Ob2Rlc1Jl",
-            "cXVlc3QSFAoMbWF4Tm9kZUNvdW50GAEgASgNEhkKEWluY2x1ZGVOZWlnaGJv",
-            "dXJzGAIgASgIIj0KFkdldFJhbmRvbU5vZGVzUmVzcG9uc2USIwoFbm9kZXMY",
-            "ASADKAsyFC5pb3AubG9jbmV0Lk5vZGVJbmZvIpMBCiBHZXRDbG9zZXN0Tm9k",
-            "ZXNCeURpc3RhbmNlUmVxdWVzdBIpCghsb2NhdGlvbhgBIAEoCzIXLmlvcC5s",
-            "b2NuZXQuR3BzTG9jYXRpb24SEwoLbWF4UmFkaXVzS20YAiABKAISFAoMbWF4",
-            "Tm9kZUNvdW50GAMgASgNEhkKEWluY2x1ZGVOZWlnaGJvdXJzGAQgASgIIkgK",
-            "IUdldENsb3Nlc3ROb2Rlc0J5RGlzdGFuY2VSZXNwb25zZRIjCgVub2RlcxgB",
-            "IAMoCzIULmlvcC5sb2NuZXQuTm9kZUluZm8i9wEKDUNsaWVudFJlcXVlc3QS",
-            "NQoLZ2V0Tm9kZUluZm8YASABKAsyHi5pb3AubG9jbmV0LkdldE5vZGVJbmZv",
-            "UmVxdWVzdEgAElEKEWdldE5laWdoYm91ck5vZGVzGAIgASgLMjQuaW9wLmxv",
-            "Y25ldC5HZXROZWlnaGJvdXJOb2Rlc0J5RGlzdGFuY2VDbGllbnRSZXF1ZXN0",
-            "SAASRwoPZ2V0Q2xvc2VzdE5vZGVzGAMgASgLMiwuaW9wLmxvY25ldC5HZXRD",
-            "bG9zZXN0Tm9kZXNCeURpc3RhbmNlUmVxdWVzdEgAQhMKEUNsaWVudFJlcXVl",
-            "c3RUeXBlIvYBCg5DbGllbnRSZXNwb25zZRI2CgtnZXROb2RlSW5mbxgBIAEo",
-            "CzIfLmlvcC5sb2NuZXQuR2V0Tm9kZUluZm9SZXNwb25zZUgAEkwKEWdldE5l",
-            "aWdoYm91ck5vZGVzGAIgASgLMi8uaW9wLmxvY25ldC5HZXROZWlnaGJvdXJO",
-            "b2Rlc0J5RGlzdGFuY2VSZXNwb25zZUgAEkgKD2dldENsb3Nlc3ROb2RlcxgD",
-            "IAEoCzItLmlvcC5sb2NuZXQuR2V0Q2xvc2VzdE5vZGVzQnlEaXN0YW5jZVJl",
-            "c3BvbnNlSABCFAoSQ2xpZW50UmVzcG9uc2VUeXBlIhQKEkdldE5vZGVJbmZv",
-            "UmVxdWVzdCI9ChNHZXROb2RlSW5mb1Jlc3BvbnNlEiYKCG5vZGVJbmZvGAEg",
-            "ASgLMhQuaW9wLmxvY25ldC5Ob2RlSW5mbyIqCihHZXROZWlnaGJvdXJOb2Rl",
-            "c0J5RGlzdGFuY2VDbGllbnRSZXF1ZXN0KnkKBlN0YXR1cxINCglTVEFUVVNf",
-            "T0sQABIcChhFUlJPUl9QUk9UT0NPTF9WSU9MQVRJT04QARIVChFFUlJPUl9V",
-            "TlNVUFBPUlRFRBACEhIKDkVSUk9SX0lOVEVSTkFMEAgSFwoTRVJST1JfSU5W",
-            "QUxJRF9WQUxVRRA2KpYBCgtTZXJ2aWNlVHlwZRIQCgxVbnN0cnVjdHVyZWQQ",
-            "ABILCgdDb250ZW50EAESCwoHTGF0ZW5jeRACEgwKCExvY2F0aW9uEAMSCQoF",
-            "VG9rZW4QChILCgdQcm9maWxlEAsSDQoJUHJveGltaXR5EAwSCQoFUmVsYXkQ",
-            "DRIOCgpSZXB1dGF0aW9uEA4SCwoHTWludGluZxAPYgZwcm90bzM="));
+            "Cg9Jb3BMb2NOZXQucHJvdG8SCmlvcC5sb2NuZXQiPwoLU2VydmljZUluZm8S",
+            "DAoEdHlwZRgBIAEoCRIMCgRwb3J0GAIgASgNEhQKDHNlcnZpY2VfZGF0YRgD",
+            "IAEoDCIyCgtHcHNMb2NhdGlvbhIQCghsYXRpdHVkZRgBIAEoDxIRCglsb25n",
+            "aXR1ZGUYAiABKA8iSQoLTm9kZUNvbnRhY3QSEgoKaXBfYWRkcmVzcxgBIAEo",
+            "DBIRCglub2RlX3BvcnQYAiABKA0SEwoLY2xpZW50X3BvcnQYAyABKA0imwEK",
+            "CE5vZGVJbmZvEg8KB25vZGVfaWQYASABKAwSKAoHY29udGFjdBgCIAEoCzIX",
+            "LmlvcC5sb2NuZXQuTm9kZUNvbnRhY3QSKQoIbG9jYXRpb24YAyABKAsyFy5p",
+            "b3AubG9jbmV0Lkdwc0xvY2F0aW9uEikKCHNlcnZpY2VzGCAgAygLMhcuaW9w",
+            "LmxvY25ldC5TZXJ2aWNlSW5mbyJGChFNZXNzYWdlV2l0aEhlYWRlchIOCgZo",
+            "ZWFkZXIYASABKAcSIQoEYm9keRgCIAEoCzITLmlvcC5sb2NuZXQuTWVzc2Fn",
+            "ZSJ2CgdNZXNzYWdlEgoKAmlkGAEgASgNEiYKB3JlcXVlc3QYAiABKAsyEy5p",
+            "b3AubG9jbmV0LlJlcXVlc3RIABIoCghyZXNwb25zZRgDIAEoCzIULmlvcC5s",
+            "b2NuZXQuUmVzcG9uc2VIAEINCgtNZXNzYWdlVHlwZSLGAQoHUmVxdWVzdBIP",
+            "Cgd2ZXJzaW9uGAEgASgMEjgKDWxvY2FsX3NlcnZpY2UYAiABKAsyHy5pb3Au",
+            "bG9jbmV0LkxvY2FsU2VydmljZVJlcXVlc3RIABI0CgtyZW1vdGVfbm9kZRgD",
+            "IAEoCzIdLmlvcC5sb2NuZXQuUmVtb3RlTm9kZVJlcXVlc3RIABIrCgZjbGll",
+            "bnQYBCABKAsyGS5pb3AubG9jbmV0LkNsaWVudFJlcXVlc3RIAEINCgtSZXF1",
+            "ZXN0VHlwZSKCAgoIUmVzcG9uc2USIgoGc3RhdHVzGAEgASgOMhIuaW9wLmxv",
+            "Y25ldC5TdGF0dXMSEQoJdGltZXN0YW1wGAIgASgSEg8KB2RldGFpbHMYAyAB",
+            "KAkSOQoNbG9jYWxfc2VydmljZRgEIAEoCzIgLmlvcC5sb2NuZXQuTG9jYWxT",
+            "ZXJ2aWNlUmVzcG9uc2VIABI1CgtyZW1vdGVfbm9kZRgFIAEoCzIeLmlvcC5s",
+            "b2NuZXQuUmVtb3RlTm9kZVJlc3BvbnNlSAASLAoGY2xpZW50GAYgASgLMhou",
+            "aW9wLmxvY25ldC5DbGllbnRSZXNwb25zZUgAQg4KDFJlc3BvbnNlVHlwZSKX",
+            "AwoTTG9jYWxTZXJ2aWNlUmVxdWVzdBI+ChByZWdpc3Rlcl9zZXJ2aWNlGAEg",
+            "ASgLMiIuaW9wLmxvY25ldC5SZWdpc3RlclNlcnZpY2VSZXF1ZXN0SAASQgoS",
+            "ZGVyZWdpc3Rlcl9zZXJ2aWNlGAIgASgLMiQuaW9wLmxvY25ldC5EZXJlZ2lz",
+            "dGVyU2VydmljZVJlcXVlc3RIABJSChNnZXRfbmVpZ2hib3VyX25vZGVzGAMg",
+            "ASgLMjMuaW9wLmxvY25ldC5HZXROZWlnaGJvdXJOb2Rlc0J5RGlzdGFuY2VM",
+            "b2NhbFJlcXVlc3RIABJUChVuZWlnaGJvdXJob29kX2NoYW5nZWQYBCABKAsy",
+            "My5pb3AubG9jbmV0Lk5laWdoYm91cmhvb2RDaGFuZ2VkTm90aWZpY2F0aW9u",
+            "UmVxdWVzdEgAEjcKDWdldF9ub2RlX2luZm8YBSABKAsyHi5pb3AubG9jbmV0",
+            "LkdldE5vZGVJbmZvUmVxdWVzdEgAQhkKF0xvY2FsU2VydmljZVJlcXVlc3RU",
+            "eXBlIpkDChRMb2NhbFNlcnZpY2VSZXNwb25zZRI/ChByZWdpc3Rlcl9zZXJ2",
+            "aWNlGAEgASgLMiMuaW9wLmxvY25ldC5SZWdpc3RlclNlcnZpY2VSZXNwb25z",
+            "ZUgAEkMKEmRlcmVnaXN0ZXJfc2VydmljZRgCIAEoCzIlLmlvcC5sb2NuZXQu",
+            "RGVyZWdpc3RlclNlcnZpY2VSZXNwb25zZUgAEk4KE2dldF9uZWlnaGJvdXJf",
+            "bm9kZXMYAyABKAsyLy5pb3AubG9jbmV0LkdldE5laWdoYm91ck5vZGVzQnlE",
+            "aXN0YW5jZVJlc3BvbnNlSAASVQoVbmVpZ2hib3VyaG9vZF91cGRhdGVkGAQg",
+            "ASgLMjQuaW9wLmxvY25ldC5OZWlnaGJvdXJob29kQ2hhbmdlZE5vdGlmaWNh",
+            "dGlvblJlc3BvbnNlSAASOAoNZ2V0X25vZGVfaW5mbxgFIAEoCzIfLmlvcC5s",
+            "b2NuZXQuR2V0Tm9kZUluZm9SZXNwb25zZUgAQhoKGExvY2FsU2VydmljZVJl",
+            "c3BvbnNlVHlwZSJCChZSZWdpc3RlclNlcnZpY2VSZXF1ZXN0EigKB3NlcnZp",
+            "Y2UYASABKAsyFy5pb3AubG9jbmV0LlNlcnZpY2VJbmZvIkQKF1JlZ2lzdGVy",
+            "U2VydmljZVJlc3BvbnNlEikKCGxvY2F0aW9uGAEgASgLMhcuaW9wLmxvY25l",
+            "dC5HcHNMb2NhdGlvbiIwChhEZXJlZ2lzdGVyU2VydmljZVJlcXVlc3QSFAoM",
+            "c2VydmljZV90eXBlGAEgASgJIhsKGURlcmVnaXN0ZXJTZXJ2aWNlUmVzcG9u",
+            "c2UiTgonR2V0TmVpZ2hib3VyTm9kZXNCeURpc3RhbmNlTG9jYWxSZXF1ZXN0",
+            "EiMKG2tlZXBfYWxpdmVfYW5kX3NlbmRfdXBkYXRlcxgBIAEoCCJKCiNHZXRO",
+            "ZWlnaGJvdXJOb2Rlc0J5RGlzdGFuY2VSZXNwb25zZRIjCgVub2RlcxgBIAMo",
+            "CzIULmlvcC5sb2NuZXQuTm9kZUluZm8iogEKE05laWdoYm91cmhvb2RDaGFu",
+            "Z2USLwoPYWRkZWRfbm9kZV9pbmZvGAEgASgLMhQuaW9wLmxvY25ldC5Ob2Rl",
+            "SW5mb0gAEjEKEXVwZGF0ZWRfbm9kZV9pbmZvGAIgASgLMhQuaW9wLmxvY25l",
+            "dC5Ob2RlSW5mb0gAEhkKD3JlbW92ZWRfbm9kZV9pZBgDIAEoDEgAQgwKCkNo",
+            "YW5nZVR5cGUiWwonTmVpZ2hib3VyaG9vZENoYW5nZWROb3RpZmljYXRpb25S",
+            "ZXF1ZXN0EjAKB2NoYW5nZXMYASADKAsyHy5pb3AubG9jbmV0Lk5laWdoYm91",
+            "cmhvb2RDaGFuZ2UiKgooTmVpZ2hib3VyaG9vZENoYW5nZWROb3RpZmljYXRp",
+            "b25SZXNwb25zZSKcBAoRUmVtb3RlTm9kZVJlcXVlc3QSOwoQYWNjZXB0X2Nv",
+            "bGxlYWd1ZRgBIAEoCzIfLmlvcC5sb2NuZXQuQnVpbGROZXR3b3JrUmVxdWVz",
+            "dEgAEjoKD3JlbmV3X2NvbGxlYWd1ZRgCIAEoCzIfLmlvcC5sb2NuZXQuQnVp",
+            "bGROZXR3b3JrUmVxdWVzdEgAEjsKEGFjY2VwdF9uZWlnaGJvdXIYAyABKAsy",
+            "Hy5pb3AubG9jbmV0LkJ1aWxkTmV0d29ya1JlcXVlc3RIABI6Cg9yZW5ld19u",
+            "ZWlnaGJvdXIYBCABKAsyHy5pb3AubG9jbmV0LkJ1aWxkTmV0d29ya1JlcXVl",
+            "c3RIABI5Cg5nZXRfbm9kZV9jb3VudBgFIAEoCzIfLmlvcC5sb2NuZXQuR2V0",
+            "Tm9kZUNvdW50UmVxdWVzdEgAEj0KEGdldF9yYW5kb21fbm9kZXMYBiABKAsy",
+            "IS5pb3AubG9jbmV0LkdldFJhbmRvbU5vZGVzUmVxdWVzdEgAEkkKEWdldF9j",
+            "bG9zZXN0X25vZGVzGAcgASgLMiwuaW9wLmxvY25ldC5HZXRDbG9zZXN0Tm9k",
+            "ZXNCeURpc3RhbmNlUmVxdWVzdEgAEjcKDWdldF9ub2RlX2luZm8YCCABKAsy",
+            "Hi5pb3AubG9jbmV0LkdldE5vZGVJbmZvUmVxdWVzdEgAQhcKFVJlbW90ZU5v",
+            "ZGVSZXF1ZXN0VHlwZSKmBAoSUmVtb3RlTm9kZVJlc3BvbnNlEjwKEGFjY2Vw",
+            "dF9jb2xsZWFndWUYASABKAsyIC5pb3AubG9jbmV0LkJ1aWxkTmV0d29ya1Jl",
+            "c3BvbnNlSAASOwoPcmVuZXdfY29sbGVhZ3VlGAIgASgLMiAuaW9wLmxvY25l",
+            "dC5CdWlsZE5ldHdvcmtSZXNwb25zZUgAEjwKEGFjY2VwdF9uZWlnaGJvdXIY",
+            "AyABKAsyIC5pb3AubG9jbmV0LkJ1aWxkTmV0d29ya1Jlc3BvbnNlSAASOwoP",
+            "cmVuZXdfbmVpZ2hib3VyGAQgASgLMiAuaW9wLmxvY25ldC5CdWlsZE5ldHdv",
+            "cmtSZXNwb25zZUgAEjoKDmdldF9ub2RlX2NvdW50GAUgASgLMiAuaW9wLmxv",
+            "Y25ldC5HZXROb2RlQ291bnRSZXNwb25zZUgAEj4KEGdldF9yYW5kb21fbm9k",
+            "ZXMYBiABKAsyIi5pb3AubG9jbmV0LkdldFJhbmRvbU5vZGVzUmVzcG9uc2VI",
+            "ABJKChFnZXRfY2xvc2VzdF9ub2RlcxgHIAEoCzItLmlvcC5sb2NuZXQuR2V0",
+            "Q2xvc2VzdE5vZGVzQnlEaXN0YW5jZVJlc3BvbnNlSAASOAoNZ2V0X25vZGVf",
+            "aW5mbxgIIAEoCzIfLmlvcC5sb2NuZXQuR2V0Tm9kZUluZm9SZXNwb25zZUgA",
+            "QhgKFlJlbW90ZU5vZGVSZXNwb25zZVR5cGUiSAoTQnVpbGROZXR3b3JrUmVx",
+            "dWVzdBIxChNyZXF1ZXN0b3Jfbm9kZV9pbmZvGAEgASgLMhQuaW9wLmxvY25l",
+            "dC5Ob2RlSW5mbyJ1ChRCdWlsZE5ldHdvcmtSZXNwb25zZRIQCghhY2NlcHRl",
+            "ZBgBIAEoCBIwChJhY2NlcHRvcl9ub2RlX2luZm8YAiABKAsyFC5pb3AubG9j",
+            "bmV0Lk5vZGVJbmZvEhkKEXJlbW90ZV9pcF9hZGRyZXNzGAMgASgMIhUKE0dl",
+            "dE5vZGVDb3VudFJlcXVlc3QiKgoUR2V0Tm9kZUNvdW50UmVzcG9uc2USEgoK",
+            "bm9kZV9jb3VudBgBIAEoDSJLChVHZXRSYW5kb21Ob2Rlc1JlcXVlc3QSFgoO",
+            "bWF4X25vZGVfY291bnQYASABKA0SGgoSaW5jbHVkZV9uZWlnaGJvdXJzGAIg",
+            "ASgIIj0KFkdldFJhbmRvbU5vZGVzUmVzcG9uc2USIwoFbm9kZXMYASADKAsy",
+            "FC5pb3AubG9jbmV0Lk5vZGVJbmZvIpgBCiBHZXRDbG9zZXN0Tm9kZXNCeURp",
+            "c3RhbmNlUmVxdWVzdBIpCghsb2NhdGlvbhgBIAEoCzIXLmlvcC5sb2NuZXQu",
+            "R3BzTG9jYXRpb24SFQoNbWF4X3JhZGl1c19rbRgCIAEoAhIWCg5tYXhfbm9k",
+            "ZV9jb3VudBgDIAEoDRIaChJpbmNsdWRlX25laWdoYm91cnMYBCABKAgiSAoh",
+            "R2V0Q2xvc2VzdE5vZGVzQnlEaXN0YW5jZVJlc3BvbnNlEiMKBW5vZGVzGAEg",
+            "AygLMhQuaW9wLmxvY25ldC5Ob2RlSW5mbyKHAwoNQ2xpZW50UmVxdWVzdBI3",
+            "Cg1nZXRfbm9kZV9pbmZvGAEgASgLMh4uaW9wLmxvY25ldC5HZXROb2RlSW5m",
+            "b1JlcXVlc3RIABJTChNnZXRfbmVpZ2hib3VyX25vZGVzGAIgASgLMjQuaW9w",
+            "LmxvY25ldC5HZXROZWlnaGJvdXJOb2Rlc0J5RGlzdGFuY2VDbGllbnRSZXF1",
+            "ZXN0SAASSQoRZ2V0X2Nsb3Nlc3Rfbm9kZXMYAyABKAsyLC5pb3AubG9jbmV0",
+            "LkdldENsb3Nlc3ROb2Rlc0J5RGlzdGFuY2VSZXF1ZXN0SAASSQoNZXhwbG9y",
+            "ZV9ub2RlcxgEIAEoCzIwLmlvcC5sb2NuZXQuRXhwbG9yZU5ldHdvcmtOb2Rl",
+            "c0J5RGlzdGFuY2VSZXF1ZXN0SAASPQoQZ2V0X3JhbmRvbV9ub2RlcxgFIAEo",
+            "CzIhLmlvcC5sb2NuZXQuR2V0UmFuZG9tTm9kZXNSZXF1ZXN0SABCEwoRQ2xp",
+            "ZW50UmVxdWVzdFR5cGUiiAMKDkNsaWVudFJlc3BvbnNlEjgKDWdldF9ub2Rl",
+            "X2luZm8YASABKAsyHy5pb3AubG9jbmV0LkdldE5vZGVJbmZvUmVzcG9uc2VI",
+            "ABJOChNnZXRfbmVpZ2hib3VyX25vZGVzGAIgASgLMi8uaW9wLmxvY25ldC5H",
+            "ZXROZWlnaGJvdXJOb2Rlc0J5RGlzdGFuY2VSZXNwb25zZUgAEkoKEWdldF9j",
+            "bG9zZXN0X25vZGVzGAMgASgLMi0uaW9wLmxvY25ldC5HZXRDbG9zZXN0Tm9k",
+            "ZXNCeURpc3RhbmNlUmVzcG9uc2VIABJKCg1leHBsb3JlX25vZGVzGAQgASgL",
+            "MjEuaW9wLmxvY25ldC5FeHBsb3JlTmV0d29ya05vZGVzQnlEaXN0YW5jZVJl",
+            "c3BvbnNlSAASPgoQZ2V0X3JhbmRvbV9ub2RlcxgFIAEoCzIiLmlvcC5sb2Nu",
+            "ZXQuR2V0UmFuZG9tTm9kZXNSZXNwb25zZUgAQhQKEkNsaWVudFJlc3BvbnNl",
+            "VHlwZSIUChJHZXROb2RlSW5mb1JlcXVlc3QiPgoTR2V0Tm9kZUluZm9SZXNw",
+            "b25zZRInCglub2RlX2luZm8YASABKAsyFC5pb3AubG9jbmV0Lk5vZGVJbmZv",
+            "IioKKEdldE5laWdoYm91ck5vZGVzQnlEaXN0YW5jZUNsaWVudFJlcXVlc3Qi",
+            "gwEKJEV4cGxvcmVOZXR3b3JrTm9kZXNCeURpc3RhbmNlUmVxdWVzdBIpCghs",
+            "b2NhdGlvbhgBIAEoCzIXLmlvcC5sb2NuZXQuR3BzTG9jYXRpb24SGQoRdGFy",
+            "Z2V0X25vZGVfY291bnQYAiABKA0SFQoNbWF4X25vZGVfaG9wcxgDIAEoDSJU",
+            "CiVFeHBsb3JlTmV0d29ya05vZGVzQnlEaXN0YW5jZVJlc3BvbnNlEisKDWNs",
+            "b3Nlc3Rfbm9kZXMYASADKAsyFC5pb3AubG9jbmV0Lk5vZGVJbmZvKnkKBlN0",
+            "YXR1cxINCglTVEFUVVNfT0sQABIcChhFUlJPUl9QUk9UT0NPTF9WSU9MQVRJ",
+            "T04QARIVChFFUlJPUl9VTlNVUFBPUlRFRBACEhIKDkVSUk9SX0lOVEVSTkFM",
+            "EAgSFwoTRVJST1JfSU5WQUxJRF9WQUxVRRA2YgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
-          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Iop.Locnet.Status), typeof(global::Iop.Locnet.ServiceType), }, new pbr::GeneratedClrTypeInfo[] {
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Iop.Locnet.Status), }, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.ServiceInfo), global::Iop.Locnet.ServiceInfo.Parser, new[]{ "Type", "Port", "ServiceData" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.GpsLocation), global::Iop.Locnet.GpsLocation.Parser, new[]{ "Latitude", "Longitude" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.NodeContact), global::Iop.Locnet.NodeContact.Parser, new[]{ "IpAddress", "NodePort", "ClientPort" }, null, null, null),
@@ -145,8 +156,8 @@ namespace Iop.Locnet {
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.Message), global::Iop.Locnet.Message.Parser, new[]{ "Id", "Request", "Response" }, new[]{ "MessageType" }, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.Request), global::Iop.Locnet.Request.Parser, new[]{ "Version", "LocalService", "RemoteNode", "Client" }, new[]{ "RequestType" }, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.Response), global::Iop.Locnet.Response.Parser, new[]{ "Status", "Timestamp", "Details", "LocalService", "RemoteNode", "Client" }, new[]{ "ResponseType" }, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.LocalServiceRequest), global::Iop.Locnet.LocalServiceRequest.Parser, new[]{ "RegisterService", "DeregisterService", "GetNeighbourNodes", "NeighbourhoodChanged" }, new[]{ "LocalServiceRequestType" }, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.LocalServiceResponse), global::Iop.Locnet.LocalServiceResponse.Parser, new[]{ "RegisterService", "DeregisterService", "GetNeighbourNodes", "NeighbourhoodUpdated" }, new[]{ "LocalServiceResponseType" }, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.LocalServiceRequest), global::Iop.Locnet.LocalServiceRequest.Parser, new[]{ "RegisterService", "DeregisterService", "GetNeighbourNodes", "NeighbourhoodChanged", "GetNodeInfo" }, new[]{ "LocalServiceRequestType" }, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.LocalServiceResponse), global::Iop.Locnet.LocalServiceResponse.Parser, new[]{ "RegisterService", "DeregisterService", "GetNeighbourNodes", "NeighbourhoodUpdated", "GetNodeInfo" }, new[]{ "LocalServiceResponseType" }, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.RegisterServiceRequest), global::Iop.Locnet.RegisterServiceRequest.Parser, new[]{ "Service" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.RegisterServiceResponse), global::Iop.Locnet.RegisterServiceResponse.Parser, new[]{ "Location" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.DeregisterServiceRequest), global::Iop.Locnet.DeregisterServiceRequest.Parser, new[]{ "ServiceType" }, null, null, null),
@@ -166,11 +177,13 @@ namespace Iop.Locnet {
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.GetRandomNodesResponse), global::Iop.Locnet.GetRandomNodesResponse.Parser, new[]{ "Nodes" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.GetClosestNodesByDistanceRequest), global::Iop.Locnet.GetClosestNodesByDistanceRequest.Parser, new[]{ "Location", "MaxRadiusKm", "MaxNodeCount", "IncludeNeighbours" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.GetClosestNodesByDistanceResponse), global::Iop.Locnet.GetClosestNodesByDistanceResponse.Parser, new[]{ "Nodes" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.ClientRequest), global::Iop.Locnet.ClientRequest.Parser, new[]{ "GetNodeInfo", "GetNeighbourNodes", "GetClosestNodes" }, new[]{ "ClientRequestType" }, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.ClientResponse), global::Iop.Locnet.ClientResponse.Parser, new[]{ "GetNodeInfo", "GetNeighbourNodes", "GetClosestNodes" }, new[]{ "ClientResponseType" }, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.ClientRequest), global::Iop.Locnet.ClientRequest.Parser, new[]{ "GetNodeInfo", "GetNeighbourNodes", "GetClosestNodes", "ExploreNodes", "GetRandomNodes" }, new[]{ "ClientRequestType" }, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.ClientResponse), global::Iop.Locnet.ClientResponse.Parser, new[]{ "GetNodeInfo", "GetNeighbourNodes", "GetClosestNodes", "ExploreNodes", "GetRandomNodes" }, new[]{ "ClientResponseType" }, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.GetNodeInfoRequest), global::Iop.Locnet.GetNodeInfoRequest.Parser, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.GetNodeInfoResponse), global::Iop.Locnet.GetNodeInfoResponse.Parser, new[]{ "NodeInfo" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.GetNeighbourNodesByDistanceClientRequest), global::Iop.Locnet.GetNeighbourNodesByDistanceClientRequest.Parser, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.GetNeighbourNodesByDistanceClientRequest), global::Iop.Locnet.GetNeighbourNodesByDistanceClientRequest.Parser, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.ExploreNetworkNodesByDistanceRequest), global::Iop.Locnet.ExploreNetworkNodesByDistanceRequest.Parser, new[]{ "Location", "TargetNodeCount", "MaxNodeHops" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Iop.Locnet.ExploreNetworkNodesByDistanceResponse), global::Iop.Locnet.ExploreNetworkNodesByDistanceResponse.Parser, new[]{ "ClosestNodes" }, null, null, null)
           }));
     }
     #endregion
@@ -203,29 +216,6 @@ namespace Iop.Locnet {
     /// A field in the request contains an invalid value.
     /// </summary>
     [pbr::OriginalName("ERROR_INVALID_VALUE")] ErrorInvalidValue = 54,
-  }
-
-  /// <summary>
-  /// All further network/server types of the Internet of People
-  /// that can be registered here so as it can be searched geographically on the client interface.
-  /// </summary>
-  public enum ServiceType {
-    /// <summary>
-    /// Low level networks
-    /// </summary>
-    [pbr::OriginalName("Unstructured")] Unstructured = 0,
-    [pbr::OriginalName("Content")] Content = 1,
-    [pbr::OriginalName("Latency")] Latency = 2,
-    [pbr::OriginalName("Location")] Location = 3,
-    /// <summary>
-    /// High level servers
-    /// </summary>
-    [pbr::OriginalName("Token")] Token = 10,
-    [pbr::OriginalName("Profile")] Profile = 11,
-    [pbr::OriginalName("Proximity")] Proximity = 12,
-    [pbr::OriginalName("Relay")] Relay = 13,
-    [pbr::OriginalName("Reputation")] Reputation = 14,
-    [pbr::OriginalName("Minting")] Minting = 15,
   }
 
   #endregion
@@ -271,12 +261,12 @@ namespace Iop.Locnet {
 
     /// <summary>Field number for the "type" field.</summary>
     public const int TypeFieldNumber = 1;
-    private global::Iop.Locnet.ServiceType type_ = 0;
+    private string type_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Iop.Locnet.ServiceType Type {
+    public string Type {
       get { return type_; }
       set {
-        type_ = value;
+        type_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
     }
 
@@ -294,7 +284,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "serviceData" field.</summary>
+    /// <summary>Field number for the "service_data" field.</summary>
     public const int ServiceDataFieldNumber = 3;
     private pb::ByteString serviceData_ = pb::ByteString.Empty;
     /// <summary>
@@ -330,7 +320,7 @@ namespace Iop.Locnet {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      if (Type != 0) hash ^= Type.GetHashCode();
+      if (Type.Length != 0) hash ^= Type.GetHashCode();
       if (Port != 0) hash ^= Port.GetHashCode();
       if (ServiceData.Length != 0) hash ^= ServiceData.GetHashCode();
       return hash;
@@ -343,9 +333,9 @@ namespace Iop.Locnet {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (Type != 0) {
-        output.WriteRawTag(8);
-        output.WriteEnum((int) Type);
+      if (Type.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteString(Type);
       }
       if (Port != 0) {
         output.WriteRawTag(16);
@@ -360,8 +350,8 @@ namespace Iop.Locnet {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      if (Type != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Type);
+      if (Type.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Type);
       }
       if (Port != 0) {
         size += 1 + pb::CodedOutputStream.ComputeUInt32Size(Port);
@@ -377,7 +367,7 @@ namespace Iop.Locnet {
       if (other == null) {
         return;
       }
-      if (other.Type != 0) {
+      if (other.Type.Length != 0) {
         Type = other.Type;
       }
       if (other.Port != 0) {
@@ -396,8 +386,8 @@ namespace Iop.Locnet {
           default:
             input.SkipLastField();
             break;
-          case 8: {
-            type_ = (global::Iop.Locnet.ServiceType) input.ReadEnum();
+          case 10: {
+            Type = input.ReadString();
             break;
           }
           case 16: {
@@ -609,7 +599,7 @@ namespace Iop.Locnet {
       return new NodeContact(this);
     }
 
-    /// <summary>Field number for the "ipAddress" field.</summary>
+    /// <summary>Field number for the "ip_address" field.</summary>
     public const int IpAddressFieldNumber = 1;
     private pb::ByteString ipAddress_ = pb::ByteString.Empty;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -620,7 +610,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "nodePort" field.</summary>
+    /// <summary>Field number for the "node_port" field.</summary>
     public const int NodePortFieldNumber = 2;
     private uint nodePort_;
     /// <summary>
@@ -634,7 +624,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "clientPort" field.</summary>
+    /// <summary>Field number for the "client_port" field.</summary>
     public const int ClientPortFieldNumber = 3;
     private uint clientPort_;
     /// <summary>
@@ -793,7 +783,7 @@ namespace Iop.Locnet {
       return new NodeInfo(this);
     }
 
-    /// <summary>Field number for the "nodeId" field.</summary>
+    /// <summary>Field number for the "node_id" field.</summary>
     public const int NodeIdFieldNumber = 1;
     private pb::ByteString nodeId_ = pb::ByteString.Empty;
     /// <summary>
@@ -1310,10 +1300,16 @@ namespace Iop.Locnet {
       }
       switch (other.MessageTypeCase) {
         case MessageTypeOneofCase.Request:
-          Request = other.Request;
+          if (Request == null) {
+            Request = new global::Iop.Locnet.Request();
+          }
+          Request.MergeFrom(other.Request);
           break;
         case MessageTypeOneofCase.Response:
-          Response = other.Response;
+          if (Response == null) {
+            Response = new global::Iop.Locnet.Response();
+          }
+          Response.MergeFrom(other.Response);
           break;
       }
 
@@ -1423,7 +1419,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "localService" field.</summary>
+    /// <summary>Field number for the "local_service" field.</summary>
     public const int LocalServiceFieldNumber = 2;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.LocalServiceRequest LocalService {
@@ -1434,7 +1430,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "remoteNode" field.</summary>
+    /// <summary>Field number for the "remote_node" field.</summary>
     public const int RemoteNodeFieldNumber = 3;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.RemoteNodeRequest RemoteNode {
@@ -1561,13 +1557,22 @@ namespace Iop.Locnet {
       }
       switch (other.RequestTypeCase) {
         case RequestTypeOneofCase.LocalService:
-          LocalService = other.LocalService;
+          if (LocalService == null) {
+            LocalService = new global::Iop.Locnet.LocalServiceRequest();
+          }
+          LocalService.MergeFrom(other.LocalService);
           break;
         case RequestTypeOneofCase.RemoteNode:
-          RemoteNode = other.RemoteNode;
+          if (RemoteNode == null) {
+            RemoteNode = new global::Iop.Locnet.RemoteNodeRequest();
+          }
+          RemoteNode.MergeFrom(other.RemoteNode);
           break;
         case RequestTypeOneofCase.Client:
-          Client = other.Client;
+          if (Client == null) {
+            Client = new global::Iop.Locnet.ClientRequest();
+          }
+          Client.MergeFrom(other.Client);
           break;
       }
 
@@ -1709,7 +1714,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "localService" field.</summary>
+    /// <summary>Field number for the "local_service" field.</summary>
     public const int LocalServiceFieldNumber = 4;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.LocalServiceResponse LocalService {
@@ -1720,7 +1725,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "remoteNode" field.</summary>
+    /// <summary>Field number for the "remote_node" field.</summary>
     public const int RemoteNodeFieldNumber = 5;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.RemoteNodeResponse RemoteNode {
@@ -1871,13 +1876,22 @@ namespace Iop.Locnet {
       }
       switch (other.ResponseTypeCase) {
         case ResponseTypeOneofCase.LocalService:
-          LocalService = other.LocalService;
+          if (LocalService == null) {
+            LocalService = new global::Iop.Locnet.LocalServiceResponse();
+          }
+          LocalService.MergeFrom(other.LocalService);
           break;
         case ResponseTypeOneofCase.RemoteNode:
-          RemoteNode = other.RemoteNode;
+          if (RemoteNode == null) {
+            RemoteNode = new global::Iop.Locnet.RemoteNodeResponse();
+          }
+          RemoteNode.MergeFrom(other.RemoteNode);
           break;
         case ResponseTypeOneofCase.Client:
-          Client = other.Client;
+          if (Client == null) {
+            Client = new global::Iop.Locnet.ClientResponse();
+          }
+          Client.MergeFrom(other.Client);
           break;
       }
 
@@ -1976,6 +1990,9 @@ namespace Iop.Locnet {
         case LocalServiceRequestTypeOneofCase.NeighbourhoodChanged:
           NeighbourhoodChanged = other.NeighbourhoodChanged.Clone();
           break;
+        case LocalServiceRequestTypeOneofCase.GetNodeInfo:
+          GetNodeInfo = other.GetNodeInfo.Clone();
+          break;
       }
 
     }
@@ -1985,7 +2002,7 @@ namespace Iop.Locnet {
       return new LocalServiceRequest(this);
     }
 
-    /// <summary>Field number for the "registerService" field.</summary>
+    /// <summary>Field number for the "register_service" field.</summary>
     public const int RegisterServiceFieldNumber = 1;
     /// <summary>
     /// These requests are sent as usual from the client to the server asking to perform an operation.
@@ -1999,7 +2016,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "deregisterService" field.</summary>
+    /// <summary>Field number for the "deregister_service" field.</summary>
     public const int DeregisterServiceFieldNumber = 2;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.DeregisterServiceRequest DeregisterService {
@@ -2010,7 +2027,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "getNeighbourNodes" field.</summary>
+    /// <summary>Field number for the "get_neighbour_nodes" field.</summary>
     public const int GetNeighbourNodesFieldNumber = 3;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.GetNeighbourNodesByDistanceLocalRequest GetNeighbourNodes {
@@ -2021,11 +2038,11 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "neighbourhoodChanged" field.</summary>
+    /// <summary>Field number for the "neighbourhood_changed" field.</summary>
     public const int NeighbourhoodChangedFieldNumber = 4;
     /// <summary>
     /// This is an unique, exceptional request. If the client previously sent
-    /// a getNeigbhourNodes request to the server and set the keepAlive flag,
+    /// a get_neighbour_nodes request to the server and set the keep_alive flag,
     /// the server is supposed to keep the connection alive and notify the client
     /// about changes in its neigbhourhood by sending the following request to the client.
     /// </summary>
@@ -2038,6 +2055,17 @@ namespace Iop.Locnet {
       }
     }
 
+    /// <summary>Field number for the "get_node_info" field.</summary>
+    public const int GetNodeInfoFieldNumber = 5;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Locnet.GetNodeInfoRequest GetNodeInfo {
+      get { return localServiceRequestTypeCase_ == LocalServiceRequestTypeOneofCase.GetNodeInfo ? (global::Iop.Locnet.GetNodeInfoRequest) localServiceRequestType_ : null; }
+      set {
+        localServiceRequestType_ = value;
+        localServiceRequestTypeCase_ = value == null ? LocalServiceRequestTypeOneofCase.None : LocalServiceRequestTypeOneofCase.GetNodeInfo;
+      }
+    }
+
     private object localServiceRequestType_;
     /// <summary>Enum of possible cases for the "LocalServiceRequestType" oneof.</summary>
     public enum LocalServiceRequestTypeOneofCase {
@@ -2046,6 +2074,7 @@ namespace Iop.Locnet {
       DeregisterService = 2,
       GetNeighbourNodes = 3,
       NeighbourhoodChanged = 4,
+      GetNodeInfo = 5,
     }
     private LocalServiceRequestTypeOneofCase localServiceRequestTypeCase_ = LocalServiceRequestTypeOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2076,6 +2105,7 @@ namespace Iop.Locnet {
       if (!object.Equals(DeregisterService, other.DeregisterService)) return false;
       if (!object.Equals(GetNeighbourNodes, other.GetNeighbourNodes)) return false;
       if (!object.Equals(NeighbourhoodChanged, other.NeighbourhoodChanged)) return false;
+      if (!object.Equals(GetNodeInfo, other.GetNodeInfo)) return false;
       if (LocalServiceRequestTypeCase != other.LocalServiceRequestTypeCase) return false;
       return true;
     }
@@ -2087,6 +2117,7 @@ namespace Iop.Locnet {
       if (localServiceRequestTypeCase_ == LocalServiceRequestTypeOneofCase.DeregisterService) hash ^= DeregisterService.GetHashCode();
       if (localServiceRequestTypeCase_ == LocalServiceRequestTypeOneofCase.GetNeighbourNodes) hash ^= GetNeighbourNodes.GetHashCode();
       if (localServiceRequestTypeCase_ == LocalServiceRequestTypeOneofCase.NeighbourhoodChanged) hash ^= NeighbourhoodChanged.GetHashCode();
+      if (localServiceRequestTypeCase_ == LocalServiceRequestTypeOneofCase.GetNodeInfo) hash ^= GetNodeInfo.GetHashCode();
       hash ^= (int) localServiceRequestTypeCase_;
       return hash;
     }
@@ -2114,6 +2145,10 @@ namespace Iop.Locnet {
         output.WriteRawTag(34);
         output.WriteMessage(NeighbourhoodChanged);
       }
+      if (localServiceRequestTypeCase_ == LocalServiceRequestTypeOneofCase.GetNodeInfo) {
+        output.WriteRawTag(42);
+        output.WriteMessage(GetNodeInfo);
+      }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2131,6 +2166,9 @@ namespace Iop.Locnet {
       if (localServiceRequestTypeCase_ == LocalServiceRequestTypeOneofCase.NeighbourhoodChanged) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(NeighbourhoodChanged);
       }
+      if (localServiceRequestTypeCase_ == LocalServiceRequestTypeOneofCase.GetNodeInfo) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(GetNodeInfo);
+      }
       return size;
     }
 
@@ -2141,16 +2179,34 @@ namespace Iop.Locnet {
       }
       switch (other.LocalServiceRequestTypeCase) {
         case LocalServiceRequestTypeOneofCase.RegisterService:
-          RegisterService = other.RegisterService;
+          if (RegisterService == null) {
+            RegisterService = new global::Iop.Locnet.RegisterServiceRequest();
+          }
+          RegisterService.MergeFrom(other.RegisterService);
           break;
         case LocalServiceRequestTypeOneofCase.DeregisterService:
-          DeregisterService = other.DeregisterService;
+          if (DeregisterService == null) {
+            DeregisterService = new global::Iop.Locnet.DeregisterServiceRequest();
+          }
+          DeregisterService.MergeFrom(other.DeregisterService);
           break;
         case LocalServiceRequestTypeOneofCase.GetNeighbourNodes:
-          GetNeighbourNodes = other.GetNeighbourNodes;
+          if (GetNeighbourNodes == null) {
+            GetNeighbourNodes = new global::Iop.Locnet.GetNeighbourNodesByDistanceLocalRequest();
+          }
+          GetNeighbourNodes.MergeFrom(other.GetNeighbourNodes);
           break;
         case LocalServiceRequestTypeOneofCase.NeighbourhoodChanged:
-          NeighbourhoodChanged = other.NeighbourhoodChanged;
+          if (NeighbourhoodChanged == null) {
+            NeighbourhoodChanged = new global::Iop.Locnet.NeighbourhoodChangedNotificationRequest();
+          }
+          NeighbourhoodChanged.MergeFrom(other.NeighbourhoodChanged);
+          break;
+        case LocalServiceRequestTypeOneofCase.GetNodeInfo:
+          if (GetNodeInfo == null) {
+            GetNodeInfo = new global::Iop.Locnet.GetNodeInfoRequest();
+          }
+          GetNodeInfo.MergeFrom(other.GetNodeInfo);
           break;
       }
 
@@ -2200,6 +2256,15 @@ namespace Iop.Locnet {
             NeighbourhoodChanged = subBuilder;
             break;
           }
+          case 42: {
+            global::Iop.Locnet.GetNodeInfoRequest subBuilder = new global::Iop.Locnet.GetNodeInfoRequest();
+            if (localServiceRequestTypeCase_ == LocalServiceRequestTypeOneofCase.GetNodeInfo) {
+              subBuilder.MergeFrom(GetNodeInfo);
+            }
+            input.ReadMessage(subBuilder);
+            GetNodeInfo = subBuilder;
+            break;
+          }
         }
       }
     }
@@ -2243,6 +2308,9 @@ namespace Iop.Locnet {
         case LocalServiceResponseTypeOneofCase.NeighbourhoodUpdated:
           NeighbourhoodUpdated = other.NeighbourhoodUpdated.Clone();
           break;
+        case LocalServiceResponseTypeOneofCase.GetNodeInfo:
+          GetNodeInfo = other.GetNodeInfo.Clone();
+          break;
       }
 
     }
@@ -2252,7 +2320,7 @@ namespace Iop.Locnet {
       return new LocalServiceResponse(this);
     }
 
-    /// <summary>Field number for the "registerService" field.</summary>
+    /// <summary>Field number for the "register_service" field.</summary>
     public const int RegisterServiceFieldNumber = 1;
     /// <summary>
     /// Responses sent back to the client from the server as usual.
@@ -2266,7 +2334,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "deregisterService" field.</summary>
+    /// <summary>Field number for the "deregister_service" field.</summary>
     public const int DeregisterServiceFieldNumber = 2;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.DeregisterServiceResponse DeregisterService {
@@ -2277,7 +2345,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "getNeighbourNodes" field.</summary>
+    /// <summary>Field number for the "get_neighbour_nodes" field.</summary>
     public const int GetNeighbourNodesFieldNumber = 3;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.GetNeighbourNodesByDistanceResponse GetNeighbourNodes {
@@ -2288,7 +2356,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "neighbourhoodUpdated" field.</summary>
+    /// <summary>Field number for the "neighbourhood_updated" field.</summary>
     public const int NeighbourhoodUpdatedFieldNumber = 4;
     /// <summary>
     /// For each neigbhourhood change notification, the client must send this response as an acknowledgement.
@@ -2302,6 +2370,17 @@ namespace Iop.Locnet {
       }
     }
 
+    /// <summary>Field number for the "get_node_info" field.</summary>
+    public const int GetNodeInfoFieldNumber = 5;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Locnet.GetNodeInfoResponse GetNodeInfo {
+      get { return localServiceResponseTypeCase_ == LocalServiceResponseTypeOneofCase.GetNodeInfo ? (global::Iop.Locnet.GetNodeInfoResponse) localServiceResponseType_ : null; }
+      set {
+        localServiceResponseType_ = value;
+        localServiceResponseTypeCase_ = value == null ? LocalServiceResponseTypeOneofCase.None : LocalServiceResponseTypeOneofCase.GetNodeInfo;
+      }
+    }
+
     private object localServiceResponseType_;
     /// <summary>Enum of possible cases for the "LocalServiceResponseType" oneof.</summary>
     public enum LocalServiceResponseTypeOneofCase {
@@ -2310,6 +2389,7 @@ namespace Iop.Locnet {
       DeregisterService = 2,
       GetNeighbourNodes = 3,
       NeighbourhoodUpdated = 4,
+      GetNodeInfo = 5,
     }
     private LocalServiceResponseTypeOneofCase localServiceResponseTypeCase_ = LocalServiceResponseTypeOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2340,6 +2420,7 @@ namespace Iop.Locnet {
       if (!object.Equals(DeregisterService, other.DeregisterService)) return false;
       if (!object.Equals(GetNeighbourNodes, other.GetNeighbourNodes)) return false;
       if (!object.Equals(NeighbourhoodUpdated, other.NeighbourhoodUpdated)) return false;
+      if (!object.Equals(GetNodeInfo, other.GetNodeInfo)) return false;
       if (LocalServiceResponseTypeCase != other.LocalServiceResponseTypeCase) return false;
       return true;
     }
@@ -2351,6 +2432,7 @@ namespace Iop.Locnet {
       if (localServiceResponseTypeCase_ == LocalServiceResponseTypeOneofCase.DeregisterService) hash ^= DeregisterService.GetHashCode();
       if (localServiceResponseTypeCase_ == LocalServiceResponseTypeOneofCase.GetNeighbourNodes) hash ^= GetNeighbourNodes.GetHashCode();
       if (localServiceResponseTypeCase_ == LocalServiceResponseTypeOneofCase.NeighbourhoodUpdated) hash ^= NeighbourhoodUpdated.GetHashCode();
+      if (localServiceResponseTypeCase_ == LocalServiceResponseTypeOneofCase.GetNodeInfo) hash ^= GetNodeInfo.GetHashCode();
       hash ^= (int) localServiceResponseTypeCase_;
       return hash;
     }
@@ -2378,6 +2460,10 @@ namespace Iop.Locnet {
         output.WriteRawTag(34);
         output.WriteMessage(NeighbourhoodUpdated);
       }
+      if (localServiceResponseTypeCase_ == LocalServiceResponseTypeOneofCase.GetNodeInfo) {
+        output.WriteRawTag(42);
+        output.WriteMessage(GetNodeInfo);
+      }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2395,6 +2481,9 @@ namespace Iop.Locnet {
       if (localServiceResponseTypeCase_ == LocalServiceResponseTypeOneofCase.NeighbourhoodUpdated) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(NeighbourhoodUpdated);
       }
+      if (localServiceResponseTypeCase_ == LocalServiceResponseTypeOneofCase.GetNodeInfo) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(GetNodeInfo);
+      }
       return size;
     }
 
@@ -2405,16 +2494,34 @@ namespace Iop.Locnet {
       }
       switch (other.LocalServiceResponseTypeCase) {
         case LocalServiceResponseTypeOneofCase.RegisterService:
-          RegisterService = other.RegisterService;
+          if (RegisterService == null) {
+            RegisterService = new global::Iop.Locnet.RegisterServiceResponse();
+          }
+          RegisterService.MergeFrom(other.RegisterService);
           break;
         case LocalServiceResponseTypeOneofCase.DeregisterService:
-          DeregisterService = other.DeregisterService;
+          if (DeregisterService == null) {
+            DeregisterService = new global::Iop.Locnet.DeregisterServiceResponse();
+          }
+          DeregisterService.MergeFrom(other.DeregisterService);
           break;
         case LocalServiceResponseTypeOneofCase.GetNeighbourNodes:
-          GetNeighbourNodes = other.GetNeighbourNodes;
+          if (GetNeighbourNodes == null) {
+            GetNeighbourNodes = new global::Iop.Locnet.GetNeighbourNodesByDistanceResponse();
+          }
+          GetNeighbourNodes.MergeFrom(other.GetNeighbourNodes);
           break;
         case LocalServiceResponseTypeOneofCase.NeighbourhoodUpdated:
-          NeighbourhoodUpdated = other.NeighbourhoodUpdated;
+          if (NeighbourhoodUpdated == null) {
+            NeighbourhoodUpdated = new global::Iop.Locnet.NeighbourhoodChangedNotificationResponse();
+          }
+          NeighbourhoodUpdated.MergeFrom(other.NeighbourhoodUpdated);
+          break;
+        case LocalServiceResponseTypeOneofCase.GetNodeInfo:
+          if (GetNodeInfo == null) {
+            GetNodeInfo = new global::Iop.Locnet.GetNodeInfoResponse();
+          }
+          GetNodeInfo.MergeFrom(other.GetNodeInfo);
           break;
       }
 
@@ -2462,6 +2569,15 @@ namespace Iop.Locnet {
             }
             input.ReadMessage(subBuilder);
             NeighbourhoodUpdated = subBuilder;
+            break;
+          }
+          case 42: {
+            global::Iop.Locnet.GetNodeInfoResponse subBuilder = new global::Iop.Locnet.GetNodeInfoResponse();
+            if (localServiceResponseTypeCase_ == LocalServiceResponseTypeOneofCase.GetNodeInfo) {
+              subBuilder.MergeFrom(GetNodeInfo);
+            }
+            input.ReadMessage(subBuilder);
+            GetNodeInfo = subBuilder;
             break;
           }
         }
@@ -2758,14 +2874,14 @@ namespace Iop.Locnet {
       return new DeregisterServiceRequest(this);
     }
 
-    /// <summary>Field number for the "serviceType" field.</summary>
+    /// <summary>Field number for the "service_type" field.</summary>
     public const int ServiceTypeFieldNumber = 1;
-    private global::Iop.Locnet.ServiceType serviceType_ = 0;
+    private string serviceType_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Iop.Locnet.ServiceType ServiceType {
+    public string ServiceType {
       get { return serviceType_; }
       set {
-        serviceType_ = value;
+        serviceType_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
     }
 
@@ -2789,7 +2905,7 @@ namespace Iop.Locnet {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      if (ServiceType != 0) hash ^= ServiceType.GetHashCode();
+      if (ServiceType.Length != 0) hash ^= ServiceType.GetHashCode();
       return hash;
     }
 
@@ -2800,17 +2916,17 @@ namespace Iop.Locnet {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (ServiceType != 0) {
-        output.WriteRawTag(8);
-        output.WriteEnum((int) ServiceType);
+      if (ServiceType.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteString(ServiceType);
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      if (ServiceType != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) ServiceType);
+      if (ServiceType.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(ServiceType);
       }
       return size;
     }
@@ -2820,7 +2936,7 @@ namespace Iop.Locnet {
       if (other == null) {
         return;
       }
-      if (other.ServiceType != 0) {
+      if (other.ServiceType.Length != 0) {
         ServiceType = other.ServiceType;
       }
     }
@@ -2833,8 +2949,8 @@ namespace Iop.Locnet {
           default:
             input.SkipLastField();
             break;
-          case 8: {
-            serviceType_ = (global::Iop.Locnet.ServiceType) input.ReadEnum();
+          case 10: {
+            ServiceType = input.ReadString();
             break;
           }
         }
@@ -2934,7 +3050,7 @@ namespace Iop.Locnet {
 
   /// <summary>
   /// Get the list of neighbouring nodes by distance.
-  /// If the keepAlive flag is set, the server must keep the connection alive and notify the client
+  /// If the keep_alive flag is set, the server must keep the connection alive and notify the client
   /// about changes in its neigbhourhood by sending NeighbourhoodChangeRequests to the client.
   /// </summary>
   public sealed partial class GetNeighbourNodesByDistanceLocalRequest : pb::IMessage<GetNeighbourNodesByDistanceLocalRequest> {
@@ -2969,7 +3085,7 @@ namespace Iop.Locnet {
       return new GetNeighbourNodesByDistanceLocalRequest(this);
     }
 
-    /// <summary>Field number for the "keepAliveAndSendUpdates" field.</summary>
+    /// <summary>Field number for the "keep_alive_and_send_updates" field.</summary>
     public const int KeepAliveAndSendUpdatesFieldNumber = 1;
     private bool keepAliveAndSendUpdates_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -3212,7 +3328,7 @@ namespace Iop.Locnet {
       return new NeighbourhoodChange(this);
     }
 
-    /// <summary>Field number for the "addedNodeInfo" field.</summary>
+    /// <summary>Field number for the "added_node_info" field.</summary>
     public const int AddedNodeInfoFieldNumber = 1;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.NodeInfo AddedNodeInfo {
@@ -3223,7 +3339,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "updatedNodeInfo" field.</summary>
+    /// <summary>Field number for the "updated_node_info" field.</summary>
     public const int UpdatedNodeInfoFieldNumber = 2;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.NodeInfo UpdatedNodeInfo {
@@ -3234,7 +3350,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "removedNodeId" field.</summary>
+    /// <summary>Field number for the "removed_node_id" field.</summary>
     public const int RemovedNodeIdFieldNumber = 3;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public pb::ByteString RemovedNodeId {
@@ -3338,10 +3454,16 @@ namespace Iop.Locnet {
       }
       switch (other.ChangeTypeCase) {
         case ChangeTypeOneofCase.AddedNodeInfo:
-          AddedNodeInfo = other.AddedNodeInfo;
+          if (AddedNodeInfo == null) {
+            AddedNodeInfo = new global::Iop.Locnet.NodeInfo();
+          }
+          AddedNodeInfo.MergeFrom(other.AddedNodeInfo);
           break;
         case ChangeTypeOneofCase.UpdatedNodeInfo:
-          UpdatedNodeInfo = other.UpdatedNodeInfo;
+          if (UpdatedNodeInfo == null) {
+            UpdatedNodeInfo = new global::Iop.Locnet.NodeInfo();
+          }
+          UpdatedNodeInfo.MergeFrom(other.UpdatedNodeInfo);
           break;
         case ChangeTypeOneofCase.RemovedNodeId:
           RemovedNodeId = other.RemovedNodeId;
@@ -3645,7 +3767,7 @@ namespace Iop.Locnet {
       return new RemoteNodeRequest(this);
     }
 
-    /// <summary>Field number for the "acceptColleague" field.</summary>
+    /// <summary>Field number for the "accept_colleague" field.</summary>
     public const int AcceptColleagueFieldNumber = 1;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.BuildNetworkRequest AcceptColleague {
@@ -3656,7 +3778,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "renewColleague" field.</summary>
+    /// <summary>Field number for the "renew_colleague" field.</summary>
     public const int RenewColleagueFieldNumber = 2;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.BuildNetworkRequest RenewColleague {
@@ -3667,7 +3789,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "acceptNeighbour" field.</summary>
+    /// <summary>Field number for the "accept_neighbour" field.</summary>
     public const int AcceptNeighbourFieldNumber = 3;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.BuildNetworkRequest AcceptNeighbour {
@@ -3678,7 +3800,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "renewNeighbour" field.</summary>
+    /// <summary>Field number for the "renew_neighbour" field.</summary>
     public const int RenewNeighbourFieldNumber = 4;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.BuildNetworkRequest RenewNeighbour {
@@ -3689,7 +3811,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "getNodeCount" field.</summary>
+    /// <summary>Field number for the "get_node_count" field.</summary>
     public const int GetNodeCountFieldNumber = 5;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.GetNodeCountRequest GetNodeCount {
@@ -3700,7 +3822,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "getRandomNodes" field.</summary>
+    /// <summary>Field number for the "get_random_nodes" field.</summary>
     public const int GetRandomNodesFieldNumber = 6;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.GetRandomNodesRequest GetRandomNodes {
@@ -3711,7 +3833,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "getClosestNodes" field.</summary>
+    /// <summary>Field number for the "get_closest_nodes" field.</summary>
     public const int GetClosestNodesFieldNumber = 7;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.GetClosestNodesByDistanceRequest GetClosestNodes {
@@ -3722,7 +3844,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "getNodeInfo" field.</summary>
+    /// <summary>Field number for the "get_node_info" field.</summary>
     public const int GetNodeInfoFieldNumber = 8;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.GetNodeInfoRequest GetNodeInfo {
@@ -3876,28 +3998,52 @@ namespace Iop.Locnet {
       }
       switch (other.RemoteNodeRequestTypeCase) {
         case RemoteNodeRequestTypeOneofCase.AcceptColleague:
-          AcceptColleague = other.AcceptColleague;
+          if (AcceptColleague == null) {
+            AcceptColleague = new global::Iop.Locnet.BuildNetworkRequest();
+          }
+          AcceptColleague.MergeFrom(other.AcceptColleague);
           break;
         case RemoteNodeRequestTypeOneofCase.RenewColleague:
-          RenewColleague = other.RenewColleague;
+          if (RenewColleague == null) {
+            RenewColleague = new global::Iop.Locnet.BuildNetworkRequest();
+          }
+          RenewColleague.MergeFrom(other.RenewColleague);
           break;
         case RemoteNodeRequestTypeOneofCase.AcceptNeighbour:
-          AcceptNeighbour = other.AcceptNeighbour;
+          if (AcceptNeighbour == null) {
+            AcceptNeighbour = new global::Iop.Locnet.BuildNetworkRequest();
+          }
+          AcceptNeighbour.MergeFrom(other.AcceptNeighbour);
           break;
         case RemoteNodeRequestTypeOneofCase.RenewNeighbour:
-          RenewNeighbour = other.RenewNeighbour;
+          if (RenewNeighbour == null) {
+            RenewNeighbour = new global::Iop.Locnet.BuildNetworkRequest();
+          }
+          RenewNeighbour.MergeFrom(other.RenewNeighbour);
           break;
         case RemoteNodeRequestTypeOneofCase.GetNodeCount:
-          GetNodeCount = other.GetNodeCount;
+          if (GetNodeCount == null) {
+            GetNodeCount = new global::Iop.Locnet.GetNodeCountRequest();
+          }
+          GetNodeCount.MergeFrom(other.GetNodeCount);
           break;
         case RemoteNodeRequestTypeOneofCase.GetRandomNodes:
-          GetRandomNodes = other.GetRandomNodes;
+          if (GetRandomNodes == null) {
+            GetRandomNodes = new global::Iop.Locnet.GetRandomNodesRequest();
+          }
+          GetRandomNodes.MergeFrom(other.GetRandomNodes);
           break;
         case RemoteNodeRequestTypeOneofCase.GetClosestNodes:
-          GetClosestNodes = other.GetClosestNodes;
+          if (GetClosestNodes == null) {
+            GetClosestNodes = new global::Iop.Locnet.GetClosestNodesByDistanceRequest();
+          }
+          GetClosestNodes.MergeFrom(other.GetClosestNodes);
           break;
         case RemoteNodeRequestTypeOneofCase.GetNodeInfo:
-          GetNodeInfo = other.GetNodeInfo;
+          if (GetNodeInfo == null) {
+            GetNodeInfo = new global::Iop.Locnet.GetNodeInfoRequest();
+          }
+          GetNodeInfo.MergeFrom(other.GetNodeInfo);
           break;
       }
 
@@ -4047,7 +4193,7 @@ namespace Iop.Locnet {
       return new RemoteNodeResponse(this);
     }
 
-    /// <summary>Field number for the "acceptColleague" field.</summary>
+    /// <summary>Field number for the "accept_colleague" field.</summary>
     public const int AcceptColleagueFieldNumber = 1;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.BuildNetworkResponse AcceptColleague {
@@ -4058,7 +4204,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "renewColleague" field.</summary>
+    /// <summary>Field number for the "renew_colleague" field.</summary>
     public const int RenewColleagueFieldNumber = 2;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.BuildNetworkResponse RenewColleague {
@@ -4069,7 +4215,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "acceptNeighbour" field.</summary>
+    /// <summary>Field number for the "accept_neighbour" field.</summary>
     public const int AcceptNeighbourFieldNumber = 3;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.BuildNetworkResponse AcceptNeighbour {
@@ -4080,7 +4226,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "renewNeighbour" field.</summary>
+    /// <summary>Field number for the "renew_neighbour" field.</summary>
     public const int RenewNeighbourFieldNumber = 4;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.BuildNetworkResponse RenewNeighbour {
@@ -4091,7 +4237,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "getNodeCount" field.</summary>
+    /// <summary>Field number for the "get_node_count" field.</summary>
     public const int GetNodeCountFieldNumber = 5;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.GetNodeCountResponse GetNodeCount {
@@ -4102,7 +4248,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "getRandomNodes" field.</summary>
+    /// <summary>Field number for the "get_random_nodes" field.</summary>
     public const int GetRandomNodesFieldNumber = 6;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.GetRandomNodesResponse GetRandomNodes {
@@ -4113,7 +4259,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "getClosestNodes" field.</summary>
+    /// <summary>Field number for the "get_closest_nodes" field.</summary>
     public const int GetClosestNodesFieldNumber = 7;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.GetClosestNodesByDistanceResponse GetClosestNodes {
@@ -4124,7 +4270,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "getNodeInfo" field.</summary>
+    /// <summary>Field number for the "get_node_info" field.</summary>
     public const int GetNodeInfoFieldNumber = 8;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.GetNodeInfoResponse GetNodeInfo {
@@ -4278,28 +4424,52 @@ namespace Iop.Locnet {
       }
       switch (other.RemoteNodeResponseTypeCase) {
         case RemoteNodeResponseTypeOneofCase.AcceptColleague:
-          AcceptColleague = other.AcceptColleague;
+          if (AcceptColleague == null) {
+            AcceptColleague = new global::Iop.Locnet.BuildNetworkResponse();
+          }
+          AcceptColleague.MergeFrom(other.AcceptColleague);
           break;
         case RemoteNodeResponseTypeOneofCase.RenewColleague:
-          RenewColleague = other.RenewColleague;
+          if (RenewColleague == null) {
+            RenewColleague = new global::Iop.Locnet.BuildNetworkResponse();
+          }
+          RenewColleague.MergeFrom(other.RenewColleague);
           break;
         case RemoteNodeResponseTypeOneofCase.AcceptNeighbour:
-          AcceptNeighbour = other.AcceptNeighbour;
+          if (AcceptNeighbour == null) {
+            AcceptNeighbour = new global::Iop.Locnet.BuildNetworkResponse();
+          }
+          AcceptNeighbour.MergeFrom(other.AcceptNeighbour);
           break;
         case RemoteNodeResponseTypeOneofCase.RenewNeighbour:
-          RenewNeighbour = other.RenewNeighbour;
+          if (RenewNeighbour == null) {
+            RenewNeighbour = new global::Iop.Locnet.BuildNetworkResponse();
+          }
+          RenewNeighbour.MergeFrom(other.RenewNeighbour);
           break;
         case RemoteNodeResponseTypeOneofCase.GetNodeCount:
-          GetNodeCount = other.GetNodeCount;
+          if (GetNodeCount == null) {
+            GetNodeCount = new global::Iop.Locnet.GetNodeCountResponse();
+          }
+          GetNodeCount.MergeFrom(other.GetNodeCount);
           break;
         case RemoteNodeResponseTypeOneofCase.GetRandomNodes:
-          GetRandomNodes = other.GetRandomNodes;
+          if (GetRandomNodes == null) {
+            GetRandomNodes = new global::Iop.Locnet.GetRandomNodesResponse();
+          }
+          GetRandomNodes.MergeFrom(other.GetRandomNodes);
           break;
         case RemoteNodeResponseTypeOneofCase.GetClosestNodes:
-          GetClosestNodes = other.GetClosestNodes;
+          if (GetClosestNodes == null) {
+            GetClosestNodes = new global::Iop.Locnet.GetClosestNodesByDistanceResponse();
+          }
+          GetClosestNodes.MergeFrom(other.GetClosestNodes);
           break;
         case RemoteNodeResponseTypeOneofCase.GetNodeInfo:
-          GetNodeInfo = other.GetNodeInfo;
+          if (GetNodeInfo == null) {
+            GetNodeInfo = new global::Iop.Locnet.GetNodeInfoResponse();
+          }
+          GetNodeInfo.MergeFrom(other.GetNodeInfo);
           break;
       }
 
@@ -4427,7 +4597,7 @@ namespace Iop.Locnet {
       return new BuildNetworkRequest(this);
     }
 
-    /// <summary>Field number for the "requestorNodeInfo" field.</summary>
+    /// <summary>Field number for the "requestor_node_info" field.</summary>
     public const int RequestorNodeInfoFieldNumber = 1;
     private global::Iop.Locnet.NodeInfo requestorNodeInfo_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -4566,7 +4736,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "acceptorNodeInfo" field.</summary>
+    /// <summary>Field number for the "acceptor_node_info" field.</summary>
     public const int AcceptorNodeInfoFieldNumber = 2;
     private global::Iop.Locnet.NodeInfo acceptorNodeInfo_;
     /// <summary>
@@ -4580,7 +4750,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "remoteIpAddress" field.</summary>
+    /// <summary>Field number for the "remote_ip_address" field.</summary>
     public const int RemoteIpAddressFieldNumber = 3;
     private pb::ByteString remoteIpAddress_ = pb::ByteString.Empty;
     /// <summary>
@@ -4830,7 +5000,7 @@ namespace Iop.Locnet {
       return new GetNodeCountResponse(this);
     }
 
-    /// <summary>Field number for the "nodeCount" field.</summary>
+    /// <summary>Field number for the "node_count" field.</summary>
     public const int NodeCountFieldNumber = 1;
     private uint nodeCount_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -4951,7 +5121,7 @@ namespace Iop.Locnet {
       return new GetRandomNodesRequest(this);
     }
 
-    /// <summary>Field number for the "maxNodeCount" field.</summary>
+    /// <summary>Field number for the "max_node_count" field.</summary>
     public const int MaxNodeCountFieldNumber = 1;
     private uint maxNodeCount_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -4962,7 +5132,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "includeNeighbours" field.</summary>
+    /// <summary>Field number for the "include_neighbours" field.</summary>
     public const int IncludeNeighboursFieldNumber = 2;
     private bool includeNeighbours_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -5221,7 +5391,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "maxRadiusKm" field.</summary>
+    /// <summary>Field number for the "max_radius_km" field.</summary>
     public const int MaxRadiusKmFieldNumber = 2;
     private float maxRadiusKm_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -5232,7 +5402,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "maxNodeCount" field.</summary>
+    /// <summary>Field number for the "max_node_count" field.</summary>
     public const int MaxNodeCountFieldNumber = 3;
     private uint maxNodeCount_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -5243,7 +5413,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "includeNeighbours" field.</summary>
+    /// <summary>Field number for the "include_neighbours" field.</summary>
     public const int IncludeNeighboursFieldNumber = 4;
     private bool includeNeighbours_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -5525,6 +5695,12 @@ namespace Iop.Locnet {
         case ClientRequestTypeOneofCase.GetClosestNodes:
           GetClosestNodes = other.GetClosestNodes.Clone();
           break;
+        case ClientRequestTypeOneofCase.ExploreNodes:
+          ExploreNodes = other.ExploreNodes.Clone();
+          break;
+        case ClientRequestTypeOneofCase.GetRandomNodes:
+          GetRandomNodes = other.GetRandomNodes.Clone();
+          break;
       }
 
     }
@@ -5534,7 +5710,7 @@ namespace Iop.Locnet {
       return new ClientRequest(this);
     }
 
-    /// <summary>Field number for the "getNodeInfo" field.</summary>
+    /// <summary>Field number for the "get_node_info" field.</summary>
     public const int GetNodeInfoFieldNumber = 1;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.GetNodeInfoRequest GetNodeInfo {
@@ -5545,7 +5721,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "getNeighbourNodes" field.</summary>
+    /// <summary>Field number for the "get_neighbour_nodes" field.</summary>
     public const int GetNeighbourNodesFieldNumber = 2;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.GetNeighbourNodesByDistanceClientRequest GetNeighbourNodes {
@@ -5556,7 +5732,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "getClosestNodes" field.</summary>
+    /// <summary>Field number for the "get_closest_nodes" field.</summary>
     public const int GetClosestNodesFieldNumber = 3;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.GetClosestNodesByDistanceRequest GetClosestNodes {
@@ -5567,6 +5743,28 @@ namespace Iop.Locnet {
       }
     }
 
+    /// <summary>Field number for the "explore_nodes" field.</summary>
+    public const int ExploreNodesFieldNumber = 4;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Locnet.ExploreNetworkNodesByDistanceRequest ExploreNodes {
+      get { return clientRequestTypeCase_ == ClientRequestTypeOneofCase.ExploreNodes ? (global::Iop.Locnet.ExploreNetworkNodesByDistanceRequest) clientRequestType_ : null; }
+      set {
+        clientRequestType_ = value;
+        clientRequestTypeCase_ = value == null ? ClientRequestTypeOneofCase.None : ClientRequestTypeOneofCase.ExploreNodes;
+      }
+    }
+
+    /// <summary>Field number for the "get_random_nodes" field.</summary>
+    public const int GetRandomNodesFieldNumber = 5;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Locnet.GetRandomNodesRequest GetRandomNodes {
+      get { return clientRequestTypeCase_ == ClientRequestTypeOneofCase.GetRandomNodes ? (global::Iop.Locnet.GetRandomNodesRequest) clientRequestType_ : null; }
+      set {
+        clientRequestType_ = value;
+        clientRequestTypeCase_ = value == null ? ClientRequestTypeOneofCase.None : ClientRequestTypeOneofCase.GetRandomNodes;
+      }
+    }
+
     private object clientRequestType_;
     /// <summary>Enum of possible cases for the "ClientRequestType" oneof.</summary>
     public enum ClientRequestTypeOneofCase {
@@ -5574,6 +5772,8 @@ namespace Iop.Locnet {
       GetNodeInfo = 1,
       GetNeighbourNodes = 2,
       GetClosestNodes = 3,
+      ExploreNodes = 4,
+      GetRandomNodes = 5,
     }
     private ClientRequestTypeOneofCase clientRequestTypeCase_ = ClientRequestTypeOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -5603,6 +5803,8 @@ namespace Iop.Locnet {
       if (!object.Equals(GetNodeInfo, other.GetNodeInfo)) return false;
       if (!object.Equals(GetNeighbourNodes, other.GetNeighbourNodes)) return false;
       if (!object.Equals(GetClosestNodes, other.GetClosestNodes)) return false;
+      if (!object.Equals(ExploreNodes, other.ExploreNodes)) return false;
+      if (!object.Equals(GetRandomNodes, other.GetRandomNodes)) return false;
       if (ClientRequestTypeCase != other.ClientRequestTypeCase) return false;
       return true;
     }
@@ -5613,6 +5815,8 @@ namespace Iop.Locnet {
       if (clientRequestTypeCase_ == ClientRequestTypeOneofCase.GetNodeInfo) hash ^= GetNodeInfo.GetHashCode();
       if (clientRequestTypeCase_ == ClientRequestTypeOneofCase.GetNeighbourNodes) hash ^= GetNeighbourNodes.GetHashCode();
       if (clientRequestTypeCase_ == ClientRequestTypeOneofCase.GetClosestNodes) hash ^= GetClosestNodes.GetHashCode();
+      if (clientRequestTypeCase_ == ClientRequestTypeOneofCase.ExploreNodes) hash ^= ExploreNodes.GetHashCode();
+      if (clientRequestTypeCase_ == ClientRequestTypeOneofCase.GetRandomNodes) hash ^= GetRandomNodes.GetHashCode();
       hash ^= (int) clientRequestTypeCase_;
       return hash;
     }
@@ -5636,6 +5840,14 @@ namespace Iop.Locnet {
         output.WriteRawTag(26);
         output.WriteMessage(GetClosestNodes);
       }
+      if (clientRequestTypeCase_ == ClientRequestTypeOneofCase.ExploreNodes) {
+        output.WriteRawTag(34);
+        output.WriteMessage(ExploreNodes);
+      }
+      if (clientRequestTypeCase_ == ClientRequestTypeOneofCase.GetRandomNodes) {
+        output.WriteRawTag(42);
+        output.WriteMessage(GetRandomNodes);
+      }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -5650,6 +5862,12 @@ namespace Iop.Locnet {
       if (clientRequestTypeCase_ == ClientRequestTypeOneofCase.GetClosestNodes) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(GetClosestNodes);
       }
+      if (clientRequestTypeCase_ == ClientRequestTypeOneofCase.ExploreNodes) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(ExploreNodes);
+      }
+      if (clientRequestTypeCase_ == ClientRequestTypeOneofCase.GetRandomNodes) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(GetRandomNodes);
+      }
       return size;
     }
 
@@ -5660,13 +5878,34 @@ namespace Iop.Locnet {
       }
       switch (other.ClientRequestTypeCase) {
         case ClientRequestTypeOneofCase.GetNodeInfo:
-          GetNodeInfo = other.GetNodeInfo;
+          if (GetNodeInfo == null) {
+            GetNodeInfo = new global::Iop.Locnet.GetNodeInfoRequest();
+          }
+          GetNodeInfo.MergeFrom(other.GetNodeInfo);
           break;
         case ClientRequestTypeOneofCase.GetNeighbourNodes:
-          GetNeighbourNodes = other.GetNeighbourNodes;
+          if (GetNeighbourNodes == null) {
+            GetNeighbourNodes = new global::Iop.Locnet.GetNeighbourNodesByDistanceClientRequest();
+          }
+          GetNeighbourNodes.MergeFrom(other.GetNeighbourNodes);
           break;
         case ClientRequestTypeOneofCase.GetClosestNodes:
-          GetClosestNodes = other.GetClosestNodes;
+          if (GetClosestNodes == null) {
+            GetClosestNodes = new global::Iop.Locnet.GetClosestNodesByDistanceRequest();
+          }
+          GetClosestNodes.MergeFrom(other.GetClosestNodes);
+          break;
+        case ClientRequestTypeOneofCase.ExploreNodes:
+          if (ExploreNodes == null) {
+            ExploreNodes = new global::Iop.Locnet.ExploreNetworkNodesByDistanceRequest();
+          }
+          ExploreNodes.MergeFrom(other.ExploreNodes);
+          break;
+        case ClientRequestTypeOneofCase.GetRandomNodes:
+          if (GetRandomNodes == null) {
+            GetRandomNodes = new global::Iop.Locnet.GetRandomNodesRequest();
+          }
+          GetRandomNodes.MergeFrom(other.GetRandomNodes);
           break;
       }
 
@@ -5705,6 +5944,24 @@ namespace Iop.Locnet {
             }
             input.ReadMessage(subBuilder);
             GetClosestNodes = subBuilder;
+            break;
+          }
+          case 34: {
+            global::Iop.Locnet.ExploreNetworkNodesByDistanceRequest subBuilder = new global::Iop.Locnet.ExploreNetworkNodesByDistanceRequest();
+            if (clientRequestTypeCase_ == ClientRequestTypeOneofCase.ExploreNodes) {
+              subBuilder.MergeFrom(ExploreNodes);
+            }
+            input.ReadMessage(subBuilder);
+            ExploreNodes = subBuilder;
+            break;
+          }
+          case 42: {
+            global::Iop.Locnet.GetRandomNodesRequest subBuilder = new global::Iop.Locnet.GetRandomNodesRequest();
+            if (clientRequestTypeCase_ == ClientRequestTypeOneofCase.GetRandomNodes) {
+              subBuilder.MergeFrom(GetRandomNodes);
+            }
+            input.ReadMessage(subBuilder);
+            GetRandomNodes = subBuilder;
             break;
           }
         }
@@ -5747,6 +6004,12 @@ namespace Iop.Locnet {
         case ClientResponseTypeOneofCase.GetClosestNodes:
           GetClosestNodes = other.GetClosestNodes.Clone();
           break;
+        case ClientResponseTypeOneofCase.ExploreNodes:
+          ExploreNodes = other.ExploreNodes.Clone();
+          break;
+        case ClientResponseTypeOneofCase.GetRandomNodes:
+          GetRandomNodes = other.GetRandomNodes.Clone();
+          break;
       }
 
     }
@@ -5756,7 +6019,7 @@ namespace Iop.Locnet {
       return new ClientResponse(this);
     }
 
-    /// <summary>Field number for the "getNodeInfo" field.</summary>
+    /// <summary>Field number for the "get_node_info" field.</summary>
     public const int GetNodeInfoFieldNumber = 1;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.GetNodeInfoResponse GetNodeInfo {
@@ -5767,7 +6030,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "getNeighbourNodes" field.</summary>
+    /// <summary>Field number for the "get_neighbour_nodes" field.</summary>
     public const int GetNeighbourNodesFieldNumber = 2;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.GetNeighbourNodesByDistanceResponse GetNeighbourNodes {
@@ -5778,7 +6041,7 @@ namespace Iop.Locnet {
       }
     }
 
-    /// <summary>Field number for the "getClosestNodes" field.</summary>
+    /// <summary>Field number for the "get_closest_nodes" field.</summary>
     public const int GetClosestNodesFieldNumber = 3;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Iop.Locnet.GetClosestNodesByDistanceResponse GetClosestNodes {
@@ -5789,6 +6052,28 @@ namespace Iop.Locnet {
       }
     }
 
+    /// <summary>Field number for the "explore_nodes" field.</summary>
+    public const int ExploreNodesFieldNumber = 4;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Locnet.ExploreNetworkNodesByDistanceResponse ExploreNodes {
+      get { return clientResponseTypeCase_ == ClientResponseTypeOneofCase.ExploreNodes ? (global::Iop.Locnet.ExploreNetworkNodesByDistanceResponse) clientResponseType_ : null; }
+      set {
+        clientResponseType_ = value;
+        clientResponseTypeCase_ = value == null ? ClientResponseTypeOneofCase.None : ClientResponseTypeOneofCase.ExploreNodes;
+      }
+    }
+
+    /// <summary>Field number for the "get_random_nodes" field.</summary>
+    public const int GetRandomNodesFieldNumber = 5;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Locnet.GetRandomNodesResponse GetRandomNodes {
+      get { return clientResponseTypeCase_ == ClientResponseTypeOneofCase.GetRandomNodes ? (global::Iop.Locnet.GetRandomNodesResponse) clientResponseType_ : null; }
+      set {
+        clientResponseType_ = value;
+        clientResponseTypeCase_ = value == null ? ClientResponseTypeOneofCase.None : ClientResponseTypeOneofCase.GetRandomNodes;
+      }
+    }
+
     private object clientResponseType_;
     /// <summary>Enum of possible cases for the "ClientResponseType" oneof.</summary>
     public enum ClientResponseTypeOneofCase {
@@ -5796,6 +6081,8 @@ namespace Iop.Locnet {
       GetNodeInfo = 1,
       GetNeighbourNodes = 2,
       GetClosestNodes = 3,
+      ExploreNodes = 4,
+      GetRandomNodes = 5,
     }
     private ClientResponseTypeOneofCase clientResponseTypeCase_ = ClientResponseTypeOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -5825,6 +6112,8 @@ namespace Iop.Locnet {
       if (!object.Equals(GetNodeInfo, other.GetNodeInfo)) return false;
       if (!object.Equals(GetNeighbourNodes, other.GetNeighbourNodes)) return false;
       if (!object.Equals(GetClosestNodes, other.GetClosestNodes)) return false;
+      if (!object.Equals(ExploreNodes, other.ExploreNodes)) return false;
+      if (!object.Equals(GetRandomNodes, other.GetRandomNodes)) return false;
       if (ClientResponseTypeCase != other.ClientResponseTypeCase) return false;
       return true;
     }
@@ -5835,6 +6124,8 @@ namespace Iop.Locnet {
       if (clientResponseTypeCase_ == ClientResponseTypeOneofCase.GetNodeInfo) hash ^= GetNodeInfo.GetHashCode();
       if (clientResponseTypeCase_ == ClientResponseTypeOneofCase.GetNeighbourNodes) hash ^= GetNeighbourNodes.GetHashCode();
       if (clientResponseTypeCase_ == ClientResponseTypeOneofCase.GetClosestNodes) hash ^= GetClosestNodes.GetHashCode();
+      if (clientResponseTypeCase_ == ClientResponseTypeOneofCase.ExploreNodes) hash ^= ExploreNodes.GetHashCode();
+      if (clientResponseTypeCase_ == ClientResponseTypeOneofCase.GetRandomNodes) hash ^= GetRandomNodes.GetHashCode();
       hash ^= (int) clientResponseTypeCase_;
       return hash;
     }
@@ -5858,6 +6149,14 @@ namespace Iop.Locnet {
         output.WriteRawTag(26);
         output.WriteMessage(GetClosestNodes);
       }
+      if (clientResponseTypeCase_ == ClientResponseTypeOneofCase.ExploreNodes) {
+        output.WriteRawTag(34);
+        output.WriteMessage(ExploreNodes);
+      }
+      if (clientResponseTypeCase_ == ClientResponseTypeOneofCase.GetRandomNodes) {
+        output.WriteRawTag(42);
+        output.WriteMessage(GetRandomNodes);
+      }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -5872,6 +6171,12 @@ namespace Iop.Locnet {
       if (clientResponseTypeCase_ == ClientResponseTypeOneofCase.GetClosestNodes) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(GetClosestNodes);
       }
+      if (clientResponseTypeCase_ == ClientResponseTypeOneofCase.ExploreNodes) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(ExploreNodes);
+      }
+      if (clientResponseTypeCase_ == ClientResponseTypeOneofCase.GetRandomNodes) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(GetRandomNodes);
+      }
       return size;
     }
 
@@ -5882,13 +6187,34 @@ namespace Iop.Locnet {
       }
       switch (other.ClientResponseTypeCase) {
         case ClientResponseTypeOneofCase.GetNodeInfo:
-          GetNodeInfo = other.GetNodeInfo;
+          if (GetNodeInfo == null) {
+            GetNodeInfo = new global::Iop.Locnet.GetNodeInfoResponse();
+          }
+          GetNodeInfo.MergeFrom(other.GetNodeInfo);
           break;
         case ClientResponseTypeOneofCase.GetNeighbourNodes:
-          GetNeighbourNodes = other.GetNeighbourNodes;
+          if (GetNeighbourNodes == null) {
+            GetNeighbourNodes = new global::Iop.Locnet.GetNeighbourNodesByDistanceResponse();
+          }
+          GetNeighbourNodes.MergeFrom(other.GetNeighbourNodes);
           break;
         case ClientResponseTypeOneofCase.GetClosestNodes:
-          GetClosestNodes = other.GetClosestNodes;
+          if (GetClosestNodes == null) {
+            GetClosestNodes = new global::Iop.Locnet.GetClosestNodesByDistanceResponse();
+          }
+          GetClosestNodes.MergeFrom(other.GetClosestNodes);
+          break;
+        case ClientResponseTypeOneofCase.ExploreNodes:
+          if (ExploreNodes == null) {
+            ExploreNodes = new global::Iop.Locnet.ExploreNetworkNodesByDistanceResponse();
+          }
+          ExploreNodes.MergeFrom(other.ExploreNodes);
+          break;
+        case ClientResponseTypeOneofCase.GetRandomNodes:
+          if (GetRandomNodes == null) {
+            GetRandomNodes = new global::Iop.Locnet.GetRandomNodesResponse();
+          }
+          GetRandomNodes.MergeFrom(other.GetRandomNodes);
           break;
       }
 
@@ -5927,6 +6253,24 @@ namespace Iop.Locnet {
             }
             input.ReadMessage(subBuilder);
             GetClosestNodes = subBuilder;
+            break;
+          }
+          case 34: {
+            global::Iop.Locnet.ExploreNetworkNodesByDistanceResponse subBuilder = new global::Iop.Locnet.ExploreNetworkNodesByDistanceResponse();
+            if (clientResponseTypeCase_ == ClientResponseTypeOneofCase.ExploreNodes) {
+              subBuilder.MergeFrom(ExploreNodes);
+            }
+            input.ReadMessage(subBuilder);
+            ExploreNodes = subBuilder;
+            break;
+          }
+          case 42: {
+            global::Iop.Locnet.GetRandomNodesResponse subBuilder = new global::Iop.Locnet.GetRandomNodesResponse();
+            if (clientResponseTypeCase_ == ClientResponseTypeOneofCase.GetRandomNodes) {
+              subBuilder.MergeFrom(GetRandomNodes);
+            }
+            input.ReadMessage(subBuilder);
+            GetRandomNodes = subBuilder;
             break;
           }
         }
@@ -6059,7 +6403,7 @@ namespace Iop.Locnet {
       return new GetNodeInfoResponse(this);
     }
 
-    /// <summary>Field number for the "nodeInfo" field.</summary>
+    /// <summary>Field number for the "node_info" field.</summary>
     public const int NodeInfoFieldNumber = 1;
     private global::Iop.Locnet.NodeInfo nodeInfo_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -6238,6 +6582,300 @@ namespace Iop.Locnet {
           default:
             input.SkipLastField();
             break;
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  /// Explore the closest nodes around the specified location.
+  /// While GetClosestNodesByDistanceResponse queries information only from this single node,
+  /// this call requests the node to contact also other nodes which might know the location better
+  /// so as the mobile client doesn't have to drain too much battery for such network communication.
+  /// </summary>
+  public sealed partial class ExploreNetworkNodesByDistanceRequest : pb::IMessage<ExploreNetworkNodesByDistanceRequest> {
+    private static readonly pb::MessageParser<ExploreNetworkNodesByDistanceRequest> _parser = new pb::MessageParser<ExploreNetworkNodesByDistanceRequest>(() => new ExploreNetworkNodesByDistanceRequest());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<ExploreNetworkNodesByDistanceRequest> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[34]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ExploreNetworkNodesByDistanceRequest() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ExploreNetworkNodesByDistanceRequest(ExploreNetworkNodesByDistanceRequest other) : this() {
+      Location = other.location_ != null ? other.Location.Clone() : null;
+      targetNodeCount_ = other.targetNodeCount_;
+      maxNodeHops_ = other.maxNodeHops_;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ExploreNetworkNodesByDistanceRequest Clone() {
+      return new ExploreNetworkNodesByDistanceRequest(this);
+    }
+
+    /// <summary>Field number for the "location" field.</summary>
+    public const int LocationFieldNumber = 1;
+    private global::Iop.Locnet.GpsLocation location_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Iop.Locnet.GpsLocation Location {
+      get { return location_; }
+      set {
+        location_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "target_node_count" field.</summary>
+    public const int TargetNodeCountFieldNumber = 2;
+    private uint targetNodeCount_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public uint TargetNodeCount {
+      get { return targetNodeCount_; }
+      set {
+        targetNodeCount_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "max_node_hops" field.</summary>
+    public const int MaxNodeHopsFieldNumber = 3;
+    private uint maxNodeHops_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public uint MaxNodeHops {
+      get { return maxNodeHops_; }
+      set {
+        maxNodeHops_ = value;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as ExploreNetworkNodesByDistanceRequest);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(ExploreNetworkNodesByDistanceRequest other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (!object.Equals(Location, other.Location)) return false;
+      if (TargetNodeCount != other.TargetNodeCount) return false;
+      if (MaxNodeHops != other.MaxNodeHops) return false;
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (location_ != null) hash ^= Location.GetHashCode();
+      if (TargetNodeCount != 0) hash ^= TargetNodeCount.GetHashCode();
+      if (MaxNodeHops != 0) hash ^= MaxNodeHops.GetHashCode();
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (location_ != null) {
+        output.WriteRawTag(10);
+        output.WriteMessage(Location);
+      }
+      if (TargetNodeCount != 0) {
+        output.WriteRawTag(16);
+        output.WriteUInt32(TargetNodeCount);
+      }
+      if (MaxNodeHops != 0) {
+        output.WriteRawTag(24);
+        output.WriteUInt32(MaxNodeHops);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (location_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Location);
+      }
+      if (TargetNodeCount != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeUInt32Size(TargetNodeCount);
+      }
+      if (MaxNodeHops != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeUInt32Size(MaxNodeHops);
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(ExploreNetworkNodesByDistanceRequest other) {
+      if (other == null) {
+        return;
+      }
+      if (other.location_ != null) {
+        if (location_ == null) {
+          location_ = new global::Iop.Locnet.GpsLocation();
+        }
+        Location.MergeFrom(other.Location);
+      }
+      if (other.TargetNodeCount != 0) {
+        TargetNodeCount = other.TargetNodeCount;
+      }
+      if (other.MaxNodeHops != 0) {
+        MaxNodeHops = other.MaxNodeHops;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+          case 10: {
+            if (location_ == null) {
+              location_ = new global::Iop.Locnet.GpsLocation();
+            }
+            input.ReadMessage(location_);
+            break;
+          }
+          case 16: {
+            TargetNodeCount = input.ReadUInt32();
+            break;
+          }
+          case 24: {
+            MaxNodeHops = input.ReadUInt32();
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  public sealed partial class ExploreNetworkNodesByDistanceResponse : pb::IMessage<ExploreNetworkNodesByDistanceResponse> {
+    private static readonly pb::MessageParser<ExploreNetworkNodesByDistanceResponse> _parser = new pb::MessageParser<ExploreNetworkNodesByDistanceResponse>(() => new ExploreNetworkNodesByDistanceResponse());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<ExploreNetworkNodesByDistanceResponse> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Iop.Locnet.IopLocNetReflection.Descriptor.MessageTypes[35]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ExploreNetworkNodesByDistanceResponse() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ExploreNetworkNodesByDistanceResponse(ExploreNetworkNodesByDistanceResponse other) : this() {
+      closestNodes_ = other.closestNodes_.Clone();
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ExploreNetworkNodesByDistanceResponse Clone() {
+      return new ExploreNetworkNodesByDistanceResponse(this);
+    }
+
+    /// <summary>Field number for the "closest_nodes" field.</summary>
+    public const int ClosestNodesFieldNumber = 1;
+    private static readonly pb::FieldCodec<global::Iop.Locnet.NodeInfo> _repeated_closestNodes_codec
+        = pb::FieldCodec.ForMessage(10, global::Iop.Locnet.NodeInfo.Parser);
+    private readonly pbc::RepeatedField<global::Iop.Locnet.NodeInfo> closestNodes_ = new pbc::RepeatedField<global::Iop.Locnet.NodeInfo>();
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<global::Iop.Locnet.NodeInfo> ClosestNodes {
+      get { return closestNodes_; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as ExploreNetworkNodesByDistanceResponse);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(ExploreNetworkNodesByDistanceResponse other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if(!closestNodes_.Equals(other.closestNodes_)) return false;
+      return true;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      hash ^= closestNodes_.GetHashCode();
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      closestNodes_.WriteTo(output, _repeated_closestNodes_codec);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      size += closestNodes_.CalculateSize(_repeated_closestNodes_codec);
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(ExploreNetworkNodesByDistanceResponse other) {
+      if (other == null) {
+        return;
+      }
+      closestNodes_.Add(other.closestNodes_);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+          case 10: {
+            closestNodes_.AddEntriesFrom(input, _repeated_closestNodes_codec);
+            break;
+          }
         }
       }
     }

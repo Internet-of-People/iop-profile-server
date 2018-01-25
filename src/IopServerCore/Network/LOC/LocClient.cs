@@ -196,7 +196,7 @@ namespace IopServerCore.Network.LOC
       ServiceInfo serviceInfo = new ServiceInfo()
       {
         Port = (uint)PrimaryPort,
-        Type = ServiceType.Profile,
+        Type = "Profile",
         ServiceData = ProtocolHelper.ByteArrayToByteString(Crypto.Sha256(((KeysEd25519)config.Settings["Keys"]).PublicKey))
       };
 
@@ -250,7 +250,7 @@ namespace IopServerCore.Network.LOC
 
       bool res = false;
 
-      var request = MessageBuilder.CreateDeregisterServiceRequest(ServiceType.Profile);
+      var request = MessageBuilder.CreateDeregisterServiceRequest("Profile");
       if (await SendMessageAsync(request))
       {
         var response = await ReceiveMessageAsync(shutdownSignaling.ShutdownCancellationTokenSource.Token);

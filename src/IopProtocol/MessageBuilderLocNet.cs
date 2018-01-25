@@ -302,7 +302,7 @@ namespace IopProtocol
     /// </summary>
     /// <param name="ServiceType">Type of service to unregister.</param>
     /// <returns>DeregisterServiceRequest message that is ready to be sent.</returns>
-    public IProtocolMessage<Message> CreateDeregisterServiceRequest(ServiceType ServiceType)
+    public IProtocolMessage<Message> CreateDeregisterServiceRequest(string ServiceType)
     {
       DeregisterServiceRequest deregisterServiceRequest = new DeregisterServiceRequest();
       deregisterServiceRequest.ServiceType = ServiceType;
