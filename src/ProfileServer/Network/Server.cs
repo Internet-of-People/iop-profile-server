@@ -63,7 +63,10 @@ namespace ProfileServer.Network
     /// <summary>List of open relays.</summary>
     public RelayList RelayList { get { return relayList; } }
 
-
+    public Server(RoleServerFactoryDelegate roleServerFactory)
+      : base(roleServerFactory)
+    {}
+    
     public override bool Init()
     {
       log.Info("()");

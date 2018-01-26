@@ -60,7 +60,7 @@ namespace ProfileServer.Network
       logPrefix = LogPrefix;
       log = new Logger("ProfileServer.Network.PsMessageProcessor", logPrefix);
       serverComponent = (Server)Base.ComponentDictionary[Server.ComponentName];
-      clientList = serverComponent.GetClientList();
+      clientList = serverComponent.Clients;
       relayList = serverComponent.RelayList;
     }
 
@@ -582,7 +582,7 @@ namespace ProfileServer.Network
 
       var res = new List<Iop.Profileserver.ServerRole>();
 
-      foreach (var roleServer in serverComponent.GetRoleServers())
+      foreach (var roleServer in serverComponent.Servers)
       {
         foreach (ServerRole role in Enum.GetValues(typeof(ServerRole)))
         {

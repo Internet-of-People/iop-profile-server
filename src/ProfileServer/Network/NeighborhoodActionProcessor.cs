@@ -77,7 +77,7 @@ namespace ProfileServer.Network
       try
       {
         Server serverComponent = (Server)Base.ComponentDictionary[Server.ComponentName];
-        var roleServers = serverComponent.GetRoleServers();
+        var roleServers = serverComponent.Servers;
         foreach (var roleServer in roleServers)
         {
           if ((roleServer.Roles & (uint)ServerRole.Primary) != 0)
